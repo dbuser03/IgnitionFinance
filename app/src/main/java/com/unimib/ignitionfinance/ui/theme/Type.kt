@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.ui.theme
+package com.example.ignitionfinance.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,29 +6,98 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
+// Set of Material typography styles
 val Typography = Typography(
+    // Body Normal
+    bodySmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 14.sp,
+        letterSpacing = 0.4.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+        lineHeight = 18.sp,
+        letterSpacing = 0.4.sp
+    ),
+
+    // Title Normal
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
+        fontSize = 24.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.4.sp
     ),
-    labelSmall = TextStyle(
+
+    // Headline Normal
+    headlineSmall = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.4.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 36.sp,
+        lineHeight = 40.sp,
+        letterSpacing = 0.4.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 40.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.4.sp
+    ),
+
+    // Display Normal
+    displaySmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 48.sp,
+        lineHeight = 54.sp,
+        letterSpacing = 0.4.sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 64.sp,
+        lineHeight = 72.sp,
+        letterSpacing = 0.4.sp
+    ),
+    displayLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 96.sp,
+        lineHeight = 108.sp,
+        letterSpacing = 0.4.sp
+    ),
+)
+
+val TypographyMedium = Typography.copy(
+    // Body Medium
+    bodySmall = Typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+    bodyMedium = Typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+    bodyLarge = Typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+
+    // Title Medium
+    titleLarge = Typography.titleLarge.copy(fontWeight = FontWeight.Medium)
+)
+
+val TypographyBold = Typography.copy(
+    // Headline Bold
+    headlineLarge = Typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
 )
