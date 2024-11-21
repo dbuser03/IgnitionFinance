@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.ui.screens
+package com.unimib.ignitionfinance.ui.screens.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
