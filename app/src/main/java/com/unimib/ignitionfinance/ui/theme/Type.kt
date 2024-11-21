@@ -1,4 +1,4 @@
-package com.example.ignitionfinance.ui.theme
+package com.unimib.ignitionfinance.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

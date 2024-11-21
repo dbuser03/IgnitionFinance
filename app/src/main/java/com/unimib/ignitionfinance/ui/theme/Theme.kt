@@ -1,4 +1,4 @@
-package com.example.ignitionfinance.ui.theme
+package com.unimib.ignitionfinance.ui.theme
 
 // import android.app.Activity
 import android.os.Build
