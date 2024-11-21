@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.unimib.ignitionfinance"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.unimib.ignitionfinance"
