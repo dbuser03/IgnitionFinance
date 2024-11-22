@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.inflation_api
 
 import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URI
 import java.net.URLEncoder
 import java.io.BufferedReader
