@@ -1,12 +1,12 @@
 package com.unimib.ignitionfinance.data.remote.stock_api
 
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface IndexApiService {
 
-    // Use @GET with query parameters
-    @GET("query")
+    @GET("path")
     suspend fun getIndexData(
         @Query("function") function: String = "TIME_SERIES_DAILY",
         @Query("symbol") symbol: String,
