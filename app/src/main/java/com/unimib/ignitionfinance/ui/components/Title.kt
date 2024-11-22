@@ -1,18 +1,21 @@
+@file:Suppress("DEPRECATION")
+
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.Alignment
 
 @Composable
 fun Title(
@@ -34,6 +37,7 @@ fun Title(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp)
+                .padding(end = 24.dp)
         )
     }
 }
@@ -59,6 +63,7 @@ fun TitleWithDescription(
                 .fillMaxWidth()
                 .padding(start = 16.dp)
                 .align(Alignment.Center)
+                .padding(end = 24.dp)
         )
         Text(
             text = description,
@@ -71,12 +76,13 @@ fun TitleWithDescription(
                 .padding(start = 16.dp)
                 .align(Alignment.BottomStart)
                 .padding(bottom = 8.dp)
+                .padding(end = 24.dp)
         )
     }
 }
 
 @Composable
-fun TitleWithDescriptionAndCircle(
+fun TitleWithDescriptionAndIcon(
     title: String,
     description: String,
 ) {
@@ -96,6 +102,7 @@ fun TitleWithDescriptionAndCircle(
                 .fillMaxWidth()
                 .padding(start = 16.dp)
                 .align(Alignment.CenterStart)
+                .padding(end = 24.dp)
         )
         Text(
             text = description,
@@ -108,12 +115,44 @@ fun TitleWithDescriptionAndCircle(
                 .padding(start = 16.dp)
                 .align(Alignment.BottomStart)
                 .padding(bottom = 8.dp)
+                .padding(end = 24.dp)
         )
-        Box(
+        SettingsIcon(
+            icon = Icons.Default.Settings,
             modifier = Modifier
-                .size(40.dp)
-                .background(color = Color.Blue, shape = CircleShape)
                 .align(Alignment.CenterEnd)
+                .padding(end = 24.dp)
+        )
+    }
+}
+
+@Composable
+fun TitleSettings() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(256.dp)
+            .background(color = BackgroundWhite),
+        contentAlignment = Alignment.Center
+    ) {
+        GoBackIcon(
+            icon = Icons.Filled.ArrowBack,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp)
+                .padding(top = 72.dp)
+        )
+        Text(
+            text = "Settings",
+            style = TypographyBold.headlineLarge,
+            textAlign = TextAlign.Left,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp)
+                .padding(end = 24.dp)
+                .padding(top = 48.dp)
         )
     }
 }
@@ -128,16 +167,22 @@ fun TitlePreview() {
 @Composable
 fun TitleWithDescriptionPreview() {
     TitleWithDescription(
-        title = "Ignition \nFinance",
+        title = "Your \nNet Worth",
         description = "Manage your finances easily and efficiently with our powerful tools."
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TitleWithDescriptionAndCirclePreview() {
-    TitleWithDescriptionAndCircle(
-        title = "Ignition \nFinance",
+fun TitleWithDescriptionAndIconPreview() {
+    TitleWithDescriptionAndIcon(
+        title = "FIRE \nSimulation",
         description = "Manage your finances easily and efficiently with our powerful tools."
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TitleSettingsPreview() {
+    TitleSettings()
 }
