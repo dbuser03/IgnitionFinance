@@ -17,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
+import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun SettingsIcon(
@@ -61,16 +62,20 @@ fun GoBackIcon(
 @Preview
 @Composable
 fun PreviewCircularIcon() {
-    SettingsIcon(
-        icon = Icons.Default.Settings,
-    )
+    IgnitionFinanceTheme {
+        SettingsIcon(
+            icon = Icons.Default.Settings,
+        )
+    }
 }
 
 @Preview
 @Composable
 fun PreviewBackIcon() {
+    IgnitionFinanceTheme {
         GoBackIcon(
             icon = Icons.Filled.ArrowBack,
         )
+    }
 }
 

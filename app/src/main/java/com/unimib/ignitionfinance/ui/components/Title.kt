@@ -15,21 +15,24 @@ import com.unimib.ignitionfinance.ui.theme.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 
 @Composable
 fun Title(
     title: String,
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(216.dp)
-            .background(color = BackgroundWhite),
+            .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = title,
+            color = color,
             style = TypographyBold.headlineLarge,
             textAlign = TextAlign.Left,
             maxLines = 2,
@@ -46,15 +49,18 @@ fun Title(
 fun TitleWithDescription(
     title: String,
     description: String,
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(216.dp)
-            .background(color = BackgroundWhite)
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         Text(
             text = title,
+            color = color,
             style = TypographyBold.headlineLarge,
             textAlign = TextAlign.Left,
             maxLines = 2,
@@ -67,6 +73,7 @@ fun TitleWithDescription(
         )
         Text(
             text = description,
+            color = color,
             style = Typography.bodyMedium,
             textAlign = TextAlign.Left,
             maxLines = 3,
@@ -85,15 +92,18 @@ fun TitleWithDescription(
 fun TitleWithDescriptionAndIcon(
     title: String,
     description: String,
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(216.dp)
-            .background(color = BackgroundWhite)
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         Text(
             text = title,
+            color = color,
             style = TypographyBold.headlineLarge,
             textAlign = TextAlign.Left,
             maxLines = 2,
@@ -106,6 +116,7 @@ fun TitleWithDescriptionAndIcon(
         )
         Text(
             text = description,
+            color = color,
             style = Typography.bodyMedium,
             textAlign = TextAlign.Left,
             maxLines = 3,
@@ -127,12 +138,15 @@ fun TitleWithDescriptionAndIcon(
 }
 
 @Composable
-fun TitleSettings() {
+fun TitleSettings(
+    title: String,
+    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(256.dp)
-            .background(color = BackgroundWhite),
+            .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         GoBackIcon(
@@ -143,7 +157,8 @@ fun TitleSettings() {
                 .padding(top = 72.dp)
         )
         Text(
-            text = "Settings",
+            text = title,
+            color = color,
             style = TypographyBold.headlineLarge,
             textAlign = TextAlign.Left,
             maxLines = 1,
@@ -160,29 +175,37 @@ fun TitleSettings() {
 @Preview(showBackground = true)
 @Composable
 fun TitlePreview() {
-    Title("Ignition \nFinance")
+    IgnitionFinanceTheme {
+        Title("Ignition \nFinance")
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TitleWithDescriptionPreview() {
-    TitleWithDescription(
-        title = "Your \nNet Worth",
-        description = "Manage your finances easily and efficiently with our powerful tools."
-    )
+    IgnitionFinanceTheme {
+        TitleWithDescription(
+            title = "Your \nNet Worth",
+            description = "Manage your finances easily and efficiently with our powerful tools."
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TitleWithDescriptionAndIconPreview() {
-    TitleWithDescriptionAndIcon(
-        title = "FIRE \nSimulation",
-        description = "Manage your finances easily and efficiently with our powerful tools."
-    )
+    IgnitionFinanceTheme {
+        TitleWithDescriptionAndIcon(
+            title = "FIRE \nSimulation",
+            description = "Manage your finances easily and efficiently with our powerful tools."
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TitleSettingsPreview() {
-    TitleSettings()
+    IgnitionFinanceTheme {
+        TitleSettings("Settings")
+    }
 }
