@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.data.remote.stock_api
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface IndexApiResponse {
+interface IndexApiService {
 
     // Use @GET with query parameters
     @GET("query")
