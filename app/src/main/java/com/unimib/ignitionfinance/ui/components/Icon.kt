@@ -15,8 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
-import com.unimib.ignitionfinance.ui.theme.*
 
 @Composable
 fun SettingsIcon(
@@ -29,17 +29,19 @@ fun SettingsIcon(
         modifier = modifier
             .size(backgroundSize)
             .clip(shape = androidx.compose.foundation.shape.CircleShape)
-            .background(color = HighlightGray),
+            .background(color = MaterialTheme.colorScheme.onSecondary),
         contentAlignment = Alignment.Center
     ) {
         Image(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(iconSize),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Fit,
+            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
     }
 }
+
 
 @Composable
 fun GoBackIcon(
@@ -51,7 +53,8 @@ fun GoBackIcon(
         imageVector = icon,
         contentDescription = null,
         modifier = modifier.size(iconSize),
-        contentScale = ContentScale.Fit
+        contentScale = ContentScale.Fit,
+        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.primary)
     )
 }
 
@@ -66,7 +69,8 @@ fun PreviewCircularIcon() {
 @Preview
 @Composable
 fun PreviewBackIcon() {
-    GoBackIcon(
-        icon = Icons.Filled.ArrowBack,
-    )
+        GoBackIcon(
+            icon = Icons.Filled.ArrowBack,
+        )
 }
+
