@@ -2,29 +2,37 @@ package com.unimib.ignitionfinance.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.unimib.ignitionfinance.R
+
+val NeueHaasGroteskDisplayFontFamily = FontFamily(
+    Font(R.font.neue_haas_grotesk_display_regular, FontWeight.Normal),
+    Font(R.font.neue_haas_grotesk_display_medium, FontWeight.Medium),
+    Font(R.font.neue_haas_grotesk_display_bold, FontWeight.Bold)
+)
 
 // Set of Material typography styles
 val Typography = Typography(
     // Body Normal
     bodySmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 14.sp,
         letterSpacing = 0.4.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 18.sp,
@@ -33,7 +41,7 @@ val Typography = Typography(
 
     // Title Normal
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 28.sp,
@@ -42,21 +50,21 @@ val Typography = Typography(
 
     // Headline Normal
     headlineSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 32.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.4.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 36.sp,
         lineHeight = 40.sp,
         letterSpacing = 0.4.sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 40.sp,
         lineHeight = 44.sp,
@@ -65,21 +73,21 @@ val Typography = Typography(
 
     // Display Normal
     displaySmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 48.sp,
         lineHeight = 54.sp,
         letterSpacing = 0.4.sp
     ),
     displayMedium = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 64.sp,
         lineHeight = 72.sp,
         letterSpacing = 0.4.sp
     ),
     displayLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = NeueHaasGroteskDisplayFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 96.sp,
         lineHeight = 108.sp,
