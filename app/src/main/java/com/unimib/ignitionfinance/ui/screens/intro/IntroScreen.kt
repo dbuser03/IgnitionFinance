@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.unimib.ignitionfinance.ui.components.Title
+import com.unimib.ignitionfinance.ui.components.VideoPlaceholder
 import com.unimib.ignitionfinance.ui.theme.*
 import com.unimib.ignitionfinance.R
 
@@ -22,6 +23,9 @@ fun IntroScreen() {
         horizontalAlignment = Alignment.Start
     ) {
         Title(title = stringResource(id = R.string.app_title))
+
+        Spacer(modifier = Modifier.weight(1f))
+        VideoPlaceholder()
     }
 }
 

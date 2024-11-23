@@ -33,7 +33,10 @@ fun Title(
         Text(
             text = title,
             color = color,
-            style = TypographyBold.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = TypographyBold.headlineLarge.fontWeight
+            ),
             textAlign = TextAlign.Left,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -61,7 +64,10 @@ fun TitleWithDescription(
         Text(
             text = title,
             color = color,
-            style = TypographyBold.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = TypographyBold.headlineLarge.fontWeight
+            ),
             textAlign = TextAlign.Left,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -74,7 +80,9 @@ fun TitleWithDescription(
         Text(
             text = description,
             color = color,
-            style = Typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.primary
+            ),
             textAlign = TextAlign.Left,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
@@ -104,7 +112,10 @@ fun TitleWithDescriptionAndIcon(
         Text(
             text = title,
             color = color,
-            style = TypographyBold.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = TypographyBold.headlineLarge.fontWeight
+            ),
             textAlign = TextAlign.Left,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -117,7 +128,9 @@ fun TitleWithDescriptionAndIcon(
         Text(
             text = description,
             color = color,
-            style = Typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.primary
+            ),
             textAlign = TextAlign.Left,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
@@ -159,7 +172,10 @@ fun TitleSettings(
         Text(
             text = title,
             color = color,
-            style = TypographyBold.headlineLarge,
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = TypographyBold.headlineLarge.fontWeight
+            ),
             textAlign = TextAlign.Left,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
