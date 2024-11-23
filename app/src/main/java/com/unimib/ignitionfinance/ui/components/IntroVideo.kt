@@ -8,8 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.stringResource
 import com.unimib.ignitionfinance.R
@@ -30,7 +28,7 @@ fun VideoPlaceholder() {
     ) {
         Text(
             text = stringResource(id = R.string.lorem_ipsum),
-            modifier = Modifier.padding(start = 16.dp, end = 56.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 112.dp),
             style = MaterialTheme.typography.titleLarge.copy(
                 color = MaterialTheme.colorScheme.secondary
             )

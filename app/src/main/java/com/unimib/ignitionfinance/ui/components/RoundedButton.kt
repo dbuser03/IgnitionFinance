@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
@@ -16,15 +14,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import com.unimib.ignitionfinance.ui.theme.*
-import com.unimib.ignitionfinance.R
-import androidx.compose.ui.res.painterResource
 
 @Composable
-fun CandlestickChartIcon(
-    icon: Painter,
+fun RoundedSettingsButton(
+    icon: ImageVector,
     modifier: Modifier = Modifier,
     backgroundSize: Dp = 40.dp,
     iconSize: Dp = 20.dp
@@ -37,7 +32,7 @@ fun CandlestickChartIcon(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = icon,
+            imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(iconSize),
             contentScale = ContentScale.Fit,
@@ -46,39 +41,12 @@ fun CandlestickChartIcon(
     }
 }
 
-
-@Composable
-fun GoBackIcon(
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    iconSize: Dp = 32.dp
-) {
-    Image(
-        imageVector = icon,
-        contentDescription = null,
-        modifier = modifier.size(iconSize),
-        contentScale = ContentScale.Fit,
-        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.primary)
-    )
-}
-
 @Preview
 @Composable
-fun PreviewSettingsIcon() {
+fun PreviewRoundedSettingsIcon() {
     IgnitionFinanceTheme {
-        CandlestickChartIcon(
-            icon = painterResource(id = R.drawable.baseline_candlestick_chart_20),
+        RoundedSettingsButton(
+            icon = Icons.Filled.Settings,
         )
     }
 }
-
-@Preview
-@Composable
-fun PreviewGoBackIcon() {
-    IgnitionFinanceTheme {
-        GoBackIcon(
-            icon = Icons.Filled.ArrowBack,
-        )
-    }
-}
-

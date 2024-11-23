@@ -1,5 +1,4 @@
 @file:Suppress("DEPRECATION")
-
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
@@ -13,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 
@@ -44,6 +43,7 @@ fun Title(
                 .fillMaxWidth()
                 .padding(start = 16.dp)
                 .padding(end = 24.dp)
+                .padding(top = 16.dp)
         )
     }
 }
@@ -53,7 +53,6 @@ fun TitleWithDescription(
     title: String,
     description: String,
     color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
-
 ) {
     Box(
         modifier = Modifier
@@ -97,11 +96,10 @@ fun TitleWithDescription(
 }
 
 @Composable
-fun TitleWithDescriptionAndIcon(
+fun TitleWithDescriptionAndButton(
     title: String,
     description: String,
     color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
-
 ) {
     Box(
         modifier = Modifier
@@ -141,8 +139,8 @@ fun TitleWithDescriptionAndIcon(
                 .padding(bottom = 8.dp)
                 .padding(end = 24.dp)
         )
-        SettingsIcon(
-            icon = Icons.Default.Settings,
+        RoundedSettingsButton(
+            icon = Icons.Filled.Settings,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 24.dp)
@@ -211,7 +209,7 @@ fun TitleWithDescriptionPreview() {
 @Composable
 fun TitleWithDescriptionAndIconPreview() {
     IgnitionFinanceTheme {
-        TitleWithDescriptionAndIcon(
+        TitleWithDescriptionAndButton(
             title = "FIRE \nSimulation",
             description = "Manage your finances easily and efficiently with our powerful tools."
         )

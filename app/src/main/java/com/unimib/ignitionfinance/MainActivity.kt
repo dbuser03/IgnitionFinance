@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.unimib.ignitionfinance.ui.screens.intro.IntroScreen
+import com.unimib.ignitionfinance.ui.screens.IntroScreen
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 class MainActivity : ComponentActivity() {
