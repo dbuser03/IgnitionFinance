@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.stock_api
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 
 // Main API response
 data class StockApiResponseData(
@@ -21,9 +22,9 @@ data class MetaData(
 
 // TimeSeriesData represents each day's data
 data class TimeSeriesData(
-    @SerializedName("1. open") val open: String,
-    @SerializedName("2. high") val high: String,
-    @SerializedName("3. low") val low: String,
-    @SerializedName("4. close") val close: String,
-    @SerializedName("5. volume") val volume: String
+    @SerializedName("1. open") val open: BigDecimal,
+    @SerializedName("2. high") val high: BigDecimal,
+    @SerializedName("3. low") val low: BigDecimal,
+    @SerializedName("4. close") val close: BigDecimal,
+    @SerializedName("5. volume") val volume: Long
 )
