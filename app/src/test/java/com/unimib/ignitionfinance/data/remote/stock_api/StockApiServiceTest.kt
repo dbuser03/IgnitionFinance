@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.stock_api
 
+import com.google.gson.internal.GsonBuildConfig
 import com.unimib.ignitionfinance.BuildConfig
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
