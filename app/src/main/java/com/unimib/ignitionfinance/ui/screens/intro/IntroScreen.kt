@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.ui.screens.intro
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ fun IntroScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundWhite),
+            .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
