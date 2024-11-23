@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.data.remote.stock_api
 import com.google.gson.annotations.SerializedName
 
 // Main API response
-data class IndexApiResponseData(
+data class StockApiResponseData(
     @SerializedName("Meta Data")
     val metaData: MetaData,
     @SerializedName("Time Series (Daily)")
