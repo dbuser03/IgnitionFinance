@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.ui.components.VideoPlaceholder
+import com.unimib.ignitionfinance.ui.components.IntroImage
 import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import kotlinx.coroutines.delay
@@ -48,7 +48,7 @@ fun IntroScreen() {
                 .fillMaxWidth()
                 .offset(y = animatedOffset.value.dp)
         ) {
-            VideoPlaceholder()
+            IntroImage()
         }
     }
 }

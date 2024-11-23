@@ -30,14 +30,14 @@ fun RoundedSwipeUpButton(
         modifier = modifier
             .size(backgroundSize)
             .clip(shape = androidx.compose.foundation.shape.CircleShape)
-            .background(color = MaterialTheme.colorScheme.primary),
+            .background(PrimaryWhite),
     ) {
         Image(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(iconSize),
             contentScale = ContentScale.Fit,
-            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(PrimaryBlack)
         )
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -15,7 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.theme.*
@@ -24,7 +28,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 
 @Composable
-fun VideoPlaceholder() {
+fun IntroImage() {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val videoHeight = screenHeight * 0.8f
 
@@ -61,6 +65,15 @@ fun VideoPlaceholder() {
             ),
         contentAlignment = Alignment.BottomStart
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.intro_screen_image),
+            contentDescription = "Intro Screen Background",
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
+            contentScale = ContentScale.Crop
+        )
+
         AnimatedVisibility(
             visible = textVisible,
             enter = fadeIn(tween(1000)),
@@ -96,6 +109,6 @@ fun VideoPlaceholder() {
 @Composable
 fun VideoPlaceholderPreview() {
     IgnitionFinanceTheme {
-        VideoPlaceholder()
+        IntroImage()
     }
 }
