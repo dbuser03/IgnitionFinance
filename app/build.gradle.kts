@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.unimib.ignitionfinance"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.unimib.ignitionfinance"
@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
+    implementation(libs.mockwebserver)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
