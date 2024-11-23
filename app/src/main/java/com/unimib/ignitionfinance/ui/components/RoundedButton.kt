@@ -18,6 +18,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.unimib.ignitionfinance.ui.theme.*
 
 @Composable
+fun RoundedSwipeUpButton(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    backgroundSize: Dp = 50.dp,
+    iconSize: Dp = 28.dp
+) {
+    Box(
+        modifier = modifier
+            .size(backgroundSize)
+            .clip(shape = androidx.compose.foundation.shape.CircleShape)
+            .background(color = MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(iconSize),
+            contentScale = ContentScale.Fit,
+            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
+        )
+    }
+}
+
+@Composable
 fun RoundedSettingsButton(
     icon: ImageVector,
     modifier: Modifier = Modifier,
@@ -43,10 +67,20 @@ fun RoundedSettingsButton(
 
 @Preview
 @Composable
-fun PreviewRoundedSettingsIcon() {
+fun PreviewRoundedSettingsButton() {
     IgnitionFinanceTheme {
         RoundedSettingsButton(
             icon = Icons.Filled.Settings,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewRoundedSwipeUpButton() {
+    IgnitionFinanceTheme {
+        RoundedSwipeUpButton(
+            icon = Icons.Filled.KeyboardArrowUp,
         )
     }
 }

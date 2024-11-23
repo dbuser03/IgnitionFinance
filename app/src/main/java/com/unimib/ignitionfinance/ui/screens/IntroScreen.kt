@@ -23,7 +23,6 @@ fun IntroScreen() {
         horizontalAlignment = Alignment.Start
     ) {
         Title(title = stringResource(id = R.string.app_title))
-
         Spacer(modifier = Modifier.weight(1f))
         VideoPlaceholder()
     }
