@@ -42,21 +42,60 @@ class NewInflationApiServiceTest {
         val mockResponse = """
     {
         "header": {
-            "id": "mock-id-1234",
-            "prepared": "2024-11-22T22:45:53.238+01:00",
+            "id": "a5a97a39-281d-4513-978b-a91dad969502",
+            "test": false,
+            "prepared": "2024-11-24T12:09:44.123+01:00",
             "sender": {
                 "id": "ECB"
             }
         },
-        "data": {
-            "items": [
-                {"value": 2.5, "date": "2024-11-01"},
-                {"value": 3.1, "date": "2024-10-01"}
-            ]
-        },
-        "info": {
-            "name": "Inflation Data",
-            "description": "Monthly inflation rates"
+        "dataSets": [
+            {
+                "action": "Replace",
+                "validFrom": "2024-11-24T12:09:44.123+01:00",
+                "series": {
+                    "0:0:0:0:0": {
+                        "attributes": [0, null, 0, null, null, null, null, null, null, null, null, null, 0, null, 0, null, 0, 0, 0, 0],
+                        "observations": {
+                            "0": [1.0412, 0, 0, null, null]
+                        }
+                    }
+                }
+            }
+        ],
+        "structure": {
+            "links": [
+                {
+                    "title": "Exchange Rates",
+                    "rel": "dataflow",
+                    "href": "http://data-api.ecb.europa.eu:80/service/dataflow/ECB/EXR/1.0"
+                }
+            ],
+            "name": "Exchange Rates",
+            "dimensions": {
+                "series": [
+                    {
+                        "id": "FREQ",
+                        "name": "Frequency",
+                        "values": [
+                            {
+                                "id": "D",
+                                "name": "Daily"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "CURRENCY",
+                        "name": "Currency",
+                        "values": [
+                            {
+                                "id": "USD",
+                                "name": "US dollar"
+                            }
+                        ]
+                    }
+                ]
+            }
         }
     }
     """.trimIndent()
@@ -74,17 +113,32 @@ class NewInflationApiServiceTest {
 
         val responseBody = response.body()!!
 
-        // Verifica dei campi della struttura JSON mock
-        assertEquals("mock-id-1234", responseBody.header.id)
+        // Header assertions
+        assertEquals("a5a97a39-281d-4513-978b-a91dad969502", responseBody.header.id)
+        assertEquals(false, responseBody.header.test)
+        assertEquals("2024-11-24T12:09:44.123+01:00", responseBody.header.prepared)
         assertEquals("ECB", responseBody.header.sender.id)
 
-        val items = responseBody.data.items
-        assertNotNull(items)
-        assertEquals(2, items.size)
-        assertEquals(2.5, items[0].value)
-        assertEquals("2024-11-01", items[0].date)
+        // DataSets assertions
+        val dataSet = responseBody.dataSets[0]
+        assertEquals("Replace", dataSet.action)
+        assertEquals("2024-11-24T12:09:44.123+01:00", dataSet.validFrom)
 
-        assertEquals("Inflation Data", responseBody.info.name)
+        val seriesData = dataSet.series["0:0:0:0:0"]
+        assertNotNull(seriesData)
+        assertEquals(1, seriesData?.observations?.size)
+
+        val firstObservation = seriesData?.observations?.get("0")
+        assertEquals(1.0412, firstObservation?.get(0))
+
+        // Structure assertions
+        assertEquals("Exchange Rates", responseBody.structure.name)
+
+        val dimension = responseBody.structure.dimensions.series[0]
+        assertEquals("FREQ", dimension.id)
+        assertEquals("Frequency", dimension.name)
+        assertEquals("D", dimension.values[0].id)
+        assertEquals("Daily", dimension.values[0].name)
     }
 
     @Test
@@ -112,4 +166,5 @@ class NewInflationApiServiceTest {
 
         println("Response JSON: ${Gson().toJson(responseBody)}")
     }
+
 }
