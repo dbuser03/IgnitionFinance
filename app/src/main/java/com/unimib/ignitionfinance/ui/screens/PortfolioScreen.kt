@@ -21,7 +21,6 @@ fun PortfolioScreen() {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
-                modifier = Modifier,
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary,
                 items = listOf(
@@ -43,21 +42,22 @@ fun PortfolioScreen() {
                 )
             )
         }
-    ) { innerPadding ->
+    ) { innerPadding -> // Correctly capture innerPadding
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                .fillMaxSize(), // Remove innerPadding from Column
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
+            // Title should remain at the top without innerPadding
             Title(title = "My \nPortfolio")
             Spacer(modifier = Modifier.weight(1f))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp),
+                    .padding(bottom = 24.dp) // Optional bottom padding for button
+                    .padding(innerPadding), // Apply innerPadding only to the Box
                 contentAlignment = Alignment.Center
             ) {
                 RoundedAddButton(
@@ -74,7 +74,7 @@ fun PortfolioScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PortfolioScreenPreview() {
-    IgnitionFinanceTheme{
+    IgnitionFinanceTheme {
         PortfolioScreen()
     }
 }
