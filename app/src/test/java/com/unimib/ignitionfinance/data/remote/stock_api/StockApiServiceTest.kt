@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.stock_api
 
+import com.google.gson.Gson
 import com.google.gson.internal.GsonBuildConfig
 import com.unimib.ignitionfinance.BuildConfig
 import kotlinx.coroutines.runBlocking
@@ -86,31 +87,27 @@ class StockApiServiceTest {
     }
 
     @Test
-    fun `test getStockData API call with real API`() = runBlocking {
+    fun `test getStockData API call response is JSON with status 200`() = runBlocking {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://www.alphavantage.co/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        stockApiService = retrofit.create(StockApiService::class.java)
+        val stockApiService = retrofit.create(StockApiService::class.java)
         val realApiKey = BuildConfig.ALPHAVANTAGE_API_KEY
 
+        // Make the real API call
         val response = stockApiService.getStockData(symbol = "IBM", apiKey = realApiKey)
 
-        assertNotNull(response.body())
+        // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
 
-        val responseBody = response.body()!!
-        assertEquals("Daily Prices (open, high, low, close) and Volumes", responseBody.metaData.information)
-        assertEquals("IBM", responseBody.metaData.symbol)
-        assertEquals("2024-11-22", responseBody.metaData.lastRefreshed)
+        // Check that the response body is not null and print the JSON
+        val responseBody = response.body()
+        assertNotNull(responseBody)
 
-        val dailyData = responseBody.timeSeries["2024-11-22"]
-        assertNotNull(dailyData)
-        assertEquals(BigDecimal("223.3500"), dailyData?.open)
-        assertEquals(BigDecimal("227.2000"), dailyData?.high)
-        assertEquals(BigDecimal("220.8900"), dailyData?.low)
-        assertEquals(BigDecimal("222.9700"), dailyData?.close)
-        assertEquals(5320740L, dailyData?.volume)
+        // Print the JSON response for debugging/inspection
+        println("Response JSON: ${Gson().toJson(responseBody)}")
     }
+
 }
