@@ -26,15 +26,15 @@ data class DataSet(
 )
 
 data class SeriesData(
-    @SerializedName("attributes") val attributes: List<Double?>,
-    @SerializedName("observations") val observations: Map<String, List<Double?>>
+    @SerializedName("attributes") val attributes: List<Int?>, // Change to Int? as attributes seem to be integers, with possible nulls
+    @SerializedName("observations") val observations: Map<String, List<Double?>> // Keep Double? for potential nulls in observations
 )
 
 data class Structure(
     @SerializedName("links") val links: List<Link>,
     @SerializedName("name") val name: String,
     @SerializedName("dimensions") val dimensions: Dimensions,
-    @SerializedName("observation") val observation: List<Observation>
+    @SerializedName("attributes") val attributes: Attributes // Corrected key from "observation" to "attributes"
 )
 
 data class Link(
@@ -44,7 +44,8 @@ data class Link(
 )
 
 data class Dimensions(
-    @SerializedName("series") val series: List<Dimension>
+    @SerializedName("series") val series: List<Dimension>,
+    @SerializedName("observation") val observation: List<ObservationDimension> // Added ObservationDimension list for observations
 )
 
 data class Dimension(
@@ -53,14 +54,38 @@ data class Dimension(
     @SerializedName("values") val values: List<Value>
 )
 
+data class ObservationDimension(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("role") val role: String?,
+    @SerializedName("values") val values: List<ObservationValue>
+)
+
 data class Value(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String
 )
 
-data class Observation(
+data class ObservationValue(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("role") val role: String,
-    @SerializedName("values") val values: List<Value>
+    @SerializedName("start") val start: String,
+    @SerializedName("end") val end: String
+)
+
+data class Attributes(
+    @SerializedName("series") val series: List<Attribute>,
+    @SerializedName("observation") val observation: List<ObservationAttribute>
+)
+
+data class Attribute(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("values") val values: List<Value?>
+)
+
+data class ObservationAttribute(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("values") val values: List<Value?>
 )
