@@ -65,6 +65,29 @@ fun RoundedSettingsButton(
     }
 }
 
+@Composable
+fun RoundedAddButton(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    backgroundSize: Dp = 50.dp,
+    iconSize: Dp = 28.dp
+) {
+    IconButton(
+        onClick = { /* Handle click */ },
+        modifier = modifier
+            .size(backgroundSize)
+            .clip(androidx.compose.foundation.shape.CircleShape)
+            .background(MaterialTheme.colorScheme.primary)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(iconSize),
+            tint = MaterialTheme.colorScheme.onPrimary
+        )
+    }
+}
+
 
 @Preview
 @Composable
@@ -82,6 +105,16 @@ fun PreviewRoundedSwipeUpButton() {
     IgnitionFinanceTheme {
         RoundedSwipeUpButton(
             icon = Icons.Filled.KeyboardArrowUp,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewRoundedAddButton() {
+    IgnitionFinanceTheme {
+        RoundedAddButton(
+            icon = Icons.Filled.Add,
         )
     }
 }
