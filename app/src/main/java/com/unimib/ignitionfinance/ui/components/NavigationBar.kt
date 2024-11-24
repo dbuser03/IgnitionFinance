@@ -1,20 +1,20 @@
 package com.unimib.ignitionfinance.ui.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.ui.theme.TypographyMedium
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun BottomNavigationBar(
@@ -32,7 +32,13 @@ fun BottomNavigationBar(
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                icon = item.icon,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = item.iconRes),
+                        contentDescription = item.contentDescription,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
                 label = { Text(item.label, style = TypographyMedium.bodySmall) },
                 selected = selectedIndex == index,
                 onClick = { selectedIndex = index },
@@ -49,7 +55,7 @@ fun BottomNavigationBar(
 }
 
 data class BottomNavigationItem(
-    val icon: @Composable () -> Unit,
+    val iconRes: Int,
     val label: String,
     val contentDescription: String? = null
 )
@@ -64,16 +70,19 @@ fun BottomNavigationBarPreview() {
             contentColor = MaterialTheme.colorScheme.primary,
             items = listOf(
                 BottomNavigationItem(
-                    icon = { Icon(Icons.Filled.Home, contentDescription = "Portfolio") },
-                    label = "Portfolio"
+                    iconRes = R.drawable.outline_add_notes_24,
+                    label = "Portfolio",
+                    contentDescription = "Portfolio"
                 ),
                 BottomNavigationItem(
-                    icon = { Icon(Icons.Filled.AccountBox, contentDescription = "Summary") },
-                    label = "Summary"
+                    iconRes = R.drawable.outline_donut_large_24,
+                    label = "Summary",
+                    contentDescription = "Summary"
                 ),
                 BottomNavigationItem(
-                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Simulation") },
-                    label = "Simulation"
+                    iconRes = R.drawable.outline_analytics_24,
+                    label = "Simulation",
+                    contentDescription = "Simulation"
                 ),
             )
         )

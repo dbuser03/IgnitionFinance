@@ -2,25 +2,25 @@ package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.Image
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
 import com.unimib.ignitionfinance.ui.theme.*
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun RoundedSwipeUpButton(
-    icon: ImageVector,
+    icon: Painter,
     modifier: Modifier = Modifier,
     backgroundSize: Dp = 50.dp,
     iconSize: Dp = 28.dp
@@ -33,7 +33,7 @@ fun RoundedSwipeUpButton(
             .background(PrimaryWhite),
     ) {
         Image(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
             modifier = Modifier.size(iconSize),
             contentScale = ContentScale.Fit,
@@ -44,7 +44,7 @@ fun RoundedSwipeUpButton(
 
 @Composable
 fun RoundedSettingsButton(
-    icon: ImageVector,
+    icon: Painter,
     modifier: Modifier = Modifier,
     backgroundSize: Dp = 50.dp,
     iconSize: Dp = 28.dp
@@ -57,7 +57,7 @@ fun RoundedSettingsButton(
             .background(MaterialTheme.colorScheme.onSecondary)
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
             modifier = Modifier.size(iconSize),
             tint = MaterialTheme.colorScheme.primary
@@ -67,7 +67,7 @@ fun RoundedSettingsButton(
 
 @Composable
 fun RoundedAddButton(
-    icon: ImageVector,
+    icon: Painter,
     modifier: Modifier = Modifier,
     backgroundSize: Dp = 50.dp,
     iconSize: Dp = 28.dp
@@ -80,7 +80,7 @@ fun RoundedAddButton(
             .background(MaterialTheme.colorScheme.primary)
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
             modifier = Modifier.size(iconSize),
             tint = MaterialTheme.colorScheme.onPrimary
@@ -94,7 +94,7 @@ fun RoundedAddButton(
 fun PreviewRoundedSettingsButton() {
     IgnitionFinanceTheme {
         RoundedSettingsButton(
-            icon = Icons.Filled.Settings,
+            icon = painterResource(id = R.drawable.outline_settings_24),
         )
     }
 }
@@ -104,7 +104,7 @@ fun PreviewRoundedSettingsButton() {
 fun PreviewRoundedSwipeUpButton() {
     IgnitionFinanceTheme {
         RoundedSwipeUpButton(
-            icon = Icons.Filled.KeyboardArrowUp,
+            icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
         )
     }
 }
@@ -114,7 +114,7 @@ fun PreviewRoundedSwipeUpButton() {
 fun PreviewRoundedAddButton() {
     IgnitionFinanceTheme {
         RoundedAddButton(
-            icon = Icons.Filled.Add,
+            icon = painterResource(id = R.drawable.outline_add_24),
         )
     }
 }

@@ -49,12 +49,12 @@ fun CandlestickChartIcon(
 
 @Composable
 fun GoBackIcon(
-    icon: ImageVector,
+    icon: Painter,
     modifier: Modifier = Modifier,
     iconSize: Dp = 32.dp
 ) {
     Image(
-        imageVector = icon,
+        painter = icon,
         contentDescription = null,
         modifier = modifier.size(iconSize),
         contentScale = ContentScale.Fit,
@@ -67,7 +67,7 @@ fun GoBackIcon(
 fun PreviewSettingsIcon() {
     IgnitionFinanceTheme {
         CandlestickChartIcon(
-            icon = painterResource(id = R.drawable.baseline_candlestick_chart_20),
+            icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
         )
     }
 }
@@ -77,7 +77,7 @@ fun PreviewSettingsIcon() {
 fun PreviewGoBackIcon() {
     IgnitionFinanceTheme {
         GoBackIcon(
-            icon = Icons.Filled.ArrowBack,
+            icon = painterResource(id = R.drawable.outline_arrow_back_24),
         )
     }
 }

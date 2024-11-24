@@ -11,11 +11,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun Title(
@@ -140,7 +139,7 @@ fun TitleWithDescriptionAndButton(
                 .padding(end = 24.dp)
         )
         RoundedSettingsButton(
-            icon = Icons.Filled.Settings,
+            icon = painterResource(id = R.drawable.outline_settings_24),
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 24.dp)
@@ -161,7 +160,7 @@ fun TitleSettings(
         contentAlignment = Alignment.Center
     ) {
         GoBackIcon(
-            icon = Icons.Filled.ArrowBack,
+            icon = painterResource(id = R.drawable.outline_arrow_back_24),
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp)

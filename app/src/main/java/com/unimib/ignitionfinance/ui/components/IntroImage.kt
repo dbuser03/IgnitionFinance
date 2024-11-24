@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -97,7 +95,7 @@ fun IntroImage() {
         }
 
         RoundedSwipeUpButton(
-            icon = Icons.Filled.KeyboardArrowUp,
+            icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 52.dp)
