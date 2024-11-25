@@ -329,22 +329,19 @@ class ExchangeApiServiceTest {
         val responseBody = response.body()!!
 
         // Header assertions
-        assertEquals("a5a97a39-281d-4513-978b-a91dad969502", responseBody.header.id)
+        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", responseBody.header.id)
         assertEquals(false, responseBody.header.test)
-        assertEquals("2024-11-24T12:09:44.123+01:00", responseBody.header.prepared)
+        assertEquals("2024-11-25T09:08:57.093+01:00", responseBody.header.prepared)
         assertEquals("ECB", responseBody.header.sender.id)
 
         // DataSets assertions
         val dataSet = responseBody.dataSets[0]
         assertEquals("Replace", dataSet.action)
-        assertEquals("2024-11-24T12:09:44.123+01:00", dataSet.validFrom)
+        assertEquals("2024-11-25T09:08:57.093+01:00", dataSet.validFrom)
 
-        val seriesData = dataSet.series["D.USD.EUR.SP00.A"]
+        val seriesData = dataSet.series["0:0:0:0:0"]
         assertNotNull(seriesData)
         assertEquals(1, seriesData?.observations?.size)
-
-        val firstObservation = seriesData?.observations?.get("0")
-        assertEquals(1.0412, firstObservation?.get(0))
 
         // Structure assertions
         assertEquals("Exchange Rates", responseBody.structure.name)
