@@ -228,4 +228,64 @@ class ExchangeApiServiceTest {
         assertEquals(1, seriesData?.observations?.size)
         assertEquals("Exchange Rates", responseBody.structure.name)
     }
+    @Test
+    fun `test getDailyEuroToDollarExchangeRate real API call with correct series key`() = runBlocking {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://data-api.ecb.europa.eu/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
+
+        // Call the Euro to Dollar exchange rate endpoint
+        val response = exchangeApiService.getDailyEuroToDollarExchangeRate("EXR.D.USD.EUR.SP00.A", "JSONDATA")
+
+        if (response.isSuccessful) {
+            assertEquals(200, response.code())
+            val responseBody = response.body()
+            assertNotNull(responseBody)
+            println("Response JSON (Euro to Dollar): ${Gson().toJson(responseBody)}")
+        } else {
+            println("Error response code: ${response.code()}")
+            println("Error response body: ${response.errorBody()?.string()}")
+        }
+    }
+
+    @Test
+    fun `test getDailyEuroToSwissFrancExchangeRate real API call with correct series key`() = runBlocking {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://data-api.ecb.europa.eu/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
+
+        // Call the Euro to Swiss Franc exchange rate endpoint
+        val response = exchangeApiService.getDailyEuroToSwissFrancExchangeRate("EXR.D.CHF.EUR.SP00.A", "JSONDATA")
+
+        if (response.isSuccessful) {
+            assertEquals(200, response.code())
+            val responseBody = response.body()
+            assertNotNull(responseBody)
+            println("Response JSON (Euro to Swiss Franc): ${Gson().toJson(responseBody)}")
+        } else {
+            println("Error response code: ${response.code()}")
+            println("Error response body: ${response.errorBody()?.string()}")
+        }
+    }
+
 }
