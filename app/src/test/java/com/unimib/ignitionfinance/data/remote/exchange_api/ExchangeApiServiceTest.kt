@@ -12,9 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import java.util.concurrent.TimeUnit
-
 
 class ExchangeApiServiceTest {
 
@@ -248,7 +246,7 @@ class ExchangeApiServiceTest {
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
         // Make the real API call for Euro-to-Dollar exchange rate
-        val response = exchangeApiService.getDailyEuroToDollarExchangeRate("EXR.D.USD.EUR.SP00.A", "JSONDATA")
+        val response = exchangeApiService.getDailyEuroToDollarExchangeRate()
 
         // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
@@ -279,7 +277,7 @@ class ExchangeApiServiceTest {
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
         // Make the real API call for Euro-to-Swiss-Franc exchange rate
-        val response = exchangeApiService.getDailyEuroToSwissFrancExchangeRate("EXR.D.CHF.EUR.SP00.A", "JSONDATA")
+        val response = exchangeApiService.getDailyEuroToDollarExchangeRate()
 
         // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
@@ -291,5 +289,4 @@ class ExchangeApiServiceTest {
         // Print the JSON response for debugging/inspection
         println("Response JSON (Euro to Swiss Franc): ${Gson().toJson(responseBody)}")
     }
-
 }
