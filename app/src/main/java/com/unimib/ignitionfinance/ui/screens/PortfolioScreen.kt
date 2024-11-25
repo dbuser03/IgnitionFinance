@@ -25,17 +25,17 @@ fun PortfolioScreen() {
                 contentColor = MaterialTheme.colorScheme.primary,
                 items = listOf(
                     BottomNavigationItem(
-                        iconRes = R.drawable.outline_add_notes_24,
+                        iconRes = R.drawable.avd_outline_add_notes_24,
                         label = "Portfolio",
                         contentDescription = "Portfolio"
                     ),
                     BottomNavigationItem(
-                        iconRes = R.drawable.outline_donut_large_24,
+                        iconRes = R.drawable.avd_outline_donut_large_24,
                         label = "Summary",
                         contentDescription = "Summary"
                     ),
                     BottomNavigationItem(
-                        iconRes = R.drawable.outline_analytics_24,
+                        iconRes = R.drawable.avd_outline_analytics_24,
                         label = "Simulation",
                         contentDescription = "Simulation"
                     ),
