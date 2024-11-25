@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.ui.theme.TypographyBold
+import com.unimib.ignitionfinance.ui.theme.Typography
 
 @Composable
 fun BottomNavigationBar(
@@ -39,7 +41,12 @@ fun BottomNavigationBar(
                         modifier = Modifier.size(24.dp)
                     )
                 },
-                label = { Text(item.label, style = TypographyMedium.bodySmall) },
+                label = {
+                    Text(
+                        text = item.label,
+                        style = if (selectedIndex == index) TypographyBold.bodySmall else TypographyMedium.bodySmall
+                    )
+                },
                 selected = selectedIndex == index,
                 onClick = { selectedIndex = index },
                 colors = NavigationBarItemDefaults.colors(
@@ -53,6 +60,7 @@ fun BottomNavigationBar(
         }
     }
 }
+
 
 data class BottomNavigationItem(
     val iconRes: Int,
