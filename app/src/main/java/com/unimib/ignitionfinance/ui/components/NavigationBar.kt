@@ -16,7 +16,6 @@ import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.theme.TypographyBold
-import com.unimib.ignitionfinance.ui.theme.Typography
 
 @Composable
 fun BottomNavigationBar(
