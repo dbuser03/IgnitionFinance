@@ -12,6 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import java.util.concurrent.TimeUnit
 
 class ExchangeApiServiceTest {
@@ -229,7 +230,7 @@ class ExchangeApiServiceTest {
         assertEquals("Exchange Rates", responseBody.structure.name)
     }
     @Test
-    fun `test getDailyEuroToDollarExchangeRate real API call with correct series key`() = runBlocking {
+    fun `test getDailyEuroToDollarExchangeRate API call response is JSON with status 200`() = runBlocking {
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -242,24 +243,29 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+        // Create the API service
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
-        // Call the Euro to Dollar exchange rate endpoint
+        // Make the real API call for Euro-to-Dollar exchange rate
         val response = exchangeApiService.getDailyEuroToDollarExchangeRate("EXR.D.USD.EUR.SP00.A", "JSONDATA")
 
-        if (response.isSuccessful) {
-            assertEquals(200, response.code())
-            val responseBody = response.body()
-            assertNotNull(responseBody)
-            println("Response JSON (Euro to Dollar): ${Gson().toJson(responseBody)}")
-        } else {
-            println("Error response code: ${response.code()}")
-            println("Error response body: ${response.errorBody()?.string()}")
-        }
+        // Verify that the response code is 200 (OK)
+        assertEquals(200, response.code())
+
+        // Check that the response body is not null and contains expected data
+        val responseBody = response.body()
+        assertNotNull(responseBody)
+
+        // Assuming the response body is a parsed data class, verify if it has meaningful data
+        // Replace `responseBody.data` with the actual property that holds the exchange rates
+        //assertTrue("Response body is empty or missing data", responseBody!!.data.isNotEmpty())
+
+        // Print the JSON response for debugging/inspection
+        println("Response JSON (Euro to Dollar): ${Gson().toJson(responseBody)}")
     }
 
     @Test
-    fun `test getDailyEuroToSwissFrancExchangeRate real API call with correct series key`() = runBlocking {
+    fun `test getDailyEuroToSwissFrancExchangeRate API call response is JSON with status 200`() = runBlocking {
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -272,20 +278,25 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+        // Create the API service
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
-        // Call the Euro to Swiss Franc exchange rate endpoint
+        // Make the real API call for Euro-to-Swiss-Franc exchange rate
         val response = exchangeApiService.getDailyEuroToSwissFrancExchangeRate("EXR.D.CHF.EUR.SP00.A", "JSONDATA")
 
-        if (response.isSuccessful) {
-            assertEquals(200, response.code())
-            val responseBody = response.body()
-            assertNotNull(responseBody)
-            println("Response JSON (Euro to Swiss Franc): ${Gson().toJson(responseBody)}")
-        } else {
-            println("Error response code: ${response.code()}")
-            println("Error response body: ${response.errorBody()?.string()}")
-        }
+        // Verify that the response code is 200 (OK)
+        assertEquals(200, response.code())
+
+        // Check that the response body is not null and contains expected data
+        val responseBody = response.body()
+        assertNotNull(responseBody)
+
+        // Assuming the response body is a parsed data class, verify if it has meaningful data
+        // Replace `responseBody.data` with the actual property that holds the exchange rates
+        //assertTrue("Response body is empty or missing data", responseBody!!.data.isNotEmpty())
+
+        // Print the JSON response for debugging/inspection
+        println("Response JSON (Euro to Swiss Franc): ${Gson().toJson(responseBody)}")
     }
 
 }
