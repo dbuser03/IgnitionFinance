@@ -230,66 +230,66 @@ class ExchangeApiServiceTest {
         assertEquals(1, seriesData?.observations?.size)
         assertEquals("Exchange Rates", responseBody.structure.name)
     }
-   /* private val baseUrl = "https://data-api.ecb.europa.eu/"
-
-    private fun createRetrofitClient(): Retrofit {
-// Configurazione client OkHttp con logging
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
+    @Test
+    fun `test getDailyEuroToDollarExchangeRate API call response is JSON with status 200`() = runBlocking {
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor) // Aggiungi l'interceptor per il logging
-            .connectTimeout(60, TimeUnit.SECONDS) // Timeout per la connessione
-            .readTimeout(30, TimeUnit.SECONDS)    // Timeout per la lettura della risposta
-            .writeTimeout(30, TimeUnit.SECONDS)   // Timeout per la scrittura della richiesta
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://data-api.ecb.europa.eu/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+        // Create the API service
+        val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
+
+        // Make the real API call for Euro-to-Dollar exchange rate
+        val response = exchangeApiService.getDailyEuroToDollarExchangeRate("EXR.D.USD.EUR.SP00.A", "JSONDATA")
+
+        // Verify that the response code is 200 (OK)
+        assertEquals(200, response.code())
+
+        // Check that the response body is not null and print the JSON
+        val responseBody = response.body()
+        assertNotNull(responseBody)
+
+        // Print the JSON response for debugging/inspection
+        println("Response JSON (Euro to Dollar): ${Gson().toJson(responseBody)}")
     }
 
     @Test
-    fun `test getDailyEuroToDollarExchangeRate response is valid`() = runBlocking {
-        val retrofit = createRetrofitClient()
+    fun `test getDailyEuroToSwissFrancExchangeRate API call response is JSON with status 200`() = runBlocking {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://data-api.ecb.europa.eu/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        // Create the API service
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
-        // Chiamata API per Euro -> Dollaro
-        val response = exchangeApiService.getDailyEuroToDollarExchangeRate("EXR.D.USD.EUR.SP00.A", "JSONDATA")
+        // Make the real API call for Euro-to-Swiss-Franc exchange rate
+        val response = exchangeApiService.getDailyEuroToSwissFrancExchangeRate("EXR.D.CHF.EUR.SP00.A", "JSONDATA")
 
-        // Verifica che il codice di stato sia 200 (OK)
+        // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
 
-        // Verifica che il corpo della risposta non sia nullo
+        // Check that the response body is not null and print the JSON
         val responseBody = response.body()
-        assertNotNull("La risposta non deve essere nulla", responseBody)
+        assertNotNull(responseBody)
 
-        // Log della risposta JSON per debug
-        println("Risposta JSON (Euro -> Dollaro): ${Gson().toJson(responseBody)}")
+        // Print the JSON response for debugging/inspection
+        println("Response JSON (Euro to Swiss Franc): ${Gson().toJson(responseBody)}")
     }
-}
-@Test
-fun `test getDailyEuroToSwissFrancExchangeRate response is valid`() = runBlocking {
-    val retrofit = createRetrofitClient()
-    val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
-
-    // Chiamata API per Euro -> Franco Svizzero
-    val response = exchangeApiService.getDailyEuroToSwissFrancExchangeRate("EXR.D.CHF.EUR.SP00.A", "JSONDATA")
-
-    // Verifica che il codice di stato sia 200 (OK)
-    assertEquals(200, response.code())
-
-    // Verifica che il corpo della risposta non sia nullo
-    val responseBody = response.body()
-    assertNotNull("La risposta non deve essere nulla", responseBody)
-
-    // Log della risposta JSON per debug
-    println("Risposta JSON (Euro -> Franco Svizzero): ${Gson().toJson(responseBody)}")
-}
-}
-*/
 
 }
