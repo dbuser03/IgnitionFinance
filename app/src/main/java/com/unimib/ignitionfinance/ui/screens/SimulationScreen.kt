@@ -1,29 +1,26 @@
 package com.unimib.ignitionfinance.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
-import com.unimib.ignitionfinance.ui.components.CustomFloatingActionButton
-import com.unimib.ignitionfinance.ui.components.Title
+import com.unimib.ignitionfinance.ui.components.TitleWithDescriptionAndButton
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
-import com.unimib.ignitionfinance.ui.theme.PrimaryBlack
-import com.unimib.ignitionfinance.ui.theme.PrimaryWhite
 
 @Composable
-fun PortfolioScreen() {
+fun SimulationScreen() {
     Scaffold(
         topBar = {
-            Title(title = "My \nPortfolio")
+            TitleWithDescriptionAndButton(
+                title = stringResource(id = R.string.simulation_title),
+                description = stringResource(id = R.string.simulation_description)
+            )
         },
         bottomBar = {
             BottomNavigationBar(
@@ -49,33 +46,22 @@ fun PortfolioScreen() {
                 )
             )
         },
-        floatingActionButton = {
-
-            CustomFloatingActionButton(
-                onClick = { /* Handle click action */ },
-                modifier = Modifier
-                    .padding(bottom = 12.dp),
-                containerColor = PrimaryWhite,
-                contentColor = PrimaryBlack,
-                icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
-                contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
         content = { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-            )
+            ) {
+
+            }
         }
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PortfolioScreenPreview() {
+fun SimulationScreenPreview() {
     IgnitionFinanceTheme {
-        PortfolioScreen()
+        SimulationScreen()
     }
 }

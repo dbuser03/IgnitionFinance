@@ -96,18 +96,18 @@ fun BottomNavigationBarPreview() {
             items = listOf(
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_add_notes_24,
-                    label = stringResource(id = R.string.portfolio_section),
-                    contentDescription = stringResource(id = R.string.portfolio_section)
+                    label = stringResource(id = R.string.portfolio_label),
+                    contentDescription = stringResource(id = R.string.portfolio_label)
                 ),
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_donut_large_24,
-                    label = stringResource(id = R.string.summary_section),
-                    contentDescription = stringResource(id = R.string.summary_section),
+                    label = stringResource(id = R.string.summary_label),
+                    contentDescription = stringResource(id = R.string.summary_label),
                 ),
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_analytics_24,
-                    label = stringResource(id = R.string.simulation_section),
-                    contentDescription = stringResource(id = R.string.simulation_section),
+                    label = stringResource(id = R.string.simulation_label),
+                    contentDescription = stringResource(id = R.string.simulation_label),
                 ),
             )
         )

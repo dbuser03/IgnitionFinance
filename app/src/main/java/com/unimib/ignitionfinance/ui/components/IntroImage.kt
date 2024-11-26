@@ -100,7 +100,9 @@ fun IntroImage() {
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 56.dp),
             containerColor = PrimaryWhite,
-            contentColor = PrimaryBlack
+            contentColor = PrimaryBlack,
+            icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
+            contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
         )
     }
 }
