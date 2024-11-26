@@ -94,12 +94,19 @@ fun IntroImage() {
             )
         }
 
-        RoundedSwipeUpButton(
-            icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
+        // FloatingActionButton replacing RoundedSwipeUpButton
+        FloatingActionButton(
+            onClick = { /* Handle the action */ },
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 52.dp)
-        )
+                .align(Alignment.BottomCenter) // Centers the FAB at the bottom of the screen
+                .padding(bottom = 52.dp) // Adjust the padding to ensure it's not too close to the edge
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
+                contentDescription = "Swipe Up",
+                modifier = Modifier.size(30.dp) // Adjust size if needed
+            )
+        }
     }
 }
 

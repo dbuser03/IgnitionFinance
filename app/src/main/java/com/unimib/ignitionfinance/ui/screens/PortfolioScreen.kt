@@ -1,6 +1,9 @@
 package com.unimib.ignitionfinance.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -12,13 +15,15 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
-import com.unimib.ignitionfinance.ui.components.RoundedAddButton
 import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun PortfolioScreen() {
     Scaffold(
+        topBar = {
+            Title(title = "My \nPortfolio")
+        },
         bottomBar = {
             BottomNavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -41,34 +46,39 @@ fun PortfolioScreen() {
                     ),
                 )
             )
-        }
-    ) { innerPadding -> // Correctly capture innerPadding
-        Column(
-            modifier = Modifier
-                .fillMaxSize(), // Remove innerPadding from Column
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top
-        ) {
-            // Title should remain at the top without innerPadding
-            Title(title = "My \nPortfolio")
-            Spacer(modifier = Modifier.weight(1f))
-
+        },
+        floatingActionButton = {
+            IgnitionFinanceTheme {
+                FloatingActionButton(
+                    onClick = { /* Handle click action */ },
+                    modifier = Modifier
+                        .padding(bottom = 24.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_add_24),
+                        contentDescription = "Swipe Up",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        content = { innerPadding ->
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp) // Optional bottom padding for button
-                    .padding(innerPadding), // Apply innerPadding only to the Box
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(innerPadding)
             ) {
-                RoundedAddButton(
-                    icon = painterResource(id = R.drawable.outline_add_24),
-                    modifier = Modifier,
-                    backgroundSize = 50.dp,
-                    iconSize = 28.dp
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
             }
         }
-    }
+    )
 }
 
 @Preview(showBackground = true)
