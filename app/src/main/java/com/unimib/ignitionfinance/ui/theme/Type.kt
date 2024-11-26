@@ -107,5 +107,6 @@ val TypographyMedium = Typography.copy(
 
 val TypographyBold = Typography.copy(
     // Headline Bold
-    headlineLarge = Typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
+    headlineLarge = Typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+    bodySmall = Typography.bodySmall.copy(fontWeight = FontWeight.Bold)
 )

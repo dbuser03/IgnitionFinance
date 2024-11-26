@@ -3,6 +3,10 @@ package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,11 +15,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun Title(
@@ -89,7 +93,6 @@ fun TitleWithDescription(
                 .fillMaxWidth()
                 .padding(start = 16.dp)
                 .align(Alignment.BottomStart)
-                .padding(bottom = 8.dp)
                 .padding(end = 24.dp)
         )
     }
@@ -136,14 +139,20 @@ fun TitleWithDescriptionAndButton(
                 .fillMaxWidth()
                 .padding(start = 16.dp)
                 .align(Alignment.BottomStart)
-                .padding(bottom = 8.dp)
                 .padding(end = 24.dp)
         )
-        RoundedSettingsButton(
-            icon = Icons.Filled.Settings,
+
+        CustomFloatingActionButton(
+            onClick = { /* Handle click action */ },
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 24.dp)
+                .padding(end = 24.dp),
+            containerColor = PrimaryWhite,
+            contentColor = PrimaryBlack,
+            icon = painterResource(id = R.drawable.outline_settings_24),
+            contentDescription = stringResource(id = R.string.settings_FAB_description),
+            fabSize = 40.dp,
+            iconSize = 24.dp
         )
     }
 }
@@ -161,7 +170,7 @@ fun TitleSettings(
         contentAlignment = Alignment.Center
     ) {
         GoBackIcon(
-            icon = Icons.Filled.ArrowBack,
+            icon = painterResource(id = R.drawable.outline_arrow_back_24),
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp)

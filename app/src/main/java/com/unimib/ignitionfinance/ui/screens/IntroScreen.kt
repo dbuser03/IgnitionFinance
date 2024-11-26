@@ -4,7 +4,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -22,7 +24,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun IntroScreen() {
     val initialOffset = 1000f
-    val targetOffset = 0f
+    val targetOffset = 24f
     val animatedOffset = remember { Animatable(initialOffset) }
 
     LaunchedEffect(Unit) {
@@ -33,24 +35,29 @@ fun IntroScreen() {
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Title(title = stringResource(id = R.string.app_title))
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(y = animatedOffset.value.dp)
-        ) {
-            IntroImage()
+    Scaffold(
+        topBar = {
+            Title(title = stringResource(id = R.string.app_title))
+        },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = animatedOffset.value.dp)
+                ) {
+                    IntroImage()
+                }
+            }
         }
-    }
+    )
 }
 
 @Preview(showBackground = true)

@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.mockwebserver)
+    implementation(libs.androidx.animation)
+    implementation(libs.androidx.animation.graphics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

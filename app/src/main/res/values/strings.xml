@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Finance</string>
     <string name="app_title">Ignition \nFinance</string>
-    <string name="lorem_ipsum">Calculate your path to financial independence: enter your wealth and
-        simulate personalized scenarios.</string>
+    <string name="intro_description">Calculate your path to financial independence: enter your
+        wealth and simulate personalized scenarios.</string>
+    <string name="portfolio_label">Portfolio</string>
+    <string name="summary_label">Summary</string>
+    <string name="simulation_label">Simulation</string>
+    <string name="summary_title">Your \nNet Worth</string>
+    <string name="simulation_title">Fire \nSimulation</string>
+    <string name="simulation_description">Before starting the simulation, ensure \nall parameters are
+        correctly set in the settings.</string>
+    <string name="add_FAB_description">Add</string>
+    <string name="swipe_up_FAB_description">Swipe Up</string>
+    <string name="settings_FAB_description">Settings</string>
 </resources>
