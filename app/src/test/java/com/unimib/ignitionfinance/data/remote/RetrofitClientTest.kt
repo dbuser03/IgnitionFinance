@@ -16,5 +16,11 @@ class RetrofitClientTest {
         val inflationService = RetrofitClient.inflationApiService
         assertNotNull(inflationService)
     }
+
+    @Test
+    fun `test exchangeApiService is correctly initialized`() {
+        val exchangeService = RetrofitClient.exchangeApiService
+        assertNotNull(exchangeService)
+    }
 }
 
