@@ -3,88 +3,66 @@ package com.unimib.ignitionfinance.data.repository
 import com.unimib.ignitionfinance.data.remote.exchange_api.ExchangeApiResponseData
 import com.unimib.ignitionfinance.data.remote.exchange_api.ExchangeApiService
 import com.unimib.ignitionfinance.data.remote.exchange_api.SeriesData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import retrofit2.Response
 
+// Repository per recuperare i tassi di cambio
 class ExchangeRateRepository(private val apiService: ExchangeApiService) {
 
-    // Metodo per recuperare i tassi di cambio e convertirli in un formato più semplice
-    suspend fun fetch(baseCurrency: String): Result<Map<String, List<ExchangeRate>>> {
-        return try {
-            // Ottieni le chiavi della serie per USD/EUR e CHF/EUR
-            val usdSeriesKey = "D.USD.EUR.SP00.A"
-            val chfSeriesKey = "D.CHF.EUR.SP00.A"
+    // Metodo che recupera i tassi di cambio e li converte in un formato più semplice
+    suspend fun fetchExchangeRateData(): Result<List<ExchangeRate>> {
+        // Ottieni i tassi di cambio per USD/EUR e CHF/EUR
+        val usdRatesResult = fetchExchangeRates("D.USD.EUR.SP00.A")
+        val chfRatesResult = fetchExchangeRates("D.CHF.EUR.SP00.A")
 
-            // Esegui entrambe le richieste per le due valute (USD e CHF)
-            val usdRatesResult = fetchExchangeRates(usdSeriesKey)
-            val chfRatesResult = fetchExchangeRates(chfSeriesKey)
-
-            // Verifica che entrambe le richieste siano andate a buon fine
-            if (usdRatesResult.isSuccess && chfRatesResult.isSuccess) {
-                // Crea una mappa di tassi di cambio per USD e CHF
-                val result = mapOf(
-                    "USD" to (usdRatesResult.getOrNull() ?: emptyList()), // Usa emptyList se null
-                    "CHF" to (chfRatesResult.getOrNull() ?: emptyList())  // Usa emptyList se null
-                )
-                // Restituisci il risultato
-                Result.success(result)
-            } else {
-                Result.failure(Exception("Failed to fetch exchange rates"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e) // Gestione delle eccezioni
+        // Verifica se entrambe le richieste sono andate a buon fine
+        return if (usdRatesResult.isSuccess && chfRatesResult.isSuccess) {
+            val result = usdRatesResult.getOrNull()?.plus(chfRatesResult.getOrNull().orEmpty())
+            Result.success(result ?: emptyList())
+        } else {
+            // Se uno dei due risultati non è riuscito, restituisci un errore
+            Result.failure(Exception("Failed to fetch exchange rates"))
         }
     }
 
-    // Metodo per recuperare i tassi di cambio per una determinata chiave della serie
+    // Metodo che recupera i tassi di cambio per una determinata chiave della serie
     private suspend fun fetchExchangeRates(seriesKey: String): Result<List<ExchangeRate>> {
-        return try {
-            val response = apiService.getExchangeRate(seriesKey = seriesKey)
+        // Effettua la richiesta all'API per i tassi di cambio
+        val response = apiService.getExchangeRate(seriesKey = seriesKey)
 
-            if (response.isSuccessful && response.body() != null) {
-                val data = response.body()!!
-                val cleanedData = process(data, seriesKey)
-                Result.success(cleanedData)
-            } else {
-                Result.failure(Exception("Failed to fetch data: ${response.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e) // Gestisce eccezioni in caso di errore di rete
+        // Controlla se la risposta è valida
+        return if (response.isSuccessful && response.body() != null) {
+            val data = response.body()!!
+            val cleanedData = processExchangeRateData(data, seriesKey)
+            Result.success(cleanedData)
+        } else {
+            // Se la risposta non è valida, restituisci un errore
+            Result.failure(Exception("Failed to fetch data: ${response.code()}"))
         }
     }
 
-    // Metodo per processare i dati e restituirli in un formato più semplice da usare
-    private fun process(data: ExchangeApiResponseData, seriesKey: String): List<ExchangeRate> {
-        // Estrai i dati da `dataSets`, che contiene il tasso di cambio
-        val dataSet = data.dataSets.firstOrNull() ?: return emptyList()
+    private fun processExchangeRateData(data: ExchangeApiResponseData, seriesKey: String): List<ExchangeRate> {
+        val processedData = mutableListOf<ExchangeRate>()
 
-        // Assumi che il tasso di cambio sia nella chiave specificata (ad esempio "D.USD.EUR.SP00.A")
-        val seriesData: SeriesData? = dataSet.series[seriesKey]
-
-        // Controlla se la serie esiste
-        if (seriesData == null) {
-            throw Exception("No series data found for the given key: $seriesKey")
-        }
-
-        // Estrai le osservazioni, che dovrebbero essere mappate per periodo di tempo
-        val observations = seriesData.observations
-        val values = mutableListOf<ExchangeRate>()
-
-        // Estrai solo i valori numerici validi dalle osservazioni
-        observations.forEach { (date, observationList) ->
-            observationList.forEach { value ->
-                // Aggiungi solo i valori non nulli
-                value?.let {
-                    // Aggiungi la data e il tasso di cambio come ExchangeRate
-                    values.add(ExchangeRate(date, it))
+        // Itera sui dataset (come nella struttura dell'inflazione)
+        data.dataSets.forEach { dataSet ->
+            dataSet.series.forEach { (key, seriesData) ->
+                // Assicurati che la chiave della serie corrisponda a quella desiderata
+                if (key == seriesKey) {
+                    // Itera sulle osservazioni della serie (date, valori)
+                    seriesData.observations.forEach { (date, values) ->
+                        // Aggiungi solo il primo valore trovato per ogni data
+                        values.firstOrNull()?.let { rate ->
+                            // Aggiungi il tasso di cambio come un nuovo ExchangeRate
+                            processedData.add(ExchangeRate(date, rate))
+                        }
+                    }
                 }
             }
         }
 
-        // Ritornare la lista dei valori numerici in formato più semplice
-        return values
+        return processedData
     }
+
 }
 
 // Data class che rappresenta un singolo tasso di cambio
