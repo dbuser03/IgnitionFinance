@@ -10,6 +10,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
@@ -18,7 +20,7 @@ import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
-fun PortfolioScreen() {
+fun PortfolioScreen(navController: NavController) {
     Scaffold(
         topBar = {
             Title(title = "My \nPortfolio")
@@ -56,7 +58,7 @@ fun PortfolioScreen() {
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 icon = painterResource(id = R.drawable.outline_add_24),
-                contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
+                contentDescription = stringResource(id = R.string.add_FAB_description)
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -74,6 +76,7 @@ fun PortfolioScreen() {
 @Composable
 fun PortfolioScreenPreview() {
     IgnitionFinanceTheme {
-        PortfolioScreen()
+        val navController = rememberNavController()
+        PortfolioScreen(navController = navController)
     }
 }

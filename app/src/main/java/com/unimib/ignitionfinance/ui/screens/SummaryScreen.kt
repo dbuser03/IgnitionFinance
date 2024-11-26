@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
@@ -14,7 +16,7 @@ import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
-fun SummaryScreen() {
+fun SummaryScreen(navController: NavController) {
     Scaffold(
         topBar = {
             Title(title = stringResource(id = R.string.summary_title))
@@ -59,6 +61,7 @@ fun SummaryScreen() {
 @Composable
 fun SummaryScreenPreview() {
     IgnitionFinanceTheme {
-        SummaryScreen()
+        val navController = rememberNavController()
+        SummaryScreen(navController = navController)
     }
 }
