@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.mockwebserver)
     implementation(libs.androidx.animation)
     implementation(libs.androidx.animation.graphics)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
