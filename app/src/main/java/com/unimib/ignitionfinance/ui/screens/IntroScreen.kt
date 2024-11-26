@@ -22,7 +22,6 @@ import com.unimib.ignitionfinance.ui.components.IntroImage
 import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.navigation.Destinations
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
-import kotlinx.coroutines.delay
 
 @SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
@@ -32,13 +31,10 @@ fun IntroScreen(navController: NavController) {
     val animatedOffset = remember { Animatable(initialOffset) }
 
     LaunchedEffect(Unit) {
-        delay(350)
         animatedOffset.animateTo(
             targetValue = targetOffset,
             animationSpec = tween(durationMillis = 1000)
         )
-        delay(4000) // Tempo extra prima di navigare
-        navController.navigate(Destinations.PortfolioScreen.route) // Naviga a PortfolioScreen
     }
 
     Scaffold(
@@ -59,12 +55,15 @@ fun IntroScreen(navController: NavController) {
                         .fillMaxWidth()
                         .offset(y = animatedOffset.value.dp)
                 ) {
-                    IntroImage()
+                    IntroImage(onNavigate = {
+                        navController.navigate(Destinations.PortfolioScreen.route) // Naviga quando il bottone viene premuto
+                    })
                 }
             }
         }
     )
 }
+
 
 @Preview(showBackground = true)
 @Composable

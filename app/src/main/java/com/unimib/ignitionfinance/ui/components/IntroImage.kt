@@ -26,7 +26,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 
 @Composable
-fun IntroImage() {
+fun IntroImage(onNavigate: () -> Unit) { // Aggiunto parametro onNavigate
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val videoHeight = screenHeight * 0.8f
 
@@ -95,7 +95,7 @@ fun IntroImage() {
         }
 
         CustomFloatingActionButton(
-            onClick = { /* Handle click action */ },
+            onClick = { onNavigate() }, // Usa il callback quando il bottone viene premuto
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 56.dp),
@@ -107,10 +107,12 @@ fun IntroImage() {
     }
 }
 
+
 @Preview
 @Composable
 fun VideoPlaceholderPreview() {
     IgnitionFinanceTheme {
-        IntroImage()
+        IntroImage(onNavigate = {})
     }
 }
+
