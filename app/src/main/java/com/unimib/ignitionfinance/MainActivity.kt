@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.unimib.ignitionfinance.ui.navigation.AppNavigation
 import com.unimib.ignitionfinance.ui.screens.IntroScreen
 import com.unimib.ignitionfinance.ui.screens.PortfolioScreen
 import com.unimib.ignitionfinance.ui.screens.SimulationScreen
@@ -21,7 +22,8 @@ class MainActivity : ComponentActivity() {
                 //IntroScreen()
                 //PortfolioScreen()
                 //SummaryScreen()
-                SimulationScreen()
+                //SimulationScreen()
+                AppNavigation()
             }
         }
     }
@@ -35,6 +37,7 @@ fun GreetingPreview() {
         //IntroScreen()
         //PortfolioScreen()
         //SummaryScreen()
-        SimulationScreen()
+        //SimulationScreen()
+        AppNavigation()
     }
 }
