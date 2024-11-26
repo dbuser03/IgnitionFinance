@@ -16,8 +16,6 @@ import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
 import com.unimib.ignitionfinance.ui.components.CustomFloatingActionButton
 import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
-import com.unimib.ignitionfinance.ui.theme.PrimaryBlack
-import com.unimib.ignitionfinance.ui.theme.PrimaryWhite
 
 @Composable
 fun PortfolioScreen() {
@@ -55,9 +53,9 @@ fun PortfolioScreen() {
                 onClick = { /* Handle click action */ },
                 modifier = Modifier
                     .padding(bottom = 12.dp),
-                containerColor = PrimaryWhite,
-                contentColor = PrimaryBlack,
-                icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                icon = painterResource(id = R.drawable.outline_add_24),
                 contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
             )
         },
