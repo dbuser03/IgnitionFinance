@@ -37,8 +37,8 @@ fun IntroScreen(navController: NavController) {
             targetValue = targetOffset,
             animationSpec = tween(durationMillis = 1000)
         )
-        delay(500) // Tempo extra prima di navigare
-      //  navController.navigate(Destinations.PortfolioScreen.route) // Naviga a PortfolioScreen
+        delay(4000) // Tempo extra prima di navigare
+        navController.navigate(Destinations.PortfolioScreen.route) // Naviga a PortfolioScreen
     }
 
     Scaffold(
