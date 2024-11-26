@@ -9,12 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.theme.TypographyBold
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
@@ -24,6 +27,7 @@ fun BottomNavigationBar(
     contentColor: Color,
     items: List<BottomNavigationItem>
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     var selectedIndex by remember { mutableIntStateOf(0) }
     val animatedState = remember { mutableStateListOf<Boolean>().apply { repeat(items.size) { add(false) } } }
 
@@ -62,6 +66,8 @@ fun BottomNavigationBar(
                 },
                 selected = isSelected,
                 onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
                     if (selectedIndex != index) {
                         selectedIndex = index
                         atEnd = !atEnd
@@ -90,18 +96,18 @@ fun BottomNavigationBarPreview() {
             items = listOf(
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_add_notes_24,
-                    label = "Portfolio",
-                    contentDescription = "Portfolio"
+                    label = stringResource(id = R.string.portfolio_section),
+                    contentDescription = stringResource(id = R.string.portfolio_section)
                 ),
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_donut_large_24,
-                    label = "Summary",
-                    contentDescription = "Summary"
+                    label = stringResource(id = R.string.summary_section),
+                    contentDescription = stringResource(id = R.string.summary_section),
                 ),
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_analytics_24,
-                    label = "Simulation",
-                    contentDescription = "Simulation"
+                    label = stringResource(id = R.string.simulation_section),
+                    contentDescription = stringResource(id = R.string.simulation_section),
                 ),
             )
         )

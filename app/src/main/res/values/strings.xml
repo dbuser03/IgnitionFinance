@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Finance</string>
     <string name="app_title">Ignition \nFinance</string>
-    <string name="lorem_ipsum">Calculate your path to financial independence: enter your wealth and
-        simulate personalized scenarios.</string>
+    <string name="intro_description">Calculate your path to financial independence: enter your
+        wealth and simulate personalized scenarios.</string>
+    <string name="portfolio_section">Portfolio</string>
+    <string name="summary_section">Summary</string>
+    <string name="simulation_section">Simulation</string>
 </resources>

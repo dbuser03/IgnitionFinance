@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,7 +30,7 @@ fun IntroImage() {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val videoHeight = screenHeight * 0.8f
 
-    val text = stringResource(id = R.string.lorem_ipsum)
+    val text = stringResource(id = R.string.intro_description)
     val initialTextColor = MaterialTheme.colorScheme.secondary
     val changedTextColor = PrimaryWhite
 
