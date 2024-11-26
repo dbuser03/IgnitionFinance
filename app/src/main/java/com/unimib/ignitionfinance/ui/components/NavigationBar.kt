@@ -25,7 +25,6 @@ fun BottomNavigationBar(
     items: List<BottomNavigationItem>
 ) {
     var selectedIndex by remember { mutableIntStateOf(0) }
-    // Variabile per tracciare se una determinata icona è stata già animata
     val animatedState = remember { mutableStateListOf<Boolean>().apply { repeat(items.size) { add(false) } } }
 
     NavigationBar(
@@ -39,10 +38,9 @@ fun BottomNavigationBar(
             var atEnd by remember { mutableStateOf(isSelected && !animatedState[index]) }
 
             LaunchedEffect(isSelected) {
-                // L'animazione viene eseguita solo se l'elemento è selezionato per la prima volta
                 if (isSelected && !animatedState[index]) {
                     atEnd = true
-                    animatedState[index] = true // Marcatura per evitare una nuova animazione
+                    animatedState[index] = true
                 }
             }
 
@@ -64,10 +62,9 @@ fun BottomNavigationBar(
                 },
                 selected = isSelected,
                 onClick = {
-                    // Se l'elemento è già selezionato, non fare nulla
                     if (selectedIndex != index) {
                         selectedIndex = index
-                        atEnd = !atEnd // Esegui l'animazione solo se è cambiata la selezione
+                        atEnd = !atEnd
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(

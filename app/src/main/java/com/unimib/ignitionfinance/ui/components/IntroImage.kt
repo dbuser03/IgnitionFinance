@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,18 +94,20 @@ fun IntroImage() {
                 style = MaterialTheme.typography.titleLarge
             )
         }
-
-        // FloatingActionButton replacing RoundedSwipeUpButton
         FloatingActionButton(
-            onClick = { /* Handle the action */ },
+            onClick = { /* Handle click action */ },
             modifier = Modifier
-                .align(Alignment.BottomCenter) // Centers the FAB at the bottom of the screen
-                .padding(bottom = 52.dp) // Adjust the padding to ensure it's not too close to the edge
-        ) {
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 56.dp),
+            containerColor = PrimaryWhite,
+            contentColor = PrimaryBlack,
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(50)),
+            elevation = FloatingActionButtonDefaults.elevation(0.dp)
+        ){
             Icon(
                 painter = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
                 contentDescription = "Swipe Up",
-                modifier = Modifier.size(30.dp) // Adjust size if needed
+                modifier = Modifier.size(24.dp)
             )
         }
     }

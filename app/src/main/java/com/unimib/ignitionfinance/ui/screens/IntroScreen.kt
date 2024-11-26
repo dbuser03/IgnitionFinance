@@ -24,7 +24,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun IntroScreen() {
     val initialOffset = 1000f
-    val targetOffset = 0f
+    val targetOffset = 24f
     val animatedOffset = remember { Animatable(initialOffset) }
 
     LaunchedEffect(Unit) {

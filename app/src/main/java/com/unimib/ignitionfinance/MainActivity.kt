@@ -16,8 +16,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IgnitionFinanceTheme {
-                IntroScreen()
-                //PortfolioScreen()
+                //IntroScreen()
+                PortfolioScreen()
             }
         }
     }
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     IgnitionFinanceTheme {
-        IntroScreen()
-        //PortfolioScreen()
+        //IntroScreen()
+        PortfolioScreen()
     }
 }

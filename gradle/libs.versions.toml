@@ -11,7 +11,7 @@ composeBom = "2024.11.00"
 retrofit = "2.9.0"
 okhttp = "4.10.0"
 mockwebserver = "4.10.0"
-composeAnimation = "1.6.0" # Aggiunta versione per animation
+composeAnimation = "1.7.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
