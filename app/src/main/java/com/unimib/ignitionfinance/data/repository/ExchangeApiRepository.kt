@@ -9,7 +9,8 @@ import retrofit2.Response
 
 class ExchangeRateRepository(private val apiService: ExchangeApiService) {
 
-    suspend fun fetch(baseCurrency: String): Result<Map<String, List<Double>>> {
+    // Metodo per recuperare i tassi di cambio e convertirli in un formato più semplice
+    suspend fun fetch(baseCurrency: String): Result<Map<String, List<ExchangeRate>>> {
         return try {
             // Ottieni le chiavi della serie per USD/EUR e CHF/EUR
             val usdSeriesKey = "D.USD.EUR.SP00.A"
@@ -36,9 +37,8 @@ class ExchangeRateRepository(private val apiService: ExchangeApiService) {
         }
     }
 
-
     // Metodo per recuperare i tassi di cambio per una determinata chiave della serie
-    private suspend fun fetchExchangeRates(seriesKey: String): Result<List<Double>> {
+    private suspend fun fetchExchangeRates(seriesKey: String): Result<List<ExchangeRate>> {
         return try {
             val response = apiService.getExchangeRate(seriesKey = seriesKey)
 
@@ -55,7 +55,7 @@ class ExchangeRateRepository(private val apiService: ExchangeApiService) {
     }
 
     // Metodo per processare i dati e restituirli in un formato più semplice da usare
-    private fun process(data: ExchangeApiResponseData, seriesKey: String): List<Double> {
+    private fun process(data: ExchangeApiResponseData, seriesKey: String): List<ExchangeRate> {
         // Estrai i dati da `dataSets`, che contiene il tasso di cambio
         val dataSet = data.dataSets.firstOrNull() ?: return emptyList()
 
@@ -69,14 +69,15 @@ class ExchangeRateRepository(private val apiService: ExchangeApiService) {
 
         // Estrai le osservazioni, che dovrebbero essere mappate per periodo di tempo
         val observations = seriesData.observations
-        val values = mutableListOf<Double>()
+        val values = mutableListOf<ExchangeRate>()
 
         // Estrai solo i valori numerici validi dalle osservazioni
-        observations.forEach { (_, observationList) ->
+        observations.forEach { (date, observationList) ->
             observationList.forEach { value ->
                 // Aggiungi solo i valori non nulli
                 value?.let {
-                    values.add(it)
+                    // Aggiungi la data e il tasso di cambio come ExchangeRate
+                    values.add(ExchangeRate(date, it))
                 }
             }
         }
@@ -85,3 +86,9 @@ class ExchangeRateRepository(private val apiService: ExchangeApiService) {
         return values
     }
 }
+
+// Data class che rappresenta un singolo tasso di cambio
+data class ExchangeRate(
+    val date: String,  // Data dell'osservazione
+    val rate: Double   // Tasso di cambio
+)
