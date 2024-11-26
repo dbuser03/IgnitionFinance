@@ -7,10 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.unimib.ignitionfinance.ui.navigation.AppNavigation
-import com.unimib.ignitionfinance.ui.screens.IntroScreen
-import com.unimib.ignitionfinance.ui.screens.PortfolioScreen
-import com.unimib.ignitionfinance.ui.screens.SimulationScreen
-import com.unimib.ignitionfinance.ui.screens.SummaryScreen
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,10 +15,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IgnitionFinanceTheme {
-                //IntroScreen()
-                //PortfolioScreen()
-                //SummaryScreen()
-                //SimulationScreen()
                 AppNavigation()
             }
         }
@@ -34,10 +26,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainActivityPreview() {
     IgnitionFinanceTheme {
-        //IntroScreen()
-        //PortfolioScreen()
-        //SummaryScreen()
-        //SimulationScreen()
         AppNavigation()
     }
 }
