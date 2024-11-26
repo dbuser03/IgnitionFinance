@@ -94,22 +94,15 @@ fun IntroImage() {
                 style = MaterialTheme.typography.titleLarge
             )
         }
-        FloatingActionButton(
+
+        CustomFloatingActionButton(
             onClick = { /* Handle click action */ },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 56.dp),
             containerColor = PrimaryWhite,
-            contentColor = PrimaryBlack,
-            shape = MaterialTheme.shapes.medium.copy(CornerSize(50)),
-            elevation = FloatingActionButtonDefaults.elevation(0.dp)
-        ){
-            Icon(
-                painter = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
-                contentDescription = "Swipe Up",
-                modifier = Modifier.size(24.dp)
-            )
-        }
+            contentColor = PrimaryBlack
+        )
     }
 }
 
