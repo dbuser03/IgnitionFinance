@@ -1,5 +1,7 @@
-package com.unimib.ignitionfinance.data.remote.stock_api
+package com.unimib.ignitionfinance.data.repository
 
+import com.unimib.ignitionfinance.data.remote.stock_api.StockApiResponseData
+import com.unimib.ignitionfinance.data.remote.stock_api.StockApiService
 import retrofit2.Response
 import java.math.BigDecimal
 
