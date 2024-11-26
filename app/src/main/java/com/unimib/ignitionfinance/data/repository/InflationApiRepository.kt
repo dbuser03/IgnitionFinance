@@ -4,10 +4,11 @@ import com.unimib.ignitionfinance.data.remote.inflation_api.InflationApiResponse
 import com.unimib.ignitionfinance.data.remote.inflation_api.InflationApiService
 import retrofit2.Response
 
+// Definiamo il repository per recuperare i dati dell'inflazione
 class InflationRepository(private val inflationApiService: InflationApiService) {
 
     // Metodo che recupera i dati dell'inflazione e li converte in un formato più semplice
-    suspend fun fetchInflationData(): Result<Map<String, List<Double>>> {
+    suspend fun fetchInflationData(): Result<List<InflationData>> {
         // Effettua la chiamata all'API
         val response = inflationApiService.getInflationData()
 
@@ -26,17 +27,26 @@ class InflationRepository(private val inflationApiService: InflationApiService) 
     }
 
     // Metodo che processa i dati dell'inflazione
-    private fun processInflationData(inflationData: InflationApiResponseData): Map<String, List<Double>> {
-        val processedData = mutableMapOf<String, List<Double>>()
+    private fun processInflationData(inflationData: InflationApiResponseData): List<InflationData> {
+        val processedData = mutableListOf<InflationData>()
 
         // Itera sulle serie e processa i valori di inflazione
         inflationData.dataSets.forEach { dataSet ->
             dataSet.series.forEach { (seriesKey, seriesData) ->
-                val inflationValues = seriesData.observations.mapNotNull { it.value.firstOrNull() }
-                processedData[seriesKey] = inflationValues
+                seriesData.observations.forEach { (date, values) ->
+                    // Aggiunge un'osservazione dei dati di inflazione
+                    values.firstOrNull()?.let { inflationRate ->
+                        processedData.add(InflationData(date, inflationRate))
+                    }
+                }
             }
         }
 
         return processedData
     }
 }
+
+data class InflationData(
+    val date: String, // La data della rilevazione
+    val inflationRate: Double // Il tasso di inflazione
+)
