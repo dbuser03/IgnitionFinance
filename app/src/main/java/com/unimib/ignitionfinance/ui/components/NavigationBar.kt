@@ -18,9 +18,10 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.theme.TypographyBold
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.ui.navigation.Destinations
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
@@ -29,33 +30,30 @@ fun BottomNavigationBar(
     containerColor: Color,
     contentColor: Color,
     items: List<BottomNavigationItem>,
-    navController: NavController
+    navController: NavController // Use this NavController for navigation
 ) {
     val hapticFeedback = LocalHapticFeedback.current
-    var selectedIndex by remember { mutableIntStateOf(0) }
-    val animatedState = remember { mutableStateListOf<Boolean>().apply { repeat(items.size) { add(false) } } }
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
     NavigationBar(
         modifier = modifier,
         containerColor = containerColor,
         contentColor = contentColor
     ) {
-        items.forEachIndexed { index, item ->
-            val isSelected = selectedIndex == index
+        items.forEach { item ->
+            val isSelected = currentDestination == item.destination
             val animatedImageVector = AnimatedImageVector.animatedVectorResource(id = item.iconRes)
-            var atEnd by remember { mutableStateOf(isSelected && !animatedState[index]) }
+            var atEnd by remember { mutableStateOf(isSelected) }
 
             LaunchedEffect(isSelected) {
-                if (isSelected && !animatedState[index]) {
+                if (isSelected) {
                     atEnd = true
-                    animatedState[index] = true
                 }
             }
 
             NavigationBarItem(
                 icon = {
                     val painter = rememberAnimatedVectorPainter(animatedImageVector, atEnd)
-
                     Icon(
                         painter = painter,
                         contentDescription = item.contentDescription,
@@ -71,12 +69,9 @@ fun BottomNavigationBar(
                 selected = isSelected,
                 onClick = {
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-
-                    if (selectedIndex != index) {
-                        selectedIndex = index
-                        atEnd = !atEnd
-
+                    if (!isSelected) {
                         navController.navigate(item.destination) {
+                            // Prevent animation and duplicates in the back stack
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -125,7 +120,7 @@ fun BottomNavigationBarPreview() {
                     contentDescription = stringResource(id = R.string.simulation_label),
                 ),
             ),
-            navController = rememberNavController()
+            navController = rememberNavController() // Provide NavController here
         )
     }
 }
