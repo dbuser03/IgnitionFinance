@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.ui.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,18 +15,24 @@ import com.unimib.ignitionfinance.ui.screens.SummaryScreen
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Destinations.IntroScreen.route
+        startDestination = Destinations.IntroScreen.route,
+        enterTransition = {
+            EnterTransition.None
+        },
+        exitTransition = {
+            ExitTransition.None
+        }
     ) {
-        composable(Destinations.IntroScreen.route) {
+        composable(route = Destinations.IntroScreen.route) {
             IntroScreen(navController)
         }
-        composable(Destinations.PortfolioScreen.route) {
+        composable(route = Destinations.PortfolioScreen.route) {
             PortfolioScreen(navController)
         }
-        composable(Destinations.SimulationScreen.route) {
+        composable(route = Destinations.SimulationScreen.route) {
             SimulationScreen(navController)
         }
-        composable(Destinations.SummaryScreen.route) {
+        composable(route = Destinations.SummaryScreen.route) {
             SummaryScreen(navController)
         }
     }

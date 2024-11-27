@@ -3,10 +3,6 @@ package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,8 +26,7 @@ fun Title(
         modifier = Modifier
             .fillMaxWidth()
             .height(216.dp)
-            .background(color = MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         Text(
             text = title,
@@ -45,9 +40,9 @@ fun Title(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
+                .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
                 .padding(end = 24.dp)
-                .padding(top = 16.dp)
         )
     }
 }
@@ -77,7 +72,7 @@ fun TitleWithDescription(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp)
-                .align(Alignment.Center)
+                .align(Alignment.CenterStart)
                 .padding(end = 24.dp)
         )
         Text(
@@ -99,7 +94,7 @@ fun TitleWithDescription(
 }
 
 @Composable
-fun TitleWithDescriptionAndButton(
+fun TitleWithButton(
     title: String,
     description: String,
     color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
@@ -188,6 +183,7 @@ fun TitleSettings(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
+                .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
                 .padding(end = 24.dp)
                 .padding(top = 48.dp)
@@ -218,7 +214,7 @@ fun TitleWithDescriptionPreview() {
 @Composable
 fun TitleWithDescriptionAndIconPreview() {
     IgnitionFinanceTheme {
-        TitleWithDescriptionAndButton(
+        TitleWithButton(
             title = "FIRE \nSimulation",
             description = "Manage your finances easily and efficiently with our powerful tools."
         )
