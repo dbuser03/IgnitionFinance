@@ -18,6 +18,9 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.theme.TypographyBold
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.unimib.ignitionfinance.ui.navigation.Destinations
 
 @OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
@@ -25,7 +28,8 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     containerColor: Color,
     contentColor: Color,
-    items: List<BottomNavigationItem>
+    items: List<BottomNavigationItem>,
+    navController: NavController
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -71,6 +75,14 @@ fun BottomNavigationBar(
                     if (selectedIndex != index) {
                         selectedIndex = index
                         atEnd = !atEnd
+
+                        navController.navigate(item.destination) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
@@ -97,19 +109,23 @@ fun BottomNavigationBarPreview() {
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_add_notes_24,
                     label = stringResource(id = R.string.portfolio_label),
+                    destination = Destinations.PortfolioScreen.route,
                     contentDescription = stringResource(id = R.string.portfolio_label)
                 ),
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_donut_large_24,
                     label = stringResource(id = R.string.summary_label),
+                    destination = Destinations.SummaryScreen.route,
                     contentDescription = stringResource(id = R.string.summary_label),
                 ),
                 BottomNavigationItem(
                     iconRes = R.drawable.avd_outline_analytics_24,
                     label = stringResource(id = R.string.simulation_label),
+                    destination = Destinations.SimulationScreen.route,
                     contentDescription = stringResource(id = R.string.simulation_label),
                 ),
-            )
+            ),
+            navController = rememberNavController()
         )
     }
 }
@@ -117,5 +133,6 @@ fun BottomNavigationBarPreview() {
 data class BottomNavigationItem(
     val iconRes: Int,
     val label: String,
-    val contentDescription: String? = null
+    val contentDescription: String? = null,
+    val destination: String
 )
