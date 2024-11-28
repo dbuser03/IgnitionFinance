@@ -26,15 +26,15 @@ data class DataSet(
 )
 
 data class SeriesData(
-    @SerializedName("attributes") val attributes: List<Int?>, // Change to Int? as attributes seem to be integers, with possible nulls
-    @SerializedName("observations") val observations: Map<String, List<Double?>> // Keep Double? for potential nulls in observations
+    @SerializedName("attributes") val attributes: List<Int?>,
+    @SerializedName("observations") val observations: Map<String, List<Double?>>
 )
 
 data class Structure(
     @SerializedName("links") val links: List<Link>,
     @SerializedName("name") val name: String,
     @SerializedName("dimensions") val dimensions: Dimensions,
-    @SerializedName("attributes") val attributes: Attributes // Corrected key from "observation" to "attributes"
+    @SerializedName("attributes") val attributes: Attributes
 )
 
 data class Link(
@@ -45,7 +45,7 @@ data class Link(
 
 data class Dimensions(
     @SerializedName("series") val series: List<Dimension>,
-    @SerializedName("observation") val observation: List<ObservationDimension> // Added ObservationDimension list for observations
+    @SerializedName("observation") val observation: List<ObservationDimension>
 )
 
 data class Dimension(

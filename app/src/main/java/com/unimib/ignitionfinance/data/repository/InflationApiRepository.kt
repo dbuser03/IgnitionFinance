@@ -1,8 +1,8 @@
 package com.unimib.ignitionfinance.data.repository
 
-import com.unimib.ignitionfinance.data.remote.inflation_api.InflationApiResponseData
 import com.unimib.ignitionfinance.data.remote.inflation_api.InflationApiService
-import retrofit2.Response
+import com.unimib.ignitionfinance.data.remote.mapper.InflationApiMapper
+import com.unimib.ignitionfinance.domain.model.InflationData
 
 class InflationRepository(private val inflationApiService: InflationApiService) {
 
@@ -13,31 +13,11 @@ class InflationRepository(private val inflationApiService: InflationApiService) 
             val inflationData = response.body()
 
             if (inflationData != null) {
-                return Result.success(processInflationData(inflationData))
+                val domainData = InflationApiMapper.mapToDomain(inflationData)
+                return Result.success(domainData)
             }
         }
 
         return Result.failure(Throwable("Failed to fetch inflation data"))
     }
-
-    private fun processInflationData(inflationData: InflationApiResponseData): List<InflationData> {
-        val processedData = mutableListOf<InflationData>()
-
-        inflationData.dataSets.forEach { dataSet ->
-            dataSet.series.forEach { (seriesKey, seriesData) ->
-                seriesData.observations.forEach { (date, values) ->
-                    values.firstOrNull()?.let { inflationRate ->
-                        processedData.add(InflationData(date, inflationRate))
-                    }
-                }
-            }
-        }
-
-        return processedData
-    }
 }
-
-data class InflationData(
-    val date: String,
-    val inflationRate: Double
-)
