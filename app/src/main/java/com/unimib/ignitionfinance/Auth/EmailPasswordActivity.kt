@@ -80,3 +80,7 @@ class EmailPasswordActivity : Activity() {
                 // Email verification has been sent (no additional action here)
             }
     }
+    // Method to update the UI based on the user's authentication state
+    private fun updateUI(user: FirebaseUser?) {
+        // Update the app's UI to reflect the current user's status
+    }
