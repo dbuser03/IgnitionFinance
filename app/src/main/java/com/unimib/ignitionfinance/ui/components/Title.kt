@@ -173,7 +173,7 @@ fun TitleSettings(
         contentAlignment = Alignment.Center
     ) {
         CustomFloatingActionButton(
-            onClick = { navController.navigate(Destinations.SimulationScreen.route) },
+            onClick = { navController.popBackStack() },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp)
