@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.rememberNavController
@@ -24,7 +25,7 @@ import androidx.navigation.NavController
 @Composable
 fun Title(
     title: String,
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
     Box(
         modifier = Modifier
@@ -55,7 +56,7 @@ fun Title(
 fun TitleWithDescription(
     title: String,
     description: String,
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
     Box(
         modifier = Modifier
@@ -101,8 +102,8 @@ fun TitleWithDescription(
 fun TitleWithButton(
     title: String,
     description: String,
-    navController: NavController, // Aggiungi il parametro navController
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary
+    navController: NavController,
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
     Box(
         modifier = Modifier
@@ -143,12 +144,12 @@ fun TitleWithButton(
         )
 
         CustomFloatingActionButton(
-            onClick = { navController.navigate(Destinations.SettingsScreen.route) }, // Naviga alla SettingsScreen
+            onClick = { navController.navigate(Destinations.SettingsScreen.route) },
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 24.dp),
-            containerColor = PrimaryWhite,
-            contentColor = PrimaryBlack,
+            containerColor = MaterialTheme.colorScheme.onSecondary,
+            contentColor = MaterialTheme.colorScheme.primary,
             icon = painterResource(id = R.drawable.outline_settings_24),
             contentDescription = stringResource(id = R.string.settings_FAB_description),
             fabSize = 40.dp,
@@ -161,8 +162,8 @@ fun TitleWithButton(
 @Composable
 fun TitleSettings(
     title: String,
-    color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
-    navController: NavController // Necessario per la navigazione
+    color: Color = MaterialTheme.colorScheme.primary,
+    navController: NavController
 ) {
     Box(
         modifier = Modifier
@@ -171,13 +172,18 @@ fun TitleSettings(
             .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        GoBackIcon(
-            icon = painterResource(id = R.drawable.outline_arrow_back_24),
+        CustomFloatingActionButton(
+            onClick = { navController.navigate(Destinations.SimulationScreen.route) },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp)
                 .padding(top = 72.dp),
-            onClick = { navController.navigate(Destinations.SimulationScreen.route) } // Naviga alla SimulationScreen
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.primary,
+            icon = painterResource(id = R.drawable.outline_arrow_back_24),
+            contentDescription = stringResource(id = R.string.go_back_FAB_description),
+            fabSize = 28.dp,
+            iconSize = 28.dp
         )
         Text(
             text = title,
@@ -194,7 +200,7 @@ fun TitleSettings(
                 .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
                 .padding(end = 24.dp)
-                .padding(top = 48.dp)
+                .padding(top = 64.dp)
         )
     }
 }
@@ -222,14 +228,12 @@ fun TitleWithDescriptionPreview() {
 @Composable
 fun TitleWithDescriptionAndIconPreview() {
     IgnitionFinanceTheme {
-        // Crea un NavController per la preview
         val navController = rememberNavController()
 
-        // Passa il NavController alla composizione
         TitleWithButton(
             title = "FIRE \nSimulation",
             description = "Manage your finances easily and efficiently with our powerful tools.",
-            navController = navController // Aggiungi il NavController
+            navController = navController
         )
     }
 }
@@ -239,7 +243,7 @@ fun TitleWithDescriptionAndIconPreview() {
 @Composable
 fun TitleSettingsPreview() {
     IgnitionFinanceTheme {
-        val navController = rememberNavController() // Crea un NavController simulato
+        val navController = rememberNavController()
         TitleSettings(
             title = "Settings",
             navController = navController

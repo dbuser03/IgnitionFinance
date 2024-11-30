@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,26 +43,6 @@ fun CandlestickChartIcon(
     }
 }
 
-
-@Composable
-fun GoBackIcon(
-    icon: Painter,
-    modifier: Modifier = Modifier,
-    iconSize: Dp = 32.dp,
-    onClick: () -> Unit // Funzione da eseguire al click
-) {
-    Image(
-        painter = icon,
-        contentDescription = null,
-        modifier = modifier
-            .size(iconSize)
-            .clickable(onClick = onClick), // Aggiunto comportamento clickabile
-        contentScale = ContentScale.Fit,
-        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.primary)
-    )
-}
-
-
 @Preview
 @Composable
 fun PreviewSettingsIcon() {
@@ -74,13 +53,3 @@ fun PreviewSettingsIcon() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewGoBackIcon() {
-    IgnitionFinanceTheme {
-        GoBackIcon(
-            icon = painterResource(id = R.drawable.outline_arrow_back_24),
-            onClick = { /* No-op for preview */ }
-        )
-    }
-}

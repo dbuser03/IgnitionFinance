@@ -94,8 +94,8 @@ fun SettingsFABPreview() {
         CustomFloatingActionButton(
             onClick = { /* Handle click action */ },
             modifier = Modifier,
-            containerColor = PrimaryWhite,
-            contentColor = PrimaryBlack,
+            containerColor = MaterialTheme.colorScheme.onSecondary,
+            contentColor = MaterialTheme.colorScheme.primary,
             icon = painterResource(id = R.drawable.outline_settings_24),
             contentDescription = stringResource(id = R.string.settings_FAB_description),
             fabSize = 40.dp,
@@ -104,3 +104,18 @@ fun SettingsFABPreview() {
     }
 }
 
+@Preview
+@Composable
+fun GoBackFABPreview() {
+    IgnitionFinanceTheme {
+        CustomFloatingActionButton(
+            onClick = { /* Handle click action */ },
+            modifier = Modifier,
+            containerColor = Color.Transparent,
+            icon = painterResource(id = R.drawable.outline_arrow_back_24),
+            contentDescription = stringResource(id = R.string.go_back_FAB_description),
+            fabSize = 32.dp,
+            iconSize = 32.dp
+        )
+    }
+}
