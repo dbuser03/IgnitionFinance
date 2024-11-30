@@ -84,3 +84,7 @@ class EmailPasswordActivity : Activity() {
     private fun updateUI(user: FirebaseUser?) {
         // Update the app's UI to reflect the current user's status
     }
+    // Method to reload the user state (placeholder for additional functionality)
+    private fun reload() {
+        // Reload user information or refresh UI
+    }
