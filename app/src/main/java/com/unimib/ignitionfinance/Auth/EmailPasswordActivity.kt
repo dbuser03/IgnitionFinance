@@ -20,3 +20,13 @@ class EmailPasswordActivity : Activity() {
         // Initialize Firebase Authentication
         auth = Firebase.auth
     }
+
+    // Lifecycle method called when the activity becomes visible
+    public override fun onStart() {
+        super.onStart()
+        // Check if a user is already signed in and update the UI accordingly
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            reload()
+        }
+    }
