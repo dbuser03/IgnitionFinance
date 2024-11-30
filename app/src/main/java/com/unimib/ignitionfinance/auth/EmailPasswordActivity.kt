@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.Auth
+package com.unimib.ignitionfinance.auth
 
 import android.app.Activity
 import android.os.Bundle
