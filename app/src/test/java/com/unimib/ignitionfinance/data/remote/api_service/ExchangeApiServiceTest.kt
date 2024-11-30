@@ -1,11 +1,11 @@
 package com.unimib.ignitionfinance.data.remote.api_service
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.api_response.DataSet
-import com.unimib.ignitionfinance.data.remote.api_response.Header
-import com.unimib.ignitionfinance.data.remote.api_response.Sender
-import com.unimib.ignitionfinance.data.remote.api_response.SeriesData
-import com.unimib.ignitionfinance.data.remote.api_response.Structure
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.DataSet
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Header
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Sender
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.SeriesData
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Structure
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse

@@ -18,11 +18,11 @@ class ExchangeRepositoryImpl(
     override suspend fun fetchExchangeData(seriesKey: String): Result<List<ExchangeData>> =
         withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getExchangeRate(seriesKey)
+                val response = apiService.getExchangeRate(seriesKey = seriesKey)
                 if (response.isSuccessful) {
-                    val data = response.body()
-                    if (data != null) {
-                        return@withContext Result.success(apiMapper.mapToDomain(data))
+                    val exchangeData = response.body()
+                    if (exchangeData != null) {
+                        return@withContext Result.success(apiMapper.mapToDomain(exchangeData))
                     }
                 }
                 Result.failure(Throwable("Error: Failed to fetch or parse exchange data"))

@@ -1,6 +1,14 @@
-package com.unimib.ignitionfinance.data.remote.api_response
+package com.unimib.ignitionfinance.data.remote.api_response.exchange
 
 import com.google.gson.Gson
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.DataSet
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimension
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimensions
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Header
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Sender
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.SeriesData
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Structure
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Value
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.collections.get

@@ -1,6 +1,15 @@
-package com.unimib.ignitionfinance.data.remote.api_response
+package com.unimib.ignitionfinance.data.remote.api_response.exchange
 
 import com.google.gson.annotations.SerializedName
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.DataSet
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimension
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimensions
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Header
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Link
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Sender
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.SeriesData
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Structure
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Value
 
 data class ExchangeApiResponseData(
     @SerializedName("header") val header: Header,

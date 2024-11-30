@@ -6,7 +6,6 @@ import com.unimib.ignitionfinance.domain.model.ExchangeData
 class FetchChfExchangeDataUseCase(
     private val repository: ExchangeRepository
 ) {
-
     suspend operator fun invoke(): Result<List<ExchangeData>> {
         return repository.fetchExchangeData("D.CHF.EUR.SP00.A")
     }

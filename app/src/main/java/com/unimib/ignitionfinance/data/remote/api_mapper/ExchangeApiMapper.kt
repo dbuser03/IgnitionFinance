@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.api_mapper
 
-import com.unimib.ignitionfinance.data.remote.api_response.ExchangeApiResponseData
+import com.unimib.ignitionfinance.data.remote.api_response.exchange.ExchangeApiResponseData
 import com.unimib.ignitionfinance.domain.model.ExchangeData
 
 object ExchangeApiMapper {

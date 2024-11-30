@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.api_response
+package com.unimib.ignitionfinance.data.remote.api_response.inflation
 
 import com.google.gson.annotations.SerializedName
 
