@@ -51,3 +51,24 @@ class EmailPasswordActivity : Activity() {
                 }
             }
     }
+    // Method to create a new account using email and password
+    private fun createAccount(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Account creation successful, update the UI with the user's information
+                    Log.d(TAG, "createUserWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    // Account creation failed, display a message to the user
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        baseContext,
+                        "Authentication failed.",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                    updateUI(null)
+                }
+            }
+    }
