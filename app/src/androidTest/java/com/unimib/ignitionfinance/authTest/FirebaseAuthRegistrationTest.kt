@@ -6,7 +6,7 @@ import junit.framework.TestCase.assertNotNull
 import org.junit.Before
 import org.junit.Test
 
-class FirebaseAuthTest {
+class FirebaseAuthRegistrationTest {
 
     private lateinit var auth: FirebaseAuth
 
