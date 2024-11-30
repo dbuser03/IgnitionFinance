@@ -4,10 +4,12 @@ import com.unimib.ignitionfinance.data.remote.api_mapper.StockApiMapper
 import com.unimib.ignitionfinance.data.remote.api_service.StockApiService
 import com.unimib.ignitionfinance.domain.model.StockData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 interface StockRepository {
-    suspend fun fetchStockData(symbol: String, apiKey: String): Result<Map<String, StockData>>
+    suspend fun fetchStockData(symbol: String, apiKey: String): Flow<Result<Map<String, StockData>>>
 }
 
 class StockRepositoryImpl(
@@ -15,20 +17,22 @@ class StockRepositoryImpl(
     private val stockApiMapper: StockApiMapper
 ) : StockRepository {
 
-    override suspend fun fetchStockData(symbol: String, apiKey: String): Result<Map<String, StockData>> =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = stockApiService.getStockData(symbol = symbol, apiKey = apiKey)
+    override suspend fun fetchStockData(symbol: String, apiKey: String): Flow<Result<Map<String, StockData>>> = flow {
+        try {
+            val response = stockApiService.getStockData(symbol = symbol, apiKey = apiKey)
 
-                if (response.isSuccessful) {
-                    val stockData = response.body()
-                    if (stockData != null) {
-                        return@withContext Result.success(stockApiMapper.mapToDomain(stockData))
-                    }
+            if (response.isSuccessful) {
+                val stockData = response.body()
+                if (stockData != null) {
+                    emit(Result.success(stockApiMapper.mapToDomain(stockData)))
+                } else {
+                    emit(Result.failure(Throwable("Error: Empty response body")))
                 }
-                Result.failure(Throwable("Failed to fetch stock data"))
-            } catch (e: Exception) {
-                Result.failure(e)
+            } else {
+                emit(Result.failure(Throwable("Failed to fetch stock data")))
             }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
         }
+    }.flowOn(Dispatchers.IO)
 }

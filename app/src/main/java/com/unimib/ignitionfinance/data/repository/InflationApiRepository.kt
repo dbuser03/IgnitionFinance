@@ -4,10 +4,12 @@ import com.unimib.ignitionfinance.data.remote.api_service.InflationApiService
 import com.unimib.ignitionfinance.data.remote.api_mapper.InflationApiMapper
 import com.unimib.ignitionfinance.domain.model.InflationData
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 interface InflationRepository {
-    suspend fun fetchInflationData(): Result<List<InflationData>>
+    suspend fun fetchInflationData(): Flow<Result<List<InflationData>>>
 }
 
 class InflationRepositoryImpl(
@@ -15,20 +17,21 @@ class InflationRepositoryImpl(
     private val inflationApiMapper: InflationApiMapper
 ) : InflationRepository {
 
-    override suspend fun fetchInflationData(): Result<List<InflationData>> =
-        withContext(Dispatchers.IO) {
-            try {
-                val response = inflationApiService.getInflationData()
-                if (response.isSuccessful) {
-                    val inflationData = response.body()
-                    if (inflationData != null) {
-                        val domainData = inflationApiMapper.mapToDomain(inflationData)
-                        return@withContext Result.success(domainData)
-                    }
+    override suspend fun fetchInflationData(): Flow<Result<List<InflationData>>> = flow {
+        try {
+            val response = inflationApiService.getInflationData()
+            if (response.isSuccessful) {
+                val inflationData = response.body()
+                if (inflationData != null) {
+                    emit(Result.success(inflationApiMapper.mapToDomain(inflationData)))
+                } else {
+                    emit(Result.failure(Throwable("Error: Empty response body")))
                 }
-                Result.failure(Throwable("Error: Empty or invalid response"))
-            } catch (e: Exception) {
-                Result.failure(e)
+            } else {
+                emit(Result.failure(Throwable("Error: Failed to fetch inflation data")))
             }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
         }
+    }.flowOn(Dispatchers.IO)
 }
