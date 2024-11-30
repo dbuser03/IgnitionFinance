@@ -1,47 +1,34 @@
 package com.unimib.ignitionfinance.data.repository
 
-import com.unimib.ignitionfinance.data.remote.api_response.StockApiResponseData
+import com.unimib.ignitionfinance.data.remote.api_mapper.StockApiMapper
 import com.unimib.ignitionfinance.data.remote.api_service.StockApiService
-import java.math.BigDecimal
+import com.unimib.ignitionfinance.domain.model.StockData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class StockRepository(private val stockApiService: StockApiService) {
-
-    suspend fun fetchStockData(symbol: String, apiKey: String): Result<Map<String, StockData>> {
-        val response = stockApiService.getStockData(symbol = symbol, apiKey = apiKey)
-
-        if (response.isSuccessful) {
-            val stockData = response.body()
-
-            if (stockData != null) {
-                return Result.success(processStockData(stockData))
-            }
-        }
-
-        return Result.failure(Throwable("Failed to fetch stock data"))
-    }
-
-    private fun processStockData(stockData: StockApiResponseData): Map<String, StockData> {
-        val processedData = mutableMapOf<String, StockData>()
-
-        stockData.timeSeries.forEach { (date, timeSeriesData) ->
-            val stockDataForDay = StockData(
-                open = timeSeriesData.open,
-                high = timeSeriesData.high,
-                low = timeSeriesData.low,
-                close = timeSeriesData.close,
-                volume = timeSeriesData.volume
-            )
-            processedData[date] = stockDataForDay
-        }
-
-        return processedData
-    }
+interface StockRepository {
+    suspend fun fetchStockData(symbol: String, apiKey: String): Result<Map<String, StockData>>
 }
 
-data class StockData(
-    val open: BigDecimal,
-    val high: BigDecimal,
-    val low: BigDecimal,
-    val close: BigDecimal,
-    val volume: Long
-)
+class StockRepositoryImpl(
+    private val stockApiService: StockApiService,
+    private val stockApiMapper: StockApiMapper
+) : StockRepository {
+
+    override suspend fun fetchStockData(symbol: String, apiKey: String): Result<Map<String, StockData>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = stockApiService.getStockData(symbol = symbol, apiKey = apiKey)
+
+                if (response.isSuccessful) {
+                    val stockData = response.body()
+                    if (stockData != null) {
+                        return@withContext Result.success(stockApiMapper.mapToDomain(stockData))
+                    }
+                }
+                Result.failure(Throwable("Failed to fetch stock data"))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+}
