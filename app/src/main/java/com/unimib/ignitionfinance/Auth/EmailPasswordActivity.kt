@@ -88,3 +88,8 @@ class EmailPasswordActivity : Activity() {
     private fun reload() {
         // Reload user information or refresh UI
     }
+    // Companion object to hold a constant for logging
+    companion object {
+        private const val TAG = "EmailPassword"
+    }
+}
