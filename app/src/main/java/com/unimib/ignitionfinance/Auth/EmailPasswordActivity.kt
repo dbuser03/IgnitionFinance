@@ -72,3 +72,11 @@ class EmailPasswordActivity : Activity() {
                 }
             }
     }
+    // Method to send an email verification to the currently signed-in user
+    private fun sendEmailVerification() {
+        val user = auth.currentUser!!
+        user.sendEmailVerification()
+            .addOnCompleteListener(this) { task ->
+                // Email verification has been sent (no additional action here)
+            }
+    }
