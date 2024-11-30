@@ -3,7 +3,6 @@ package com.unimib.ignitionfinance.domain.model
 import java.math.BigDecimal
 
 data class StockData(
-    val date: String,
     val open: BigDecimal,
     val high: BigDecimal,
     val low: BigDecimal,

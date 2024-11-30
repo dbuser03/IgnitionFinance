@@ -6,10 +6,9 @@ import java.math.BigDecimal
 
 class StockApiMapper {
 
-    fun mapToDomain(response: StockApiResponseData): List<StockData> {
-        return response.timeSeries.map { (dateString, timeSeriesData) ->
+    fun mapToDomain(response: StockApiResponseData): Map<String, StockData> {
+        return response.timeSeries.mapValues { (dateString, timeSeriesData) ->
             StockData(
-                date = dateString,
                 open = timeSeriesData.open,
                 high = timeSeriesData.high,
                 low = timeSeriesData.low,
