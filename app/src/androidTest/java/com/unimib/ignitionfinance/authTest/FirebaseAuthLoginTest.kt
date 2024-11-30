@@ -20,7 +20,7 @@ class FirebaseAuthLoginTest {
     @Test
     fun testUserLogin() {
         val email = "testuser@example.com"
-        val password = "securePassword123"
+        val password = "securePassword123!"
 
         // Prima, registriamo l'utente
         val registrationTask = auth.createUserWithEmailAndPassword(email, password)
