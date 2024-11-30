@@ -1,4 +1,6 @@
 package com.unimib.ignitionfinance.domain.model
 
-class ExchangeData {
-}
+data class ExchangeData(
+    val date: String,
+    val inflationRate: Double
+)
