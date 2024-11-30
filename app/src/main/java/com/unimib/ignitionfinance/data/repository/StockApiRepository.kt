@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.data.repository
 
-import com.unimib.ignitionfinance.data.remote.response.StockApiResponseData
-import com.unimib.ignitionfinance.data.remote.service.StockApiService
+import com.unimib.ignitionfinance.data.remote.api_response.StockApiResponseData
+import com.unimib.ignitionfinance.data.remote.api_service.StockApiService
 import java.math.BigDecimal
 
 class StockRepository(private val stockApiService: StockApiService) {

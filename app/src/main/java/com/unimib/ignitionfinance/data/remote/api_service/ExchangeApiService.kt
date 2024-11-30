@@ -1,6 +1,6 @@
-package com.unimib.ignitionfinance.data.remote.service
+package com.unimib.ignitionfinance.data.remote.api_service
 
-import com.unimib.ignitionfinance.data.remote.response.ExchangeApiResponseData
+import com.unimib.ignitionfinance.data.remote.api_response.ExchangeApiResponseData
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

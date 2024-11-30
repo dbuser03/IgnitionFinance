@@ -1,12 +1,11 @@
-package com.unimib.ignitionfinance.data.remote.exchange_api
+package com.unimib.ignitionfinance.data.remote.api_service
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.response.DataSet
-import com.unimib.ignitionfinance.data.remote.response.Header
-import com.unimib.ignitionfinance.data.remote.response.Sender
-import com.unimib.ignitionfinance.data.remote.response.SeriesData
-import com.unimib.ignitionfinance.data.remote.response.Structure
-import com.unimib.ignitionfinance.data.remote.service.ExchangeApiService
+import com.unimib.ignitionfinance.data.remote.api_response.DataSet
+import com.unimib.ignitionfinance.data.remote.api_response.Header
+import com.unimib.ignitionfinance.data.remote.api_response.Sender
+import com.unimib.ignitionfinance.data.remote.api_response.SeriesData
+import com.unimib.ignitionfinance.data.remote.api_response.Structure
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -19,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import java.util.concurrent.TimeUnit
+import kotlin.text.get
 
 class ExchangeApiServiceTest {
 

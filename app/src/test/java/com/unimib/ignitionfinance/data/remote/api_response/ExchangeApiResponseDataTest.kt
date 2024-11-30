@@ -1,21 +1,10 @@
-package com.unimib.ignitionfinance.data.remote.exchange_api
+package com.unimib.ignitionfinance.data.remote.api_response
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.response.Attribute
-import com.unimib.ignitionfinance.data.remote.response.Attributes
-import com.unimib.ignitionfinance.data.remote.response.DataSet
-import com.unimib.ignitionfinance.data.remote.response.Dimension
-import com.unimib.ignitionfinance.data.remote.response.Dimensions
-import com.unimib.ignitionfinance.data.remote.response.ExchangeApiResponseData
-import com.unimib.ignitionfinance.data.remote.response.Header
-import com.unimib.ignitionfinance.data.remote.response.ObservationDimension
-import com.unimib.ignitionfinance.data.remote.response.ObservationValue
-import com.unimib.ignitionfinance.data.remote.response.Sender
-import com.unimib.ignitionfinance.data.remote.response.SeriesData
-import com.unimib.ignitionfinance.data.remote.response.Structure
-import com.unimib.ignitionfinance.data.remote.response.Value
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import kotlin.collections.get
+import kotlin.text.get
 
 class ExchangeApiResponseDataTest {
 
@@ -349,7 +338,7 @@ class ExchangeApiResponseDataTest {
 
                 // Verify attributes and observations
                 val firstObservation = SeriesData.observations?.get("0")
-                assertEquals(1.0412, firstObservation?.get(0))
+            assertEquals(1.0412, firstObservation?.get(0))
 
                 // Verify structure name and dimension values
                 assertEquals("Exchange Rates", Structure.name)

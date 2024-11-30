@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.response
+package com.unimib.ignitionfinance.data.remote.api_response
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal

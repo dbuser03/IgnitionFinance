@@ -1,7 +1,6 @@
-package com.unimib.ignitionfinance.data.remote.inflation_api
+package com.unimib.ignitionfinance.data.remote.api_service
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.service.InflationApiService
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse

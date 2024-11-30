@@ -1,8 +1,8 @@
-package com.unimib.ignitionfinance.data.remote.response
+package com.unimib.ignitionfinance.data.remote.api_response
 
 import com.google.gson.annotations.SerializedName
 
-data class ExchangeApiResponseData(
+data class InflationApiResponseData(
     @SerializedName("header") val header: Header,
     @SerializedName("dataSets") val dataSets: List<DataSet>,
     @SerializedName("structure") val structure: Structure
@@ -26,7 +26,7 @@ data class DataSet(
 )
 
 data class SeriesData(
-    @SerializedName("attributes") val attributes: List<Int?>,
+    @SerializedName("attributes") val attributes: List<Double?>,
     @SerializedName("observations") val observations: Map<String, List<Double?>>
 )
 
@@ -34,7 +34,7 @@ data class Structure(
     @SerializedName("links") val links: List<Link>,
     @SerializedName("name") val name: String,
     @SerializedName("dimensions") val dimensions: Dimensions,
-    @SerializedName("attributes") val attributes: Attributes
+    @SerializedName("observation") val observation: List<Observation>
 )
 
 data class Link(
@@ -44,8 +44,7 @@ data class Link(
 )
 
 data class Dimensions(
-    @SerializedName("series") val series: List<Dimension>,
-    @SerializedName("observation") val observation: List<ObservationDimension>
+    @SerializedName("series") val series: List<Dimension>
 )
 
 data class Dimension(
@@ -54,38 +53,14 @@ data class Dimension(
     @SerializedName("values") val values: List<Value>
 )
 
-data class ObservationDimension(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("role") val role: String?,
-    @SerializedName("values") val values: List<ObservationValue>
-)
-
 data class Value(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String
 )
 
-data class ObservationValue(
+data class Observation(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("start") val start: String,
-    @SerializedName("end") val end: String
-)
-
-data class Attributes(
-    @SerializedName("series") val series: List<Attribute>,
-    @SerializedName("observation") val observation: List<ObservationAttribute>
-)
-
-data class Attribute(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("values") val values: List<Value?>
-)
-
-data class ObservationAttribute(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("values") val values: List<Value?>
+    @SerializedName("role") val role: String,
+    @SerializedName("values") val values: List<Value>
 )
