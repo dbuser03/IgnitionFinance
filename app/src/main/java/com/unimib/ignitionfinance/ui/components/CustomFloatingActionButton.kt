@@ -31,7 +31,8 @@ fun CustomFloatingActionButton(
     icon: Painter,
     contentDescription: String? = null,
     fabSize: Dp = 56.dp,
-    iconSize: Dp = 24.dp
+    iconSize: Dp = 24.dp,
+    isClickable: Boolean = true
 ) {
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -43,8 +44,10 @@ fun CustomFloatingActionButton(
 
     FloatingActionButton(
         onClick = {
-            hapticFeedback.performHapticFeedback(feedbackType)
-            onClick()
+            if (isClickable) {
+                hapticFeedback.performHapticFeedback(feedbackType)
+                onClick()
+            }
         },
         modifier = modifier.size(fabSize),
         containerColor = containerColor,
@@ -59,6 +62,7 @@ fun CustomFloatingActionButton(
         )
     }
 }
+
 
 @Preview
 @Composable

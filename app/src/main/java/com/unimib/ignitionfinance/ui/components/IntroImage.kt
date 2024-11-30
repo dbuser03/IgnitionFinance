@@ -26,7 +26,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.withStyle
 
 @Composable
-fun IntroImage(onNavigate: () -> Unit) { // Aggiunto parametro onNavigate
+fun IntroImage(onNavigate: () -> Unit) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val videoHeight = screenHeight * 0.8f
 
@@ -36,6 +36,7 @@ fun IntroImage(onNavigate: () -> Unit) { // Aggiunto parametro onNavigate
 
     var textVisible by remember { mutableStateOf(false) }
     var coloredIndices by remember { mutableIntStateOf(0) }
+    var isFabClickable by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(1000)
@@ -49,6 +50,7 @@ fun IntroImage(onNavigate: () -> Unit) { // Aggiunto parametro onNavigate
                 kotlinx.coroutines.delay(18)
                 coloredIndices = i + 1
             }
+            isFabClickable = true
         }
     }
 
@@ -95,18 +97,22 @@ fun IntroImage(onNavigate: () -> Unit) { // Aggiunto parametro onNavigate
         }
 
         CustomFloatingActionButton(
-            onClick = { onNavigate() }, // Usa il callback quando il bottone viene premuto
+            onClick = {
+                if (isFabClickable) {
+                    onNavigate()
+                }
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 56.dp),
             containerColor = PrimaryWhite,
             contentColor = PrimaryBlack,
             icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
-            contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
+            contentDescription = stringResource(id = R.string.swipe_up_FAB_description),
+            isClickable = isFabClickable
         )
     }
 }
-
 
 @Preview
 @Composable
