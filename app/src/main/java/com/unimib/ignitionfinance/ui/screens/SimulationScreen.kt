@@ -23,7 +23,8 @@ fun SimulationScreen(navController: NavController) {
         topBar = {
             TitleWithButton(
                 title = stringResource(id = R.string.simulation_title),
-                description = stringResource(id = R.string.simulation_description)
+                description = stringResource(id = R.string.simulation_description),
+                navController = navController // Passa il NavController
             )
         },
         bottomBar = {

@@ -10,6 +10,7 @@ import com.unimib.ignitionfinance.ui.screens.IntroScreen
 import com.unimib.ignitionfinance.ui.screens.PortfolioScreen
 import com.unimib.ignitionfinance.ui.screens.SimulationScreen
 import com.unimib.ignitionfinance.ui.screens.SummaryScreen
+import com.unimib.ignitionfinance.ui.screens.SettingsScreen // Importa la SettingsScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -34,6 +35,9 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(route = Destinations.SummaryScreen.route) {
             SummaryScreen(navController)
+        }
+        composable(route = Destinations.SettingsScreen.route) {  // Aggiungi questa riga
+            SettingsScreen(navController) // Aggiungi la navigazione alla SettingsScreen
         }
     }
 }

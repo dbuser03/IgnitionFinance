@@ -5,4 +5,6 @@ sealed class Destinations(val route: String) {
     object PortfolioScreen : Destinations("portfolio_screen")
     object SimulationScreen : Destinations("simulation_screen")
     object SummaryScreen : Destinations("summary_screen")
+    object SettingsScreen : Destinations("settings_screen")
+
 }
