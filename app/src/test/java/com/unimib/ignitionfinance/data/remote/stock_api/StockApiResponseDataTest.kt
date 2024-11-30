@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.stock_api
 
 import com.google.gson.Gson
+import com.unimib.ignitionfinance.data.remote.response.StockApiResponseData
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.math.BigDecimal

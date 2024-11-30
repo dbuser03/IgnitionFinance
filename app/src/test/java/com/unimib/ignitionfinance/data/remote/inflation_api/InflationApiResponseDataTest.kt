@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.data.remote.inflation_api
 
 
 import com.google.gson.Gson
+import com.unimib.ignitionfinance.data.remote.response.InflationApiResponseData
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

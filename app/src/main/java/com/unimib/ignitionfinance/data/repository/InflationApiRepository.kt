@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.repository
 
-import com.unimib.ignitionfinance.data.remote.inflation_api.InflationApiService
+import com.unimib.ignitionfinance.data.remote.service.InflationApiService
 import com.unimib.ignitionfinance.data.remote.mapper.InflationApiMapper
 import com.unimib.ignitionfinance.domain.model.InflationData
 

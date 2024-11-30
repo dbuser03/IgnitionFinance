@@ -1,5 +1,6 @@
-package com.unimib.ignitionfinance.data.remote.inflation_api
+package com.unimib.ignitionfinance.data.remote.service
 
+import com.unimib.ignitionfinance.data.remote.response.InflationApiResponseData
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
