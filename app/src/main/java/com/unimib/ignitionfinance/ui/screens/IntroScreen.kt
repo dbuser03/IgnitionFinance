@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.ui.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
@@ -23,9 +22,8 @@ import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.navigation.Destinations
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
-@SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
-fun IntroScreen(navController: NavController, onScreenTouched: () -> Unit) {
+fun IntroScreen(navController: NavController) {
     val initialOffset = 1000f
     val targetOffset = 24f
     val animatedOffset = remember { Animatable(initialOffset) }
@@ -55,9 +53,16 @@ fun IntroScreen(navController: NavController, onScreenTouched: () -> Unit) {
                         .fillMaxWidth()
                         .offset(y = animatedOffset.value.dp)
                 ) {
-                    IntroImage(onNavigate = {
-                        onScreenTouched()
-                    })
+                    IntroImage(
+                        onNavigate = {
+                            navController.navigate(Destinations.LoginScreen.route) {
+                                popUpTo(Destinations.IntroScreen.route) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -71,8 +76,6 @@ fun IntroScreenPreview() {
         val navController = rememberNavController()
         IntroScreen(
             navController = navController,
-            onScreenTouched = {
-            }
         )
     }
 }

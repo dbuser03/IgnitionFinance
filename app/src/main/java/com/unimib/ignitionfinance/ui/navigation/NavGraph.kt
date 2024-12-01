@@ -1,29 +1,31 @@
 package com.unimib.ignitionfinance.ui.navigation
 
-import android.app.Activity
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.unimib.ignitionfinance.domain.viewmodel.NavigationViewModel
 import com.unimib.ignitionfinance.ui.screens.*
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    navigationViewModel: NavigationViewModel
 ) {
-    val context = LocalContext.current
-
     NavHost(
         navController = navController,
         startDestination = Destinations.IntroScreen.route
     ) {
+        composable(
+            route = Destinations.LoginScreen.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ) {
+            LoginScreen(
+                navController,
+            )
+        }
         composable(
             route = Destinations.PortfolioScreen.route,
             enterTransition = { EnterTransition.None },
@@ -46,14 +48,12 @@ fun NavGraph(
             SummaryScreen(navController)
         }
 
-        composable(route = Destinations.IntroScreen.route) {
-            IntroScreen(
-                navController,
-                onScreenTouched = {
-                    navigationViewModel.markIntroScreenAsVisited()
-                    navController.navigate(Destinations.PortfolioScreen.route)
-                }
-            )
+        composable(
+            route = Destinations.IntroScreen.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ){
+            IntroScreen(navController)
         }
 
         composable(
@@ -92,16 +92,6 @@ fun NavGraph(
             }
         ) {
             SettingsScreen(navController)
-        }
-    }
-
-    LaunchedEffect(navigationViewModel.hasVisitedIntroScreen.value) {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (navigationViewModel.hasVisitedIntroScreen.value && destination.route == Destinations.IntroScreen.route) {
-                if (navController.previousBackStackEntry == null) {
-                    (context as? Activity)?.finish()
-                }
-            }
         }
     }
 }
