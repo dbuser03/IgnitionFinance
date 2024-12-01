@@ -24,7 +24,7 @@ import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 fun PortfolioScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            Title(title = "My \nPortfolio")
+            Title(title = stringResource(id = R.string.portfolio_title))
         },
         bottomBar = {
             BottomNavigationBar(

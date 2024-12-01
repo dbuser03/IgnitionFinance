@@ -209,7 +209,7 @@ fun TitleSettings(
 @Composable
 fun TitlePreview() {
     IgnitionFinanceTheme {
-        Title("Ignition \nFinance")
+        Title(stringResource(id = R.string.app_title))
     }
 }
 
@@ -218,8 +218,8 @@ fun TitlePreview() {
 fun TitleWithDescriptionPreview() {
     IgnitionFinanceTheme {
         TitleWithDescription(
-            title = "Your \nNet Worth",
-            description = "Manage your finances easily and efficiently with our powerful tools."
+            title = stringResource(id = R.string.app_title),
+            description = stringResource(id = R.string.simulation_description)
         )
     }
 }
@@ -231,8 +231,8 @@ fun TitleWithDescriptionAndIconPreview() {
         val navController = rememberNavController()
 
         TitleWithButton(
-            title = "FIRE \nSimulation",
-            description = "Manage your finances easily and efficiently with our powerful tools.",
+            title = stringResource(id = R.string.simulation_title),
+            description = stringResource(id = R.string.simulation_description),
             navController = navController
         )
     }
@@ -245,7 +245,7 @@ fun TitleSettingsPreview() {
     IgnitionFinanceTheme {
         val navController = rememberNavController()
         TitleSettings(
-            title = "Settings",
+            title = stringResource(id = R.string.settings_title),
             navController = navController
         )
     }

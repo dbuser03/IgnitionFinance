@@ -3,7 +3,6 @@ package com.unimib.ignitionfinance.data.remote.api_response
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
-// Main API response
 data class StockApiResponseData(
     @SerializedName("Meta Data")
     val metaData: MetaData,
@@ -11,7 +10,6 @@ data class StockApiResponseData(
     val timeSeries: Map<String, TimeSeriesData>
 )
 
-// MetaData represents the metadata returned by the API
 data class MetaData(
     @SerializedName("1. Information") val information: String,
     @SerializedName("2. Symbol") val symbol: String,
@@ -20,7 +18,6 @@ data class MetaData(
     @SerializedName("5. Time Zone") val timeZone: String
 )
 
-// TimeSeriesData represents each day's data
 data class TimeSeriesData(
     @SerializedName("1. open") val open: BigDecimal,
     @SerializedName("2. high") val high: BigDecimal,

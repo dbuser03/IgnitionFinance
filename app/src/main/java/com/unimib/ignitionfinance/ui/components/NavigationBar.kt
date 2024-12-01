@@ -35,7 +35,6 @@ fun BottomNavigationBar(
     val hapticFeedback = LocalHapticFeedback.current
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    // Initialize previousDestination with a default value (Portfolio screen)
     var previousDestination by remember { mutableStateOf(Destinations.PortfolioScreen.route) }
 
     NavigationBar(
@@ -75,8 +74,7 @@ fun BottomNavigationBar(
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     if (!isSelected) {
                         navController.navigate(item.destination) {
-                            // Pop up to the previous destination, if available, inclusive true
-                            previousDestination?.let { popUpTo(it) { inclusive = true } }
+                            popUpTo(previousDestination) { inclusive = true }
                             launchSingleTop = true
                         }
                     }

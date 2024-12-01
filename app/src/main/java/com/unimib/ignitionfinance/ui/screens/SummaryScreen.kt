@@ -47,7 +47,7 @@ fun SummaryScreen(navController: NavController) {
                         contentDescription = stringResource(id = R.string.simulation_label),
                     ),
                 ),
-                navController = navController // Passaggio del NavController
+                navController = navController
             )
         },
         content = { innerPadding ->
@@ -56,7 +56,7 @@ fun SummaryScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Contenuto della schermata Summary
+
             }
         }
     )

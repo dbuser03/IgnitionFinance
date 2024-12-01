@@ -67,7 +67,7 @@ fun IntroImage(onNavigate: () -> Unit) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.intro_screen_image),
-            contentDescription = "Intro Screen Background",
+            contentDescription = stringResource(id = R.string.intro_bg_description),
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),

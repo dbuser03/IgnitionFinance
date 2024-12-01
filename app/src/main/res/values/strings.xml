@@ -6,8 +6,11 @@
     <string name="portfolio_label">Portfolio</string>
     <string name="summary_label">Summary</string>
     <string name="simulation_label">Simulation</string>
+    <string name="portfolio_title">Portfolio</string>
     <string name="summary_title">Your \nNet Worth</string>
     <string name="simulation_title">FIRE \nSimulation</string>
+    <string name="settings_title">Settings</string>
+    <string name="intro_bg_description">Intro Screen Background</string>
     <string name="simulation_description">Before starting the simulation, ensure \nall parameters are
         correctly set in the settings.</string>
     <string name="add_FAB_description">Add</string>

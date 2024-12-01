@@ -28,7 +28,7 @@ fun SimulationScreen(navController: NavController) {
             TitleWithButton(
                 title = stringResource(id = R.string.simulation_title),
                 description = stringResource(id = R.string.simulation_description),
-                navController = navController // Passa il NavController
+                navController = navController
             )
         },
         bottomBar = {
@@ -56,7 +56,7 @@ fun SimulationScreen(navController: NavController) {
                         contentDescription = stringResource(id = R.string.simulation_label),
                     ),
                 ),
-                navController = navController // Passa il NavController
+                navController = navController
             )
         },
         floatingActionButton = {
@@ -75,7 +75,7 @@ fun SimulationScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Qui va il contenuto principale dello schermo Simulation
+
             }
         }
     )
