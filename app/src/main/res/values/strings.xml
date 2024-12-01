@@ -6,7 +6,7 @@
     <string name="portfolio_label">Portfolio</string>
     <string name="summary_label">Summary</string>
     <string name="simulation_label">Simulation</string>
-    <string name="portfolio_title">Portfolio</string>
+    <string name="portfolio_title">My \nPortfolio</string>
     <string name="summary_title">Your \nNet Worth</string>
     <string name="simulation_title">FIRE \nSimulation</string>
     <string name="settings_title">Settings</string>
@@ -18,4 +18,5 @@
     <string name="settings_FAB_description">Settings</string>
     <string name="go_back_FAB_description">Go back</string>
     <string name="simulate_FAB_description">Start Simulation</string>
+    <string name="login_FAB_description">Login</string>
 </resources>

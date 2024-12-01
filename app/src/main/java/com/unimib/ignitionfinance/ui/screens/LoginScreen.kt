@@ -35,8 +35,8 @@ fun LoginScreen(navController: NavController) {
                           },
                 modifier = Modifier
                     .padding(bottom = 24.dp),
-                icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
-                contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
+                icon = painterResource(id = R.drawable.outline_keyboard_arrow_right_24),
+                contentDescription = stringResource(id = R.string.login_FAB_description)
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
