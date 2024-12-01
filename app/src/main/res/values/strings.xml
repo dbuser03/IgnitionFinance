@@ -14,4 +14,5 @@
     <string name="swipe_up_FAB_description">Swipe Up</string>
     <string name="settings_FAB_description">Settings</string>
     <string name="go_back_FAB_description">Go back</string>
+    <string name="simulate_FAB_description">Start Simulation</string>
 </resources>

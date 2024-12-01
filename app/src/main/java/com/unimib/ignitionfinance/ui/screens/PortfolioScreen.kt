@@ -55,13 +55,10 @@ fun PortfolioScreen(navController: NavController) {
             )
         },
         floatingActionButton = {
-
             CustomFloatingActionButton(
                 onClick = { /* Handle click action */ },
                 modifier = Modifier
                     .padding(bottom = 12.dp),
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
                 icon = painterResource(id = R.drawable.outline_add_24),
                 contentDescription = stringResource(id = R.string.add_FAB_description)
             )

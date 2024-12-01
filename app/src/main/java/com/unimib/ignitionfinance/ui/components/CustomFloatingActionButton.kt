@@ -123,3 +123,16 @@ fun GoBackFABPreview() {
         )
     }
 }
+
+@Preview
+@Composable
+fun SimulateFABPreview(){
+    IgnitionFinanceTheme {
+        CustomFloatingActionButton(
+            onClick = { /* Handle click action */ },
+            modifier = Modifier,
+            icon = painterResource(id = R.drawable.outline_autoplay_24),
+            contentDescription = stringResource(id = R.string.simulate_FAB_description)
+        )
+    }
+}

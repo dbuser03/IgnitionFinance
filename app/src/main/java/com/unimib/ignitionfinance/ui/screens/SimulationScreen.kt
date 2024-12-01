@@ -1,17 +1,21 @@
 package com.unimib.ignitionfinance.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
+import com.unimib.ignitionfinance.ui.components.CustomFloatingActionButton
 import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.components.TitleWithButton
 import com.unimib.ignitionfinance.ui.navigation.Destinations
@@ -55,6 +59,16 @@ fun SimulationScreen(navController: NavController) {
                 navController = navController // Passa il NavController
             )
         },
+        floatingActionButton = {
+            CustomFloatingActionButton(
+                onClick = { /* Handle click action */ },
+                modifier = Modifier
+                    .padding(bottom = 12.dp),
+                icon = painterResource(id = R.drawable.outline_autoplay_24),
+                contentDescription = stringResource(id = R.string.simulate_FAB_description)
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center,
         content = { innerPadding ->
             Box(
                 modifier = Modifier

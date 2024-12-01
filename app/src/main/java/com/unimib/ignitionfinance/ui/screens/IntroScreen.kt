@@ -56,7 +56,7 @@ fun IntroScreen(navController: NavController) {
                         .offset(y = animatedOffset.value.dp)
                 ) {
                     IntroImage(onNavigate = {
-                        navController.navigate(Destinations.PortfolioScreen.route) // Naviga quando il bottone viene premuto
+                        navController.navigate(Destinations.PortfolioScreen.route)
                     })
                 }
             }
