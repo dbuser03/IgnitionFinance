@@ -1,5 +1,6 @@
-package com.unimib.ignitionfinance.data.remote.stock_api
+package com.unimib.ignitionfinance.data.remote.api_service
 
+import com.unimib.ignitionfinance.data.remote.api_response.StockApiResponseData
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

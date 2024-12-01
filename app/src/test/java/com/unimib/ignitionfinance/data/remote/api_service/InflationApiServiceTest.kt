@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.inflation_api
+package com.unimib.ignitionfinance.data.remote.api_service
 
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking

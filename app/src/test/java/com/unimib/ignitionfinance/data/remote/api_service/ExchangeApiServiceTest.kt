@@ -1,6 +1,11 @@
-package com.unimib.ignitionfinance.data.remote.exchange_api
+package com.unimib.ignitionfinance.data.remote.api_service
 
 import com.google.gson.Gson
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.DataSet
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Header
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Sender
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.SeriesData
+import com.unimib.ignitionfinance.data.remote.api_response.inflation.Structure
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -13,6 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import java.util.concurrent.TimeUnit
+import kotlin.text.get
 
 class ExchangeApiServiceTest {
 
@@ -38,7 +44,7 @@ class ExchangeApiServiceTest {
     }
 
     @Test
-    fun `test getDailyEuroToDollarExchangeRate API call with mock response`() = runBlocking {
+    fun `test getExchangeRate with Euro to Dollar exchange rate`() = runBlocking {
         val mockResponse = """
         {
           "header": {
@@ -108,28 +114,28 @@ class ExchangeApiServiceTest {
                 .setResponseCode(200)
         )
 
-        val response = exchangeApiService.getDailyEuroToDollarExchangeRate()
+        val response = exchangeApiService.getExchangeRate(seriesKey = "D.USD.EUR.SP00.A")
 
         assertNotNull(response)
         assertEquals(200, response.code())
 
         val responseBody = response.body()!!
 
-        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", responseBody.header.id)
-        assertEquals(false, responseBody.header.test)
-        assertEquals("2024-11-25T09:08:57.093+01:00", responseBody.header.prepared)
-        assertEquals("ECB", responseBody.header.sender.id)
+        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", Header.id)
+        assertEquals(false, Header.test)
+        assertEquals("2024-11-25T09:08:57.093+01:00", Header.prepared)
+        assertEquals("ECB", Sender.id)
         val dataSet = responseBody.dataSets[0]
-        assertEquals("Replace", dataSet.action)
-        assertEquals("2024-11-25T09:08:57.093+01:00", dataSet.validFrom)
-        val seriesData = dataSet.series["0:0:0:0:0"]
+        assertEquals("Replace", DataSet.action)
+        assertEquals("2024-11-25T09:08:57.093+01:00", DataSet.validFrom)
+        val seriesData = DataSet.series["0:0:0:0:0"]
         assertNotNull(seriesData)
-        assertEquals(1, seriesData?.observations?.size)
-        assertEquals("Exchange Rates", responseBody.structure.name)
+        assertEquals(1, SeriesData.observations?.size)
+        assertEquals("Exchange Rates", Structure.name)
     }
 
     @Test
-    fun `test getDailyEuroToSwissFrancExchangeRate API call with mock response`() = runBlocking {
+    fun `test getExchangeRate with Euro to Swiss Franc exchange rate`() = runBlocking {
         val mockResponse = """
         {
           "header": {
@@ -209,27 +215,29 @@ class ExchangeApiServiceTest {
                 .setResponseCode(200)
         )
 
-        val response = exchangeApiService.getDailyEuroToSwissFrancExchangeRate()
+        val response = exchangeApiService.getExchangeRate(seriesKey = "D.CHF.EUR.SP00.A")
 
         assertNotNull(response)
         assertEquals(200, response.code())
 
         val responseBody = response.body()!!
 
-        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", responseBody.header.id)
-        assertEquals(false, responseBody.header.test)
-        assertEquals("2024-11-25T09:08:57.093+01:00", responseBody.header.prepared)
-        assertEquals("ECB", responseBody.header.sender.id)
+        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", Header.id)
+        assertEquals(false, Header.test)
+        assertEquals("2024-11-25T09:08:57.093+01:00", Header.prepared)
+        assertEquals("ECB", Sender.id)
         val dataSet = responseBody.dataSets[0]
-        assertEquals("Replace", dataSet.action)
-        assertEquals("2024-11-25T09:08:57.093+01:00", dataSet.validFrom)
-        val seriesData = dataSet.series["EXR.D.CHF.EUR.SP00.A"]
+        assertEquals("Replace", DataSet.action)
+        assertEquals("2024-11-25T09:08:57.093+01:00", DataSet.validFrom)
+        val seriesData = DataSet.series["EXR.D.CHF.EUR.SP00.A"]
         assertNotNull(seriesData)
-        assertEquals(1, seriesData?.observations?.size)
-        assertEquals("Exchange Rates", responseBody.structure.name)
+        assertEquals(1, SeriesData.observations?.size)
+        assertEquals("Exchange Rates", Structure.name)
     }
+
+    // Additional test cases for real API calls
     @Test
-    fun `test getDailyEuroToDollarExchangeRate API call response is JSON with status 200`() = runBlocking {
+    fun `test getExchangeRate real Euro to Dollar exchange rate`() = runBlocking {
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -242,25 +250,19 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        // Create the API service
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
-        // Make the real API call for Euro-to-Dollar exchange rate
-        val response = exchangeApiService.getDailyEuroToDollarExchangeRate()
+        val response = exchangeApiService.getExchangeRate(seriesKey = "D.USD.EUR.SP00.A")
 
-        // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
 
-        // Check that the response body is not null and print the JSON
         val responseBody = response.body()
         assertNotNull(responseBody)
-
-        // Print the JSON response for debugging/inspection
         println("Response JSON (Euro to Dollar): ${Gson().toJson(responseBody)}")
     }
 
     @Test
-    fun `test getDailyEuroToSwissFrancExchangeRate API call response is JSON with status 200`() = runBlocking {
+    fun `test getExchangeRate real Euro to Swiss Franc exchange rate`() = runBlocking {
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -273,20 +275,14 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        // Create the API service
         val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
 
-        // Make the real API call for Euro-to-Swiss-Franc exchange rate
-        val response = exchangeApiService.getDailyEuroToDollarExchangeRate()
+        val response = exchangeApiService.getExchangeRate(seriesKey = "D.CHF.EUR.SP00.A")
 
-        // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
 
-        // Check that the response body is not null and print the JSON
         val responseBody = response.body()
         assertNotNull(responseBody)
-
-        // Print the JSON response for debugging/inspection
         println("Response JSON (Euro to Swiss Franc): ${Gson().toJson(responseBody)}")
     }
 }

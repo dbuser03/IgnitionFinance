@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.stock_api
+package com.unimib.ignitionfinance.data.remote.api_response
 
 import com.google.gson.Gson
 import org.junit.Assert.assertEquals
