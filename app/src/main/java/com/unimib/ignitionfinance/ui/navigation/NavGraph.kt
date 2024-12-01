@@ -1,16 +1,25 @@
 package com.unimib.ignitionfinance.ui.navigation
 
+import android.app.Activity
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.unimib.ignitionfinance.domain.viewmodel.NavigationViewModel
 import com.unimib.ignitionfinance.ui.screens.*
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController,
+    navigationViewModel: NavigationViewModel
+) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = Destinations.IntroScreen.route
@@ -38,7 +47,13 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(route = Destinations.IntroScreen.route) {
-            IntroScreen(navController)
+            IntroScreen(
+                navController,
+                onScreenTouched = {
+                    navigationViewModel.markIntroScreenAsVisited()
+                    navController.navigate(Destinations.PortfolioScreen.route)
+                }
+            )
         }
 
         composable(
@@ -77,6 +92,16 @@ fun NavGraph(navController: NavHostController) {
             }
         ) {
             SettingsScreen(navController)
+        }
+    }
+
+    LaunchedEffect(navigationViewModel.hasVisitedIntroScreen.value) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (navigationViewModel.hasVisitedIntroScreen.value && destination.route == Destinations.IntroScreen.route) {
+                if (navController.previousBackStackEntry == null) {
+                    (context as? Activity)?.finish()
+                }
+            }
         }
     }
 }

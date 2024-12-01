@@ -25,7 +25,7 @@ import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
-fun IntroScreen(navController: NavController) {
+fun IntroScreen(navController: NavController, onScreenTouched: () -> Unit) {
     val initialOffset = 1000f
     val targetOffset = 24f
     val animatedOffset = remember { Animatable(initialOffset) }
@@ -56,7 +56,7 @@ fun IntroScreen(navController: NavController) {
                         .offset(y = animatedOffset.value.dp)
                 ) {
                     IntroImage(onNavigate = {
-                        navController.navigate(Destinations.PortfolioScreen.route)
+                        onScreenTouched()
                     })
                 }
             }
@@ -64,12 +64,15 @@ fun IntroScreen(navController: NavController) {
     )
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun IntroScreenPreview() {
     IgnitionFinanceTheme {
         val navController = rememberNavController()
-        IntroScreen(navController = navController)
+        IntroScreen(
+            navController = navController,
+            onScreenTouched = {
+            }
+        )
     }
 }
