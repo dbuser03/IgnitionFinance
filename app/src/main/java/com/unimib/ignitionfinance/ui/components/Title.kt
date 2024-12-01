@@ -1,25 +1,24 @@
 @file:Suppress("DEPRECATION")
+
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.ui.theme.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.navigation.Destinations
-import androidx.navigation.NavController
+import com.unimib.ignitionfinance.ui.theme.*
 
 
 @Composable
@@ -46,8 +45,7 @@ fun Title(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterStart)
-                .padding(start = 16.dp)
-                .padding(end = 24.dp)
+                .padding(start = 16.dp, end = 24.dp)
         )
     }
 }
@@ -76,10 +74,10 @@ fun TitleWithDescription(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp)
+                .padding(start = 16.dp, end = 24.dp)
                 .align(Alignment.CenterStart)
-                .padding(end = 24.dp)
         )
+
         Text(
             text = description,
             color = color,
@@ -91,9 +89,8 @@ fun TitleWithDescription(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp)
+                .padding(start = 16.dp, end = 24.dp)
                 .align(Alignment.BottomStart)
-                .padding(end = 24.dp)
         )
     }
 }
@@ -123,10 +120,10 @@ fun TitleWithButton(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp)
+                .padding(start = 16.dp, end = 24.dp)
                 .align(Alignment.CenterStart)
-                .padding(end = 24.dp)
         )
+
         Text(
             text = description,
             color = color,
@@ -138,9 +135,8 @@ fun TitleWithButton(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp)
+                .padding(start = 16.dp, end = 24.dp)
                 .align(Alignment.BottomStart)
-                .padding(end = 24.dp)
         )
 
         CustomFloatingActionButton(
@@ -157,7 +153,6 @@ fun TitleWithButton(
         )
     }
 }
-
 
 @Composable
 fun TitleSettings(
@@ -176,8 +171,7 @@ fun TitleSettings(
             onClick = { navController.popBackStack() },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp)
-                .padding(top = 72.dp),
+                .padding(start = 16.dp, top = 72.dp),
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.primary,
             icon = painterResource(id = R.drawable.outline_arrow_back_24),
@@ -185,6 +179,7 @@ fun TitleSettings(
             fabSize = 28.dp,
             iconSize = 28.dp
         )
+
         Text(
             text = title,
             color = color,
@@ -198,55 +193,7 @@ fun TitleSettings(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterStart)
-                .padding(start = 16.dp)
-                .padding(end = 24.dp)
-                .padding(top = 64.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TitlePreview() {
-    IgnitionFinanceTheme {
-        Title(stringResource(id = R.string.app_title))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TitleWithDescriptionPreview() {
-    IgnitionFinanceTheme {
-        TitleWithDescription(
-            title = stringResource(id = R.string.app_title),
-            description = stringResource(id = R.string.simulation_description)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TitleWithDescriptionAndIconPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-
-        TitleWithButton(
-            title = stringResource(id = R.string.simulation_title),
-            description = stringResource(id = R.string.simulation_description),
-            navController = navController
-        )
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun TitleSettingsPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-        TitleSettings(
-            title = stringResource(id = R.string.settings_title),
-            navController = navController
+                .padding(start = 16.dp, end = 24.dp, top = 64.dp)
         )
     }
 }

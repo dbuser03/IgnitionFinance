@@ -13,6 +13,8 @@
     <string name="intro_bg_description">Intro Screen Background</string>
     <string name="simulation_description">Before starting the simulation, ensure \nall parameters are
         correctly set in the settings.</string>
+    <string name="login_description">Sign in using the email and password \nyou used to sign up the
+        first time.</string>
     <string name="add_FAB_description">Add</string>
     <string name="swipe_up_FAB_description">Swipe Up</string>
     <string name="settings_FAB_description">Settings</string>

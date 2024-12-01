@@ -16,7 +16,6 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.ui.components.BottomNavigationItem
 import com.unimib.ignitionfinance.ui.components.CustomFloatingActionButton
-import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.components.TitleWithButton
 import com.unimib.ignitionfinance.ui.navigation.Destinations
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme

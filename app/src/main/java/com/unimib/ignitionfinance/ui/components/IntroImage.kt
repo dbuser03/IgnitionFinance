@@ -7,32 +7,30 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.theme.*
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.withStyle
 
 @Composable
 fun IntroImage(onNavigate: () -> Unit) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val videoHeight = screenHeight * 0.8f
 
-    val text = stringResource(id = R.string.intro_description)
-    val initialTextColor = MaterialTheme.colorScheme.secondary
-    val changedTextColor = PrimaryWhite
+    val introText = stringResource(id = R.string.intro_description)
 
     var textVisible by remember { mutableStateOf(false) }
     var coloredIndices by remember { mutableIntStateOf(0) }
@@ -46,7 +44,7 @@ fun IntroImage(onNavigate: () -> Unit) {
     LaunchedEffect(textVisible) {
         if (textVisible) {
             kotlinx.coroutines.delay(500)
-            for (i in text.indices) {
+            for (i in introText.indices) {
                 kotlinx.coroutines.delay(18)
                 coloredIndices = i + 1
             }
@@ -65,36 +63,9 @@ fun IntroImage(onNavigate: () -> Unit) {
             ),
         contentAlignment = Alignment.BottomStart
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.intro_screen_image),
-            contentDescription = stringResource(id = R.string.intro_bg_description),
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
-            contentScale = ContentScale.Crop
-        )
+        BackgroundImage()
 
-        AnimatedVisibility(
-            visible = textVisible,
-            enter = fadeIn(tween(1000)),
-            exit = fadeOut(tween(1000))
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    for (i in text.indices) {
-                        withStyle(
-                            style = SpanStyle(
-                                color = if (i < coloredIndices) changedTextColor else initialTextColor
-                            )
-                        ) {
-                            append(text[i])
-                        }
-                    }
-                },
-                modifier = Modifier.padding(start = 16.dp, end = 112.dp, bottom = 160.dp),
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
+        AnimatedText(text = introText, coloredIndices = coloredIndices, visible = textVisible)
 
         CustomFloatingActionButton(
             onClick = {
@@ -108,8 +79,47 @@ fun IntroImage(onNavigate: () -> Unit) {
             containerColor = PrimaryWhite,
             contentColor = PrimaryBlack,
             icon = painterResource(id = R.drawable.outline_keyboard_arrow_up_24),
-            contentDescription = stringResource(id = R.string.swipe_up_FAB_description),
-            isClickable = isFabClickable
+            contentDescription = stringResource(id = R.string.swipe_up_FAB_description)
+        )
+    }
+}
+
+@Composable
+fun BackgroundImage() {
+    Image(
+        painter = painterResource(id = R.drawable.intro_screen_image),
+        contentDescription = stringResource(id = R.string.intro_bg_description),
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+fun AnimatedText(text: String, coloredIndices: Int, visible: Boolean) {
+    val initialTextColor = MaterialTheme.colorScheme.secondary
+    val changedTextColor = PrimaryWhite
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(tween(1000)),
+        exit = fadeOut(tween(1000))
+    ) {
+        Text(
+            text = buildAnnotatedString {
+                for (i in text.indices) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = if (i < coloredIndices) changedTextColor else initialTextColor
+                        )
+                    ) {
+                        append(text[i])
+                    }
+                }
+            },
+            modifier = Modifier.padding(start = 16.dp, end = 112.dp, bottom = 160.dp),
+            style = MaterialTheme.typography.titleLarge
         )
     }
 }
@@ -121,4 +131,3 @@ fun VideoPlaceholderPreview() {
         IntroImage(onNavigate = {})
     }
 }
-
