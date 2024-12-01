@@ -30,7 +30,7 @@ fun BottomNavigationBar(
     containerColor: Color,
     contentColor: Color,
     items: List<BottomNavigationItem>,
-    navController: NavController // Use this NavController for navigation
+    navController: NavController
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -71,7 +71,6 @@ fun BottomNavigationBar(
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     if (!isSelected) {
                         navController.navigate(item.destination) {
-                            // Prevent animation and duplicates in the back stack
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -120,7 +119,7 @@ fun BottomNavigationBarPreview() {
                     contentDescription = stringResource(id = R.string.simulation_label),
                 ),
             ),
-            navController = rememberNavController() // Provide NavController here
+            navController = rememberNavController()
         )
     }
 }
