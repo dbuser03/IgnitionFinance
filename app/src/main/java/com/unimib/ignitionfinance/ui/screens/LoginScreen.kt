@@ -2,7 +2,6 @@ package com.unimib.ignitionfinance.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.CustomFloatingActionButton
-import com.unimib.ignitionfinance.ui.components.Title
 import com.unimib.ignitionfinance.ui.components.TitleWithDescription
 import com.unimib.ignitionfinance.ui.navigation.Destinations
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
