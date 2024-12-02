@@ -10,8 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
 
 @Composable
@@ -19,21 +19,20 @@ fun ExpandableInputCard(
     label: String,
     title: String,
     modifier: Modifier = Modifier,
-    initiallyExpanded: Boolean = false,
     inputValues: List<MutableState<TextFieldValue>>,
     prefixes: List<String> = listOf("€"),
     iconResIds: List<Int> = listOf(R.drawable.outline_person_4_24),
-    inputBoxes: List<String>
+    inputBoxes: List<String>,
+    isExpanded: Boolean,
+    onCardClicked: () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(initiallyExpanded) }
-
     val cardInputBoxHeight = 64.dp
     val spacerHeight = 24.dp
 
     val cardHeight by animateDpAsState(
         targetValue = if (isExpanded) {
             val totalInputBoxHeight = cardInputBoxHeight * inputBoxes.size
-            val totalSpacerHeight = spacerHeight * (inputBoxes.size)
+            val totalSpacerHeight = spacerHeight * (inputBoxes.size - 1)
             totalInputBoxHeight + totalSpacerHeight + 104.dp
         } else {
             104.dp
@@ -46,7 +45,7 @@ fun ExpandableInputCard(
             .fillMaxWidth()
             .height(cardHeight)
             .clickable(
-                onClick = { isExpanded = !isExpanded },
+                onClick = onCardClicked,
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ),
@@ -78,31 +77,22 @@ fun ExpandableInputCard(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            if (isExpanded) {
+                Spacer(modifier = Modifier.height(24.dp))
+                inputBoxes.forEachIndexed { index, boxLabel ->
+                    val prefix = prefixes.getOrElse(index) { "€" }
+                    val iconResId = iconResIds.getOrElse(index) { R.drawable.outline_person_4_24 }
+                    val inputValue = inputValues[index]
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    inputBoxes.forEachIndexed { index, label ->
-                        val prefix = prefixes.getOrElse(index) { "€" }
-                        val iconResId = iconResIds.getOrElse(index) { R.drawable.outline_person_4_24 }
-                        val inputValue = inputValues.getOrElse(index) { mutableStateOf(TextFieldValue("")) }
-
-                        CardInputBox(
-                            text = label,
-                            prefix = prefix,
-                            inputValue = inputValue,
-                            iconResId = iconResId,
-                            isEnabled = isExpanded
-                        )
-                        if (index < inputBoxes.size - 1) {
-                            Spacer(modifier = Modifier.height(spacerHeight))
-                        }
+                    CardInputBox(
+                        text = boxLabel,
+                        prefix = prefix,
+                        inputValue = inputValue,
+                        iconResId = iconResId,
+                        isEnabled = true
+                    )
+                    if (index < inputBoxes.size - 1) {
+                        Spacer(modifier = Modifier.height(spacerHeight))
                     }
                 }
             }

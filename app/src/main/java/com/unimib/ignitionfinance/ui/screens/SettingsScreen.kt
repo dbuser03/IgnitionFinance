@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -21,6 +19,8 @@ import com.unimib.ignitionfinance.ui.components.ExpandableSelectCard
 
 @Composable
 fun SettingsScreen(navController: NavController) {
+    var expandedCardIndex by remember { mutableIntStateOf(-1) }
+
     Scaffold(
         topBar = {
             TitleSettings(
@@ -42,46 +42,51 @@ fun SettingsScreen(navController: NavController) {
                     ExpandableInputCard(
                         label = "NORMAL, RETIREMENT",
                         title = "WITHDRAW",
-                        initiallyExpanded = false,
                         inputValues = List(2) { remember { mutableStateOf(TextFieldValue("----")) } },
                         prefixes = listOf("€", "€"),
                         iconResIds = listOf(R.drawable.outline_person_apron_24, R.drawable.outline_person_4_24),
-                        inputBoxes = listOf("Monthly withdrawals (no pension)", "Monthly withdrawals (with pension)")
+                        inputBoxes = listOf("Monthly withdrawals (no pension)", "Monthly withdrawals (with pension)"),
+                        isExpanded = expandedCardIndex == 0,
+                        onCardClicked = { expandedCardIndex = if (expandedCardIndex == 0) -1 else 0 }
                     )
                     ExpandableSelectCard(
                         label = "NORMAL, SCALE, LOGNORMAL",
                         title = "INFLATION",
                         inputText = "Choose the inflation model:",
-                        initiallyExpanded = false,
                         displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
-                        initialSelectedText = "SCALE"
+                        initialSelectedText = "SCALE",
+                        isExpanded = expandedCardIndex == 1,
+                        onCardClicked = { expandedCardIndex = if (expandedCardIndex == 1) -1 else 1 }
                     )
                     ExpandableInputCard(
                         label = "TAX RATE, STAMP DUTY, LOAD",
                         title = "EXPENSES",
-                        initiallyExpanded = false,
                         inputValues = List(3) { remember { mutableStateOf(TextFieldValue("----")) } },
                         prefixes = listOf("%", "%", "%"),
                         iconResIds = listOf(R.drawable.outline_account_balance_24, R.drawable.outline_position_top_right_24, R.drawable.outline_weight_24),
-                        inputBoxes = listOf("Tax Rate Percentage", "Stamp Duty Percentage", "Load Percentage")
+                        inputBoxes = listOf("Tax Rate Percentage", "Stamp Duty Percentage", "Load Percentage"),
+                        isExpanded = expandedCardIndex == 2,
+                        onCardClicked = { expandedCardIndex = if (expandedCardIndex == 2) -1 else 2 }
                     )
                     ExpandableInputCard(
                         label = "YEARS, RETIREMENTS YEARS, BUFFER",
                         title = "INTERVALS",
-                        initiallyExpanded = false,
                         inputValues = List(3) { remember { mutableStateOf(TextFieldValue("----")) } },
                         prefixes = listOf("YRS", "YRS", "YRS"),
                         iconResIds = listOf(R.drawable.outline_local_fire_department_24, R.drawable.outline_send_money_24, R.drawable.outline_clock_loader_10_24),
-                        inputBoxes = listOf("Years in FIRE", "Years in paid retirement", "Years of buffer")
+                        inputBoxes = listOf("Years in FIRE", "Years in paid retirement", "Years of buffer"),
+                        isExpanded = expandedCardIndex == 3,
+                        onCardClicked = { expandedCardIndex = if (expandedCardIndex == 3) -1 else 3 }
                     )
                     ExpandableInputCard(
                         label = "NUMBER",
                         title = "SIMULATIONS",
-                        initiallyExpanded = false,
-                        inputValues = List(3) { remember { mutableStateOf(TextFieldValue("----")) } },
+                        inputValues = List(1) { remember { mutableStateOf(TextFieldValue("----")) } },
                         prefixes = listOf("N°"),
                         iconResIds = listOf(R.drawable.outline_autoplay_24),
-                        inputBoxes = listOf("Number of simulations to perform")
+                        inputBoxes = listOf("Number of simulations to perform"),
+                        isExpanded = expandedCardIndex == 4,
+                        onCardClicked = { expandedCardIndex = if (expandedCardIndex == 4) -1 else 4 }
                     )
                 }
             }

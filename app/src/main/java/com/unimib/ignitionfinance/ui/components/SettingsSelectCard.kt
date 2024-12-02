@@ -4,23 +4,14 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -32,12 +23,11 @@ fun ExpandableSelectCard(
     title: String,
     modifier: Modifier = Modifier,
     inputText: String,
-    initiallyExpanded: Boolean = false,
     displayedTexts: List<String>,
-    initialSelectedText: String? = null
-){
-    var isExpanded by remember { mutableStateOf(initiallyExpanded) }
-
+    initialSelectedText: String? = null,
+    isExpanded: Boolean,
+    onCardClicked: () -> Unit
+) {
     val cardSelectBoxHeight = 152.dp
     val compactHeight = 104.dp
 
@@ -50,13 +40,12 @@ fun ExpandableSelectCard(
         label = ""
     )
 
-
     Card(
         modifier = modifier
             .fillMaxWidth()
             .height(cardHeight)
             .clickable(
-                onClick = { isExpanded = !isExpanded },
+                onClick = onCardClicked,
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ),
@@ -88,24 +77,25 @@ fun ExpandableSelectCard(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            if (isExpanded) {
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Column(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    CardSelectBox(
-                        text = inputText,
-                        displayedTexts = displayedTexts,
-                        initialSelectedText = initialSelectedText
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        CardSelectBox(
+                            text = inputText,
+                            displayedTexts = displayedTexts,
+                            initialSelectedText = initialSelectedText
+                        )
+                    }
                 }
             }
-            
         }
     }
 }
