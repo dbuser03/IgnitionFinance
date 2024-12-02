@@ -4,44 +4,54 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.unimib.ignitionfinance.R
+import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
-fun ExpandableInputCard(
+fun ExpandableSelectCard(
     label: String,
     title: String,
     modifier: Modifier = Modifier,
+    inputText: String,
     initiallyExpanded: Boolean = false,
-    inputValues: List<MutableState<TextFieldValue>>,
-    prefixes: List<String> = listOf("€"),
-    iconResIds: List<Int> = listOf(R.drawable.outline_person_4_24),
-    inputBoxes: List<String>
-) {
+    displayedTexts: List<String>,
+    initialSelectedText: String? = null
+){
     var isExpanded by remember { mutableStateOf(initiallyExpanded) }
 
-    val cardInputBoxHeight = 64.dp
-    val spacerHeight = 24.dp
+    val cardSelectBoxHeight = 152.dp
+    val compactHeight = 104.dp
 
     val cardHeight by animateDpAsState(
         targetValue = if (isExpanded) {
-            val totalInputBoxHeight = cardInputBoxHeight * inputBoxes.size
-            val totalSpacerHeight = spacerHeight * (inputBoxes.size)
-            totalInputBoxHeight + totalSpacerHeight + 104.dp
+            cardSelectBoxHeight + compactHeight + 24.dp
         } else {
-            104.dp
+            compactHeight
         },
         label = ""
     )
+
 
     Card(
         modifier = modifier
@@ -90,45 +100,29 @@ fun ExpandableInputCard(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    inputBoxes.forEachIndexed { index, label ->
-                        val prefix = prefixes.getOrElse(index) { "€" }
-                        val iconResId = iconResIds.getOrElse(index) { R.drawable.outline_person_4_24 }
-                        val inputValue = inputValues.getOrElse(index) { mutableStateOf(TextFieldValue("")) }
-
-                        CardInputBox(
-                            text = label,
-                            prefix = prefix,
-                            inputValue = inputValue,
-                            iconResId = iconResId,
-                            isEnabled = isExpanded
-                        )
-                        if (index < inputBoxes.size - 1) {
-                            Spacer(modifier = Modifier.height(spacerHeight))
-                        }
-                    }
+                    CardSelectBox(
+                        text = inputText,
+                        displayedTexts = displayedTexts,
+                        initialSelectedText = initialSelectedText
+                    )
                 }
             }
+            
         }
     }
 }
 
 @Preview
 @Composable
-fun ExpandableInputCardPreview() {
-    val inputValues = listOf(
-        remember { mutableStateOf(TextFieldValue("100")) },
-        remember { mutableStateOf(TextFieldValue("200")) }
-    )
-
+fun ExpandableSelectCardPreview() {
     IgnitionFinanceTheme {
-        ExpandableInputCard(
-            label = "BUDGET",
-            title = "EXPENSES",
-            inputValues = inputValues,
-            prefixes = listOf("$", "€"),
-            iconResIds = listOf(R.drawable.outline_person_4_24, R.drawable.outline_person_4_24),
-            inputBoxes = listOf("Rent", "Groceries"),
-            initiallyExpanded = true
+        ExpandableSelectCard(
+            label = "NORMAL, SCALE,LOGNORMAL",
+            title = "INFLATION",
+            inputText = "Choose the inflation model",
+            initiallyExpanded = true,
+            displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
+            initialSelectedText = "SCALE"
         )
     }
 }

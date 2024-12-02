@@ -11,13 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.ui.components.TitleSettings
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.ExpandableInputCard
+import com.unimib.ignitionfinance.ui.components.ExpandableSelectCard
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -34,11 +34,10 @@ fun SettingsScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Wrap the Column with verticalScroll
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())  // Make the column scrollable
+                        .verticalScroll(rememberScrollState())
                 ) {
                     ExpandableInputCard(
                         label = "NORMAL, RETIREMENT",
@@ -48,6 +47,14 @@ fun SettingsScreen(navController: NavController) {
                         prefixes = listOf("€", "€"),
                         iconResIds = listOf(R.drawable.outline_person_apron_24, R.drawable.outline_person_4_24),
                         inputBoxes = listOf("Monthly withdrawals (no pension)", "Monthly withdrawals (with pension)")
+                    )
+                    ExpandableSelectCard(
+                        label = "NORMAL, SCALE, LOGNORMAL",
+                        title = "INFLATION",
+                        inputText = "Choose the inflation model",
+                        initiallyExpanded = false,
+                        displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
+                        initialSelectedText = "SCALE"
                     )
                     ExpandableInputCard(
                         label = "TAX RATE, STAMP DUTY, LOAD",
