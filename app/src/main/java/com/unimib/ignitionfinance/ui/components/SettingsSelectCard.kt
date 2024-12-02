@@ -24,9 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun ExpandableSelectCard(
@@ -109,20 +107,5 @@ fun ExpandableSelectCard(
             }
             
         }
-    }
-}
-
-@Preview
-@Composable
-fun ExpandableSelectCardPreview() {
-    IgnitionFinanceTheme {
-        ExpandableSelectCard(
-            label = "NORMAL, SCALE,LOGNORMAL",
-            title = "INFLATION",
-            inputText = "Choose the inflation model",
-            initiallyExpanded = true,
-            displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
-            initialSelectedText = "SCALE"
-        )
     }
 }

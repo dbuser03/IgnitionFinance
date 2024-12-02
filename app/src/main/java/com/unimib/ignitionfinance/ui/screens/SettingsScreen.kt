@@ -51,7 +51,7 @@ fun SettingsScreen(navController: NavController) {
                     ExpandableSelectCard(
                         label = "NORMAL, SCALE, LOGNORMAL",
                         title = "INFLATION",
-                        inputText = "Choose the inflation model",
+                        inputText = "Choose the inflation model:",
                         initiallyExpanded = false,
                         displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
                         initialSelectedText = "SCALE"

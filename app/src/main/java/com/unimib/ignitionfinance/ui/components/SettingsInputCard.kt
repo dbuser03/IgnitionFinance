@@ -12,9 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun ExpandableInputCard(
@@ -109,26 +107,5 @@ fun ExpandableInputCard(
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun ExpandableInputCardPreview() {
-    val inputValues = listOf(
-        remember { mutableStateOf(TextFieldValue("100")) },
-        remember { mutableStateOf(TextFieldValue("200")) }
-    )
-
-    IgnitionFinanceTheme {
-        ExpandableInputCard(
-            label = "BUDGET",
-            title = "EXPENSES",
-            inputValues = inputValues,
-            prefixes = listOf("$", "€"),
-            iconResIds = listOf(R.drawable.outline_person_4_24, R.drawable.outline_person_4_24),
-            inputBoxes = listOf("Rent", "Groceries"),
-            initiallyExpanded = true
-        )
     }
 }
