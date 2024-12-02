@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.auth
+package com.unimib.ignitionfinance.data.remote.auth
 
 import android.app.Activity
 import android.os.Bundle

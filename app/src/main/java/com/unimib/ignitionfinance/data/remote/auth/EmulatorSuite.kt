@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.auth
+package com.unimib.ignitionfinance.data.remote.auth
 
 import com.google.firebase.auth.auth
 import com.google.firebase.Firebase
