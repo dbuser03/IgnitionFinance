@@ -1,14 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.api_response.exchange
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.DataSet
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimension
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimensions
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Header
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Sender
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.SeriesData
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Structure
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Value
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.collections.get
@@ -363,7 +355,7 @@ class ExchangeApiResponseDataTest {
                 assertEquals("time", observationDimension.role)
                 assertEquals("2024-11-22", observationDimension.values[0].id)
 
-                val attribute = response.structure.observation.series[0]
+                val attribute = response.structure.attributes.series[0]
                 assertEquals("TIME_FORMAT", attribute.id)
                 assertEquals("Time format code", attribute.name)
                 assertEquals("P1D", attribute.values[0].name)
