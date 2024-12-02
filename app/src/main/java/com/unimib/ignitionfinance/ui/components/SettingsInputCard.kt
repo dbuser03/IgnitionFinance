@@ -32,7 +32,7 @@ fun ExpandableInputCard(
     val cardHeight by animateDpAsState(
         targetValue = if (isExpanded) {
             val totalInputBoxHeight = cardInputBoxHeight * inputBoxes.size
-            val totalSpacerHeight = spacerHeight * (inputBoxes.size - 1)
+            val totalSpacerHeight = spacerHeight * (inputBoxes.size)
             totalInputBoxHeight + totalSpacerHeight + 104.dp
         } else {
             104.dp
