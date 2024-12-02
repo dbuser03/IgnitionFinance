@@ -23,12 +23,13 @@ fun CustomFloatingActionButton(
     icon: Painter,
     contentDescription: String? = null,
     fabSize: Dp = 56.dp,
-    iconSize: Dp = 24.dp
+    iconSize: Dp = 24.dp,
+    hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.LongPress // Nuovo parametro
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     FloatingActionButton(
         onClick = {
-            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+            hapticFeedback.performHapticFeedback(hapticFeedbackType)
             onClick()
         },
         modifier = modifier.size(fabSize),
@@ -44,4 +45,3 @@ fun CustomFloatingActionButton(
         )
     }
 }
-
