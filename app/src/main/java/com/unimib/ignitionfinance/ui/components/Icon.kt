@@ -52,3 +52,23 @@ fun PreviewSettingsIcon() {
         )
     }
 }
+
+@Preview
+@Composable
+fun PreviewPensionIcon() {
+    IgnitionFinanceTheme {
+        IconWithBackground(
+            icon = painterResource(id = R.drawable.outline_person_4_24)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewNoPensionIcon() {
+    IgnitionFinanceTheme {
+        IconWithBackground(
+            icon = painterResource(id = R.drawable.outline_person_apron_24)
+        )
+    }
+}
