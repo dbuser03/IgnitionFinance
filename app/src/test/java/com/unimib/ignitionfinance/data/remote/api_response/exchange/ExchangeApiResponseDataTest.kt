@@ -1,14 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.api_response.exchange
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.DataSet
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimension
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Dimensions
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Header
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Sender
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.SeriesData
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Structure
-import com.unimib.ignitionfinance.data.remote.api_response.inflation.Value
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.collections.get
@@ -330,42 +322,42 @@ class ExchangeApiResponseDataTest {
                 val response = gson.fromJson(jsonResponse, ExchangeApiResponseData::class.java)
 
                 // Verify header values
-                assertEquals("a5a97a39-281d-4513-978b-a91dad969502", Header.id)
-                assertEquals(false, Header.test)
-                assertEquals("2024-11-24T12:09:44.123+01:00", Header.prepared)
-                assertEquals("ECB", Sender.id)
+                assertEquals("a5a97a39-281d-4513-978b-a91dad969502", response.header.id)
+                assertEquals(false, response.header.test)
+                assertEquals("2024-11-24T12:09:44.123+01:00", response.header.prepared)
+                assertEquals("ECB", response.header.sender.id)
 
                 // Verify dataSets values
                 val dataSet = response.dataSets[0]
-                assertEquals("Replace", DataSet.action)
-                assertEquals("2024-11-24T12:09:44.123+01:00", DataSet.validFrom)
+                assertEquals("Replace", dataSet.action)
+                assertEquals("2024-11-24T12:09:44.123+01:00", dataSet.validFrom)
 
-                val seriesData = DataSet.series["0:0:0:0:0"]
-                assertEquals(20, SeriesData.attributes?.size)
-                assertEquals(1, SeriesData.observations?.size)
+                val seriesData = dataSet.series["0:0:0:0:0"]
+                assertEquals(20, seriesData?.attributes?.size)
+                assertEquals(1, seriesData?.observations?.size)
 
                 // Verify attributes and observations
-                val firstObservation = SeriesData.observations?.get("0")
-            assertEquals(1.0412, firstObservation?.get(0))
+                val firstObservation = seriesData?.observations?.get("0")
+                assertEquals(1.0412, firstObservation?.get(0))
 
                 // Verify structure name and dimension values
-                assertEquals("Exchange Rates", Structure.name)
+                assertEquals("Exchange Rates", response.structure.name)
 
-                val dimension = Dimensions.series[0]
-                assertEquals("FREQ", Dimension.id)
-                assertEquals("Frequency", Dimension.name)
-                assertEquals("D", Value.id)
-                assertEquals("Daily", Value.name)
+                val dimension = response.structure.dimensions.series[0]
+                assertEquals("FREQ", dimension.id)
+                assertEquals("Frequency", dimension.name)
+                assertEquals("D", dimension.values[0].id)
+                assertEquals("Daily", dimension.values[0].name)
 
-                val observationDimension = Dimensions.observation[0]
-                assertEquals("TIME_PERIOD", ObservationDimension.id)
-                assertEquals("Time period or range", ObservationDimension.name)
-                assertEquals("time", ObservationDimension.role)
-                assertEquals("2024-11-22", ObservationValue.id)
+                val observationDimension = response.structure.observation[0]
+                assertEquals("TIME_PERIOD", observationDimension.id)
+                assertEquals("Time period or range", observationDimension.name)
+                assertEquals("time", observationDimension.role)
+                assertEquals("2024-11-22", observationDimension.values[0].id)
 
-                val attribute = Attributes.series[0]
-                assertEquals("TIME_FORMAT", Attribute.id)
-                assertEquals("Time format code", Attribute.name)
-                assertEquals("P1D", Value.name)
+                val attribute = response.structure.attributes.series[0]
+                assertEquals("TIME_FORMAT", attribute.id)
+                assertEquals("Time format code", attribute.name)
+                assertEquals("P1D", attribute.values[0].name)
         }
 }

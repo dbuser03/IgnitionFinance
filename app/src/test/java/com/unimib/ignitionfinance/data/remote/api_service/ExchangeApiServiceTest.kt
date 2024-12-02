@@ -121,17 +121,17 @@ class ExchangeApiServiceTest {
 
         val responseBody = response.body()!!
 
-        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", Header.id)
-        assertEquals(false, Header.test)
-        assertEquals("2024-11-25T09:08:57.093+01:00", Header.prepared)
-        assertEquals("ECB", Sender.id)
+        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", responseBody.header.id)
+        assertEquals(false, responseBody.header.test)
+        assertEquals("2024-11-25T09:08:57.093+01:00", responseBody.header.prepared)
+        assertEquals("ECB", responseBody.header.sender.id)
         val dataSet = responseBody.dataSets[0]
-        assertEquals("Replace", DataSet.action)
-        assertEquals("2024-11-25T09:08:57.093+01:00", DataSet.validFrom)
-        val seriesData = DataSet.series["0:0:0:0:0"]
+        assertEquals("Replace", dataSet.action)
+        assertEquals("2024-11-25T09:08:57.093+01:00", dataSet.validFrom)
+        val seriesData = dataSet.series["0:0:0:0:0"]
         assertNotNull(seriesData)
-        assertEquals(1, SeriesData.observations?.size)
-        assertEquals("Exchange Rates", Structure.name)
+        assertEquals(1, seriesData?.observations?.size)
+        assertEquals("Exchange Rates", responseBody.structure.name)
     }
 
     @Test
@@ -222,17 +222,17 @@ class ExchangeApiServiceTest {
 
         val responseBody = response.body()!!
 
-        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", Header.id)
-        assertEquals(false, Header.test)
-        assertEquals("2024-11-25T09:08:57.093+01:00", Header.prepared)
-        assertEquals("ECB", Sender.id)
+        assertEquals("4f7728af-b162-4c1c-b05a-f5640d4622ab", responseBody.header.id)
+        assertEquals(false, responseBody.header.test)
+        assertEquals("2024-11-25T09:08:57.093+01:00", responseBody.header.prepared)
+        assertEquals("ECB", responseBody.header.sender.id)
         val dataSet = responseBody.dataSets[0]
-        assertEquals("Replace", DataSet.action)
-        assertEquals("2024-11-25T09:08:57.093+01:00", DataSet.validFrom)
-        val seriesData = DataSet.series["EXR.D.CHF.EUR.SP00.A"]
+        assertEquals("Replace", dataSet.action)
+        assertEquals("2024-11-25T09:08:57.093+01:00", dataSet.validFrom)
+        val seriesData = dataSet.series["EXR.D.CHF.EUR.SP00.A"]
         assertNotNull(seriesData)
-        assertEquals(1, SeriesData.observations?.size)
-        assertEquals("Exchange Rates", Structure.name)
+        assertEquals(1, seriesData?.observations?.size)
+        assertEquals("Exchange Rates", responseBody.structure.name)
     }
 
     // Additional test cases for real API calls

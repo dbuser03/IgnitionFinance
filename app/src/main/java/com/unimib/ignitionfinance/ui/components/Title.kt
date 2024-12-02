@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
@@ -13,6 +11,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -148,8 +147,10 @@ fun TitleWithButton(
             contentColor = MaterialTheme.colorScheme.primary,
             icon = painterResource(id = R.drawable.outline_settings_24),
             contentDescription = stringResource(id = R.string.settings_FAB_description),
+            hapticFeedbackType = HapticFeedbackType.TextHandleMove,
             fabSize = 40.dp,
             iconSize = 24.dp
+
         )
     }
 }
@@ -176,6 +177,7 @@ fun TitleSettings(
             contentColor = MaterialTheme.colorScheme.primary,
             icon = painterResource(id = R.drawable.outline_arrow_back_24),
             contentDescription = stringResource(id = R.string.go_back_FAB_description),
+            hapticFeedbackType = HapticFeedbackType.TextHandleMove,
             fabSize = 28.dp,
             iconSize = 28.dp
         )
