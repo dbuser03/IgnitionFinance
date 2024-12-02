@@ -92,7 +92,7 @@ fun CardInputBox(
         }
     }
 
-    if (showDialog) {
+    /*if (showDialog) {
         AlertDialog(
             onDismissRequest = {
                 showDialog = false
@@ -121,5 +121,5 @@ fun CardInputBox(
                 }
             }
         )
-    }
+    }*/
 }
