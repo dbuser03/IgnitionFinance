@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -29,27 +30,37 @@ fun ExpandableCard(
             .height(cardHeight)
             .clickable { isExpanded = !isExpanded },
         shape = RectangleShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(all = 16.dp),
-            verticalArrangement = if (isExpanded) Arrangement.Top else Arrangement.Center,
-            horizontalAlignment = Alignment.Start
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(MaterialTheme.colorScheme.secondary)
+                    .align(Alignment.TopCenter)
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = 16.dp),
+                verticalArrangement = if (isExpanded) Arrangement.Top else Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.displaySmall,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
     }
 }
@@ -61,7 +72,7 @@ fun ExpandableCardExpandedPreview() {
         ExpandableCard(
             label = "NORMAL, RETIREMENT",
             title = "WITHDRAW",
-            initiallyExpanded = true
+            initiallyExpanded = false
         )
     }
 }
