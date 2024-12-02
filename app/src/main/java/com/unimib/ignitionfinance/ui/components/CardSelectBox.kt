@@ -12,10 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun CardSelectBox(
@@ -31,7 +29,10 @@ fun CardSelectBox(
             .fillMaxWidth()
             .height(152.dp)
             .background(MaterialTheme.colorScheme.background)
-            .clickable {
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
                 isSelected = !isSelected
             }
     ) {
@@ -79,17 +80,5 @@ fun CardSelectBox(
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun CardSelectBoxPreview() {
-    IgnitionFinanceTheme {
-        CardSelectBox(
-            text = "Choose the inflation model",
-            displayedTexts = listOf("REAL", "SCALED", "LOGNORMAL"),
-            initialSelectedText = "LOGNORMAL"
-        )
     }
 }

@@ -13,13 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.painterResource
-import com.unimib.ignitionfinance.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
@@ -123,36 +120,6 @@ fun CardInputBox(
                     Text("Cancel")
                 }
             }
-        )
-    }
-}
-
-@Preview
-@Composable
-fun WithdrawalsNoPensionInputPreview() {
-    IgnitionFinanceTheme {
-        val inputValue = remember { mutableStateOf(TextFieldValue("----")) }
-        CardInputBox(
-            text = "Monthly withdrawals (no pension)",
-            prefix = "€",
-            inputValue = inputValue,
-            iconResId = R.drawable.outline_person_apron_24,
-            isEnabled = true
-        )
-    }
-}
-
-@Preview
-@Composable
-fun WithdrawalsPensionInputPreview() {
-    IgnitionFinanceTheme {
-        val inputValue = remember { mutableStateOf(TextFieldValue("----")) }
-        CardInputBox(
-            text = "Monthly withdrawals (pension)",
-            prefix = "€",
-            inputValue = inputValue,
-            iconResId = R.drawable.outline_person_4_24,
-            isEnabled = true
         )
     }
 }
