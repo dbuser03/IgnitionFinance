@@ -20,11 +20,10 @@ import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 fun CardSelectBox(
     text: String,
     displayedTexts: List<String>,
-    iconResId: Int,
-    initialSelectedText: String? = null // New parameter for pre-selection
+    initialSelectedText: String? = null
 ) {
     var isSelected by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(initialSelectedText) } // Initialize with the given value
+    var selectedText by remember { mutableStateOf(initialSelectedText) }
 
     Box(
         modifier = Modifier
@@ -47,32 +46,33 @@ fun CardSelectBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopStart)
-                .padding(top = 32.dp),
+                .padding(top = 24.dp),
             verticalArrangement = Arrangement.Top
         ) {
             displayedTexts.forEach { displayedText ->
-                Text(
-                    text = displayedText,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        textDecoration = if (selectedText == displayedText) TextDecoration.Underline else TextDecoration.None
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable {
-                        selectedText = displayedText
-                    }
-                )
-            }
-        }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            selectedText = displayedText
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = displayedText,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            textDecoration = if (selectedText == displayedText) TextDecoration.Underline else TextDecoration.None
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
+                    )
 
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-            ) {
-                IconWithBackground(
-                    icon = painterResource(id = iconResId)
-                )
+                    if (selectedText == displayedText) {
+                        IconWithBackground(
+                            icon = painterResource(id = R.drawable.outline_check_24)
+                        )
+                    }
+                }
             }
         }
     }
@@ -83,10 +83,9 @@ fun CardSelectBox(
 fun CardSelectBoxPreview() {
     IgnitionFinanceTheme {
         CardSelectBox(
-            text = "Monthly withdrawals (no pension)",
-            displayedTexts = listOf("REAL", "NOMINAL", "INDEXED"),
-            iconResId = R.drawable.outline_person_apron_24,
-            initialSelectedText = "NOMINAL"
+            text = "Choose the inflation model",
+            displayedTexts = listOf("REAL", "SCALED", "LOGNORMAL"),
+            initialSelectedText = "LOGNORMAL"
         )
     }
 }

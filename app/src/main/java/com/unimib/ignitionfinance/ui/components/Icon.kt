@@ -72,3 +72,13 @@ fun PreviewNoPensionIcon() {
         )
     }
 }
+
+@Preview
+@Composable
+fun PreviewSelectedIcon() {
+    IgnitionFinanceTheme {
+        IconWithBackground(
+            icon = painterResource(id = R.drawable.outline_check_24)
+        )
+    }
+}

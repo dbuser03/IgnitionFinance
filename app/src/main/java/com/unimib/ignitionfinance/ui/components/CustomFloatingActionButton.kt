@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -34,7 +35,7 @@ fun CustomFloatingActionButton(
         modifier = modifier.size(fabSize),
         containerColor = containerColor,
         contentColor = contentColor,
-        shape = androidx.compose.foundation.shape.CircleShape,
+        shape = CircleShape,
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
     ) {
         Icon(
