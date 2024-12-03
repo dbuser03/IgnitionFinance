@@ -1,16 +1,12 @@
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
-import com.unimib.ignitionfinance.ui.theme.SecondaryGray
 import com.unimib.ignitionfinance.ui.theme.TypographyMedium
 
 @Composable
@@ -23,13 +19,42 @@ fun CustomDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp) // Padding orizzontale
-            .height(248.dp), // Imposta un'altezza fissa di 248.dp
+        containerColor = MaterialTheme.colorScheme.surface,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation(textInput)
+                },
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    "Confirm",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = TypographyMedium.bodyMedium.fontWeight,
+                        color = MaterialTheme.colorScheme.primary // Customize the button text color
+                    )
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                },
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    "Dismiss",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = TypographyMedium.bodyMedium.fontWeight,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+            }
+        },
         title = {
             Column(
-                modifier = Modifier.padding(top = 16.dp) // Aggiungi padding sopra al titolo
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
                     text = dialogTitle,
@@ -42,80 +67,16 @@ fun CustomDialog(
         },
         text = {
             Column(
-                modifier = Modifier.padding(top = 8.dp) // Aggiungi padding sopra al CustomTextField
+                modifier = Modifier.padding(top = 8.dp)
             ) {
                 CustomTextField(
                     textColor = MaterialTheme.colorScheme.onSurface,
-                    labelColor = SecondaryGray, // Pass label color once
-                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    labelColor = MaterialTheme.colorScheme.secondary,
                     labelTextStyle = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.fillMaxWidth(),
-                    textValue = textInput,
-                    onTextChange = { textInput = it }
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation(textInput)
-                }
-            ) {
-                Text(
-                    "Confirm",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = TypographyMedium.bodyMedium.fontWeight // Cambia la tipografia del pulsante
-                    )
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text(
-                    "Dismiss",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = TypographyMedium.bodyMedium.fontWeight // Cambia la tipografia del pulsante
-                    )
-                )
-            }
-        }
-    )
-}
-
-@Composable
-fun CustomTextField(
-    modifier: Modifier = Modifier,
-    textValue: String,
-    onTextChange: (String) -> Unit,
-    textColor: Color = MaterialTheme.colorScheme.onSurface,
-    labelColor: Color = SecondaryGray, // Default to SecondaryGray
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    labelTextStyle: TextStyle = MaterialTheme.typography.bodyMedium
-) {
-    OutlinedTextField(
-        value = textValue,
-        onValueChange = { onTextChange(it) },
-        label = {
-            Text(
-                text = "New Value",
-                color = labelColor, // Use the passed labelColor
-                style = labelTextStyle
-            )
-        },
-        shape = RoundedCornerShape(56.dp),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = textColor),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = labelColor,
-            unfocusedLabelColor = labelColor
-        ),
-        modifier = modifier
     )
 }
 
@@ -124,16 +85,13 @@ fun CustomTextField(
 fun PreviewCustomDialog() {
     IgnitionFinanceTheme {
         var showDialog by remember { mutableStateOf(true) }
-
-        if (showDialog) {
-            CustomDialog(
-                onDismissRequest = { showDialog = false },
-                onConfirmation = { input ->
-                    showDialog = false
-                    println("Input text: $input")
-                },
-                dialogTitle = "Update the amount",
-            )
-        }
+        CustomDialog(
+            onDismissRequest = { showDialog = false },
+            onConfirmation = { input ->
+                showDialog = false
+                println("Input text: $input")
+            },
+            dialogTitle = "Update the amount",
+        )
     }
 }

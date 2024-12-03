@@ -101,19 +101,19 @@ fun SettingsScreen(navController: NavController) {
                                             label = "Tax Rate Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_account_balance_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("26")) }
                                         ),
                                         InputBoxData(
                                             label = "Stamp Duty Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_position_top_right_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("0.2")) }
                                         ),
                                         InputBoxData(
                                             label = "Load Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_weight_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("1")) }
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 2,
