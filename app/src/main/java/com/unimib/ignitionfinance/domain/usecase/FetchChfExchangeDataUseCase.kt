@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.repository.ExchangeRepository
-import com.unimib.ignitionfinance.domain.model.ExchangeData
+import com.unimib.ignitionfinance.data.model.ExchangeData
 import kotlinx.coroutines.flow.Flow
 
 class FetchChfExchangeDataUseCase(

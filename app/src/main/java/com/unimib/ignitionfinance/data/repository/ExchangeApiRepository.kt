@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.data.repository
 
 import com.unimib.ignitionfinance.data.remote.api_service.ExchangeApiService
 import com.unimib.ignitionfinance.data.remote.api_mapper.ExchangeApiMapper
-import com.unimib.ignitionfinance.domain.model.ExchangeData
+import com.unimib.ignitionfinance.data.model.ExchangeData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

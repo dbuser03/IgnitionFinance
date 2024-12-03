@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.api_mapper
 
-import com.unimib.ignitionfinance.domain.model.InflationData
+import com.unimib.ignitionfinance.data.model.InflationData
 import com.unimib.ignitionfinance.data.remote.api_response.inflation.InflationApiResponseData
 
 object InflationApiMapper {

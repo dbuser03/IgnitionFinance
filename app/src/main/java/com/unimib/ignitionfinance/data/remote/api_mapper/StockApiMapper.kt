@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.api_mapper
 
 import com.unimib.ignitionfinance.data.remote.api_response.StockApiResponseData
-import com.unimib.ignitionfinance.domain.model.StockData
+import com.unimib.ignitionfinance.data.model.StockData
 import java.math.BigDecimal
 
 class StockApiMapper {

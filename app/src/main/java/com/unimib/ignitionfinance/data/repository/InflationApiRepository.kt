@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.data.repository
 
 import com.unimib.ignitionfinance.data.remote.api_service.InflationApiService
 import com.unimib.ignitionfinance.data.remote.api_mapper.InflationApiMapper
-import com.unimib.ignitionfinance.domain.model.InflationData
+import com.unimib.ignitionfinance.data.model.InflationData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

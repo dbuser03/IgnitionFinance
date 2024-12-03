@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.model
+package com.unimib.ignitionfinance.data.model
 
 data class ExchangeData(
     val date: String,
