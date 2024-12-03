@@ -13,21 +13,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
+import com.unimib.ignitionfinance.domain.model.InputBoxData
 
 @Composable
 fun ExpandableInputCard(
     label: String,
     title: String,
     modifier: Modifier = Modifier,
-    inputValues: List<MutableState<TextFieldValue>>,
-    prefixes: List<String> = listOf("€"),
-    iconResIds: List<Int> = listOf(R.drawable.outline_person_4_24),
-    inputBoxes: List<String>,
+    inputBoxDataList: List<InputBoxData>,
     isExpanded: Boolean,
     onCardClicked: () -> Unit
 ) {
@@ -36,8 +30,8 @@ fun ExpandableInputCard(
 
     val cardHeight by animateDpAsState(
         targetValue = if (isExpanded) {
-            val totalInputBoxHeight = cardInputBoxHeight * inputBoxes.size
-            val totalSpacerHeight = spacerHeight * (inputBoxes.size)
+            val totalInputBoxHeight = cardInputBoxHeight * inputBoxDataList.size
+            val totalSpacerHeight = spacerHeight * (inputBoxDataList.size)
             totalInputBoxHeight + totalSpacerHeight + 104.dp
         } else {
             104.dp
@@ -106,43 +100,13 @@ fun ExpandableInputCard(
 
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(24.dp))
-                inputBoxes.forEachIndexed { index, boxLabel ->
-                    val prefix = prefixes.getOrElse(index) { "€" }
-                    val iconResId = iconResIds.getOrElse(index) { R.drawable.outline_person_4_24 }
-                    val inputValue = inputValues[index]
-
-                    CardInputBox(
-                        text = boxLabel,
-                        prefix = prefix,
-                        inputValue = inputValue,
-                        iconResId = iconResId,
-                        isEnabled = true
-                    )
-                    if (index < inputBoxes.size - 1) {
+                inputBoxDataList.forEachIndexed { index, inputBoxData ->
+                    CardInputBox(inputBoxData = inputBoxData, isEnabled = true)
+                    if (index < inputBoxDataList.size - 1) {
                         Spacer(modifier = Modifier.height(spacerHeight))
                     }
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun ExpandableInputCardPreview() {
-    val isExpanded = false
-    val inputValues = List(3) { mutableStateOf(TextFieldValue("100")) }
-
-    IgnitionFinanceTheme {
-        ExpandableInputCard(
-            label = "NORMAL, RETIREMENT",
-            title = "WITHDRAW",
-            inputValues = inputValues,
-            prefixes = listOf("€", "€", "€"),
-            iconResIds = listOf(R.drawable.outline_person_4_24, R.drawable.outline_person_4_24, R.drawable.outline_person_4_24),
-            inputBoxes = listOf("Monthly withdrawals (no pension)", "Monthly withdrawals (with pension)", "Monthly withdrawals (extra)"),
-            isExpanded = isExpanded,
-            onCardClicked = {}
-        )
     }
 }

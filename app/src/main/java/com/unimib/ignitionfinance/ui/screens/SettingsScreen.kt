@@ -5,19 +5,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.TextFieldValue
 import com.unimib.ignitionfinance.ui.components.TitleSettings
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.ui.components.ExpandableInputCard
 import com.unimib.ignitionfinance.ui.components.ExpandableSelectCard
+import com.unimib.ignitionfinance.domain.model.InputBoxData
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -50,10 +50,19 @@ fun SettingsScreen(navController: NavController) {
                                 ExpandableInputCard(
                                     label = "NORMAL, RETIREMENT",
                                     title = "WITHDRAW",
-                                    inputValues = List(2) { remember { mutableStateOf(TextFieldValue("----")) } },
-                                    prefixes = listOf("€", "€"),
-                                    iconResIds = listOf(R.drawable.outline_person_apron_24, R.drawable.outline_person_4_24),
-                                    inputBoxes = listOf("Monthly withdrawals (no pension)", "Monthly withdrawals (with pension)"),
+                                    inputBoxDataList = listOf(
+                                        InputBoxData(
+                                            label = "Monthly withdrawals (no pension)",
+                                            prefix = "€",
+                                            iconResId = R.drawable.outline_person_apron_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }                                         ),
+                                        InputBoxData(
+                                            label = "Monthly withdrawals (with pension)",
+                                            prefix = "€",
+                                            iconResId = R.drawable.outline_person_4_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        )
+                                    ),
                                     isExpanded = expandedCardIndex == 0,
                                     onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 0) }
                                 )
@@ -87,10 +96,26 @@ fun SettingsScreen(navController: NavController) {
                                 ExpandableInputCard(
                                     label = "TAX RATE, STAMP DUTY, LOAD",
                                     title = "EXPENSES",
-                                    inputValues = List(3) { remember { mutableStateOf(TextFieldValue("----")) } },
-                                    prefixes = listOf("%", "%", "%"),
-                                    iconResIds = listOf(R.drawable.outline_account_balance_24, R.drawable.outline_position_top_right_24, R.drawable.outline_weight_24),
-                                    inputBoxes = listOf("Tax Rate Percentage", "Stamp Duty Percentage", "Load Percentage"),
+                                    inputBoxDataList = listOf(
+                                        InputBoxData(
+                                            label = "Tax Rate Percentage",
+                                            prefix = "%",
+                                            iconResId = R.drawable.outline_account_balance_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        ),
+                                        InputBoxData(
+                                            label = "Stamp Duty Percentage",
+                                            prefix = "%",
+                                            iconResId = R.drawable.outline_position_top_right_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        ),
+                                        InputBoxData(
+                                            label = "Load Percentage",
+                                            prefix = "%",
+                                            iconResId = R.drawable.outline_weight_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        )
+                                    ),
                                     isExpanded = expandedCardIndex == 2,
                                     onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 2) }
                                 )
@@ -106,10 +131,26 @@ fun SettingsScreen(navController: NavController) {
                                 ExpandableInputCard(
                                     label = "YEARS, RETIREMENTS YEARS, BUFFER",
                                     title = "INTERVALS",
-                                    inputValues = List(3) { remember { mutableStateOf(TextFieldValue("----")) } },
-                                    prefixes = listOf("YRS", "YRS", "YRS"),
-                                    iconResIds = listOf(R.drawable.outline_local_fire_department_24, R.drawable.outline_send_money_24, R.drawable.outline_clock_loader_10_24),
-                                    inputBoxes = listOf("Years in FIRE", "Years in paid retirement", "Years of buffer"),
+                                    inputBoxDataList = listOf(
+                                        InputBoxData(
+                                            label = "Years in FIRE",
+                                            prefix = "YRS",
+                                            iconResId = R.drawable.outline_local_fire_department_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        ),
+                                        InputBoxData(
+                                            label = "Years in paid retirement",
+                                            prefix = "YRS",
+                                            iconResId = R.drawable.outline_send_money_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        ),
+                                        InputBoxData(
+                                            label = "Years of buffer",
+                                            prefix = "YRS",
+                                            iconResId = R.drawable.outline_clock_loader_10_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        )
+                                    ),
                                     isExpanded = expandedCardIndex == 3,
                                     onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 3) }
                                 )
@@ -125,10 +166,14 @@ fun SettingsScreen(navController: NavController) {
                                 ExpandableInputCard(
                                     label = "NUMBER",
                                     title = "SIMULATIONS",
-                                    inputValues = List(1) { remember { mutableStateOf(TextFieldValue("----")) } },
-                                    prefixes = listOf("N°"),
-                                    iconResIds = listOf(R.drawable.outline_autoplay_24),
-                                    inputBoxes = listOf("Number of simulations to perform"),
+                                    inputBoxDataList = listOf(
+                                        InputBoxData(
+                                            label = "Number of simulations to perform",
+                                            prefix = "N°",
+                                            iconResId = R.drawable.outline_autoplay_24,
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                        )
+                                    ),
                                     isExpanded = expandedCardIndex == 4,
                                     onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 4) }
                                 )

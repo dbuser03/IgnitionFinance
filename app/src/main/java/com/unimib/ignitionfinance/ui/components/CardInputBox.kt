@@ -1,8 +1,8 @@
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -11,16 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.TextFieldValue
+import com.unimib.ignitionfinance.domain.model.InputBoxData
 
 @Composable
-fun CardInputBox(
-    text: String,
-    prefix: String,
-    inputValue: MutableState<TextFieldValue>,
-    iconResId: Int,
-    isEnabled: Boolean
-) {
+fun CardInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
     var showDialog by remember { mutableStateOf(false) }
 
     Box(
@@ -30,7 +24,7 @@ fun CardInputBox(
             .background(MaterialTheme.colorScheme.background)
     ) {
         Text(
-            text = text,
+            text = inputBoxData.label,
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -56,8 +50,8 @@ fun CardInputBox(
                     .padding(0.dp)
             ) {
                 DisplayInputValue(
-                    prefix = prefix,
-                    inputValue = inputValue.value.text
+                    prefix = inputBoxData.prefix,
+                    inputValue = inputBoxData.inputValue.value.text
                 )
             }
 
@@ -66,13 +60,13 @@ fun CardInputBox(
                     .align(Alignment.BottomEnd)
             ) {
                 IconWithBackground(
-                    icon = painterResource(id = iconResId),
+                    icon = painterResource(id = inputBoxData.iconResId),
                 )
             }
         }
     }
 
     if (showDialog) {
-        // You can implement AlertDialog here or manage it from parent if needed
+        // Implement the dialog or handle logic if needed
     }
 }
