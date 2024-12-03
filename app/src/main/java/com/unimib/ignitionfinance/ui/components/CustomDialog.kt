@@ -1,6 +1,8 @@
 package com.unimib.ignitionfinance.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth  // Importa fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height // Importa height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,6 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
+import com.unimib.ignitionfinance.ui.theme.TypographyBold
+import com.unimib.ignitionfinance.ui.theme.TypographyMedium
 
 @Composable
 fun CustomDialog(
@@ -21,21 +25,26 @@ fun CustomDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        modifier = Modifier.fillMaxWidth(), // Imposta la larghezza del dialogo a tutta la larghezza
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(224.dp), // Imposta un'altezza fissa di 224.dp
         title = {
             Text(
                 text = dialogTitle,
-                style = MaterialTheme.typography.titleLarge // Applicare lo stile headlineSmall
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = TypographyMedium.titleLarge.fontWeight
+                )
             )
         },
         text = {
-            // Usa il componente CustomTextField al posto del testo
             CustomTextField(
                 textColor = MaterialTheme.colorScheme.onSurface,
                 labelColor = MaterialTheme.colorScheme.primary,
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 labelTextStyle = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxWidth(),  // Aggiungi anche qui fillMaxWidth per il campo di testo
+                modifier = Modifier.fillMaxWidth(),
                 textValue = textInput,
                 onTextChange = { textInput = it }
             )
@@ -63,9 +72,9 @@ fun CustomDialog(
 
 @Composable
 fun CustomTextField(
-    modifier: Modifier = Modifier,  // Qui viene usato Modifier
-    textValue: String, // Testo attuale del campo
-    onTextChange: (String) -> Unit, // Callback per aggiornare il testo
+    modifier: Modifier = Modifier,
+    textValue: String,
+    onTextChange: (String) -> Unit,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     labelColor: Color = MaterialTheme.colorScheme.primary,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
@@ -94,7 +103,7 @@ fun CustomTextField(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun PreviewCustomDialog() {
     IgnitionFinanceTheme {
