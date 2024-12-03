@@ -1,8 +1,6 @@
 package com.unimib.ignitionfinance.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height // Importa height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
-import com.unimib.ignitionfinance.ui.theme.TypographyBold
+import com.unimib.ignitionfinance.ui.theme.SecondaryGray
 import com.unimib.ignitionfinance.ui.theme.TypographyMedium
 
 @Composable
@@ -27,27 +25,35 @@ fun CustomDialog(
         onDismissRequest = onDismissRequest,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .height(224.dp), // Imposta un'altezza fissa di 224.dp
+            .padding(horizontal = 16.dp) // Padding orizzontale
+            .height(248.dp), // Imposta un'altezza fissa di 248.dp
         title = {
-            Text(
-                text = dialogTitle,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = TypographyMedium.titleLarge.fontWeight
+            Column(
+                modifier = Modifier.padding(top = 16.dp) // Aggiungi padding sopra al titolo
+            ) {
+                Text(
+                    text = dialogTitle,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = TypographyMedium.titleLarge.fontWeight
+                    )
                 )
-            )
+            }
         },
         text = {
-            CustomTextField(
-                textColor = MaterialTheme.colorScheme.onSurface,
-                labelColor = MaterialTheme.colorScheme.primary,
-                backgroundColor = MaterialTheme.colorScheme.surface,
-                labelTextStyle = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxWidth(),
-                textValue = textInput,
-                onTextChange = { textInput = it }
-            )
+            Column(
+                modifier = Modifier.padding(top = 8.dp) // Aggiungi padding sopra al CustomTextField
+            ) {
+                CustomTextField(
+                    textColor = MaterialTheme.colorScheme.onSurface,
+                    labelColor = SecondaryGray, // Pass label color once
+                    backgroundColor = MaterialTheme.colorScheme.surface,
+                    labelTextStyle = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.fillMaxWidth(),
+                    textValue = textInput,
+                    onTextChange = { textInput = it }
+                )
+            }
         },
         confirmButton = {
             TextButton(
@@ -55,7 +61,12 @@ fun CustomDialog(
                     onConfirmation(textInput)
                 }
             ) {
-                Text("Confirm")
+                Text(
+                    "Confirm",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = TypographyMedium.bodyMedium.fontWeight // Cambia la tipografia del pulsante
+                    )
+                )
             }
         },
         dismissButton = {
@@ -64,7 +75,12 @@ fun CustomDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text(
+                    "Dismiss",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = TypographyMedium.bodyMedium.fontWeight // Cambia la tipografia del pulsante
+                    )
+                )
             }
         }
     )
@@ -76,7 +92,7 @@ fun CustomTextField(
     textValue: String,
     onTextChange: (String) -> Unit,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    labelColor: Color = MaterialTheme.colorScheme.primary,
+    labelColor: Color = SecondaryGray, // Default to SecondaryGray
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     labelTextStyle: TextStyle = MaterialTheme.typography.bodyMedium
 ) {
@@ -86,7 +102,7 @@ fun CustomTextField(
         label = {
             Text(
                 text = "New Value",
-                color = labelColor,
+                color = labelColor, // Use the passed labelColor
                 style = labelTextStyle
             )
         },
