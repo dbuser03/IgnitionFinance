@@ -19,29 +19,21 @@ import com.unimib.ignitionfinance.R
 fun CardSelectBox(
     text: String,
     displayedTexts: List<String>,
-    initialSelectedText: String? = null
+    selectedText: String? = null,
+    onTextSelected: (String) -> Unit
 ) {
-    var isSelected by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(initialSelectedText) }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(152.dp)
             .background(MaterialTheme.colorScheme.background)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                isSelected = !isSelected
-            }
+            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { }
     ) {
         Text(
             text = text,
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .align(Alignment.TopStart)
+            modifier = Modifier.align(Alignment.TopStart)
         )
 
         Column(
@@ -59,7 +51,7 @@ fun CardSelectBox(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
-                            selectedText = displayedText
+                            onTextSelected(displayedText)
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
