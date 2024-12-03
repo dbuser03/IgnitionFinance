@@ -122,6 +122,7 @@ fun ExpandableSelectCard(
                             selectedText = selectedText,
                             onTextSelected = { newSelection ->
                                 selectedText = newSelection
+                                // Update the selected text in the database
                             }
                         )
                     }

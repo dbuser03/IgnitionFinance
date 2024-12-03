@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.domain.model.InputBoxData
 
@@ -71,9 +72,10 @@ fun CardInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
             onDismissRequest = { showDialog = false },
             onConfirmation = { input ->
                 showDialog = false
-                println("Input text: $input")
+                // Update the information on the database
             },
             dialogTitle = "Update the amount",
         )
     }
 }
+

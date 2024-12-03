@@ -21,7 +21,7 @@ import com.unimib.ignitionfinance.domain.model.InputBoxData
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    var expandedCardIndex by remember { mutableStateOf(-1) }
+    var expandedCardIndex by remember { mutableIntStateOf(-1) }
     val listState = rememberLazyListState()
 
     Scaffold(
@@ -55,12 +55,13 @@ fun SettingsScreen(navController: NavController) {
                                             label = "Monthly withdrawals (no pension)",
                                             prefix = "€",
                                             iconResId = R.drawable.outline_person_apron_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }                                         ),
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
+                                        ),
                                         InputBoxData(
                                             label = "Monthly withdrawals (with pension)",
                                             prefix = "€",
                                             iconResId = R.drawable.outline_person_4_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 0,
@@ -80,7 +81,7 @@ fun SettingsScreen(navController: NavController) {
                                     title = "INFLATION",
                                     inputText = "Choose the inflation model:",
                                     displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
-                                    initialSelectedText = "SCALE",
+                                    initialSelectedText = "SCALE", // Fetch from database
                                     isExpanded = expandedCardIndex == 1,
                                     onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 1) }
                                 )
@@ -101,19 +102,19 @@ fun SettingsScreen(navController: NavController) {
                                             label = "Tax Rate Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_account_balance_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("26")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("26")) } // Fetch from database
                                         ),
                                         InputBoxData(
                                             label = "Stamp Duty Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_position_top_right_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("0.2")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("0.2")) } // Fetch from database
                                         ),
                                         InputBoxData(
                                             label = "Load Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_weight_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("1")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("1")) } // Fetch from database
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 2,
@@ -136,19 +137,19 @@ fun SettingsScreen(navController: NavController) {
                                             label = "Years in FIRE",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_local_fire_department_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         ),
                                         InputBoxData(
                                             label = "Years in paid retirement",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_send_money_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         ),
                                         InputBoxData(
                                             label = "Years of buffer",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_clock_loader_10_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 3,
@@ -171,7 +172,7 @@ fun SettingsScreen(navController: NavController) {
                                             label = "Number of simulations to perform",
                                             prefix = "N°",
                                             iconResId = R.drawable.outline_autoplay_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 4,

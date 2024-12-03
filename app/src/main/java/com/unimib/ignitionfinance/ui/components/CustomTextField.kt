@@ -57,7 +57,7 @@ fun CustomTextField(
         },
         label = {
             Text(
-                text = "Input",
+                text = "New value",
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium
             )
