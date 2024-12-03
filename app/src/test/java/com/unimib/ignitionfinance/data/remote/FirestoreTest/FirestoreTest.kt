@@ -1,54 +1,44 @@
-package com.unimib.ignitionfinance.data.remote.FirestoreTest
-
-import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import org.junit.Before
 import org.junit.Test
 
-class FirestoreTest {
+class FirestoreUnitTest {
 
     private lateinit var firestore: FirebaseFirestore
 
     @Before
     fun setup() {
-        FirebaseApp.initializeApp() // Inizializza Firebase (se non l'hai già fatto)
-        firestore = Firebase.firestore
-
-        // Configura Firestore per utilizzare l'emulatore
-        firestore.useEmulator("10.0.2.2", 8080) // Usa "10.0.2.2" per l'emulatore Android
+        // Configura Firestore per connettersi all'emulatore
+        firestore = FirebaseFirestore.getInstance()
+        firestore.useEmulator("127.0.0.1", 8080) // Usa localhost per i test locali
     }
 
     @Test
     fun testFirestoreWriteAndRead() {
-        // Scrivi un documento nel database
         val testData = hashMapOf(
             "name" to "Test User",
             "email" to "testuser@example.com"
         )
 
-        firestore.collection("users").document("testUser")
-            .set(testData)
+        // Scrivi e leggi un documento
+        firestore.collection("users").document("testUser").set(testData)
             .addOnSuccessListener {
-                println("Documento scritto con successo!")
+                println("Documento scritto correttamente!")
             }
             .addOnFailureListener { e ->
-                println("Errore nella scrittura del documento: $e")
+                println("Errore: ${e.message}")
             }
 
-        // Leggi il documento
-        firestore.collection("users").document("testUser")
-            .get()
+        firestore.collection("users").document("testUser").get()
             .addOnSuccessListener { document ->
-                if (document != null) {
+                if (document.exists()) {
                     println("Documento trovato: ${document.data}")
                 } else {
-                    println("Nessun documento trovato!")
+                    println("Documento non trovato!")
                 }
             }
             .addOnFailureListener { e ->
-                println("Errore nella lettura del documento: $e")
+                println("Errore nella lettura: ${e.message}")
             }
     }
 }
