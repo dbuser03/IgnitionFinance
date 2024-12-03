@@ -31,7 +31,7 @@ fun CustomDialog(
                     "Confirm",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = TypographyMedium.bodyMedium.fontWeight,
-                        color = MaterialTheme.colorScheme.primary // Customize the button text color
+                        color = MaterialTheme.colorScheme.primary
                     )
                 )
             }

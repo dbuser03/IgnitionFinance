@@ -1,18 +1,20 @@
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
@@ -20,32 +22,39 @@ import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
-    textColor: Color = MaterialTheme.colorScheme.onSurface, // Colore del testo
-    labelColor: Color = MaterialTheme.colorScheme.primary, // Colore della label
-    backgroundColor: Color = MaterialTheme.colorScheme.surface, // Colore dello sfondo
-    labelTextStyle: TextStyle = MaterialTheme.typography.bodyMedium // Stile tipografico della label
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    labelColor: Color = MaterialTheme.colorScheme.primary,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    labelTextStyle: TextStyle = MaterialTheme.typography.bodyMedium
 ) {
-    var text by remember { mutableStateOf("Input") }
+    var text by remember { mutableStateOf("") }
 
     OutlinedTextField(
         value = text,
-        onValueChange = { text = it },
-        label = {
-            Text(
-                text = "New Value",
-                color = labelColor, // Colore della label
-                style = labelTextStyle // Applica lo stile personalizzato della label
-            )
+        onValueChange = { input ->
+            if (input.all { it.isDigit() }) {
+                text = input
+            }
         },
-        shape = RoundedCornerShape(56.dp), // Arrotonda i bordi
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = textColor), // Stile e colore del testo
+        label = if (text.isEmpty()) {
+            {
+                Text(
+                    text = "Input",
+                    color = labelColor,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        } else null,
+        shape = RoundedCornerShape(56.dp),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = textColor),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary, // Bordo attivo
-            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant, // Bordo inattivo
-            cursorColor = MaterialTheme.colorScheme.primary, // Colore del cursore
-            focusedLabelColor = labelColor, // Colore della label attiva
-            unfocusedLabelColor = labelColor // Colore della label inattiva
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = labelColor,
+            unfocusedLabelColor = labelColor
         ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier
     )
 }
@@ -55,7 +64,7 @@ fun CustomTextField(
 fun PreviewCustomTextField() {
     IgnitionFinanceTheme {
         CustomTextField(
-            labelTextStyle = MaterialTheme.typography.bodySmall // Passa uno stile personalizzato
+            labelTextStyle = MaterialTheme.typography.bodySmall
         )
     }
 }
