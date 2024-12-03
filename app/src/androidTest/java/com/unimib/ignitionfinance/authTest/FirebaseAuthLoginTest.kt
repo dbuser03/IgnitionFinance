@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.authTest
+package com.unimib.ignitionfinance.authTest
 
 import com.google.firebase.auth.FirebaseAuth
 import junit.framework.TestCase.assertEquals
