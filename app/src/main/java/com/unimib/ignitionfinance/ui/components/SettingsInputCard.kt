@@ -5,14 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun ExpandableInputCard(
@@ -66,16 +71,38 @@ fun ExpandableInputCard(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.displaySmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                IconButton(
+                    onClick = onCardClicked,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Icon(
+                        imageVector = if (isExpanded) {
+                            Icons.Default.KeyboardArrowUp
+                        } else {
+                            Icons.Default.KeyboardArrowDown
+                        },
+                        contentDescription = if (isExpanded) "Collapse" else "Expand"
+                    )
+                }
+            }
 
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(24.dp))
@@ -97,5 +124,25 @@ fun ExpandableInputCard(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun ExpandableInputCardPreview() {
+    val isExpanded = false
+    val inputValues = List(3) { mutableStateOf(TextFieldValue("100")) }
+
+    IgnitionFinanceTheme {
+        ExpandableInputCard(
+            label = "NORMAL, RETIREMENT",
+            title = "WITHDRAW",
+            inputValues = inputValues,
+            prefixes = listOf("€", "€", "€"),
+            iconResIds = listOf(R.drawable.outline_person_4_24, R.drawable.outline_person_4_24, R.drawable.outline_person_4_24),
+            inputBoxes = listOf("Monthly withdrawals (no pension)", "Monthly withdrawals (with pension)", "Monthly withdrawals (extra)"),
+            isExpanded = isExpanded,
+            onCardClicked = {}
+        )
     }
 }
