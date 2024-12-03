@@ -4,6 +4,8 @@ package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -13,6 +15,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -149,7 +153,8 @@ fun TitleWithButton(
             icon = painterResource(id = R.drawable.outline_settings_24),
             contentDescription = stringResource(id = R.string.settings_FAB_description),
             fabSize = 40.dp,
-            iconSize = 24.dp
+            iconSize = 24.dp,
+            hapticFeedbackType = HapticFeedbackType.TextHandleMove
         )
     }
 }
@@ -160,6 +165,9 @@ fun TitleSettings(
     color: Color = MaterialTheme.colorScheme.primary,
     navController: NavController
 ) {
+    // Get the HapticFeedback instance
+    val hapticFeedback = LocalHapticFeedback.current
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,18 +175,25 @@ fun TitleSettings(
             .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        CustomFloatingActionButton(
-            onClick = { navController.popBackStack() },
+        IconButton(
+            onClick = {
+                // Perform haptic feedback on click
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
+                // Pop back stack navigation
+                navController.popBackStack()
+            },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 72.dp),
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.primary,
-            icon = painterResource(id = R.drawable.outline_arrow_back_24),
-            contentDescription = stringResource(id = R.string.go_back_FAB_description),
-            fabSize = 28.dp,
-            iconSize = 28.dp
-        )
+                .padding(top = 72.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_arrow_back_24),
+                contentDescription = stringResource(id = R.string.go_back_FAB_description),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+        }
 
         Text(
             text = title,
