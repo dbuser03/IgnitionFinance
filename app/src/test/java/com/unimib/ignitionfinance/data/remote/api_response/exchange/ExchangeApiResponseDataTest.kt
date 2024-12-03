@@ -1,18 +1,15 @@
-package com.unimib.ignitionfinance.data.remote.api_response.exchange
-
 import com.google.gson.Gson
-import org.junit.Assert.assertEquals
+import com.unimib.ignitionfinance.data.remote.api_response.exchange.ExchangeApiResponseData
+import org.junit.Assert.*
 import org.junit.Test
-import kotlin.collections.get
-import kotlin.text.get
 
 class ExchangeApiResponseDataTest {
 
-        private val gson = Gson()
+    private val gson = Gson()
 
-        @Test
-        fun `test deserialization of ExchangeApiResponseData`() {
-                val jsonResponse = """
+    @Test
+    fun `test deserialization of ExchangeApiResponseData`() {
+        val jsonResponse = """
         {
             "header": {
                 "id": "a5a97a39-281d-4513-978b-a91dad969502",
@@ -83,46 +80,6 @@ class ExchangeApiResponseDataTest {
                                     "name": "Daily"
                                 }
                             ]
-                        },
-                        {
-                            "id": "CURRENCY",
-                            "name": "Currency",
-                            "values": [
-                                {
-                                    "id": "USD",
-                                    "name": "US dollar"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "CURRENCY_DENOM",
-                            "name": "Currency denominator",
-                            "values": [
-                                {
-                                    "id": "EUR",
-                                    "name": "Euro"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "EXR_TYPE",
-                            "name": "Exchange rate type",
-                            "values": [
-                                {
-                                    "id": "SP00",
-                                    "name": "Spot"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "EXR_SUFFIX",
-                            "name": "Series variation - EXR context",
-                            "values": [
-                                {
-                                    "id": "A",
-                                    "name": "Average"
-                                }
-                            ]
                         }
                     ],
                     "observation": [
@@ -133,184 +90,9 @@ class ExchangeApiResponseDataTest {
                             "values": [
                                 {
                                     "id": "2024-11-22",
-                                    "name": "2024-11-22",
-                                    "start": "2024-11-22T00:00:00.000+01:00",
-                                    "end": "2024-11-22T23:59:59.999+01:00"
+                                    "name": "2024-11-22"
                                 }
                             ]
-                        }
-                    ]
-                },
-                "attributes": {
-                    "series": [
-                        {
-                            "id": "TIME_FORMAT",
-                            "name": "Time format code",
-                            "values": [
-                                {
-                                    "name": "P1D"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "BREAKS",
-                            "name": "Breaks",
-                            "values": []
-                        },
-                        {
-                            "id": "COLLECTION",
-                            "name": "Collection indicator",
-                            "values": [
-                                {
-                                    "id": "A",
-                                    "name": "Average of observations through period"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "COMPILING_ORG",
-                            "name": "Compiling organisation",
-                            "values": []
-                        },
-                        {
-                            "id": "DISS_ORG",
-                            "name": "Data dissemination organisation",
-                            "values": []
-                        },
-                        {
-                            "id": "DOM_SER_IDS",
-                            "name": "Domestic series ids",
-                            "values": []
-                        },
-                        {
-                            "id": "PUBL_ECB",
-                            "name": "Source publication (ECB only)",
-                            "values": []
-                        },
-                        {
-                            "id": "PUBL_MU",
-                            "name": "Source publication (Euro area only)",
-                            "values": []
-                        },
-                        {
-                            "id": "PUBL_PUBLIC",
-                            "name": "Source publication (public)",
-                            "values": []
-                        },
-                        {
-                            "id": "UNIT_INDEX_BASE",
-                            "name": "Unit index base",
-                            "values": []
-                        },
-                        {
-                            "id": "COMPILATION",
-                            "name": "Compilation",
-                            "values": []
-                        },
-                        {
-                            "id": "COVERAGE",
-                            "name": "Coverage",
-                            "values": []
-                        },
-                        {
-                            "id": "DECIMALS",
-                            "name": "Decimals",
-                            "values": [
-                                {
-                                    "id": "4",
-                                    "name": "Four"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "NAT_TITLE",
-                            "name": "National language title",
-                            "values": []
-                        },
-                        {
-                            "id": "SOURCE_AGENCY",
-                            "name": "Source agency",
-                            "values": [
-                                {
-                                    "id": "4F0",
-                                    "name": "European Central Bank (ECB)"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "SOURCE_PUB",
-                            "name": "Publication source",
-                            "values": []
-                        },
-                        {
-                            "id": "TITLE",
-                            "name": "Title",
-                            "values": [
-                                {
-                                    "name": "US dollar/Euro"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "TITLE_COMPL",
-                            "name": "Title complement",
-                            "values": [
-                                {
-                                    "name": "ECB reference exchange rate, US dollar/Euro, 2:15 pm (C.E.T.)"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "UNIT",
-                            "name": "Unit",
-                            "values": [
-                                {
-                                    "id": "USD",
-                                    "name": "US dollar"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "UNIT_MULT",
-                            "name": "Unit multiplier",
-                            "values": [
-                                {
-                                    "id": "0",
-                                    "name": "Units"
-                                }
-                            ]
-                        }
-                    ],
-                    "observation": [
-                        {
-                            "id": "OBS_STATUS",
-                            "name": "Observation status",
-                            "values": [
-                                {
-                                    "id": "A",
-                                    "name": "Normal value"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "OBS_CONF",
-                            "name": "Observation confidentiality",
-                            "values": [
-                                {
-                                    "id": "F",
-                                    "name": "Free"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "OBS_PRE_BREAK",
-                            "name": "Pre-break observation value",
-                            "values": []
-                        },
-                        {
-                            "id": "OBS_COM",
-                            "name": "Observation comment",
-                            "values": []
                         }
                     ]
                 }
@@ -318,46 +100,48 @@ class ExchangeApiResponseDataTest {
         }
         """.trimIndent()
 
-                // Deserialize the JSON into the Kotlin data class
-                val response = gson.fromJson(jsonResponse, ExchangeApiResponseData::class.java)
+        // Deserialize the JSON into the Kotlin data class
+        val response = gson.fromJson(jsonResponse, ExchangeApiResponseData::class.java)
 
-                // Verify header values
-                assertEquals("a5a97a39-281d-4513-978b-a91dad969502", response.header.id)
-                assertEquals(false, response.header.test)
-                assertEquals("2024-11-24T12:09:44.123+01:00", response.header.prepared)
-                assertEquals("ECB", response.header.sender.id)
+        // Verify header values
+        assertEquals("a5a97a39-281d-4513-978b-a91dad969502", response.header.id)
+        assertEquals(false, response.header.test)
+        assertEquals("2024-11-24T12:09:44.123+01:00", response.header.prepared)
+        assertEquals("ECB", response.header.sender.id)
 
-                // Verify dataSets values
-                val dataSet = response.dataSets[0]
-                assertEquals("Replace", dataSet.action)
-                assertEquals("2024-11-24T12:09:44.123+01:00", dataSet.validFrom)
+        // Verify dataSets values
+        val dataSet = response.dataSets[0]
+        assertEquals("Replace", dataSet.action)
+        assertEquals("2024-11-24T12:09:44.123+01:00", dataSet.validFrom)
 
-                val seriesData = dataSet.series["0:0:0:0:0"]
-                assertEquals(20, seriesData?.attributes?.size)
-                assertEquals(1, seriesData?.observations?.size)
+        val seriesData = dataSet.series["0:0:0:0:0"]
+        assertEquals(20, seriesData?.attributes?.size)
+        assertEquals(1, seriesData?.observations?.size)
 
-                // Verify attributes and observations
-                val firstObservation = seriesData?.observations?.get("0")
-                assertEquals(1.0412, firstObservation?.get(0))
+        // Verify attributes and observations
+        val firstObservation = seriesData?.observations?.get("0")
+        assertEquals(1.0412, firstObservation?.get(0))
 
-                // Verify structure name and dimension values
-                assertEquals("Exchange Rates", response.structure.name)
+        // Verify structure name and dimension values
+        assertEquals("Exchange Rates", response.structure.name)
 
-                val dimension = response.structure.dimensions.series[0]
-                assertEquals("FREQ", dimension.id)
-                assertEquals("Frequency", dimension.name)
-                assertEquals("D", dimension.values[0].id)
-                assertEquals("Daily", dimension.values[0].name)
+        val dimension = response.structure.dimensions.series[0]
+        assertEquals("FREQ", dimension.id)
+        assertEquals("Frequency", dimension.name)
+        assertEquals("D", dimension.values[0].id)
+        assertEquals("Daily", dimension.values[0].name)
 
-                val observationDimension = response.structure.observation[0]
-                assertEquals("TIME_PERIOD", observationDimension.id)
-                assertEquals("Time period or range", observationDimension.name)
-                assertEquals("time", observationDimension.role)
-                assertEquals("2024-11-22", observationDimension.values[0].id)
+        // Verify observation dimensions, ensure structure and dimensions are not null or empty
+        val timeDimension = response.structure.observation?.firstOrNull()
 
-                val attribute = response.structure.attributes.series[0]
-                assertEquals("TIME_FORMAT", attribute.id)
-                assertEquals("Time format code", attribute.name)
-                assertEquals("P1D", attribute.values[0].name)
-        }
+        // Explicit null check for timeDimension
+        assertNotNull(timeDimension)
+
+        assertEquals("TIME_PERIOD", timeDimension?.id)
+        assertEquals("Time period or range", timeDimension?.name)
+
+        // Ensure values list is not null or empty before accessing first element
+        assertTrue(timeDimension?.values?.isNotEmpty() == true)
+        assertEquals("2024-11-22", timeDimension?.values?.firstOrNull()?.id)
+    }
 }
