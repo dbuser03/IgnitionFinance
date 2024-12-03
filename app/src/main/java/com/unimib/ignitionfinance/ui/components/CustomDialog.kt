@@ -72,7 +72,6 @@ fun CustomDialog(
                 CustomTextField(
                     textColor = MaterialTheme.colorScheme.onSurface,
                     labelColor = MaterialTheme.colorScheme.secondary,
-                    labelTextStyle = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
