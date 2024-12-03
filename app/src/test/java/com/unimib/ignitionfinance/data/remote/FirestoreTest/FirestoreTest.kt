@@ -10,7 +10,7 @@ class FirestoreUnitTest {
     fun setup() {
         // Configura Firestore per connettersi all'emulatore
         firestore = FirebaseFirestore.getInstance()
-        firestore.useEmulator("127.0.0.1", 8080) // Usa localhost per i test locali
+        firestore.useEmulator("127.0.0.1", 4400) // Usa localhost per i test locali
     }
 
     @Test
