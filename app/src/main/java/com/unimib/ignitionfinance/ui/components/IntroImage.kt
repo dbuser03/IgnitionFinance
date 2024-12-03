@@ -123,11 +123,3 @@ fun AnimatedText(text: String, coloredIndices: Int, visible: Boolean) {
         )
     }
 }
-
-@Preview
-@Composable
-fun VideoPlaceholderPreview() {
-    IgnitionFinanceTheme {
-        IntroImage(onNavigate = {})
-    }
-}

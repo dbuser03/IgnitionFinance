@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.ui.components
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -24,18 +25,18 @@ fun CustomFloatingActionButton(
     contentDescription: String? = null,
     fabSize: Dp = 56.dp,
     iconSize: Dp = 24.dp,
-    hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.LongPress // Nuovo parametro
+    hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.LongPress // New parameter for haptic feedback
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     FloatingActionButton(
         onClick = {
-            hapticFeedback.performHapticFeedback(hapticFeedbackType)
+            hapticFeedback.performHapticFeedback(hapticFeedbackType) // Use the passed feedback type
             onClick()
         },
         modifier = modifier.size(fabSize),
         containerColor = containerColor,
         contentColor = contentColor,
-        shape = androidx.compose.foundation.shape.CircleShape,
+        shape = CircleShape,
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
     ) {
         Icon(
