@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.text.input.TextFieldValue
 import com.unimib.ignitionfinance.presentation.ui.components.TitleSettings
@@ -18,10 +17,15 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.SettingsInputCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxData
+import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
 fun SettingsScreen(navController: NavController) {
-    var expandedCardIndex by remember { mutableIntStateOf(-1) }
+    val settingsViewModel: SettingsScreenViewModel = viewModel()
+
+    val expandedCardIndex by remember { settingsViewModel.expandedCardIndex }
     val listState = rememberLazyListState()
 
     Scaffold(
@@ -42,7 +46,7 @@ fun SettingsScreen(navController: NavController) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     item {
-                        ExpandableCardItem(
+                        CardItem(
                             cardIndex = 0,
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
@@ -65,13 +69,13 @@ fun SettingsScreen(navController: NavController) {
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 0,
-                                    onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 0) }
+                                    onCardClicked = { settingsViewModel.toggleCardExpansion(0) }
                                 )
                             }
                         )
                     }
                     item {
-                        ExpandableCardItem(
+                        CardItem(
                             cardIndex = 1,
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
@@ -83,13 +87,13 @@ fun SettingsScreen(navController: NavController) {
                                     displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
                                     initialSelectedText = "SCALE", // Fetch from database
                                     isExpanded = expandedCardIndex == 1,
-                                    onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 1) }
+                                    onCardClicked = { settingsViewModel.toggleCardExpansion(1) }
                                 )
                             }
                         )
                     }
                     item {
-                        ExpandableCardItem(
+                        CardItem(
                             cardIndex = 2,
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
@@ -118,13 +122,13 @@ fun SettingsScreen(navController: NavController) {
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 2,
-                                    onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 2) }
+                                    onCardClicked = { settingsViewModel.toggleCardExpansion(2) }
                                 )
                             }
                         )
                     }
                     item {
-                        ExpandableCardItem(
+                        CardItem(
                             cardIndex = 3,
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
@@ -153,13 +157,13 @@ fun SettingsScreen(navController: NavController) {
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 3,
-                                    onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 3) }
+                                    onCardClicked = { settingsViewModel.toggleCardExpansion(3) }
                                 )
                             }
                         )
                     }
                     item {
-                        ExpandableCardItem(
+                        CardItem(
                             cardIndex = 4,
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
@@ -176,7 +180,7 @@ fun SettingsScreen(navController: NavController) {
                                         )
                                     ),
                                     isExpanded = expandedCardIndex == 4,
-                                    onCardClicked = { expandedCardIndex = toggleCardExpansion(expandedCardIndex, 4) }
+                                    onCardClicked = { settingsViewModel.toggleCardExpansion(4) }
                                 )
                             }
                         )
@@ -185,31 +189,6 @@ fun SettingsScreen(navController: NavController) {
             }
         }
     )
-}
-
-@Composable
-fun ExpandableCardItem(
-    cardIndex: Int,
-    expandedCardIndex: Int,
-    listState: LazyListState,
-    content: @Composable () -> Unit
-) {
-    if (expandedCardIndex == cardIndex) {
-        LaunchedEffect(cardIndex) {
-            listState.animateScrollToItem(cardIndex)
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        content()
-    }
-}
-
-fun toggleCardExpansion(expandedCardIndex: Int, cardIndex: Int): Int {
-    return if (expandedCardIndex == cardIndex) -1 else cardIndex
 }
 
 @Preview(showBackground = true)

@@ -16,8 +16,6 @@ fun SelectCardBody(
     selectedText: String?,
     onTextSelected: (String) -> Unit
 ) {
-    Spacer(modifier = Modifier.height(24.dp))
-
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
