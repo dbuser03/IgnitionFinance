@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class InflationApiResponseDataTest {
+class InflationResponseTest {
     private val gson = Gson()
 
     @Test

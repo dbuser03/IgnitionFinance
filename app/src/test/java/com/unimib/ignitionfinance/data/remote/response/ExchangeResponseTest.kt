@@ -3,7 +3,7 @@ import com.unimib.ignitionfinance.data.remote.response.ExchangeResponse
 import org.junit.Assert.*
 import org.junit.Test
 
-class ExchangeApiResponseDataTest {
+class ExchangeResponseTest {
 
         private val gson = Gson()
 

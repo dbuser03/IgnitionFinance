@@ -14,7 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import java.math.BigDecimal
 
-class StockApiServiceTest {
+class StockServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
     private lateinit var stockService: StockService

@@ -14,7 +14,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import java.util.concurrent.TimeUnit
 
-class ExchangeApiServiceTest {
+class ExchangeServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
     private lateinit var exchangeService: ExchangeService

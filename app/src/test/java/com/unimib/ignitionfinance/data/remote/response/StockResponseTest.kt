@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.math.BigDecimal
 
-class StockApiResponseDataTest {
+class StockResponseTest {
 
     private val gson = Gson()
 
