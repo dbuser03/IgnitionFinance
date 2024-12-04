@@ -8,14 +8,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
+import com.unimib.ignitionfinance.domain.validation.InputValidator
+import com.unimib.ignitionfinance.domain.validation.ValidationResult
 
 @Composable
 fun CustomDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String) -> Unit,
-    dialogTitle: String
+    dialogTitle: String,
+    prefix: String // Prefix per la validazione
 ) {
     var textInput by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -23,7 +27,13 @@ fun CustomDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirmation(textInput)
+                    // Validazione prima della conferma
+                    val validationResult = InputValidator.validate(textInput, prefix)
+                    if (validationResult is ValidationResult.Success) {
+                        onConfirmation(textInput)
+                    } else {
+                        errorMessage = (validationResult as ValidationResult.Failure).message
+                    }
                 },
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
@@ -75,15 +85,24 @@ fun CustomDialog(
                     modifier = Modifier.fillMaxWidth(),
                     onConfirm = { input ->
                         textInput = input
-                        onConfirmation(input)
-                    }
+                        // Logica di validazione quando si conferma
+                        val validationResult = InputValidator.validate(input, prefix)
+                        if (validationResult is ValidationResult.Success) {
+                            onConfirmation(input)
+                        } else {
+                            errorMessage = (validationResult as ValidationResult.Failure).message
+                        }
+                    },
+                    errorMessage = errorMessage // Passa il messaggio di errore
                 )
             }
         },
     )
 }
 
-@Preview
+
+
+/*@Preview
 @Composable
 fun PreviewCustomDialog() {
     IgnitionFinanceTheme {
@@ -99,4 +118,4 @@ fun PreviewCustomDialog() {
             )
         }
     }
-}
+}*/

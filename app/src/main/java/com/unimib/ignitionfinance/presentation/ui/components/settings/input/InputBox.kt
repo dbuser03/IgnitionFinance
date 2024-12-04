@@ -25,7 +25,8 @@ fun InputBox(inputBoxModel: InputBoxModel, isEnabled: Boolean) {
             showDialog = false
             // Handle the input and update the database
         },
-        dialogTitle = "Update the amount"
+        dialogTitle = "Update the amount",
+        prefix = inputBoxModel.prefix // Passa il prefisso
     )
 
     Column(
