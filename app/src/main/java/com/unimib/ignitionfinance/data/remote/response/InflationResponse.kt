@@ -1,95 +1,90 @@
-
 package com.unimib.ignitionfinance.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
-// Root response class
 data class InflationResponse(
-    @SerializedName("header") val header: Header,
-    @SerializedName("dataSets") val dataSets: List<DataSet>,
-    @SerializedName("structure") val structure: Structure
+    @SerializedName("header") val header: InflationHeader,
+    @SerializedName("dataSets") val dataSets: List<InflationDataSet>,
+    @SerializedName("structure") val structure: InflationStructure
 )
 
-// Header class
-data class Header(
+data class InflationHeader(
     @SerializedName("id") val id: String,
     @SerializedName("test") val test: Boolean,
     @SerializedName("prepared") val prepared: String,
-    @SerializedName("sender") val sender: Sender
+    @SerializedName("sender") val sender: InflationSender
 )
 
-data class Sender(
+data class InflationSender(
     @SerializedName("id") val id: String
 )
 
-// DataSet class
-data class DataSet(
+data class InflationDataSet(
     @SerializedName("action") val action: String,
     @SerializedName("validFrom") val validFrom: String,
-    @SerializedName("series") val series: Map<String, Series>
+    @SerializedName("series") val series: Map<String, InflationSeries>
 )
 
-data class Series(
+data class InflationSeries(
     @SerializedName("attributes") val attributes: List<Any?>,
     @SerializedName("observations") val observations: Map<String, List<Any?>>
 )
 
-// Structure class
-data class Structure(
-    @SerializedName("links") val links: List<Link>,
+data class InflationStructure(
+    @SerializedName("links") val links: List<InflationLink>,
     @SerializedName("name") val name: String,
-    @SerializedName("dimensions") val dimensions: Dimensions,
-    @SerializedName("attributes") val attributes: Attributes
+    @SerializedName("dimensions") val dimensions: InflationDimensions,
+    @SerializedName("attributes") val attributes: InflationAttributes
 )
 
-data class Link(
+data class InflationLink(
     @SerializedName("title") val title: String,
     @SerializedName("rel") val rel: String,
     @SerializedName("href") val href: String
 )
 
-data class Dimensions(
-    @SerializedName("series") val series: List<Dimension>,
-    @SerializedName("observation") val observation: List<Observation>
+data class InflationDimensions(
+    @SerializedName("series") val series: List<InflationDimension>,
+    @SerializedName("observation") val observation: List<InflationObservation>
 )
 
-data class Dimension(
+data class InflationDimension(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("values") val values: List<Value>
+    @SerializedName("values") val values: List<InflationValue>
 )
 
-data class Observation(
+data class InflationObservation(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("role") val role: String?,
-    @SerializedName("values") val values: List<TimeValue>
+    @SerializedName("values") val values: List<InflationTimeValue>
 )
 
-data class Value(
+data class InflationValue(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String
 )
 
-data class TimeValue(
+data class InflationTimeValue(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("start") val start: String,
     @SerializedName("end") val end: String
 )
 
-data class Attributes(
-    @SerializedName("series") val series: List<Attribute>,
-    @SerializedName("observation") val observation: List<Attribute>
+data class InflationAttributes(
+    @SerializedName("series") val series: List<InflationAttribute>,
+    @SerializedName("observation") val observation: List<InflationAttribute>
 )
 
-data class Attribute(
+data class InflationAttribute(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("values") val values: List<AttributeValue>
+    @SerializedName("values") val values: List<InflationAttributeValue>
 )
 
-data class AttributeValue(
+data class InflationAttributeValue(
     @SerializedName("id") val id: String?,
     @SerializedName("name") val name: String
 )
