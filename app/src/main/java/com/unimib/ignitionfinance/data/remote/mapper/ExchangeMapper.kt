@@ -12,12 +12,11 @@ object ExchangeMapper {
                 exchangeSeries.observations.mapNotNull { observation ->
                     val date = observation.key
                     val values = observation.value
-                    values.firstOrNull()?.toString()?.toDoubleOrNull()?.let { exchangeRate ->
-                        ExchangeData(date = date, rate = exchangeRate)
+                    values.firstOrNull()?.toString()?.toDoubleOrNull()?.let { inflationRate ->
+                        ExchangeData(date = date, inflationRate = inflationRate)
                     }
                 }
             }
         }
     }
 }
-
