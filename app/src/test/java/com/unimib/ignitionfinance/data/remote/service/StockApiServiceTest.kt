@@ -17,7 +17,7 @@ import java.math.BigDecimal
 class StockApiServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var stockApiService: StockApiService
+    private lateinit var stockService: StockService
 
     @Before
     fun setup() {
@@ -29,7 +29,7 @@ class StockApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        stockApiService = retrofit.create(StockApiService::class.java)
+        stockService = retrofit.create(StockService::class.java)
     }
 
     @After
@@ -66,7 +66,7 @@ class StockApiServiceTest {
                 .setResponseCode(200)
         )
 
-        val response = stockApiService.getStockData(symbol = "IBM", apiKey = "demo")
+        val response = stockService.getStockData(symbol = "IBM", apiKey = "demo")
 
         assertNotNull(response.body())
         assertEquals(200, response.code())
@@ -92,11 +92,11 @@ class StockApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        val stockApiService = retrofit.create(StockApiService::class.java)
+        val stockService = retrofit.create(StockService::class.java)
         val realApiKey = BuildConfig.ALPHAVANTAGE_API_KEY
 
         // Make the real API call
-        val response = stockApiService.getStockData(symbol = "IBM", apiKey = realApiKey)
+        val response = stockService.getStockData(symbol = "IBM", apiKey = realApiKey)
 
         // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())

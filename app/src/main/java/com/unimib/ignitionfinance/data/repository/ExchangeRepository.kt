@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.repository
 
-import com.unimib.ignitionfinance.data.remote.service.ExchangeApiService
+import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
 import com.unimib.ignitionfinance.data.model.ExchangeData
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ interface ExchangeRepository {
 }
 
 class ExchangeRepositoryImpl(
-    private val apiService: ExchangeApiService,
+    private val apiService: ExchangeService,
     private val apiMapper: ExchangeMapper
 ) : ExchangeRepository {
 

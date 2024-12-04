@@ -21,7 +21,7 @@ import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 
 @Composable
-fun IconWithBackground(
+fun CustomIcon(
     icon: Painter,
     modifier: Modifier = Modifier,
     backgroundSize: Dp = 40.dp,
@@ -49,7 +49,7 @@ fun IconWithBackground(
 @Composable
 fun PreviewSettingsIcon() {
     IgnitionFinanceTheme {
-        IconWithBackground(
+        CustomIcon(
             icon = painterResource(id = R.drawable.outline_candlestick_chart_24)
         )
     }

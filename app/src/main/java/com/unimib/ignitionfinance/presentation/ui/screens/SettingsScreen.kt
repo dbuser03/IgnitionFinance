@@ -16,7 +16,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.TitleSettings
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.SettingsInputCard
-import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SettingsSelectCard
+import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxData
 
 @Composable
@@ -76,7 +76,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                SettingsSelectCard(
+                                SelectCard(
                                     label = "NORMAL, SCALE, LOGNORMAL",
                                     title = "INFLATION",
                                     inputText = "Choose the inflation model:",

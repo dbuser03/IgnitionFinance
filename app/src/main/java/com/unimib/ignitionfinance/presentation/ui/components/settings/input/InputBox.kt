@@ -11,11 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.ui.components.IconWithBackground
+import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.settings.dialog.DialogManager
 
 @Composable
-fun SettingsInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
+fun InputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
     var showDialog by remember { mutableStateOf(false) }
 
     DialogManager(
@@ -58,13 +58,13 @@ fun SettingsInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
                         interactionSource = remember { MutableInteractionSource() }
                     )
             ) {
-                DisplayInputValue(
+                InputBoxBody(
                     prefix = inputBoxData.prefix,
                     inputValue = inputBoxData.inputValue.value.text
                 )
             }
 
-            IconWithBackground(
+            CustomIcon(
                 icon = painterResource(id = inputBoxData.iconResId),
                 modifier = Modifier.align(Alignment.CenterVertically)
             )

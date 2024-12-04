@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class ExchangeApiServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var exchangeApiService: ExchangeApiService
+    private lateinit var exchangeService: ExchangeService
 
     @Before
     fun setup() {
@@ -29,7 +29,7 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        exchangeApiService = retrofit.create(ExchangeApiService::class.java)
+        exchangeService = retrofit.create(ExchangeService::class.java)
     }
 
     @After
@@ -108,7 +108,7 @@ class ExchangeApiServiceTest {
                 .setResponseCode(200)
         )
 
-        val response = exchangeApiService.getExchangeRate(seriesKey = "D.USD.EUR.SP00.A")
+        val response = exchangeService.getExchangeRate(seriesKey = "D.USD.EUR.SP00.A")
 
         assertNotNull(response)
         assertEquals(200, response.code())
@@ -209,7 +209,7 @@ class ExchangeApiServiceTest {
                 .setResponseCode(200)
         )
 
-        val response = exchangeApiService.getExchangeRate(seriesKey = "D.CHF.EUR.SP00.A")
+        val response = exchangeService.getExchangeRate(seriesKey = "D.CHF.EUR.SP00.A")
 
         assertNotNull(response)
         assertEquals(200, response.code())
@@ -244,9 +244,9 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
+        val exchangeService = retrofit.create(ExchangeService::class.java)
 
-        val response = exchangeApiService.getExchangeRate(seriesKey = "D.USD.EUR.SP00.A")
+        val response = exchangeService.getExchangeRate(seriesKey = "D.USD.EUR.SP00.A")
 
         assertEquals(200, response.code())
 
@@ -269,9 +269,9 @@ class ExchangeApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        val exchangeApiService = retrofit.create(ExchangeApiService::class.java)
+        val exchangeService = retrofit.create(ExchangeService::class.java)
 
-        val response = exchangeApiService.getExchangeRate(seriesKey = "D.CHF.EUR.SP00.A")
+        val response = exchangeService.getExchangeRate(seriesKey = "D.CHF.EUR.SP00.A")
 
         assertEquals(200, response.code())
 

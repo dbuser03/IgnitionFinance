@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.repository
 
-import com.unimib.ignitionfinance.data.remote.service.InflationApiService
+import com.unimib.ignitionfinance.data.remote.service.InflationService
 import com.unimib.ignitionfinance.data.remote.mapper.InflationMapper
 import com.unimib.ignitionfinance.data.model.InflationData
 import kotlinx.coroutines.Dispatchers
@@ -13,13 +13,13 @@ interface InflationRepository {
 }
 
 class InflationRepositoryImpl(
-    private val inflationApiService: InflationApiService,
+    private val inflationService: InflationService,
     private val inflationApiMapper: InflationMapper
 ) : InflationRepository {
 
     override suspend fun fetchInflationData(): Flow<Result<List<InflationData>>> = flow {
         try {
-            val response = inflationApiService.getInflationData()
+            val response = inflationService.getInflationData()
             if (response.isSuccessful) {
                 val inflationData = response.body()
                 if (inflationData != null) {

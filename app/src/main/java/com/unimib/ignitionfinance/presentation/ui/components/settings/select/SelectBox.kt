@@ -3,37 +3,42 @@ package com.unimib.ignitionfinance.presentation.ui.components.settings.select
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SettingsSelectBox(
+fun SelectBox(
     text: String,
     displayedTexts: List<String>,
     selectedText: String? = null,
-    onTextSelected: (String) -> Unit
+    onTextSelected: (String) -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    boxHeight: Dp = 152.dp
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(152.dp) // Consider moving this value to a theme or constant
+            .height(boxHeight)
             .background(MaterialTheme.colorScheme.background)
-            .clickable(
-                indication = null,
-                interactionSource = interactionSource
-            ) { }
+            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {}
     ) {
         Text(
             text = text,
             color = MaterialTheme.colorScheme.secondary,
-            style = MaterialTheme.typography.bodyMedium,
+            style = textStyle,
             modifier = Modifier.align(Alignment.TopStart)
         )
 
@@ -45,7 +50,7 @@ fun SettingsSelectBox(
             verticalArrangement = Arrangement.Top
         ) {
             displayedTexts.forEach { displayedText ->
-                SelectableRow(
+                SelectBoxBody(
                     text = displayedText,
                     isSelected = selectedText == displayedText,
                     onClick = { onTextSelected(displayedText) }

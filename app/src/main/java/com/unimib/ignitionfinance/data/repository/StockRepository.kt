@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.data.repository
 
 import com.unimib.ignitionfinance.data.remote.mapper.StockMapper
-import com.unimib.ignitionfinance.data.remote.service.StockApiService
+import com.unimib.ignitionfinance.data.remote.service.StockService
 import com.unimib.ignitionfinance.data.model.StockData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,13 +13,13 @@ interface StockRepository {
 }
 
 class StockRepositoryImpl(
-    private val stockApiService: StockApiService,
+    private val stockService: StockService,
     private val stockApiMapper: StockMapper
 ) : StockRepository {
 
     override suspend fun fetchStockData(symbol: String, apiKey: String): Flow<Result<Map<String, StockData>>> = flow {
         try {
-            val response = stockApiService.getStockData(symbol = symbol, apiKey = apiKey)
+            val response = stockService.getStockData(symbol = symbol, apiKey = apiKey)
 
             if (response.isSuccessful) {
                 val stockData = response.body()

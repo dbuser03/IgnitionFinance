@@ -7,11 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InputBoxList(
+fun InputCardBody(
     inputBoxDataList: List<InputBoxData>
 ) {
     inputBoxDataList.forEachIndexed { index, inputBoxData ->
-        SettingsInputBox(inputBoxData = inputBoxData, isEnabled = true)
+        InputBox(inputBoxData = inputBoxData, isEnabled = true)
         if (index < inputBoxDataList.size - 1) {
             Spacer(modifier = Modifier.height(24.dp))
         }

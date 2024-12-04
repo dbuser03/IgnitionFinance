@@ -8,7 +8,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.settings.Expandable
 import com.unimib.ignitionfinance.presentation.ui.components.settings.SettingsCardTitle
 
 @Composable
-fun ExpandableCardHeader(
+fun InputCardHeader(
     label: String,
     title: String,
     isExpanded: Boolean,

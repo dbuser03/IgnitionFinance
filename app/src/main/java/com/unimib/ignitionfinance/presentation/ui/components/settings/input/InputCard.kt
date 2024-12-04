@@ -64,7 +64,7 @@ fun SettingsInputCard(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            ExpandableCardHeader(
+            InputCardHeader(
                 label = label,
                 title = title,
                 isExpanded = isExpanded,
@@ -73,7 +73,7 @@ fun SettingsInputCard(
 
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(24.dp))
-                InputBoxList(inputBoxDataList = inputBoxDataList)
+                InputCardBody(inputBoxDataList = inputBoxDataList)
             }
         }
     }

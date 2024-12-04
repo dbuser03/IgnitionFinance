@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface InflationApiService {
+interface InflationService {
 
     @GET("service/data/{dataflow}/{seriesKey}")
     suspend fun getInflationData(

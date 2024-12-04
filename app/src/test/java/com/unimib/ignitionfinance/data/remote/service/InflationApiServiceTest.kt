@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class InflationApiServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var inflationApiService: InflationApiService
+    private lateinit var inflationService: InflationService
 
     @Before
     fun setup() {
@@ -29,7 +29,7 @@ class InflationApiServiceTest {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        inflationApiService = retrofit.create(InflationApiService::class.java)
+        inflationService = retrofit.create(InflationService::class.java)
     }
 
     @After
@@ -97,7 +97,7 @@ class InflationApiServiceTest {
         )
 
         // Call the API with the symbol and no API key
-        val response = inflationApiService.getInflationData()
+        val response = inflationService.getInflationData()
 
         assertNotNull(response.body())
         assertEquals(200, response.code())
@@ -147,10 +147,10 @@ class InflationApiServiceTest {
             .build()
 
         // Create the API service
-        val inflationApiService = retrofit.create(InflationApiService::class.java)
+        val inflationService = retrofit.create(InflationService::class.java)
 
         // Make the real API call
-        val response = inflationApiService.getInflationData()
+        val response = inflationService.getInflationData()
 
         // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())

@@ -8,13 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 @Composable
-fun DisplayInputValue(prefix: String, inputValue: String, padding: Dp = 0.dp) {
+fun InputBoxBody(prefix: String, inputValue: String, padding: Dp = 0.dp) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,18 +28,6 @@ fun DisplayInputValue(prefix: String, inputValue: String, padding: Dp = 0.dp) {
             text = inputValue,
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DisplayInputValuePreview() {
-    IgnitionFinanceTheme {
-        DisplayInputValue(
-            prefix = "€ ",
-            inputValue = "1000.00",
-            padding = 16.dp
         )
     }
 }
