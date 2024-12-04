@@ -13,10 +13,11 @@ object InflationMapper {
                     val date = observation.key
                     val values = observation.value
                     values.firstOrNull()?.toString()?.toDoubleOrNull()?.let { inflationRate ->
-                        InflationData(date = date, rate = inflationRate)
+                        InflationData(date = date, inflationRate = inflationRate)
                     }
                 }
             }
         }
     }
 }
+
