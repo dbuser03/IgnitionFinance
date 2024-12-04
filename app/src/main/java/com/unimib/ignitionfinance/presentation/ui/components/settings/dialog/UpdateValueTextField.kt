@@ -1,6 +1,8 @@
 package com.unimib.ignitionfinance.presentation.ui.components.settings.dialog
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -15,43 +17,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    labelColor: Color = MaterialTheme.colorScheme.primary
+    labelColor: Color = MaterialTheme.colorScheme.primary,
+    onConfirm: (String) -> Unit = {} // Aggiunto parametro per la conferma
 ) {
     var text by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    val lifecycleOwner = LocalLifecycleOwner.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                focusRequester.requestFocus()
-                keyboardController?.show()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     OutlinedTextField(
         value = text,
         onValueChange = { input ->
-            if (input.all { it.isDigit() }) {
+            if (input.matches(Regex("^\\d*\\.?\\d*\$"))) { // Permette numeri decimali
                 text = input
             }
         },
@@ -71,11 +57,22 @@ fun CustomTextField(
             focusedLabelColor = labelColor,
             unfocusedLabelColor = labelColor
         ),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = androidx.compose.ui.text.input.ImeAction.Done // Imposta l'azione a Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onConfirm(text) // Chiama la funzione di conferma
+                keyboardController?.hide() // Nasconde la tastiera
+            }
+        ),
         modifier = modifier
             .focusRequester(focusRequester)
+            .fillMaxWidth()
     )
 }
+
 
 @Preview(showBackground = true)
 @Composable
