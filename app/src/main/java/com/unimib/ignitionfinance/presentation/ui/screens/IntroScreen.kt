@@ -16,14 +16,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.components.IntroImage
+import com.unimib.ignitionfinance.presentation.ui.components.intro.IntroImage
 import com.unimib.ignitionfinance.presentation.ui.components.Title
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
+import com.unimib.ignitionfinance.presentation.viewmodel.IntroScreenViewModel
 
 @Composable
-fun IntroScreen(navController: NavController) {
+fun IntroScreen(navController: NavController, introScreenViewModel: IntroScreenViewModel = viewModel()) {
     val initialOffset = 1000f
     val targetOffset = 24f
     val animatedOffset = remember { Animatable(initialOffset) }
@@ -54,6 +56,8 @@ fun IntroScreen(navController: NavController) {
                         .offset(y = animatedOffset.value.dp)
                 ) {
                     IntroImage(
+                        textVisible = introScreenViewModel.textVisible.value,
+                        isFabClickable = introScreenViewModel.isFabClickable.value,
                         onNavigate = {
                             navController.navigate(Destinations.LoginScreen.route) {
                                 popUpTo(Destinations.IntroScreen.route) {
@@ -69,13 +73,16 @@ fun IntroScreen(navController: NavController) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun IntroScreenPreview() {
     IgnitionFinanceTheme {
         val navController = rememberNavController()
+        val viewModel: IntroScreenViewModel = viewModel()
         IntroScreen(
             navController = navController,
+            introScreenViewModel = viewModel
         )
     }
 }
+

@@ -21,28 +21,32 @@ fun CustomFAB(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-    icon: Painter,
+    icon: Painter? = null,
     contentDescription: String? = null,
     fabSize: Dp = 56.dp,
     iconSize: Dp = 24.dp,
-    hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.LongPress // New parameter for haptic feedback
+    hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.LongPress,
+    elevation: Dp = 4.dp
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     FloatingActionButton(
         onClick = {
-            hapticFeedback.performHapticFeedback(hapticFeedbackType) // Use the passed feedback type
+            hapticFeedback.performHapticFeedback(hapticFeedbackType)
             onClick()
         },
         modifier = modifier.size(fabSize),
         containerColor = containerColor,
         contentColor = contentColor,
         shape = CircleShape,
-        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp)
+        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = elevation)
     ) {
-        Icon(
-            painter = icon,
-            contentDescription = contentDescription,
-            modifier = Modifier.size(iconSize)
-        )
+        icon?.let {
+            Icon(
+                painter = it,
+                contentDescription = contentDescription,
+                modifier = Modifier.size(iconSize)
+            )
+        }
     }
 }
+
