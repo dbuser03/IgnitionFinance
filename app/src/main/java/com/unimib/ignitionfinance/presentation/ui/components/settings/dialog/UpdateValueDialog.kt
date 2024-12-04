@@ -15,7 +15,7 @@ fun CustomDialog(
     onConfirmation: (String) -> Unit,
     dialogTitle: String
 ) {
-    var textInput by remember { mutableStateOf("Input") }
+    val textInput by remember { mutableStateOf("Input") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
