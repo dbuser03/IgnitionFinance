@@ -1,16 +1,16 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
 import com.unimib.ignitionfinance.data.model.InflationData
-import com.unimib.ignitionfinance.data.remote.response.inflation.InflationApiResponseData
+import com.unimib.ignitionfinance.data.remote.response.InflationResponse
 
 object InflationMapper {
 
-    fun mapToDomain(inflationApiResponseData: InflationApiResponseData): List<InflationData> {
-        return inflationApiResponseData.dataSets.flatMap { dataSet ->
-            dataSet.series.flatMap { (_, seriesData) ->
-                seriesData.observations.mapNotNull { (date, values) ->
-                    values.firstOrNull()?.let { inflationRate ->
-                        InflationData(date, inflationRate)
+    fun mapToDomain(inflationResponse: InflationResponse): List<InflationData> {
+        return inflationResponse.dataSets.flatMap { inflationDataSet ->
+            inflationDataSet.series.flatMap { (_, inflationSeries) ->
+                inflationSeries.observations.mapNotNull { (date, values) ->
+                    values.firstOrNull()?.toString()?.toDoubleOrNull()?.let { inflationRate ->
+                        InflationData(date = date, rate = inflationRate)
                     }
                 }
             }
