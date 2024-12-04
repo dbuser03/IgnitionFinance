@@ -1,66 +1,67 @@
 package com.unimib.ignitionfinance.data.remote.response
 
+
 import com.google.gson.annotations.SerializedName
 
 data class ExchangeResponse(
-    @SerializedName("header") val header: Header,
-    @SerializedName("dataSets") val dataSets: List<DataSet>,
-    @SerializedName("structure") val structure: Structure
+    @SerializedName("header") val header: ExchangeHeader,
+    @SerializedName("dataSets") val dataSets: List<ExchangeDataSet>,
+    @SerializedName("structure") val structure: ExchangeStructure
 )
 
-data class Header(
+data class ExchangeHeader(
     @SerializedName("id") val id: String,
     @SerializedName("test") val test: Boolean,
     @SerializedName("prepared") val prepared: String,
-    @SerializedName("sender") val sender: Sender
+    @SerializedName("sender") val sender: ExchangeSender
 )
 
-data class Sender(
+data class ExchangeSender(
     @SerializedName("id") val id: String
 )
 
-data class DataSet(
+data class ExchangeDataSet(
     @SerializedName("action") val action: String,
     @SerializedName("validFrom") val validFrom: String,
-    @SerializedName("series") val series: Map<String, Series>
+    @SerializedName("series") val series: Map<String, ExchangeSeries>
 )
 
-data class Series(
+data class ExchangeSeries(
     @SerializedName("attributes") val attributes: List<Any?>,
     @SerializedName("observations") val observations: Map<String, List<Any?>>
 )
 
-data class Structure(
-    @SerializedName("links") val links: List<Link>,
+data class ExchangeStructure(
+    @SerializedName("links") val links: List<ExchangeLink>,
     @SerializedName("name") val name: String,
-    @SerializedName("dimensions") val dimensions: Dimensions
+    @SerializedName("dimensions") val dimensions: ExchangeDimensions
 )
 
-data class Link(
+data class ExchangeLink(
     @SerializedName("title") val title: String,
     @SerializedName("rel") val rel: String,
     @SerializedName("href") val href: String
 )
 
-data class Dimensions(
-    @SerializedName("series") val series: List<SeriesDimension>,
-    @SerializedName("observation") val observation: List<ObservationDimension>
+data class ExchangeDimensions(
+    @SerializedName("series") val series: List<ExchangeSeriesDimension>,
+    @SerializedName("observation") val observation: List<ExchangeObservationDimension>
 )
 
-data class SeriesDimension(
+data class ExchangeSeriesDimension(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("values") val values: List<Value>
+    @SerializedName("values") val values: List<ExchangeValue>
 )
 
-data class ObservationDimension(
+data class ExchangeObservationDimension(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("role") val role: String,
-    @SerializedName("values") val values: List<Value>
+    @SerializedName("values") val values: List<ExchangeValue>
 )
 
-data class Value(
+data class ExchangeValue(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String
 )
