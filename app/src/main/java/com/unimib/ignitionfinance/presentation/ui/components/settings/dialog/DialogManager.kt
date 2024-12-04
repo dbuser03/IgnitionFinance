@@ -8,14 +8,14 @@ fun DialogManager(
     onDismissRequest: () -> Unit,
     onConfirmation: (String) -> Unit,
     dialogTitle: String,
-    prefix: String // Aggiungi il parametro prefix
+    prefix: String
 ) {
     if (showDialog) {
         CustomDialog(
             onDismissRequest = onDismissRequest,
             onConfirmation = onConfirmation,
             dialogTitle = dialogTitle,
-            prefix = prefix // Passa il prefisso al CustomDialog
+            prefix = prefix
         )
     }
 }

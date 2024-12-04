@@ -32,9 +32,7 @@ fun CustomTextField(
         focusRequester.requestFocus()
     }
 
-    // Verifica se c'è un errore
     val isError = errorMessage != null
-    // Se c'è un errore, il colore del bordo e dell'etichetta sarà rosso
     val borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
     val labelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
 
@@ -48,18 +46,18 @@ fun CustomTextField(
         label = {
             Text(
                 text = "New value",
-                color = labelColor, // Colore dell'etichetta
+                color = labelColor,
                 style = MaterialTheme.typography.bodyMedium
             )
         },
         shape = RoundedCornerShape(56.dp),
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = textColor),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = borderColor, // Colore del bordo quando il campo è in focus
+            focusedBorderColor = borderColor,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
             cursorColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = labelColor, // Colore dell'etichetta quando il campo è in focus
-            unfocusedLabelColor = labelColor // Colore dell'etichetta quando il campo non è in focus
+            focusedLabelColor = labelColor,
+            unfocusedLabelColor = labelColor
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
@@ -67,7 +65,7 @@ fun CustomTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                // Esegui la stessa logica di conferma quando si preme "Enter"
+
                 onConfirm(text)
                 keyboardController?.hide()
             }
@@ -77,14 +75,14 @@ fun CustomTextField(
             .fillMaxWidth()
     )
 
-    // Mostra l'errore se esiste, spostato a destra
+
     errorMessage?.let {
         Text(
             text = it,
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
-                .padding(start = 16.dp) // Aggiungi padding a sinistra (o right se vuoi spostarlo a destra)
+                .padding(start = 16.dp)
                 .padding(top = 8.dp)
         )
     }

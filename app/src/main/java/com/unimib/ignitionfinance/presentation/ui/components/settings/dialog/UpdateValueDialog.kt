@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.domain.validation.InputValidator
 import com.unimib.ignitionfinance.domain.validation.ValidationResult
@@ -16,7 +14,7 @@ fun CustomDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String) -> Unit,
     dialogTitle: String,
-    prefix: String // Prefix per la validazione
+    prefix: String
 ) {
     var textInput by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -27,7 +25,6 @@ fun CustomDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    // Validazione prima della conferma
                     val validationResult = InputValidator.validate(textInput, prefix)
                     if (validationResult is ValidationResult.Success) {
                         onConfirmation(textInput)
@@ -85,7 +82,6 @@ fun CustomDialog(
                     modifier = Modifier.fillMaxWidth(),
                     onConfirm = { input ->
                         textInput = input
-                        // Logica di validazione quando si conferma
                         val validationResult = InputValidator.validate(input, prefix)
                         if (validationResult is ValidationResult.Success) {
                             onConfirmation(input)
@@ -93,7 +89,7 @@ fun CustomDialog(
                             errorMessage = (validationResult as ValidationResult.Failure).message
                         }
                     },
-                    errorMessage = errorMessage // Passa il messaggio di errore
+                    errorMessage = errorMessage
                 )
             }
         },
@@ -101,21 +97,3 @@ fun CustomDialog(
 }
 
 
-
-/*@Preview
-@Composable
-fun PreviewCustomDialog() {
-    IgnitionFinanceTheme {
-        var showDialog by remember { mutableStateOf(true) }
-        if (showDialog) {
-            CustomDialog(
-                onDismissRequest = { showDialog = false },
-                onConfirmation = { input ->
-                    showDialog = false
-                    println("Input text: $input")
-                },
-                dialogTitle = "Update the amount",
-            )
-        }
-    }
-}*/

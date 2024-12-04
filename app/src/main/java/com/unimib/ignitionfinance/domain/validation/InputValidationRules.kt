@@ -6,7 +6,7 @@ object InputBoxValidationRules {
             "€" -> validateEuro(value)
             "%" -> validatePercentage(value)
             "YRS" -> validateYears(value)
-            else -> false // Prefisso non riconosciuto
+            else -> false
         }
     }
 
