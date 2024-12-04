@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components
+package com.unimib.ignitionfinance.presentation.ui.components.settings.dialog
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

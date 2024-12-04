@@ -16,12 +16,13 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.presentation.ui.theme.PrimaryWhite
 import kotlinx.coroutines.delay
 
 @Composable
 fun AnimatedText(text: String, visible: Boolean) {
     val initialTextColor = MaterialTheme.colorScheme.secondary
-    val changedTextColor = MaterialTheme.colorScheme.primary
+    val changedTextColor = PrimaryWhite
 
     val animatedText = remember { mutableIntStateOf(0) }
 

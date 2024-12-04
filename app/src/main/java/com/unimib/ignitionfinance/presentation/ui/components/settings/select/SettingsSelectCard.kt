@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components
+package com.unimib.ignitionfinance.presentation.ui.components.settings.select
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExpandableSelectCard(
+fun SettingsSelectCard(
     label: String,
     title: String,
     modifier: Modifier = Modifier,
@@ -116,7 +116,7 @@ fun ExpandableSelectCard(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        CardSelectBox(
+                        SettingsSelectBox(
                             text = inputText,
                             displayedTexts = displayedTexts,
                             selectedText = selectedText,

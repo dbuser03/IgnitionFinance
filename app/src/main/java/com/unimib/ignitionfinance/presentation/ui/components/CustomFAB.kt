@@ -26,7 +26,7 @@ fun CustomFAB(
     fabSize: Dp = 56.dp,
     iconSize: Dp = 24.dp,
     hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.LongPress,
-    elevation: Dp = 4.dp
+    elevation: Dp = 0.dp
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     FloatingActionButton(

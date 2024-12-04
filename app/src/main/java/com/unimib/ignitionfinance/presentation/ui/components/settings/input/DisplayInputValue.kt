@@ -1,6 +1,5 @@
-package com.unimib.ignitionfinance.presentation.ui.components
+package com.unimib.ignitionfinance.presentation.ui.components.settings.input
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,15 +8,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 @Composable
-fun DisplayInputValue(prefix: String, inputValue: String) {
+fun DisplayInputValue(prefix: String, inputValue: String, padding: Dp = 0.dp) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp),
-        horizontalArrangement = Arrangement.Start,
+            .padding(padding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -29,6 +30,18 @@ fun DisplayInputValue(prefix: String, inputValue: String) {
             text = inputValue,
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DisplayInputValuePreview() {
+    IgnitionFinanceTheme {
+        DisplayInputValue(
+            prefix = "€ ",
+            inputValue = "1000.00",
+            padding = 16.dp
         )
     }
 }

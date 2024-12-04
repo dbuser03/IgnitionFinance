@@ -15,9 +15,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.unimib.ignitionfinance.presentation.ui.components.TitleSettings
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.components.ExpandableInputCard
-import com.unimib.ignitionfinance.presentation.ui.components.ExpandableSelectCard
-import com.unimib.ignitionfinance.domain.model.InputBoxData
+import com.unimib.ignitionfinance.presentation.ui.components.settings.input.SettingsInputCard
+import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SettingsSelectCard
+import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxData
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -47,7 +47,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                ExpandableInputCard(
+                                SettingsInputCard(
                                     label = "NORMAL, RETIREMENT",
                                     title = "WITHDRAW",
                                     inputBoxDataList = listOf(
@@ -76,7 +76,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                ExpandableSelectCard(
+                                SettingsSelectCard(
                                     label = "NORMAL, SCALE, LOGNORMAL",
                                     title = "INFLATION",
                                     inputText = "Choose the inflation model:",
@@ -94,7 +94,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                ExpandableInputCard(
+                                SettingsInputCard(
                                     label = "TAX RATE, STAMP DUTY, LOAD",
                                     title = "EXPENSES",
                                     inputBoxDataList = listOf(
@@ -129,7 +129,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                ExpandableInputCard(
+                                SettingsInputCard(
                                     label = "YEARS, RETIREMENTS YEARS, BUFFER",
                                     title = "INTERVALS",
                                     inputBoxDataList = listOf(
@@ -164,7 +164,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                ExpandableInputCard(
+                                SettingsInputCard(
                                     label = "NUMBER",
                                     title = "SIMULATIONS",
                                     inputBoxDataList = listOf(

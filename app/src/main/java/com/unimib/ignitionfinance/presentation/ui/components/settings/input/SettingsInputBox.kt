@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components
+package com.unimib.ignitionfinance.presentation.ui.components.settings.input
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,13 +11,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.domain.model.InputBoxData
+import com.unimib.ignitionfinance.presentation.ui.components.IconWithBackground
+import com.unimib.ignitionfinance.presentation.ui.components.settings.dialog.DialogManager
 
 @Composable
-fun CardInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
+fun SettingsInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
     var showDialog by remember { mutableStateOf(false) }
 
-    Box(
+    DialogManager(
+        showDialog = showDialog,
+        onDismissRequest = { showDialog = false },
+        onConfirmation = { input ->
+            showDialog = false
+            // Handle the input and update the database
+        },
+        dialogTitle = "Update the amount"
+    )
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
@@ -29,15 +40,14 @@ fun CardInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)
-                .align(Alignment.BottomStart)
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
                     .clickable(
                         onClick = {
                             if (isEnabled) {
@@ -47,7 +57,6 @@ fun CardInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     )
-                    .padding(0.dp)
             ) {
                 DisplayInputValue(
                     prefix = inputBoxData.prefix,
@@ -55,26 +64,10 @@ fun CardInputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-            ) {
-                IconWithBackground(
-                    icon = painterResource(id = inputBoxData.iconResId),
-                )
-            }
+            IconWithBackground(
+                icon = painterResource(id = inputBoxData.iconResId),
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
         }
     }
-
-    if (showDialog) {
-        CustomDialog(
-            onDismissRequest = { showDialog = false },
-            onConfirmation = { input ->
-                showDialog = false
-                // Update the information on the database
-            },
-            dialogTitle = "Update the amount",
-        )
-    }
 }
-
