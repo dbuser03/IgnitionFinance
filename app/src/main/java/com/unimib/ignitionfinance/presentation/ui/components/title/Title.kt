@@ -144,33 +144,3 @@ private fun TitleBox(
     }
 }
 
-@Composable
-private fun TitleText(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    CustomText(
-        text = text,
-        color = color,
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = modifier,
-        maxLines = 2
-    )
-}
-
-@Composable
-private fun DescriptionText(
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    CustomText(
-        text = text,
-        color = color,
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = modifier,
-        maxLines = 3
-    )
-}
-

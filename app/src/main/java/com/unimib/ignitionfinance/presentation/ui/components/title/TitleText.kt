@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.unimib.ignitionfinance.presentation.ui.theme.TypographyBold
 
 @Composable
 fun TitleText(
@@ -15,7 +16,7 @@ fun TitleText(
     CustomText(
         text = text,
         color = color,
-        style = MaterialTheme.typography.headlineLarge,
+        style = TypographyBold.headlineLarge,
         modifier = modifier,
         maxLines = 2
     )
