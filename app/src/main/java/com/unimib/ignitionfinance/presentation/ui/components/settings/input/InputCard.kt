@@ -20,7 +20,7 @@ fun InputCard(
     label: String,
     title: String,
     modifier: Modifier = Modifier,
-    inputBoxDataList: List<InputBoxData>,
+    inputBoxModelList: List<InputBoxModel>,
     isExpanded: Boolean,
     onCardClicked: () -> Unit
 ) {
@@ -29,8 +29,8 @@ fun InputCard(
 
     val cardHeight = animateDpAsState(
         targetValue = if (isExpanded) {
-            val totalInputBoxHeight = cardInputBoxHeight * inputBoxDataList.size
-            val totalSpacerHeight = spacerHeight * (inputBoxDataList.size)
+            val totalInputBoxHeight = cardInputBoxHeight * inputBoxModelList.size
+            val totalSpacerHeight = spacerHeight * (inputBoxModelList.size)
             totalInputBoxHeight + totalSpacerHeight + 104.dp
         } else {
             104.dp
@@ -73,7 +73,7 @@ fun InputCard(
 
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(24.dp))
-                InputCardBody(inputBoxDataList = inputBoxDataList)
+                InputCardBody(inputBoxModelList = inputBoxModelList)
             }
         }
     }

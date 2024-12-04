@@ -15,7 +15,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.settings.dialog.DialogManager
 
 @Composable
-fun InputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
+fun InputBox(inputBoxModel: InputBoxModel, isEnabled: Boolean) {
     var showDialog by remember { mutableStateOf(false) }
 
     DialogManager(
@@ -35,7 +35,7 @@ fun InputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
             .background(MaterialTheme.colorScheme.background)
     ) {
         Text(
-            text = inputBoxData.label,
+            text = inputBoxModel.label,
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -59,13 +59,13 @@ fun InputBox(inputBoxData: InputBoxData, isEnabled: Boolean) {
                     )
             ) {
                 InputBoxBody(
-                    prefix = inputBoxData.prefix,
-                    inputValue = inputBoxData.inputValue.value.text
+                    prefix = inputBoxModel.prefix,
+                    inputValue = inputBoxModel.inputValue.value.text
                 )
             }
 
             CustomIcon(
-                icon = painterResource(id = inputBoxData.iconResId),
+                icon = painterResource(id = inputBoxModel.iconResId),
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
         }

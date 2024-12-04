@@ -8,11 +8,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun InputCardBody(
-    inputBoxDataList: List<InputBoxData>
+    inputBoxModelList: List<InputBoxModel>
 ) {
-    inputBoxDataList.forEachIndexed { index, inputBoxData ->
-        InputBox(inputBoxData = inputBoxData, isEnabled = true)
-        if (index < inputBoxDataList.size - 1) {
+    inputBoxModelList.forEachIndexed { index, inputBoxData ->
+        InputBox(inputBoxModel = inputBoxData, isEnabled = true)
+        if (index < inputBoxModelList.size - 1) {
             Spacer(modifier = Modifier.height(24.dp))
         }
     }

@@ -16,7 +16,7 @@ import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
-import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxData
+import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectBoxModel
@@ -66,14 +66,14 @@ fun SettingsScreen(navController: NavController) {
                                 InputCard(
                                     label = "NORMAL, RETIREMENT",
                                     title = "WITHDRAW",
-                                    inputBoxDataList = listOf(
-                                        InputBoxData(
+                                    inputBoxModelList = listOf(
+                                        InputBoxModel(
                                             label = "Monthly withdrawals (no pension)",
                                             prefix = "€",
                                             iconResId = R.drawable.outline_person_apron_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         ),
-                                        InputBoxData(
+                                        InputBoxModel(
                                             label = "Monthly withdrawals (with pension)",
                                             prefix = "€",
                                             iconResId = R.drawable.outline_person_4_24,
@@ -114,20 +114,20 @@ fun SettingsScreen(navController: NavController) {
                                 InputCard(
                                     label = "TAX RATE, STAMP DUTY, LOAD",
                                     title = "EXPENSES",
-                                    inputBoxDataList = listOf(
-                                        InputBoxData(
+                                    inputBoxModelList = listOf(
+                                        InputBoxModel(
                                             label = "Tax Rate Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_account_balance_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("26")) } // Fetch from database
                                         ),
-                                        InputBoxData(
+                                        InputBoxModel(
                                             label = "Stamp Duty Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_position_top_right_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("0.2")) } // Fetch from database
                                         ),
-                                        InputBoxData(
+                                        InputBoxModel(
                                             label = "Load Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_weight_24,
@@ -149,20 +149,20 @@ fun SettingsScreen(navController: NavController) {
                                 InputCard(
                                     label = "YEARS, RETIREMENTS YEARS, BUFFER",
                                     title = "INTERVALS",
-                                    inputBoxDataList = listOf(
-                                        InputBoxData(
+                                    inputBoxModelList = listOf(
+                                        InputBoxModel(
                                             label = "Years in FIRE",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_local_fire_department_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         ),
-                                        InputBoxData(
+                                        InputBoxModel(
                                             label = "Years in paid retirement",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_send_money_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("----")) } // Fetch from database
                                         ),
-                                        InputBoxData(
+                                        InputBoxModel(
                                             label = "Years of buffer",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_clock_loader_10_24,
@@ -184,8 +184,8 @@ fun SettingsScreen(navController: NavController) {
                                 InputCard(
                                     label = "NUMBER",
                                     title = "SIMULATIONS",
-                                    inputBoxDataList = listOf(
-                                        InputBoxData(
+                                    inputBoxModelList = listOf(
+                                        InputBoxModel(
                                             label = "Number of simulations to perform",
                                             prefix = "N°",
                                             iconResId = R.drawable.outline_autoplay_24,
