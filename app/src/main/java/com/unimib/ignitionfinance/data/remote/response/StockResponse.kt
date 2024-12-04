@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.data.remote.response
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
-data class StockApiResponseData(
+data class StockResponse(
     @SerializedName("Meta Data")
     val metaData: MetaData,
     @SerializedName("Time Series (Daily)")

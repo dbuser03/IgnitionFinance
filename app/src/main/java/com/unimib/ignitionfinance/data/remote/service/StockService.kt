@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.service
 
-import com.unimib.ignitionfinance.data.remote.response.StockApiResponseData
+import com.unimib.ignitionfinance.data.remote.response.StockResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,5 +14,5 @@ interface StockService {
         @Query("outputsize") outputSize: String = "full",
         @Query("datatype") datatype: String = "json",
         @Query("apikey") apiKey: String
-    ): Response<StockApiResponseData>
+    ): Response<StockResponse>
 }

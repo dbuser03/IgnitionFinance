@@ -33,7 +33,7 @@ class StockApiResponseDataTest {
         }
         """.trimIndent()
 
-        val stockApiResponse = gson.fromJson(jsonResponse, StockApiResponseData::class.java)
+        val stockApiResponse = gson.fromJson(jsonResponse, StockResponse::class.java)
 
         assertEquals("Daily Prices (open, high, low, close) and Volumes", stockApiResponse.metaData.information)
         assertEquals("IBM", stockApiResponse.metaData.symbol)

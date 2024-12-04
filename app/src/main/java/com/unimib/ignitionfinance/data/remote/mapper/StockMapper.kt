@@ -1,12 +1,12 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.unimib.ignitionfinance.data.remote.response.StockApiResponseData
+import com.unimib.ignitionfinance.data.remote.response.StockResponse
 import com.unimib.ignitionfinance.data.model.StockData
 import java.math.BigDecimal
 
 class StockMapper {
 
-    fun mapToDomain(response: StockApiResponseData): Map<String, StockData> {
+    fun mapToDomain(response: StockResponse): Map<String, StockData> {
         return response.timeSeries.mapValues { (dateString, timeSeriesData) ->
             StockData(
                 open = timeSeriesData.open,
