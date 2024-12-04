@@ -7,8 +7,11 @@ object InflationMapper {
 
     fun mapToDomain(inflationResponse: InflationResponse): List<InflationData> {
         return inflationResponse.dataSets.flatMap { inflationDataSet ->
-            inflationDataSet.series.flatMap { (_, inflationSeries) ->
-                inflationSeries.observations.mapNotNull { (date, values) ->
+            inflationDataSet.series.flatMap { seriesEntry ->
+                val inflationSeries = seriesEntry.value
+                inflationSeries.observations.mapNotNull { observation ->
+                    val date = observation.key
+                    val values = observation.value
                     values.firstOrNull()?.toString()?.toDoubleOrNull()?.let { inflationRate ->
                         InflationData(date = date, rate = inflationRate)
                     }
