@@ -23,7 +23,7 @@ fun CustomDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirmation(textInput) // Passa il valore aggiornato
+                    onConfirmation(textInput)
                 },
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
@@ -74,8 +74,8 @@ fun CustomDialog(
                     labelColor = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.fillMaxWidth(),
                     onConfirm = { input ->
-                        textInput = input // Aggiorna il valore
-                        onConfirmation(input) // Esegui la conferma
+                        textInput = input
+                        onConfirmation(input)
                     }
                 )
             }

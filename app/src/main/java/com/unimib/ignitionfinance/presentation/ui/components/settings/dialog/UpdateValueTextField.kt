@@ -24,7 +24,7 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     labelColor: Color = MaterialTheme.colorScheme.primary,
-    onConfirm: (String) -> Unit = {} // Aggiunto parametro per la conferma
+    onConfirm: (String) -> Unit = {}
 ) {
     var text by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -37,7 +37,7 @@ fun CustomTextField(
     OutlinedTextField(
         value = text,
         onValueChange = { input ->
-            if (input.matches(Regex("^\\d*\\.?\\d*\$"))) { // Permette numeri decimali
+            if (input.matches(Regex("^\\d*\\.?\\d*\$"))) {
                 text = input
             }
         },
@@ -59,12 +59,12 @@ fun CustomTextField(
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
-            imeAction = androidx.compose.ui.text.input.ImeAction.Done // Imposta l'azione a Done
+            imeAction = androidx.compose.ui.text.input.ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                onConfirm(text) // Chiama la funzione di conferma
-                keyboardController?.hide() // Nasconde la tastiera
+                onConfirm(text)
+                keyboardController?.hide()
             }
         ),
         modifier = modifier
