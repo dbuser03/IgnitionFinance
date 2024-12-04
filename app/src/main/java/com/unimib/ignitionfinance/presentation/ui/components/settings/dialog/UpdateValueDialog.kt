@@ -15,7 +15,7 @@ fun CustomDialog(
     onConfirmation: (String) -> Unit,
     dialogTitle: String
 ) {
-    val textInput by remember { mutableStateOf("Input") }
+    var textInput by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -23,7 +23,7 @@ fun CustomDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirmation(textInput)
+                    onConfirmation(textInput) // Passa il valore aggiornato
                 },
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
@@ -72,7 +72,11 @@ fun CustomDialog(
                 CustomTextField(
                     textColor = MaterialTheme.colorScheme.onSurface,
                     labelColor = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onConfirm = { input ->
+                        textInput = input // Aggiorna il valore
+                        onConfirmation(input) // Esegui la conferma
+                    }
                 )
             }
         },
@@ -84,13 +88,15 @@ fun CustomDialog(
 fun PreviewCustomDialog() {
     IgnitionFinanceTheme {
         var showDialog by remember { mutableStateOf(true) }
-        CustomDialog(
-            onDismissRequest = { showDialog = false },
-            onConfirmation = { input ->
-                showDialog = false
-                println("Input text: $input")
-            },
-            dialogTitle = "Update the amount",
-        )
+        if (showDialog) {
+            CustomDialog(
+                onDismissRequest = { showDialog = false },
+                onConfirmation = { input ->
+                    showDialog = false
+                    println("Input text: $input")
+                },
+                dialogTitle = "Update the amount",
+            )
+        }
     }
 }
