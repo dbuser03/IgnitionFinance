@@ -78,7 +78,6 @@ fun CustomDialog(
             ) {
                 CustomTextField(
                     textColor = MaterialTheme.colorScheme.onSurface,
-                    labelColor = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.fillMaxWidth(),
                     onConfirm = { input ->
                         textInput = input

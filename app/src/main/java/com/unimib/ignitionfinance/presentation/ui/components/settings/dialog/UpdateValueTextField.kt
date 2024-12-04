@@ -20,7 +20,6 @@ import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 fun CustomTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    labelColor: Color = MaterialTheme.colorScheme.primary,
     onConfirm: (String) -> Unit = {},
     errorMessage: String? = null
 ) {
