@@ -19,7 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.intro.IntroImage
-import com.unimib.ignitionfinance.presentation.ui.components.Title
+import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.presentation.viewmodel.IntroScreenViewModel

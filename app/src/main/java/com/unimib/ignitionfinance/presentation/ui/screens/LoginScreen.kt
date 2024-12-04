@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
-import com.unimib.ignitionfinance.presentation.ui.components.TitleWithDescription
+import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDescription
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 

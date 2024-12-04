@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components
+package com.unimib.ignitionfinance.presentation.ui.components.navigation
 
 import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
@@ -10,13 +10,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
-import com.unimib.ignitionfinance.presentation.ui.theme.TypographyBold
 import androidx.compose.ui.platform.LocalHapticFeedback
-import com.unimib.ignitionfinance.presentation.navigation.Destinations
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.unimib.ignitionfinance.presentation.navigation.Destinations
+import com.unimib.ignitionfinance.presentation.state.rememberNavigationState
+import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
+import com.unimib.ignitionfinance.presentation.ui.theme.TypographyBold
 
 @OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
@@ -24,13 +25,13 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     containerColor: Color,
     contentColor: Color,
-    items: List<BottomNavigationItem>,
+    items: List<BottomNavigationItemModel>,
     navController: NavController
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    var previousDestination by remember { mutableStateOf(Destinations.PortfolioScreen.route) }
+    val navigationState = rememberNavigationState(initialDestination = Destinations.PortfolioScreen.route)
 
     NavigationBar(
         modifier = modifier,
@@ -45,7 +46,7 @@ fun BottomNavigationBar(
             LaunchedEffect(isSelected) {
                 if (isSelected) {
                     atEnd = true
-                    previousDestination = currentDestination
+                    navigationState.updatePreviousDestination(currentDestination)
                 }
             }
 
@@ -69,7 +70,7 @@ fun BottomNavigationBar(
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     if (!isSelected) {
                         navController.navigate(item.destination) {
-                            popUpTo(previousDestination) { inclusive = true }
+                            popUpTo(navigationState.previousDestination) { inclusive = true }
                             launchSingleTop = true
                         }
                     }
@@ -85,10 +86,3 @@ fun BottomNavigationBar(
         }
     }
 }
-
-data class BottomNavigationItem(
-    val iconRes: Int,
-    val label: String,
-    val contentDescription: String? = null,
-    val destination: String
-)

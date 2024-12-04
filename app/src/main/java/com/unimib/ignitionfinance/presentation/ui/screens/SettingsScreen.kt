@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.text.input.TextFieldValue
-import com.unimib.ignitionfinance.presentation.ui.components.TitleSettings
+import com.unimib.ignitionfinance.presentation.ui.components.title.TitleSettings
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCard
