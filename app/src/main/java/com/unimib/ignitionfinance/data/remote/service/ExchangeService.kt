@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.service
 
-import com.unimib.ignitionfinance.data.remote.response.ExchangeResponse  // Corrected import
+import com.unimib.ignitionfinance.data.remote.response.ExchangeResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -14,5 +14,5 @@ interface ExchangeService {
         @Path("seriesKey") seriesKey: String,
         @Query("format") format: String = "jsondata",
         @Query("lastNObservations") lastNObservations: Int = 1
-    ): Response<ExchangeResponse>  // Changed to match the correct response type
+    ): Response<ExchangeResponse>
 }
