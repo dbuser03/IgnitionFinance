@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 
 @Composable
-fun CustomFloatingActionButton(
+fun CustomFAB(
     onClick: (() -> Unit) = {},
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primary,

@@ -15,7 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.BottomNavigationBar
 import com.unimib.ignitionfinance.presentation.ui.components.BottomNavigationItem
-import com.unimib.ignitionfinance.presentation.ui.components.CustomFloatingActionButton
+import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.TitleWithButton
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
@@ -59,7 +59,7 @@ fun SimulationScreen(navController: NavController) {
             )
         },
         floatingActionButton = {
-            CustomFloatingActionButton(
+            CustomFAB(
                 onClick = { /* Handle click action */ },
                 modifier = Modifier
                     .padding(bottom = 12.dp),

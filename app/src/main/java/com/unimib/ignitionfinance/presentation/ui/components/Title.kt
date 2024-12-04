@@ -143,7 +143,7 @@ fun TitleWithButton(
                 .align(Alignment.BottomStart)
         )
 
-        CustomFloatingActionButton(
+        CustomFAB(
             onClick = { navController.navigate(Destinations.SettingsScreen.route) },
             modifier = Modifier
                 .align(Alignment.CenterEnd)

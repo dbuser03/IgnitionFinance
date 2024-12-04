@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.components.CustomFloatingActionButton
+import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.TitleWithDescription
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
@@ -24,7 +24,7 @@ fun LoginScreen(navController: NavController) {
             TitleWithDescription(title = stringResource(id = R.string.app_title), description = stringResource(id = R.string.login_description))
         },
         floatingActionButton = {
-            CustomFloatingActionButton(
+            CustomFAB(
                 onClick = {
                     navController.navigate(Destinations.PortfolioScreen.route){
                         popUpTo(Destinations.LoginScreen.route) {

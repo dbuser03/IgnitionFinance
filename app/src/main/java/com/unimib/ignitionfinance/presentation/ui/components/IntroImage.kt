@@ -34,7 +34,6 @@ fun IntroImage(onNavigate: () -> Unit) {
     val introText = stringResource(id = R.string.intro_description)
 
     var textVisible by remember { mutableStateOf(false) }
-    var coloredIndices by remember { mutableIntStateOf(0) }
     var isFabClickable by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -45,10 +44,6 @@ fun IntroImage(onNavigate: () -> Unit) {
     LaunchedEffect(textVisible) {
         if (textVisible) {
             delay(500)
-            for (i in introText.indices) {
-                delay(18)
-                coloredIndices = i + 1
-            }
             isFabClickable = true
         }
     }
@@ -66,9 +61,9 @@ fun IntroImage(onNavigate: () -> Unit) {
     ) {
         BackgroundImage()
 
-        AnimatedText(text = introText, coloredIndices = coloredIndices, visible = textVisible)
+        AnimatedText(text = introText, visible = textVisible)
 
-        CustomFloatingActionButton(
+        CustomFAB(
             onClick = {
                 if (isFabClickable) {
                     onNavigate()
@@ -98,9 +93,20 @@ fun BackgroundImage() {
 }
 
 @Composable
-fun AnimatedText(text: String, coloredIndices: Int, visible: Boolean) {
+fun AnimatedText(text: String, visible: Boolean) {
     val initialTextColor = MaterialTheme.colorScheme.secondary
-    val changedTextColor = PrimaryWhite
+    val changedTextColor = MaterialTheme.colorScheme.primary
+
+    val animatedText = remember { mutableIntStateOf(0) }
+
+    if (visible) {
+        LaunchedEffect(Unit) {
+            for (i in text.indices) {
+                delay(18)
+                animatedText.intValue = i + 1
+            }
+        }
+    }
 
     AnimatedVisibility(
         visible = visible,
@@ -112,7 +118,7 @@ fun AnimatedText(text: String, coloredIndices: Int, visible: Boolean) {
                 for (i in text.indices) {
                     withStyle(
                         style = SpanStyle(
-                            color = if (i < coloredIndices) changedTextColor else initialTextColor
+                            color = if (i < animatedText.intValue) changedTextColor else initialTextColor
                         )
                     ) {
                         append(text[i])
