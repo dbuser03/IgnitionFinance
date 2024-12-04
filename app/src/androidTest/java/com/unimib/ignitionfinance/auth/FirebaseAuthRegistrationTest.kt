@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.authTest
+package com.unimib.ignitionfinance.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import junit.framework.TestCase.assertEquals
