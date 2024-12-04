@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.unimib.ignitionfinance.ui.navigation.AppNavigation
-import com.unimib.ignitionfinance.ui.theme.IgnitionFinanceTheme
+import com.unimib.ignitionfinance.presentation.navigation.AppNavigation
+import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
