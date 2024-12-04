@@ -1,7 +1,6 @@
-package com.unimib.ignitionfinance.data.remote.response.inflation
+package com.unimib.ignitionfinance.data.remote.response
 
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.data.remote.response.InflationResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
