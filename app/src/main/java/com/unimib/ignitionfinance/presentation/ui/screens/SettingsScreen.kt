@@ -14,11 +14,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.unimib.ignitionfinance.presentation.ui.components.TitleSettings
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.components.settings.input.SettingsInputCard
+import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxData
 import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectBoxModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
@@ -27,6 +28,17 @@ fun SettingsScreen(navController: NavController) {
 
     val expandedCardIndex by remember { settingsViewModel.expandedCardIndex }
     val listState = rememberLazyListState()
+
+    // Using mutableStateOf for inflation model to allow for changes
+    var inflationModel by remember {
+        mutableStateOf(
+            SelectBoxModel(
+                text = "Choose the inflation model:",
+                displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
+                selectedText = "SCALE"
+            )
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -51,7 +63,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                SettingsInputCard(
+                                InputCard(
                                     label = "NORMAL, RETIREMENT",
                                     title = "WITHDRAW",
                                     inputBoxDataList = listOf(
@@ -83,11 +95,12 @@ fun SettingsScreen(navController: NavController) {
                                 SelectCard(
                                     label = "NORMAL, SCALE, LOGNORMAL",
                                     title = "INFLATION",
-                                    inputText = "Choose the inflation model:",
-                                    displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
-                                    initialSelectedText = "SCALE", // Fetch from database
+                                    model = inflationModel, // Pass the model
                                     isExpanded = expandedCardIndex == 1,
-                                    onCardClicked = { settingsViewModel.toggleCardExpansion(1) }
+                                    onCardClicked = { settingsViewModel.toggleCardExpansion(1) },
+                                    onTextSelected = { selectedText ->
+                                        inflationModel = inflationModel.copy(selectedText = selectedText)  // Update the selectedText
+                                    }
                                 )
                             }
                         )
@@ -98,7 +111,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                SettingsInputCard(
+                                InputCard(
                                     label = "TAX RATE, STAMP DUTY, LOAD",
                                     title = "EXPENSES",
                                     inputBoxDataList = listOf(
@@ -133,7 +146,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                SettingsInputCard(
+                                InputCard(
                                     label = "YEARS, RETIREMENTS YEARS, BUFFER",
                                     title = "INTERVALS",
                                     inputBoxDataList = listOf(
@@ -168,7 +181,7 @@ fun SettingsScreen(navController: NavController) {
                             expandedCardIndex = expandedCardIndex,
                             listState = listState,
                             content = {
-                                SettingsInputCard(
+                                InputCard(
                                     label = "NUMBER",
                                     title = "SIMULATIONS",
                                     inputBoxDataList = listOf(

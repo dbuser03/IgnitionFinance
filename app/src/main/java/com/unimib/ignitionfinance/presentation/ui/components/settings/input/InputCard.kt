@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SettingsInputCard(
+fun InputCard(
     label: String,
     title: String,
     modifier: Modifier = Modifier,

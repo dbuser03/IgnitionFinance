@@ -13,12 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
-import com.unimib.ignitionfinance.R
 
 @Composable
 fun CustomIcon(
@@ -41,16 +37,6 @@ fun CustomIcon(
             modifier = Modifier.size(iconSize),
             contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-        )
-    }
-}
-
-@Preview
-@Composable
-fun PreviewSettingsIcon() {
-    IgnitionFinanceTheme {
-        CustomIcon(
-            icon = painterResource(id = R.drawable.outline_candlestick_chart_24)
         )
     }
 }

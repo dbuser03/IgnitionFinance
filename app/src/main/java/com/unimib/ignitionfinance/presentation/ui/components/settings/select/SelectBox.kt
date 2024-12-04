@@ -21,9 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SelectBox(
-    text: String,
-    displayedTexts: List<String>,
-    selectedText: String? = null,
+    model: SelectBoxModel,
     onTextSelected: (String) -> Unit,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     boxHeight: Dp = 152.dp
@@ -36,7 +34,7 @@ fun SelectBox(
             .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {}
     ) {
         Text(
-            text = text,
+            text = model.text,
             color = MaterialTheme.colorScheme.secondary,
             style = textStyle,
             modifier = Modifier.align(Alignment.TopStart)
@@ -49,11 +47,13 @@ fun SelectBox(
                 .padding(top = 24.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            displayedTexts.forEach { displayedText ->
+            model.displayedTexts.forEach { displayedText ->
                 SelectBoxBody(
                     text = displayedText,
-                    isSelected = selectedText == displayedText,
-                    onClick = { onTextSelected(displayedText) }
+                    isSelected = model.selectedText == displayedText,
+                    onClick = {
+                        onTextSelected(displayedText)
+                    }
                 )
             }
         }
