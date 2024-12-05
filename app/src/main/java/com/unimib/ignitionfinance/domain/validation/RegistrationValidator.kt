@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.domain.validation
 object RegistrationValidator {
     fun validateName(name: String?): RegistrationValidationResult {
         return when {
-            name.isNullOrBlank() -> RegistrationValidationResult.Failure("Name cannot be empty")
+            name.isNullOrBlank() -> RegistrationValidationResult.Success
             !RegistrationValidationRules.validateName(name) -> RegistrationValidationResult.Failure("Name should be at least 2 characters and not contain numbers")
             else -> RegistrationValidationResult.Success
         }
@@ -11,7 +11,7 @@ object RegistrationValidator {
 
     fun validateSurname(surname: String?): RegistrationValidationResult {
         return when {
-            surname.isNullOrBlank() -> RegistrationValidationResult.Failure("Surname cannot be empty")
+            surname.isNullOrBlank() -> RegistrationValidationResult.Success
             !RegistrationValidationRules.validateSurname(surname) -> RegistrationValidationResult.Failure("Surname should be at least 2 characters and not contain numbers")
             else -> RegistrationValidationResult.Success
         }

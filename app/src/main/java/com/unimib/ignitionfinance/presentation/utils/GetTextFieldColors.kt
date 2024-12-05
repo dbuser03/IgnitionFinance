@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 @Composable
 fun getTextFieldColors(isError: Boolean): TextFieldColors {
     val focusedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val unfocusedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+    val unfocusedBorderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
     val cursorColor = MaterialTheme.colorScheme.primary
     val focusedLabelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val unfocusedLabelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+    val unfocusedLabelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
 
     return OutlinedTextFieldDefaults.colors(
         focusedBorderColor = focusedBorderColor,

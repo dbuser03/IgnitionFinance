@@ -1,7 +1,9 @@
 package com.unimib.ignitionfinance.domain.validation
 
 object RegistrationValidationRules {
+
     fun validateName(name: String): Boolean {
+        if (name.isBlank()) return true
         val isValidLength = name.length >= 3
         val containsNumbers = name.any { it.isDigit() }
         val isSingleWord = name.trim().split("\\s+".toRegex()).size == 1
@@ -11,6 +13,7 @@ object RegistrationValidationRules {
     }
 
     fun validateSurname(surname: String): Boolean {
+        if (surname.isBlank()) return true
         val isValidLength = surname.length >= 3
         val containsNumbers = surname.any { it.isDigit() }
         val isSingleWord = surname.trim().split("\\s+".toRegex()).size == 1

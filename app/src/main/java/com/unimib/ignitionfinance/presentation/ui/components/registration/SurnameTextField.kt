@@ -19,8 +19,8 @@ import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 
 @Composable
-fun NameTextField(
-    name: String,
+fun SurnameTextField(
+    surname: String,
     onNameChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -28,16 +28,12 @@ fun NameTextField(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
-
     Column(modifier = modifier) {
         OutlinedTextField(
-            value = name,
+            value = surname,
             onValueChange = {
                 onNameChange(it)
-                errorMessage = when (val result = RegistrationValidator.validateName(it)) {
+                errorMessage = when (val result = RegistrationValidator.validateSurname(it)) {
                     is RegistrationValidationResult.Failure -> result.message
                     RegistrationValidationResult.Success -> null
                 }
@@ -46,7 +42,7 @@ fun NameTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
-            label = { Text("Name") },
+            label = { Text("Surname") },
             shape = RoundedCornerShape(56.dp),
             colors = getTextFieldColors(isError = errorMessage != null),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),

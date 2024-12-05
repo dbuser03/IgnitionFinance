@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
 import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 
 @Composable
@@ -40,7 +41,7 @@ fun UpdateValueTextField(
         colors = getTextFieldColors(isError = errorMessage != null),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
-            imeAction = androidx.compose.ui.text.input.ImeAction.Done
+            imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
             onDone = {
