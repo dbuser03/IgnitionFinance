@@ -18,6 +18,7 @@ fun CustomDialog(
 ) {
     var textInput by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val isInputValid = errorMessage == null && textInput.isNotBlank()
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -25,29 +26,25 @@ fun CustomDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val validationResult = InputValidator.validate(textInput, prefix)
-                    if (validationResult is ValidationResult.Success) {
+                    if (isInputValid) {
                         onConfirmation(textInput)
-                    } else {
-                        errorMessage = (validationResult as ValidationResult.Failure).message
                     }
                 },
+                enabled = isInputValid, // Disabilita il pulsante se l'input non è valido
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text(
                     "Confirm",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = TypographyMedium.bodyMedium.fontWeight,
-                        color = MaterialTheme.colorScheme.primary
+                        color = if (isInputValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
         },
         dismissButton = {
             TextButton(
-                onClick = {
-                    onDismissRequest()
-                },
+                onClick = { onDismissRequest() },
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text(
@@ -79,14 +76,12 @@ fun CustomDialog(
                 CustomTextField(
                     textColor = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.fillMaxWidth(),
-                    onConfirm = { input ->
+                    onValueChange = { input ->
                         textInput = input
                         val validationResult = InputValidator.validate(input, prefix)
-                        if (validationResult is ValidationResult.Success) {
-                            onConfirmation(input)
-                        } else {
-                            errorMessage = (validationResult as ValidationResult.Failure).message
-                        }
+                        errorMessage = if (validationResult is ValidationResult.Failure) {
+                            validationResult.message
+                        } else null
                     },
                     errorMessage = errorMessage
                 )
@@ -94,5 +89,3 @@ fun CustomDialog(
         },
     )
 }
-
-

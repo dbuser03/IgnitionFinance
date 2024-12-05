@@ -1,8 +1,6 @@
 package com.unimib.ignitionfinance.domain.validation
 
 object InputValidator {
-
-
     fun validate(value: String, prefix: String): ValidationResult {
         return when {
             !InputBoxValidationRules.validateInput(value, prefix) -> {
@@ -17,7 +15,6 @@ object InputValidator {
         }
     }
 }
-
 
 sealed class ValidationResult {
     data object Success : ValidationResult()

@@ -9,18 +9,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    onConfirm: (String) -> Unit = {},
+    onValueChange: (String) -> Unit,
     errorMessage: String? = null
 ) {
     var text by remember { mutableStateOf("") }
@@ -40,6 +38,7 @@ fun CustomTextField(
         onValueChange = { input ->
             if (input.matches(Regex("^\\d*\\.?\\d*\$"))) {
                 text = input
+                onValueChange(input)
             }
         },
         label = {
@@ -64,16 +63,15 @@ fun CustomTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-
-                onConfirm(text)
-                keyboardController?.hide()
+                if (!isError) {
+                    keyboardController?.hide()
+                }
             }
         ),
         modifier = modifier
             .focusRequester(focusRequester)
             .fillMaxWidth()
     )
-
 
     errorMessage?.let {
         Text(
@@ -84,17 +82,5 @@ fun CustomTextField(
                 .padding(start = 16.dp)
                 .padding(top = 8.dp)
         )
-    }
-}
-
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewCustomTextField() {
-    IgnitionFinanceTheme {
-        CustomTextField()
     }
 }
