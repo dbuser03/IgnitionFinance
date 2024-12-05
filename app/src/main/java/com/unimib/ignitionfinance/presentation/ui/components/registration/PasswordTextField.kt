@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
+import androidx.compose.ui.res.painterResource
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun PasswordTextField(
@@ -30,7 +31,7 @@ fun PasswordTextField(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    var passwordVisible by remember { mutableStateOf(false) } // Stato per gestire la visibilità della password
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         OutlinedTextField(
@@ -62,10 +63,13 @@ fun PasswordTextField(
                 }
             ),
             trailingIcon = {
-                val icon = if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff
+                val iconRes = if (passwordVisible) R.drawable.outline_visibility_24 else R.drawable.outline_visibility_off_24
                 val contentDescription = if (passwordVisible) "Nascondi password" else "Mostra password"
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = icon, contentDescription = contentDescription)
+                    Icon(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = contentDescription
+                    )
                 }
             }
         )
@@ -78,3 +82,4 @@ fun PasswordTextField(
         }
     }
 }
+
