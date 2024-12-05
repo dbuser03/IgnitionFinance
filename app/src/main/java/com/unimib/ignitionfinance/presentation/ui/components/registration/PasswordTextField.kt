@@ -62,7 +62,7 @@ fun PasswordTextField(
                 }
             ),
             trailingIcon = {
-                val icon = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                val icon = if (passwordVisible) Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff
                 val contentDescription = if (passwordVisible) "Nascondi password" else "Mostra password"
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = icon, contentDescription = contentDescription)
