@@ -16,12 +16,8 @@ import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDesc
 fun RegistrationScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            TitleWithDescription(title = stringResource(id = R.string.app_title), description = stringResource(id = R.string.login_description))
+            TitleWithDescription(title = stringResource(id = R.string.app_title), description = stringResource(id = R.string.registration_description))
         },
-        floatingActionButton = {
-
-        },
-        floatingActionButtonPosition = FabPosition.Center,
         content = { innerPadding ->
             Box(
                 modifier = Modifier

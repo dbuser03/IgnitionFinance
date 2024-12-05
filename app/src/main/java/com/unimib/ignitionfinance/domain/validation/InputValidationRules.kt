@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.domain.validation
 
-object InputBoxValidationRules {
+object InputValidationRules {
     fun validateInput(value: String?, prefix: String): Boolean {
         if (value.isNullOrBlank()) return true
 
