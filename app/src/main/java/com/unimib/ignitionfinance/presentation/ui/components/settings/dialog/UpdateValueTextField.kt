@@ -18,7 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 fun CustomTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    onValueChange: (String) -> Unit,
+    onValueChange: (String?) -> Unit,
     errorMessage: String? = null
 ) {
     var text by remember { mutableStateOf("") }
@@ -36,10 +36,8 @@ fun CustomTextField(
     OutlinedTextField(
         value = text,
         onValueChange = { input ->
-            if (input.matches(Regex("^\\d*\\.?\\d*\$"))) {
-                text = input
-                onValueChange(input)
-            }
+            text = input
+            onValueChange(if (input.isBlank()) null else input)
         },
         label = {
             Text(
@@ -84,3 +82,4 @@ fun CustomTextField(
         )
     }
 }
+

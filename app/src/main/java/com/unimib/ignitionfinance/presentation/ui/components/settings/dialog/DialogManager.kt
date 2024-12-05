@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 fun DialogManager(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    onConfirmation: (String) -> Unit,
+    onConfirmation: (String?) -> Unit,
     dialogTitle: String,
     prefix: String
 ) {

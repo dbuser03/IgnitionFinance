@@ -12,13 +12,13 @@ import com.unimib.ignitionfinance.domain.validation.ValidationResult
 @Composable
 fun CustomDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: (String) -> Unit,
+    onConfirmation: (String?) -> Unit,
     dialogTitle: String,
     prefix: String
 ) {
-    var textInput by remember { mutableStateOf("") }
+    var textInput by remember { mutableStateOf<String?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val isInputValid = errorMessage == null && textInput.isNotBlank()
+    val isInputValid = errorMessage == null
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -30,7 +30,7 @@ fun CustomDialog(
                         onConfirmation(textInput)
                     }
                 },
-                enabled = isInputValid, // Disabilita il pulsante se l'input non è valido
+                enabled = isInputValid,
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text(
@@ -89,3 +89,4 @@ fun CustomDialog(
         },
     )
 }
+
