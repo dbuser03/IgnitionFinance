@@ -43,10 +43,6 @@ fun RegistrationForm() {
                     .focusRequester(surnameFocusRequester)
             )
         }
-        BirthDateField(
-            birthDate = birthDate.value,
-            onBirthDateChange = { birthDate.value = it },
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-        )
+
     }
 }
