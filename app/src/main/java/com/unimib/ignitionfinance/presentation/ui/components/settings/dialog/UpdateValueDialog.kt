@@ -74,7 +74,6 @@ fun UpdateValueDialog(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 UpdateValueTextField(
-                    textColor = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.fillMaxWidth(),
                     onValueChange = { input ->
                         textInput = input

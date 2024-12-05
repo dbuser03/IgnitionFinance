@@ -13,11 +13,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 
 @Composable
 fun UpdateValueTextField(
     modifier: Modifier = Modifier,
-    textColor: Color = MaterialTheme.colorScheme.onSurface,
     onValueChange: (String?) -> Unit,
     errorMessage: String? = null
 ) {
@@ -29,39 +29,22 @@ fun UpdateValueTextField(
         focusRequester.requestFocus()
     }
 
-    val isError = errorMessage != null
-    val borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val labelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-
     OutlinedTextField(
         value = text,
         onValueChange = { input ->
             text = input
             onValueChange(if (input.isBlank()) null else input)
         },
-        label = {
-            Text(
-                text = "New value",
-                color = labelColor,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        },
+        label = { Text("New value") },
         shape = RoundedCornerShape(56.dp),
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = textColor),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = borderColor,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = labelColor,
-            unfocusedLabelColor = labelColor
-        ),
+        colors = getTextFieldColors(isError = errorMessage != null),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = androidx.compose.ui.text.input.ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                if (!isError) {
+                if (errorMessage == null) {
                     keyboardController?.hide()
                 }
             }
@@ -82,3 +65,4 @@ fun UpdateValueTextField(
         )
     }
 }
+

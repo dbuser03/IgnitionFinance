@@ -1,77 +1,40 @@
 package com.unimib.ignitionfinance.presentation.ui.components.registration
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.KeyboardType
+import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
-import com.unimib.ignitionfinance.domain.validation.ValidationResult
+import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 
 @Composable
 fun NameTextField(
-    modifier: Modifier = Modifier,
-    textColor: Color = MaterialTheme.colorScheme.onSurface,
-    onValueChange: (String?) -> Unit,
+    name: String,
+    onNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var text by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
-
-    val validationResult = RegistrationValidator.validateName(text)
-    errorMessage = if (validationResult is ValidationResult.Failure) {
-        validationResult.message
-    } else {
-        null
-    }
-
-    val isError = errorMessage != null
-    val borderColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val labelColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-
-    Column {
+    Column(modifier = modifier) {
         OutlinedTextField(
-            value = text,
-            onValueChange = { input ->
-                text = input
-                onValueChange(if (input.isBlank()) null else input)
+            value = name,
+            onValueChange = {
+                onNameChange(it)
+                errorMessage = when (val result = RegistrationValidator.validateName(it)) {
+                    is RegistrationValidationResult.Failure -> result.message
+                    RegistrationValidationResult.Success -> null
+                }
             },
-            label = {
-                Text(
-                    text = "Name",
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            shape = RoundedCornerShape(56.dp),
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = textColor),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = borderColor,
-                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                cursorColor = MaterialTheme.colorScheme.primary,
-                focusedLabelColor = labelColor,
-                unfocusedLabelColor = labelColor
-            ),
-            modifier = modifier
-                .focusRequester(focusRequester)
-                .fillMaxWidth()
+            isError = errorMessage != null,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Name") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
+            colors = getTextFieldColors(isError = errorMessage != null)
         )
-
-        if (isError) {
-            Text(
-                text = errorMessage.orEmpty(),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
     }
 }
+

@@ -1,24 +1,24 @@
 package com.unimib.ignitionfinance.domain.validation
 
 object RegistrationValidator {
-    fun validateName(name: String?): InputValidationResult {
+    fun validateName(name: String?): RegistrationValidationResult {
         return when {
-            name.isNullOrBlank() -> InputValidationResult.Failure("Name cannot be empty")
-            !RegistrationValidationRules.validateName(name) -> InputValidationResult.Failure("Name should be at least 2 characters and not contain numbers")
-            else -> InputValidationResult.Success
+            name.isNullOrBlank() -> RegistrationValidationResult.Failure("Name cannot be empty")
+            !RegistrationValidationRules.validateName(name) -> RegistrationValidationResult.Failure("Name should be at least 2 characters and not contain numbers")
+            else -> RegistrationValidationResult.Success
         }
     }
 
-    fun validateSurname(surname: String?): InputValidationResult {
+    fun validateSurname(surname: String?): RegistrationValidationResult {
         return when {
-            surname.isNullOrBlank() -> InputValidationResult.Failure("Surname cannot be empty")
-            !RegistrationValidationRules.validateSurname(surname) -> InputValidationResult.Failure("Surname should be at least 2 characters and not contain numbers")
-            else -> InputValidationResult.Success
+            surname.isNullOrBlank() -> RegistrationValidationResult.Failure("Surname cannot be empty")
+            !RegistrationValidationRules.validateSurname(surname) -> RegistrationValidationResult.Failure("Surname should be at least 2 characters and not contain numbers")
+            else -> RegistrationValidationResult.Success
         }
     }
 }
 
-sealed class ValidationResult {
-    data object Success : InputValidationResult()
-    data class Failure(val message: String) : InputValidationResult()
+sealed class RegistrationValidationResult {
+    data object Success : RegistrationValidationResult()
+    data class Failure(val message: String) : RegistrationValidationResult()
 }
