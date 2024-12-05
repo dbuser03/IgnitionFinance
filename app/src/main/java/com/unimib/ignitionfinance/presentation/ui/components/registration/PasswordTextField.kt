@@ -2,6 +2,8 @@ package com.unimib.ignitionfinance.presentation.ui.components.registration
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -64,11 +66,17 @@ fun PasswordTextField(
             ),
             trailingIcon = {
                 val iconRes = if (passwordVisible) R.drawable.outline_visibility_24 else R.drawable.outline_visibility_off_24
-                val contentDescription = if (passwordVisible) "Nascondi password" else "Mostra password"
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                val contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible },
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                ) {
                     Icon(
                         painter = painterResource(id = iconRes),
-                        contentDescription = contentDescription
+                        contentDescription = contentDescription,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -77,9 +85,11 @@ fun PasswordTextField(
             Text(
                 text = errorMessage!!,
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 8.dp)
             )
         }
     }
 }
-
