@@ -28,10 +28,19 @@ object RegistrationValidator {
     fun validatePassword(password: String?): RegistrationValidationResult {
         return when {
             password.isNullOrBlank() -> RegistrationValidationResult.Success
-            !RegistrationValidationRules.validatePassword(password) -> RegistrationValidationResult.Failure("\"Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., @, !, ?, #, \$, etc.).\"")
+            !RegistrationValidationRules.validatePassword(password) -> RegistrationValidationResult.Failure("Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., @, !, ?, #, \$, etc.).\"")
             else -> RegistrationValidationResult.Success
         }
     }
+
+    fun validateRegistrationForm(name: String?, surname: String?, email: String?, password: String?): RegistrationValidationResult {
+        return when {
+            !RegistrationValidationRules.validateRegistrationForm(name, surname, email, password) -> RegistrationValidationResult.Failure("")
+            else -> RegistrationValidationResult.Success
+
+        }
+    }
+
 }
 
 sealed class RegistrationValidationResult {

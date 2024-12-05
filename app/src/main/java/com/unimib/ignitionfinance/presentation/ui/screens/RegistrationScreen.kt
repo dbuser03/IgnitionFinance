@@ -28,7 +28,7 @@ fun RegistrationScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                RegistrationForm()
+                RegistrationForm(navController)
             }
         }
     )

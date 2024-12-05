@@ -23,4 +23,5 @@
     <string name="go_back_FAB_description">Go back</string>
     <string name="simulate_FAB_description">Start Simulation</string>
     <string name="login_FAB_description">Login</string>
+    <string name="registration_FAB_description">Register</string>
 </resources>

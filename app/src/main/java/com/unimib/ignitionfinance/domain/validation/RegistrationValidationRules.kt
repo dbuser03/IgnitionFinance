@@ -27,4 +27,14 @@ object RegistrationValidationRules {
         return passwordRegex.matches(password)
     }
 
+    fun validateRegistrationForm(name: String?, surname: String?, email: String?, password: String?): Boolean {
+        return !name.isNullOrBlank() &&
+                !surname.isNullOrBlank() &&
+                !email.isNullOrBlank() &&
+                !password.isNullOrBlank() &&
+                validateName(name) &&
+                validateSurname(surname) &&
+                validateEmail(email) &&
+                validatePassword(password)
+    }
 }
