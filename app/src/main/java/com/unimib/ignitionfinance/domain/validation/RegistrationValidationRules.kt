@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import java.util.Calendar
+
 object RegistrationValidationRules {
 
     fun validateName(name: String): Boolean {

@@ -22,3 +22,4 @@ sealed class RegistrationValidationResult {
     data object Success : RegistrationValidationResult()
     data class Failure(val message: String) : RegistrationValidationResult()
 }
+
