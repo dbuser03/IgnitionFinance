@@ -21,7 +21,7 @@ import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 @Composable
 fun SurnameTextField(
     surname: String,
-    onNameChange: (String) -> Unit,
+    onSurnameChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -32,7 +32,7 @@ fun SurnameTextField(
         OutlinedTextField(
             value = surname,
             onValueChange = {
-                onNameChange(it)
+                onSurnameChange(it)
                 errorMessage = when (val result = RegistrationValidator.validateSurname(it)) {
                     is RegistrationValidationResult.Failure -> result.message
                     RegistrationValidationResult.Success -> null
@@ -56,5 +56,3 @@ fun SurnameTextField(
         )
     }
 }
-
-

@@ -1,16 +1,22 @@
 package com.unimib.ignitionfinance.presentation.ui.components.registration
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
+import java.util.*
 
 @Composable
 fun RegistrationForm() {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
+    val birthDate = remember { mutableStateOf("") }
+
+    val nameFocusRequester = remember { FocusRequester() }
+    val surnameFocusRequester = remember { FocusRequester() }
 
     Column(
         modifier = Modifier
@@ -24,13 +30,23 @@ fun RegistrationForm() {
             NameTextField(
                 name = name.value,
                 onNameChange = { name.value = it },
-                modifier = Modifier.weight(1f)
+                surnameFocusRequester = surnameFocusRequester,
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(nameFocusRequester)
             )
             SurnameTextField(
                 surname = surname.value,
-                onNameChange = { surname.value = it },
-                modifier = Modifier.weight(1f)
+                onSurnameChange = { surname.value = it },
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(surnameFocusRequester)
             )
         }
+        BirthDateField(
+            birthDate = birthDate.value,
+            onBirthDateChange = { birthDate.value = it },
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        )
     }
 }

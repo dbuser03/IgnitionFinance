@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -22,11 +21,11 @@ import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 fun NameTextField(
     name: String,
     onNameChange: (String) -> Unit,
+    surnameFocusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -49,16 +48,14 @@ fun NameTextField(
             label = { Text("Name") },
             shape = RoundedCornerShape(56.dp),
             colors = getTextFieldColors(isError = errorMessage != null),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
-                onDone = {
+                onNext = {
                     if (errorMessage == null) {
-                        keyboardController?.hide()
+                        surnameFocusRequester.requestFocus()
                     }
                 }
             )
         )
     }
 }
-
-
