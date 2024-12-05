@@ -7,4 +7,5 @@ sealed class Destinations(val route: String) {
     object SummaryScreen : Destinations("summary_screen")
     object SettingsScreen : Destinations("settings_screen")
     object LoginScreen : Destinations("login_screen")
+    object RegistrationScreen : Destinations("register_screen")
 }

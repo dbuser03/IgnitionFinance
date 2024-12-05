@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.unimib.ignitionfinance.presentation.ui.screens.IntroScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.LoginScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.PortfolioScreen
+import com.unimib.ignitionfinance.presentation.ui.screens.RegistrationScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SettingsScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SimulationScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SummaryScreen
@@ -23,13 +24,19 @@ fun NavGraph(
         startDestination = Destinations.IntroScreen.route
     ) {
         composable(
+            route = Destinations.RegistrationScreen.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ) {
+            RegistrationScreen(navController)
+        }
+
+        composable(
             route = Destinations.LoginScreen.route,
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
-            LoginScreen(
-                navController,
-            )
+            LoginScreen(navController)
         }
         composable(
             route = Destinations.PortfolioScreen.route,
