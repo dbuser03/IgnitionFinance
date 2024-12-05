@@ -10,7 +10,7 @@ import com.unimib.ignitionfinance.domain.validation.InputValidator
 import com.unimib.ignitionfinance.domain.validation.ValidationResult
 
 @Composable
-fun CustomDialog(
+fun UpdateValueDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String?) -> Unit,
     dialogTitle: String,
@@ -73,7 +73,7 @@ fun CustomDialog(
             Column(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                CustomTextField(
+                UpdateValueTextField(
                     textColor = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.fillMaxWidth(),
                     onValueChange = { input ->

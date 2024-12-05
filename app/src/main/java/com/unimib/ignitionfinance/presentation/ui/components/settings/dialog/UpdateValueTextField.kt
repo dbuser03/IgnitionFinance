@@ -15,7 +15,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 
 @Composable
-fun CustomTextField(
+fun UpdateValueTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     onValueChange: (String?) -> Unit,
@@ -82,4 +82,3 @@ fun CustomTextField(
         )
     }
 }
-

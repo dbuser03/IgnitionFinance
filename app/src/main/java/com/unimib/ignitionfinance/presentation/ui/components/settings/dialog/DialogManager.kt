@@ -11,7 +11,7 @@ fun DialogManager(
     prefix: String
 ) {
     if (showDialog) {
-        CustomDialog(
+        UpdateValueDialog(
             onDismissRequest = onDismissRequest,
             onConfirmation = onConfirmation,
             dialogTitle = dialogTitle,
