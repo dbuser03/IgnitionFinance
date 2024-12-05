@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 fun RegistrationForm() {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
 
     val nameFocusRequester = remember { FocusRequester() }
     val surnameFocusRequester = remember { FocusRequester() }
@@ -40,5 +42,20 @@ fun RegistrationForm() {
                     .focusRequester(surnameFocusRequester)
             )
         }
+
+        Spacer(modifier = Modifier.padding(top = 4.dp))
+        EmailTextField(
+            email = email.value,
+            onEmailChange = { email.value = it },
+            modifier = Modifier
+
+        )
+
+        Spacer(modifier = Modifier.padding(top = 4.dp))
+        PasswordTextField(
+            password = password.value,
+            onPasswordChange = { password.value = it },
+            modifier = Modifier
+        )
     }
 }

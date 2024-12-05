@@ -6,21 +6,25 @@ object RegistrationValidationRules {
 
     fun validateName(name: String): Boolean {
         if (name.isBlank()) return true
-        val isValidLength = name.length >= 3
-        val containsNumbers = name.any { it.isDigit() }
-        val isSingleWord = name.trim().split("\\s+".toRegex()).size == 1
-        val noWhiteSpaces = !name.contains(" ")
-        val noPunctuation = !name.any { it in ".,;!?()[]{}<>:/" }
-        return isValidLength && !containsNumbers && isSingleWord && noWhiteSpaces && noPunctuation
+        val nameRegex = "^[a-zA-Z]{3,}$".toRegex()
+        return nameRegex.matches(name)
     }
 
     fun validateSurname(surname: String): Boolean {
         if (surname.isBlank()) return true
-        val isValidLength = surname.length >= 3
-        val containsNumbers = surname.any { it.isDigit() }
-        val isSingleWord = surname.trim().split("\\s+".toRegex()).size == 1
-        val noWhiteSpaces = !surname.contains(" ")
-        val noPunctuation = !surname.any { it in ".,;!?()[]{}<>:/" }
-        return isValidLength && !containsNumbers && isSingleWord && noWhiteSpaces && noPunctuation
+        val surnameRegex = "^[a-zA-Z]{3,}$".toRegex()
+        return surnameRegex.matches(surname)
     }
+
+    fun validateEmail(email: String): Boolean {
+        if (email.isBlank()) return true
+        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        return emailRegex.matches(email)
+    }
+
+    fun validatePassword(password: String): Boolean {
+        val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&?!+=]).{8,}$".toRegex()
+        return passwordRegex.matches(password)
+    }
+
 }

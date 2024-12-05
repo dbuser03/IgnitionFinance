@@ -16,6 +16,22 @@ object RegistrationValidator {
             else -> RegistrationValidationResult.Success
         }
     }
+
+    fun validateEmail(email: String?): RegistrationValidationResult {
+        return when {
+            email.isNullOrBlank() -> RegistrationValidationResult.Success
+            !RegistrationValidationRules.validateEmail(email) -> RegistrationValidationResult.Failure("Email should be valid and follow the standard format (e.g., user@example.com)")
+            else -> RegistrationValidationResult.Success
+        }
+    }
+
+    fun validatePassword(password: String?): RegistrationValidationResult {
+        return when {
+            password.isNullOrBlank() -> RegistrationValidationResult.Success
+            !RegistrationValidationRules.validatePassword(password) -> RegistrationValidationResult.Failure("\"Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., @, #, \$, etc.).\"")
+            else -> RegistrationValidationResult.Success
+        }
+    }
 }
 
 sealed class RegistrationValidationResult {
