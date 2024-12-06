@@ -103,7 +103,13 @@ class EmailPasswordActivity : Activity() {
                 }
             }
     }
-
+    /**
+     * Signs out the current user and updates the UI.
+     */
+    private fun signOut() {
+        auth.signOut()
+        updateUI(null)
+    }s
     //METHOD'S BELOW TO BE VERIFIED
 
     // Method to update the UI based on the user's authentication state
