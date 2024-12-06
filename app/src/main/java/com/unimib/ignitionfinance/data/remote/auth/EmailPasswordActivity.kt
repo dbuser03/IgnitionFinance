@@ -136,17 +136,21 @@ class EmailPasswordActivity : Activity() {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    //METHOD'S BELOW TO BE VERIFIED
-
-    // Method to update the UI based on the user's authentication state
+    /**
+     * Updates the UI based on the user's authentication status.
+     * @param user The current FirebaseUser, or null if not signed in.
+     */
     private fun updateUI(user: FirebaseUser?) {
-        // Update the app's UI to reflect the current user's status
+        // Implement UI updates based on user status
     }
-    // Method to reload the user state (placeholder for additional functionality)
+
+    /**
+     * Reloads user data or refreshes the UI.
+     */
     private fun reload() {
-        // Reload user information or refresh UI
+        // Implement user data reload functionality
     }
-    // Companion object to hold a constant for logging
+
     companion object {
         private const val TAG = "EmailPassword"
     }
