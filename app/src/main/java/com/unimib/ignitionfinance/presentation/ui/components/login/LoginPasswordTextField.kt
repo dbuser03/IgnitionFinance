@@ -18,11 +18,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 import androidx.compose.ui.res.painterResource
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
+import com.unimib.ignitionfinance.domain.validation.LoginValidator
 
 @Composable
 fun LoginPasswordTextField(
@@ -40,9 +40,9 @@ fun LoginPasswordTextField(
             value = password,
             onValueChange = {
                 onPasswordChange(it)
-                errorMessage = when (val result = RegistrationValidator.validatePassword(it)) {
-                    is RegistrationValidationResult.Failure -> result.message
-                    RegistrationValidationResult.Success -> null
+                errorMessage = when (val result = LoginValidator.validatePassword(it)) {
+                    is LoginValidationResult.Failure -> result.message
+                    LoginValidationResult.Success -> null
                 }
             },
             isError = errorMessage != null,
