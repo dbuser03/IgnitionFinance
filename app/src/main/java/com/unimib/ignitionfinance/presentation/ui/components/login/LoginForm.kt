@@ -2,7 +2,10 @@ package com.unimib.ignitionfinance.presentation.ui.components.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -79,6 +82,40 @@ fun LoginForm(navController: NavController) {
                 } else {
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 }
+            )
+        }
+
+        Spacer(modifier = Modifier.padding(top = 4.dp))
+
+        TextButton(
+            onClick = {
+                //navController.navigate(Destinations.ForgotPasswordScreen.route)
+            },
+            modifier = Modifier
+                .padding(start = 0.dp)
+                .align(Alignment.Start)
+        ) {
+            Text(
+                "Forgot Password?",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Spacer(modifier = Modifier.padding(top = 4.dp))
+
+        TextButton(
+            onClick = {
+                navController.navigate(Destinations.RegistrationScreen.route)
+            },
+            modifier = Modifier
+                .padding(start = 0.dp)
+                .align(Alignment.Start)
+        ) {
+            Text(
+                "Create Account",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
