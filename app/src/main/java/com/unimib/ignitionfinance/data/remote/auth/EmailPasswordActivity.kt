@@ -127,6 +127,15 @@ class EmailPasswordActivity : Activity() {
             }
         }
     }
+    /**
+     * Validates the provided email format.
+     * @param email The email address to validate.
+     * @return True if the email format is valid, false otherwise.
+     */
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
     //METHOD'S BELOW TO BE VERIFIED
 
     // Method to update the UI based on the user's authentication state
