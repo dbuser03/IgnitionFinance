@@ -73,14 +73,22 @@ class EmailPasswordActivity : Activity() {
                 }
             }
     }
-    // Method to send an email verification to the currently signed-in user
+    /**
+     * Sends a verification email to the currently signed-in user.
+     */
     private fun sendEmailVerification() {
-        val user = auth.currentUser!!
-        user.sendEmailVerification()
-            .addOnCompleteListener(this) { task ->
-                // Email verification has been sent (no additional action here)
+        val user = auth.currentUser
+        user?.sendEmailVerification()
+            ?.addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(baseContext, "Verification email sent.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.w(TAG, "sendEmailVerification:failure", task.exception)
+                    Toast.makeText(baseContext, "Failed to send verification email.", Toast.LENGTH_SHORT).show()
+                }
             }
     }
+
 
     //METHOD'S BELOW TO BE VERIFIED
 
