@@ -22,11 +22,11 @@ import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 fun SurnameTextField(
     surname: String,
     onSurnameChange: (String) -> Unit,
+    emailFocusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(modifier = modifier) {
         OutlinedTextField(
@@ -45,11 +45,11 @@ fun SurnameTextField(
             label = { Text("Surname") },
             shape = RoundedCornerShape(56.dp),
             colors = getTextFieldColors(isError = errorMessage != null),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
                 onDone = {
                     if (errorMessage == null) {
-                        keyboardController?.hide()
+                        emailFocusRequester.requestFocus()
                     }
                 }
             )
