@@ -35,3 +35,27 @@ class EmailPasswordActivity : Activity() {
             reload()
         }
     }
+    /**
+     * Creates a new account with the provided email and password.
+     * @param email The email address to register.
+     * @param password The password for the new account.
+     */
+    private fun createAccount(email: String, password: String) {
+        if (!isValidEmail(email)) {
+            Toast.makeText(baseContext, "Invalid email.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "createUserWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    val errorMessage = task.exception?.localizedMessage ?: "Authentication failed."
+                    Toast.makeText(baseContext, errorMessage, Toast.LENGTH_SHORT).show()
+                    updateUI(null)
+                }
+            }
+    }
