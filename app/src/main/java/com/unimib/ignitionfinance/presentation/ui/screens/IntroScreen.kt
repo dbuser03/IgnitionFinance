@@ -59,7 +59,7 @@ fun IntroScreen(navController: NavController, introScreenViewModel: IntroScreenV
                         textVisible = introScreenViewModel.textVisible.value,
                         isFabClickable = introScreenViewModel.isFabClickable.value,
                         onNavigate = {
-                            navController.navigate(Destinations.RegistrationScreen.route) {
+                            navController.navigate(Destinations.LoginScreen.route) {
                                 popUpTo(Destinations.IntroScreen.route) {
                                     inclusive = true
                                 }
