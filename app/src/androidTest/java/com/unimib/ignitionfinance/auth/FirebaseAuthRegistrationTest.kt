@@ -12,7 +12,7 @@ class FirebaseAuthRegistrationTest {
 
     @Before
     fun setUp() {
-        // Configura Firebase Auth per usare l'emulatore
+
         auth = FirebaseAuth.getInstance()
         auth.useEmulator("localhost", 9099)
     }
@@ -22,12 +22,12 @@ class FirebaseAuthRegistrationTest {
         val email = "testuser@example.com"
         val password = "securePassword123!"
 
-        // Prova a registrare l'utente
+
         val task = auth.createUserWithEmailAndPassword(email, password)
         task.addOnCompleteListener { result ->
             if (result.isSuccessful) {
                 val user = auth.currentUser
-                // Verifica che l'utente sia stato creato correttamente
+
                 assertNotNull(user)
                 assertEquals(email, user?.email)
             } else {
