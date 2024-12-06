@@ -25,6 +25,8 @@ fun RegistrationForm(navController: NavController) {
 
     val nameFocusRequester = remember { FocusRequester() }
     val surnameFocusRequester = remember { FocusRequester() }
+    val emailFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
 
     val isFormValid = remember(name.value, surname.value, email.value, password.value) {
         val result = RegistrationValidator.validateRegistrationForm(name.value, surname.value, email.value, password.value)
@@ -51,6 +53,7 @@ fun RegistrationForm(navController: NavController) {
             SurnameTextField(
                 surname = surname.value,
                 onSurnameChange = { surname.value = it },
+                emailFocusRequester = emailFocusRequester,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(surnameFocusRequester)
@@ -61,7 +64,9 @@ fun RegistrationForm(navController: NavController) {
         EmailTextField(
             email = email.value,
             onEmailChange = { email.value = it },
+            passwordFocusRequester = passwordFocusRequester,
             modifier = Modifier
+                .focusRequester(emailFocusRequester)
         )
 
         Spacer(modifier = Modifier.padding(top = 4.dp))
@@ -73,6 +78,7 @@ fun RegistrationForm(navController: NavController) {
                 password = password.value,
                 onPasswordChange = { password.value = it },
                 modifier = Modifier
+                    .focusRequester(passwordFocusRequester)
                     .weight(1.0f)
             )
             CustomFAB(
