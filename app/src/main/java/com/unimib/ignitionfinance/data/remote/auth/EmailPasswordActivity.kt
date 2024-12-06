@@ -59,3 +59,27 @@ class EmailPasswordActivity : Activity() {
                 }
             }
     }
+    /**
+     * Signs in a user with the provided email and password.
+     * @param email The email address to sign in with.
+     * @param password The password for the account.
+     */
+    private fun signIn(email: String, password: String) {
+        if (!isValidEmail(email)) {
+            Toast.makeText(baseContext, "Invalid email.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "signInWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    val errorMessage = task.exception?.localizedMessage ?: "Authentication failed."
+                    Toast.makeText(baseContext, errorMessage, Toast.LENGTH_SHORT).show()
+                    updateUI(null)
+                }
+            }
+    }
