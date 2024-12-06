@@ -18,6 +18,8 @@ import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
+import com.unimib.ignitionfinance.presentation.ui.theme.TypographyBold
+import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 
 @Composable
 fun LoginForm(navController: NavController) {
@@ -85,36 +87,31 @@ fun LoginForm(navController: NavController) {
             )
         }
 
-        Spacer(modifier = Modifier.padding(top = 4.dp))
-
         TextButton(
             onClick = {
                 //navController.navigate(Destinations.ForgotPasswordScreen.route)
             },
             modifier = Modifier
-                .padding(start = 0.dp)
                 .align(Alignment.Start)
         ) {
             Text(
                 "Forgot Password?",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary
             )
         }
 
-        Spacer(modifier = Modifier.padding(top = 4.dp))
 
         TextButton(
             onClick = {
                 navController.navigate(Destinations.RegistrationScreen.route)
             },
             modifier = Modifier
-                .padding(start = 0.dp)
                 .align(Alignment.Start)
         ) {
             Text(
                 "Create Account",
-                style = MaterialTheme.typography.bodyMedium,
+                style = TypographyMedium.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
         }
