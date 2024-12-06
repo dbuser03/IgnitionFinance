@@ -21,7 +21,7 @@ import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 fun EmailTextField(
     email: String,
     onEmailChange: (String) -> Unit,
-    // passwordFocusRequester: FocusRequester,
+    passwordFocusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -48,7 +48,7 @@ fun EmailTextField(
             keyboardActions = KeyboardActions(
                 onNext = {
                     if (errorMessage == null) {
-                        //passwordFocusRequester.requestFocus()
+                        passwordFocusRequester.requestFocus()
                     }
                 }
             )
