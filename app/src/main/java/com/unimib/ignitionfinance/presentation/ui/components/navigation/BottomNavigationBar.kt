@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.unimib.ignitionfinance.presentation.model.BottomNavigationItemModel
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.state.rememberNavigationState
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium

@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.navigation
+package com.unimib.ignitionfinance.presentation.model
 
 data class BottomNavigationItemModel(
     val iconRes: Int,

@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.navigation.BottomNavigationBar
-import com.unimib.ignitionfinance.presentation.ui.components.navigation.BottomNavigationItemModel
+import com.unimib.ignitionfinance.presentation.model.BottomNavigationItemModel
 
 @Composable
 fun BottomNavigationBarInstance(navController: NavController) {

@@ -16,10 +16,10 @@ import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
-import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxModel
+import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectBoxModel
+import com.unimib.ignitionfinance.presentation.model.SelectBoxModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable

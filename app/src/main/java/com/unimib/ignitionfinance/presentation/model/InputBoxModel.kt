@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.settings.input
+package com.unimib.ignitionfinance.presentation.model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.text.input.TextFieldValue

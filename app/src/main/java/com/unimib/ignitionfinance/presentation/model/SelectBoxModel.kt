@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.settings.select
+package com.unimib.ignitionfinance.presentation.model
 
 data class SelectBoxModel(
     val text: String,
