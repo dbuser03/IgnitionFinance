@@ -88,7 +88,21 @@ class EmailPasswordActivity : Activity() {
                 }
             }
     }
-
+    /**
+     * Sends a password reset email to the provided email address.
+     * @param email The email address to send the reset link to.
+     */
+    private fun sendPasswordResetEmail(email: String) {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(baseContext, "Reset email sent.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.w(TAG, "sendPasswordResetEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Error: ${task.exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
 
     //METHOD'S BELOW TO BE VERIFIED
 
