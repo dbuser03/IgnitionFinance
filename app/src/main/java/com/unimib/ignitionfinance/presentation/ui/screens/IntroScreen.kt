@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.presentation.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.presentation.viewmodel.IntroScreenViewModel
 
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
 fun IntroScreen(navController: NavController, introScreenViewModel: IntroScreenViewModel = viewModel()) {
     val initialOffset = 1000f
