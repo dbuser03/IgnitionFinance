@@ -8,6 +8,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.auth.userProfileChangeRequest
 
 class EmailPasswordActivity : Activity() {
 
@@ -109,7 +110,23 @@ class EmailPasswordActivity : Activity() {
     private fun signOut() {
         auth.signOut()
         updateUI(null)
-    }s
+    }
+    /**
+     * Updates the profile of the currently signed-in user.
+     * @param displayName The new display name for the user.
+     */
+    private fun updateProfile(displayName: String?) {
+        val user = auth.currentUser
+        user?.updateProfile(userProfileChangeRequest {
+            this.displayName = displayName
+        })?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "User profile updated.")
+            } else {
+                Log.w(TAG, "User profile update failed.", task.exception)
+            }
+        }
+    }
     //METHOD'S BELOW TO BE VERIFIED
 
     // Method to update the UI based on the user's authentication state
