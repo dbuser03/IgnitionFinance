@@ -77,12 +77,12 @@ fun LoginForm(navController: NavController) {
                 containerColor = if (isFormValid) {
                     MaterialTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    MaterialTheme.colorScheme.secondary
                 },
                 contentColor = if (isFormValid) {
                     MaterialTheme.colorScheme.onPrimary
                 } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    MaterialTheme.colorScheme.onSecondary
                 }
             )
         }

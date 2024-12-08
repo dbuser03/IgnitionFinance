@@ -14,7 +14,6 @@ import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDesc
 
 @Composable
 fun RegistrationScreen(navController: NavController) {
-
     Scaffold(
         topBar = {
             TitleWithDescription(

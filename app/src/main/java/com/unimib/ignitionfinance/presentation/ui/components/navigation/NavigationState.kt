@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.state
+package com.unimib.ignitionfinance.presentation.ui.components.navigation
 
 import androidx.compose.runtime.*
 

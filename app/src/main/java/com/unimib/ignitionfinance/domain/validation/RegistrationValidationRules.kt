@@ -1,28 +1,28 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import android.util.Patterns
+
 object RegistrationValidationRules {
 
     fun validateName(name: String): Boolean {
-        if (name.isBlank()) return true
-        val nameRegex = "^[a-zA-Z]{3,}$".toRegex()
-        return nameRegex.matches(name)
+        return name.isNotBlank() && name.length >= 3
     }
 
     fun validateSurname(surname: String): Boolean {
-        if (surname.isBlank()) return true
-        val surnameRegex = "^[a-zA-Z]{3,}$".toRegex()
-        return surnameRegex.matches(surname)
+        return surname.isNotBlank() && surname.length >= 3
     }
 
     fun validateEmail(email: String): Boolean {
-        if (email.isBlank()) return true
-        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
-        return emailRegex.matches(email)
+        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     fun validatePassword(password: String): Boolean {
-        val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&?!+=]).{8,}$".toRegex()
-        return passwordRegex.matches(password)
+        return password.isNotBlank() &&
+                password.length >= 8 &&
+                password.any { it.isUpperCase() } &&
+                password.any { it.isLowerCase() } &&
+                password.any { it.isDigit() } &&
+                password.any { it in "@#\$%^&?!+= " }
     }
 
     fun validateRegistrationForm(name: String?, surname: String?, email: String?, password: String?): Boolean {
@@ -36,3 +36,4 @@ object RegistrationValidationRules {
                 validatePassword(password)
     }
 }
+

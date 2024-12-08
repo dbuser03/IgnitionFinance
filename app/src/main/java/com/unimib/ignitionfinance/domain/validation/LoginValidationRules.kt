@@ -1,16 +1,20 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import android.util.Patterns
+
 object LoginValidationRules {
 
     fun validateLoginEmail(email: String): Boolean {
-        if (email.isBlank()) return true
-        val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
-        return emailRegex.matches(email)
+        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     fun validateLoginPassword(password: String): Boolean {
-        val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&?!+=]).{8,}$".toRegex()
-        return passwordRegex.matches(password)
+        return password.isNotBlank() &&
+                password.length >= 8 &&
+                password.any { it.isUpperCase() } &&
+                password.any { it.isLowerCase() } &&
+                password.any { it.isDigit() } &&
+                password.any { it in "@#\$%^&?!+= " }
     }
 
     fun validateLoginForm(email: String?, password: String?): Boolean {

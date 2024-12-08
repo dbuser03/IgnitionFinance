@@ -29,7 +29,6 @@ fun SettingsScreen(navController: NavController) {
     val expandedCardIndex by remember { settingsViewModel.expandedCardIndex }
     val listState = rememberLazyListState()
 
-    // Using mutableStateOf for inflation model to allow for changes
     var inflationModel by remember {
         mutableStateOf(
             SelectBoxModel(
