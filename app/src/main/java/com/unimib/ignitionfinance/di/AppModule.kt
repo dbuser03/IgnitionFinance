@@ -17,19 +17,16 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    @Singleton
     fun provideAuthService(): AuthService {
         return AuthService()
     }
 
     @Provides
-    @Singleton
     fun provideAuthMapper(): AuthMapper {
         return AuthMapper
     }
 
     @Provides
-    @Singleton
     fun provideAuthRepository(
         authService: AuthService,
         authMapper: AuthMapper

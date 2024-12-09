@@ -36,7 +36,8 @@ fun LoginScreen(
                     navController,
                     onLoginClick = { email, password ->
                         viewModel.login(email, password)
-                    }
+                    },
+                    loginState = loginState
                 )
             }
         }

@@ -9,31 +9,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
+import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
+import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
+import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
+import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 
 @Composable
 fun LoginForm(
     navController: NavController,
-    onLoginClick: (String, String) -> Unit
+    onLoginClick: (String, String) -> Unit,
+    loginState: LoginScreenViewModel.LoginState
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
+    val emailError = remember { mutableStateOf<String?>(null) }
+    val passwordError = remember { mutableStateOf<String?>(null) }
+
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
+
+    val emailFocused = remember { mutableStateOf(false) }
+    val passwordFocused = remember { mutableStateOf(false) }
 
     val isFormValid = remember(email.value, password.value) {
         val result = LoginValidator.validateLoginForm(email.value, password.value)
         result is LoginValidationResult.Success
+    }
+
+    LaunchedEffect(Unit) {
+        emailFocusRequester.requestFocus()
     }
 
     Column(
@@ -41,12 +58,24 @@ fun LoginForm(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 32.dp)
     ) {
-        LoginEmailTextField(
-            email = email.value,
-            onEmailChange = { email.value = it },
-            passwordFocusRequester = passwordFocusRequester,
+        CustomTextField(
+            value = email.value,
+            onValueChange = {
+                email.value = it
+                emailError.value = (LoginValidator.validateEmail(it) as? LoginValidationResult.Failure)?.message
+            },
+            label = "Email",
+            isError = emailError.value != null,
+            nextFocusRequester = passwordFocusRequester,
+            imeAction = ImeAction.Next,
             modifier = Modifier
                 .focusRequester(emailFocusRequester)
+                .onFocusChanged {
+                    emailFocused.value = it.isFocused
+                    if (it.isFocused) {
+                        emailError.value = (RegistrationValidator.validateName(email.value) as? RegistrationValidationResult.Failure)?.message
+                    }
+                }
         )
 
         Spacer(modifier = Modifier.padding(top = 4.dp))
@@ -54,13 +83,27 @@ fun LoginForm(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            LoginPasswordTextField(
-                password = password.value,
-                onPasswordChange = { password.value = it },
+            CustomTextField(
+                value = password.value,
+                onValueChange = {
+                    password.value = it
+                    passwordError.value = (RegistrationValidator.validatePassword(it) as? RegistrationValidationResult.Failure)?.message
+                },
+                label = "Password",
+                isError = passwordError.value != null,
+                imeAction = ImeAction.Done,
+                isPasswordField = true,
                 modifier = Modifier
                     .focusRequester(passwordFocusRequester)
                     .weight(1.0f)
+                    .onFocusChanged {
+                        passwordFocused.value = it.isFocused
+                        if (it.isFocused) {
+                            passwordError.value = (RegistrationValidator.validatePassword(password.value) as? RegistrationValidationResult.Failure)?.message
+                        }
+                    }
             )
+
             CustomFAB(
                 modifier = Modifier
                     .padding(top = 8.dp),
@@ -81,6 +124,25 @@ fun LoginForm(
                 } else {
                     MaterialTheme.colorScheme.onSecondary
                 }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        val selectedError = when {
+            loginState is LoginScreenViewModel.LoginState.Error -> loginState.message
+            emailFocused.value -> emailError.value
+            passwordFocused.value -> passwordError.value
+            else -> null
+        }
+
+        selectedError?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .padding(start = 12.dp, end = 64.dp)
             )
         }
 
@@ -114,4 +176,3 @@ fun LoginForm(
         }
     }
 }
-

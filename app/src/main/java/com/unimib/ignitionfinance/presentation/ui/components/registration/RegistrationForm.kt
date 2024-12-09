@@ -195,7 +195,7 @@ fun RegistrationForm(
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 64.dp)
+                    .padding(start = 12.dp, end = 64.dp)
             )
         }
     }
