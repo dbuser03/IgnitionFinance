@@ -9,12 +9,6 @@ class SearchStockMapper {
         return response.bestMatches.map { symbolMatch ->
             SearchStockData(
                 symbol = symbolMatch.symbol,
-                name = symbolMatch.name,
-                type = symbolMatch.type,
-                region = symbolMatch.region,
-                marketOpen = symbolMatch.marketOpen,
-                marketClose = symbolMatch.marketClose,
-                timezone = symbolMatch.timezone,
                 currency = symbolMatch.currency,
                 matchScore = symbolMatch.matchScore
             )
