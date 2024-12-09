@@ -1,9 +1,9 @@
 package com.unimib.ignitionfinance.data.remote
 
-import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.service.StockService
 import com.unimib.ignitionfinance.data.remote.service.SearchStockService
 import com.unimib.ignitionfinance.data.remote.service.InflationService
+import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
