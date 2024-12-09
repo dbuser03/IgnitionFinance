@@ -40,7 +40,8 @@ fun RegistrationScreen(
                 RegistrationForm(
                     onRegisterClick = { email, password ->
                         viewModel.register(email, password)
-                    }
+                    },
+                    registrationState = registrationState
                 )
             }
         }

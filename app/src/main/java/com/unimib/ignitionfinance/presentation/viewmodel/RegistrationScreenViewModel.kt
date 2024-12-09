@@ -2,6 +2,8 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.unimib.ignitionfinance.data.model.AuthData
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,10 +36,19 @@ class RegistrationScreenViewModel @Inject constructor(
                         _registrationState.value = RegistrationState.Success(authData)
                     },
                     onFailure = { throwable ->
-                        _registrationState.value = RegistrationState.Error(throwable.message ?: "Unknown error")
+                        val errorMessage = mapErrorToMessage(throwable)
+                        _registrationState.value = RegistrationState.Error(errorMessage)
                     }
                 )
             }
+        }
+    }
+
+    private fun mapErrorToMessage(throwable: Throwable): String {
+        return when (throwable) {
+            is FirebaseAuthUserCollisionException -> "The account is already registered. Try logging in."
+            is FirebaseAuthException -> "Error during registration: ${throwable.message}"
+            else -> "Unknown error: ${throwable.localizedMessage ?: "No details available"}"
         }
     }
 }

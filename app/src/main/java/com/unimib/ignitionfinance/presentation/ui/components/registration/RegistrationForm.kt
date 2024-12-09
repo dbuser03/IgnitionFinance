@@ -7,51 +7,51 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
+import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
+import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 
 @Composable
 fun RegistrationForm(
-    onRegisterClick: (String, String) -> Unit
+    onRegisterClick: (String, String) -> Unit,
+    registrationState: RegistrationScreenViewModel.RegistrationState
 ) {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    val errorMessage = remember { mutableStateOf<String?>(null) }
-    val focusedField = remember { mutableStateOf<String>("name") }
+    val nameError = remember { mutableStateOf<String?>(null) }
+    val surnameError = remember { mutableStateOf<String?>(null) }
+    val emailError = remember { mutableStateOf<String?>(null) }
+    val passwordError = remember { mutableStateOf<String?>(null) }
 
     val nameFocusRequester = remember { FocusRequester() }
     val surnameFocusRequester = remember { FocusRequester() }
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
 
-    fun validateAndSetError(field: String, value: String): Boolean {
-        val result = when (field) {
-            "name" -> RegistrationValidator.validateName(value)
-            "surname" -> RegistrationValidator.validateSurname(value)
-            "email" -> RegistrationValidator.validateEmail(value)
-            "password" -> RegistrationValidator.validatePassword(value)
-            else -> RegistrationValidationResult.Success
-        }
+    val nameFocused = remember { mutableStateOf(false) }
+    val surnameFocused = remember { mutableStateOf(false) }
+    val emailFocused = remember { mutableStateOf(false) }
+    val passwordFocused = remember { mutableStateOf(false) }
 
-        return when (result) {
-            is RegistrationValidationResult.Failure -> {
-                errorMessage.value = result.message
-                focusedField.value = field
-                false
-            }
-            RegistrationValidationResult.Success -> {
-                errorMessage.value = null
-                true
-            }
-        }
+    val isFormValid = remember(name.value, surname.value, email.value, password.value) {
+        val result = RegistrationValidator.validateRegistrationForm(name.value, surname.value, email.value, password.value)
+        result is RegistrationValidationResult.Success
+    }
+
+    LaunchedEffect(Unit) {
+        nameFocusRequester.requestFocus()
     }
 
     Column(
@@ -63,63 +63,96 @@ fun RegistrationForm(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            NameTextField(
-                name = name.value,
-                onNameChange = {
+            CustomTextField(
+                value = name.value,
+                onValueChange = {
                     name.value = it
-                    validateAndSetError("name", it)
+                    nameError.value = (RegistrationValidator.validateName(it) as? RegistrationValidationResult.Failure)?.message
                 },
-                surnameFocusRequester = surnameFocusRequester,
+                label = "Name",
+                isError = nameError.value != null,
+                nextFocusRequester = surnameFocusRequester,
+                imeAction = ImeAction.Next,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(nameFocusRequester)
-                    .enabled(focusedField.value == "name"),
-            )
-            SurnameTextField(
-                surname = surname.value,
-                onSurnameChange = {
-                    surname.value = it
-                    if (validateAndSetError("surname", it)) {
-                        focusedField.value = "email"
+                    .onFocusChanged {
+                        nameFocused.value = it.isFocused
+                        if (it.isFocused) {
+                            nameError.value = (RegistrationValidator.validateName(name.value) as? RegistrationValidationResult.Failure)?.message
+                        }
                     }
+            )
+            CustomTextField(
+                value = surname.value,
+                onValueChange = {
+                    surname.value = it
+                    surnameError.value = (RegistrationValidator.validateSurname(it) as? RegistrationValidationResult.Failure)?.message
                 },
-                emailFocusRequester = emailFocusRequester,
+                label = "Surname",
+                isError = surnameError.value != null,
+                nextFocusRequester = emailFocusRequester,
+                imeAction = ImeAction.Next,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(surnameFocusRequester)
-                    .enabled(focusedField.value == "surname")
+                    .onFocusChanged {
+                        surnameFocused.value = it.isFocused
+                        if (it.isFocused) {
+                            surnameError.value = (RegistrationValidator.validateSurname(surname.value) as? RegistrationValidationResult.Failure)?.message
+                        }
+                    }
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        EmailTextField(
-            email = email.value,
-            onEmailChange = {
+        CustomTextField(
+            value = email.value,
+            onValueChange = {
                 email.value = it
-                if (validateAndSetError("email", it)) {
-                    focusedField.value = "password"
-                }
+                emailError.value = (RegistrationValidator.validateEmail(it) as? RegistrationValidationResult.Failure)?.message
             },
-            passwordFocusRequester = passwordFocusRequester,
+            label = "Email",
+            isError = emailError.value != null,
+            nextFocusRequester = passwordFocusRequester,
+            imeAction = ImeAction.Next,
+            keyboardType = KeyboardType.Email,
             modifier = Modifier
                 .focusRequester(emailFocusRequester)
-                .enabled(focusedField.value == "email")
+                .onFocusChanged {
+                    emailFocused.value = it.isFocused
+                    if (it.isFocused) {
+                        emailError.value = (RegistrationValidator.validateEmail(email.value) as? RegistrationValidationResult.Failure)?.message
+                    }
+                }
         )
+
         Spacer(modifier = Modifier.padding(top = 4.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            PasswordTextField(
-                password = password.value,
-                onPasswordChange = { password.value = it },
-                validateAndSetError("password", it),
+            CustomTextField(
+                value = password.value,
+                onValueChange = {
+                    password.value = it
+                    passwordError.value = (RegistrationValidator.validatePassword(it) as? RegistrationValidationResult.Failure)?.message
+                },
+                label = "Password",
+                isError = passwordError.value != null,
+                imeAction = ImeAction.Done,
+                isPasswordField = true,
                 modifier = Modifier
                     .focusRequester(passwordFocusRequester)
                     .weight(1.0f)
-                    .enabled(focusedField.value == "password")
+                    .onFocusChanged {
+                        passwordFocused.value = it.isFocused
+                        if (it.isFocused) {
+                            passwordError.value = (RegistrationValidator.validatePassword(password.value) as? RegistrationValidationResult.Failure)?.message
+                        }
+                    }
             )
 
             CustomFAB(
@@ -128,20 +161,16 @@ fun RegistrationForm(
                 icon = painterResource(id = R.drawable.outline_keyboard_arrow_right_24),
                 contentDescription = stringResource(id = R.string.registration_FAB_description),
                 onClick = {
-                    if (validateAndSetError("name", name.value) &&
-                        validateAndSetError("surname", surname.value) &&
-                        validateAndSetError("email", email.value) &&
-                        validateAndSetError("password", password.value)
-                    ) {
+                    if (isFormValid) {
                         onRegisterClick(email.value, password.value)
                     }
                 },
-                containerColor = if (errorMessage.value == null) {
+                containerColor = if (isFormValid) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.secondary
                 },
-                contentColor = if (errorMessage.value == null) {
+                contentColor = if (isFormValid) {
                     MaterialTheme.colorScheme.onPrimary
                 } else {
                     MaterialTheme.colorScheme.onSecondary
@@ -149,14 +178,24 @@ fun RegistrationForm(
             )
         }
 
-        Spacer(modifier = Modifier.padding(top = 4.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        if (errorMessage.value != null) {
+        val selectedError = when {
+            registrationState is RegistrationScreenViewModel.RegistrationState.Error -> registrationState.message
+            nameFocused.value -> nameError.value
+            surnameFocused.value -> surnameError.value
+            emailFocused.value -> emailError.value
+            passwordFocused.value -> passwordError.value
+            else -> null
+        }
+
+        selectedError?.let {
             Text(
-                text = errorMessage.value ?: "",
+                text = it,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 64.dp)
             )
         }
     }
