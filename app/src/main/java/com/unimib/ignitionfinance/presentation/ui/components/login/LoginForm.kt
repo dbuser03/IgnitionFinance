@@ -18,11 +18,13 @@ import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
-import com.unimib.ignitionfinance.presentation.ui.theme.TypographyBold
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 
 @Composable
-fun LoginForm(navController: NavController) {
+fun LoginForm(
+    navController: NavController,
+    onLoginClick: (String, String) -> Unit
+) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -66,12 +68,7 @@ fun LoginForm(navController: NavController) {
                 contentDescription = stringResource(id = R.string.registration_FAB_description),
                 onClick = {
                     if (isFormValid) {
-                        navController.navigate(Destinations.PortfolioScreen.route) {
-                            popUpTo(Destinations.RegistrationScreen.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                        onLoginClick(email.value, password.value)
                     }
                 },
                 containerColor = if (isFormValid) {

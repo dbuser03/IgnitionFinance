@@ -3,10 +3,8 @@ package com.unimib.ignitionfinance.data.repository
 import com.unimib.ignitionfinance.data.model.AuthData
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 interface AuthRepository {
@@ -24,28 +22,30 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun signInWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>> = flow {
         try {
             val firebaseUser = authService.signInWithEmailAndPassword(email, password)
-            if (firebaseUser != null) {
-                emit(Result.success(authMapper.mapToUser(firebaseUser)))
+            val authData = firebaseUser?.let { authMapper.mapToUser(it) }
+            if (authData != null) {
+                emit(Result.success(authData))
             } else {
                 emit(Result.failure(Throwable("Error: Failed to sign in user")))
             }
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun createUserWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>> = flow {
         try {
             val firebaseUser = authService.createUserWithEmailAndPassword(email, password)
-            if (firebaseUser != null) {
-                emit(Result.success(authMapper.mapToUser(firebaseUser)))
+            val authData = firebaseUser?.let { authMapper.mapToUser(it) }
+            if (authData != null) {
+                emit(Result.success(authData))
             } else {
                 emit(Result.failure(Throwable("Error: Failed to create user")))
             }
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun resetPassword(email: String): Flow<Result<Unit>> = flow {
         try {
@@ -54,7 +54,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun signOut(): Flow<Result<Unit>> = flow {
         try {
@@ -63,5 +63,5 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }.flowOn(Dispatchers.IO)
+    }
 }

@@ -5,15 +5,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.registration.RegistrationForm
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDescription
+import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun RegistrationScreen(navController: NavController) {
+fun RegistrationScreen(
+    navController: NavController,
+    viewModel: RegistrationScreenViewModel = hiltViewModel()
+) {
+    val registrationState by viewModel.registrationState.collectAsState()
+
     Scaffold(
         topBar = {
             TitleWithDescription(
@@ -27,8 +37,26 @@ fun RegistrationScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                RegistrationForm(navController)
+                RegistrationForm(
+                    onRegisterClick = { email, password ->
+                        viewModel.register(email, password)
+                    }
+                )
             }
         }
     )
+
+    when (registrationState) {
+        is RegistrationScreenViewModel.RegistrationState.Loading -> {
+        }
+        is RegistrationScreenViewModel.RegistrationState.Success -> {
+            navController.navigate(Destinations.PortfolioScreen.route) {
+                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
+            }
+        }
+        is RegistrationScreenViewModel.RegistrationState.Error -> {
+            val errorMessage = (registrationState as RegistrationScreenViewModel.RegistrationState.Error).message
+        }
+        else -> Unit
+    }
 }

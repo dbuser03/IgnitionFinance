@@ -9,15 +9,15 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
-import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 
 @Composable
-fun RegistrationForm(navController: NavController) {
+fun RegistrationForm(
+    onRegisterClick: (String, String) -> Unit
+) {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
@@ -60,7 +60,8 @@ fun RegistrationForm(navController: NavController) {
             )
         }
 
-        Spacer(modifier = Modifier.padding(top = 4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
         EmailTextField(
             email = email.value,
             onEmailChange = { email.value = it },
@@ -81,6 +82,7 @@ fun RegistrationForm(navController: NavController) {
                     .focusRequester(passwordFocusRequester)
                     .weight(1.0f)
             )
+
             CustomFAB(
                 modifier = Modifier
                     .padding(top = 8.dp),
@@ -88,12 +90,7 @@ fun RegistrationForm(navController: NavController) {
                 contentDescription = stringResource(id = R.string.registration_FAB_description),
                 onClick = {
                     if (isFormValid) {
-                        navController.navigate(Destinations.PortfolioScreen.route) {
-                            popUpTo(Destinations.RegistrationScreen.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                        onRegisterClick(email.value, password.value)
                     }
                 },
                 containerColor = if (isFormValid) {
@@ -110,4 +107,3 @@ fun RegistrationForm(navController: NavController) {
         }
     }
 }
-
