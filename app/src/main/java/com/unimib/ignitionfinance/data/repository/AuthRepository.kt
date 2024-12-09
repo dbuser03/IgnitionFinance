@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import javax.inject.Inject
 
 interface AuthRepository {
     suspend fun signInWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>>
@@ -15,7 +16,7 @@ interface AuthRepository {
     suspend fun signOut(): Flow<Result<Unit>>
 }
 
-class AuthRepositoryImpl(
+class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
     private val authMapper: AuthMapper
 ) : AuthRepository {
