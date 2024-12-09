@@ -1,12 +1,13 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.repository.AuthRepository
+import com.unimib.ignitionfinance.data.model.AuthData
+import kotlinx.coroutines.flow.Flow
 
-data class RegisterNewUserUseCase(
-    private val repository: AuthRepository
+class RegisterNewUserUseCase(
+    private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(email: String, password: String) {
-        repository.createUserWithEmailAndPassword(email, password)
+    suspend fun execute(email: String, password: String): Flow<Result<AuthData>> {
+        return authRepository.createUserWithEmailAndPassword(email, password)
     }
 }
-
