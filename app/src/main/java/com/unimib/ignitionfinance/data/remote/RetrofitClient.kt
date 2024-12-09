@@ -16,6 +16,7 @@ object RetrofitClient {
     }
 
     private const val STOCK_API_BASE_URL = "https://www.alphavantage.co/"
+    private const val SEARCH_STOCK_API_BASE_URL = "https://www.alphavantage.co/"
     private const val INFLATION_API_BASE_URL = "https://data-api.ecb.europa.eu/"
     private const val EXCHANGE_API_BASE_URL = "http://data-api.ecb.europa.eu/"
 
