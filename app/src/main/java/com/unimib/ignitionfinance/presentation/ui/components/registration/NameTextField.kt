@@ -48,7 +48,10 @@ fun NameTextField(
             label = { Text("Name") },
             shape = RoundedCornerShape(56.dp),
             colors = getTextFieldColors(isError = errorMessage != null),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
             keyboardActions = KeyboardActions(
                 onNext = {
                     if (errorMessage == null) {

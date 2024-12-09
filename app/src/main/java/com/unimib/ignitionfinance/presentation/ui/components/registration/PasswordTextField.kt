@@ -52,7 +52,6 @@ fun PasswordTextField(
             label = { Text("Password") },
             shape = RoundedCornerShape(56.dp),
             colors = getTextFieldColors(isError = errorMessage != null),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
@@ -64,6 +63,7 @@ fun PasswordTextField(
                     }
                 }
             ),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val iconRes = if (passwordVisible) R.drawable.outline_visibility_24 else R.drawable.outline_visibility_off_24
                 val contentDescription = if (passwordVisible) "Hide password" else "Show password"
@@ -81,15 +81,5 @@ fun PasswordTextField(
                 }
             }
         )
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage!!,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 8.dp)
-            )
-        }
     }
 }
