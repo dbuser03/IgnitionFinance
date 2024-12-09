@@ -73,7 +73,7 @@ fun RegistrationForm(
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(nameFocusRequester)
-                    .enabled(focusedField.value == "name")
+                    .enabled(focusedField.value == "name"),
             )
             SurnameTextField(
                 surname = surname.value,
@@ -148,14 +148,16 @@ fun RegistrationForm(
                 }
             )
         }
-    }
 
-    if (errorMessage.value != null) {
-        Text(
-            text = errorMessage.value ?: "",
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        Spacer(modifier = Modifier.padding(top = 4.dp))
+
+        if (errorMessage.value != null) {
+            Text(
+                text = errorMessage.value ?: "",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
     }
 }
