@@ -10,7 +10,7 @@ class SearchStockResponseTest {
 
     @Test
     fun `test deserialization of SearchStockResponse`() {
-        // JSON di esempio per il test
+
         val jsonResponse = """
         {
             "bestMatches": [
@@ -40,10 +40,8 @@ class SearchStockResponseTest {
         }
         """.trimIndent()
 
-        // Deserializza il JSON in SearchStockResponse
         val searchStockResponse = gson.fromJson(jsonResponse, SearchStockResponse::class.java)
 
-        // Verifica i dati della risposta
         assertEquals(2, searchStockResponse.bestMatches.size)
 
         val firstMatch = searchStockResponse.bestMatches[0]
