@@ -103,6 +103,13 @@ fun LoginForm(
                 isError = passwordError.value != null,
                 imeAction = ImeAction.Done,
                 isPasswordField = true,
+                onImeActionPerformed = {
+                    if (isFormValid) {
+                        focusManager.clearFocus()
+                        onLoginClick(email.value, password.value)
+                        isFabFocused.value = true
+                    }
+                },
                 modifier = Modifier
                     .focusRequester(passwordFocusRequester)
                     .weight(1.0f)

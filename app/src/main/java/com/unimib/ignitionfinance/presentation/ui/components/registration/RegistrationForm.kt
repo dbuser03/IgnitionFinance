@@ -155,8 +155,8 @@ fun RegistrationForm(
                 isPasswordField = true,
                 onImeActionPerformed = {
                     if (isFormValid) {
-                        focusManager.clearFocus() // Chiude la tastiera
-                        onRegisterClick(email.value, password.value) // Simula il click del FAB
+                        focusManager.clearFocus()
+                        onRegisterClick(email.value, password.value)
                         isFabFocused.value = true
                     }
                 },
