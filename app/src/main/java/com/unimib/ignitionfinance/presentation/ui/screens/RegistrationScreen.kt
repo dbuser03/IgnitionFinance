@@ -48,15 +48,10 @@ fun RegistrationScreen(
     )
 
     when (registrationState) {
-        is RegistrationScreenViewModel.RegistrationState.Loading -> {
-        }
         is RegistrationScreenViewModel.RegistrationState.Success -> {
             navController.navigate(Destinations.PortfolioScreen.route) {
                 popUpTo(Destinations.LoginScreen.route) { inclusive = true }
             }
-        }
-        is RegistrationScreenViewModel.RegistrationState.Error -> {
-            val errorMessage = (registrationState as RegistrationScreenViewModel.RegistrationState.Error).message
         }
         else -> Unit
     }

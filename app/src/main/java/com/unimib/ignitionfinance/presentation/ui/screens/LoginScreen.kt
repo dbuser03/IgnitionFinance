@@ -44,15 +44,10 @@ fun LoginScreen(
     )
 
     when (loginState) {
-        is LoginScreenViewModel.LoginState.Loading -> {
-        }
         is LoginScreenViewModel.LoginState.Success -> {
             navController.navigate(Destinations.PortfolioScreen.route) {
                 popUpTo(Destinations.LoginScreen.route) { inclusive = true }
             }
-        }
-        is LoginScreenViewModel.LoginState.Error -> {
-            val errorMessage = (loginState as LoginScreenViewModel.LoginState.Error).message
         }
         else -> Unit
     }

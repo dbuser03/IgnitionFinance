@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -18,8 +19,6 @@ import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
@@ -43,6 +42,9 @@ fun LoginForm(
 
     val emailFocused = remember { mutableStateOf(false) }
     val passwordFocused = remember { mutableStateOf(false) }
+
+    val isFabFocused = remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     val isFormValid = remember(email.value, password.value) {
         val result = LoginValidator.validateLoginForm(email.value, password.value)
@@ -72,13 +74,12 @@ fun LoginForm(
                 .focusRequester(emailFocusRequester)
                 .onFocusChanged {
                     emailFocused.value = it.isFocused
-                    if (it.isFocused) {
-                        emailError.value = (RegistrationValidator.validateName(email.value) as? RegistrationValidationResult.Failure)?.message
-                    }
+                    if (it.isFocused) isFabFocused.value = false
                 }
         )
 
         Spacer(modifier = Modifier.padding(top = 4.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -87,7 +88,7 @@ fun LoginForm(
                 value = password.value,
                 onValueChange = {
                     password.value = it
-                    passwordError.value = (RegistrationValidator.validatePassword(it) as? RegistrationValidationResult.Failure)?.message
+                    passwordError.value = (LoginValidator.validatePassword(it) as? LoginValidationResult.Failure)?.message
                 },
                 label = "Password",
                 isError = passwordError.value != null,
@@ -98,9 +99,7 @@ fun LoginForm(
                     .weight(1.0f)
                     .onFocusChanged {
                         passwordFocused.value = it.isFocused
-                        if (it.isFocused) {
-                            passwordError.value = (RegistrationValidator.validatePassword(password.value) as? RegistrationValidationResult.Failure)?.message
-                        }
+                        if (it.isFocused) isFabFocused.value = false
                     }
             )
 
@@ -108,9 +107,11 @@ fun LoginForm(
                 modifier = Modifier
                     .padding(top = 8.dp),
                 icon = painterResource(id = R.drawable.outline_keyboard_arrow_right_24),
-                contentDescription = stringResource(id = R.string.registration_FAB_description),
+                contentDescription = stringResource(id = R.string.login_FAB_description),
                 onClick = {
                     if (isFormValid) {
+                        focusManager.clearFocus()
+                        isFabFocused.value = true
                         onLoginClick(email.value, password.value)
                     }
                 },
@@ -130,7 +131,9 @@ fun LoginForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            loginState is LoginScreenViewModel.LoginState.Error -> loginState.message
+            isFabFocused.value && loginState is LoginScreenViewModel.LoginState.Error -> {
+                loginState.message
+            }
             emailFocused.value -> emailError.value
             passwordFocused.value -> passwordError.value
             else -> null
@@ -159,7 +162,6 @@ fun LoginForm(
                 color = MaterialTheme.colorScheme.secondary
             )
         }
-
 
         TextButton(
             onClick = {

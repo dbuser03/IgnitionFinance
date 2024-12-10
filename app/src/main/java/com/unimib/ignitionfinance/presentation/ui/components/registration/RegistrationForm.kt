@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -45,6 +46,9 @@ fun RegistrationForm(
     val emailFocused = remember { mutableStateOf(false) }
     val passwordFocused = remember { mutableStateOf(false) }
 
+    val isFabFocused = remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
     val isFormValid = remember(name.value, surname.value, email.value, password.value) {
         val result = RegistrationValidator.validateRegistrationForm(name.value, surname.value, email.value, password.value)
         result is RegistrationValidationResult.Success
@@ -78,9 +82,7 @@ fun RegistrationForm(
                     .focusRequester(nameFocusRequester)
                     .onFocusChanged {
                         nameFocused.value = it.isFocused
-                        if (it.isFocused) {
-                            nameError.value = (RegistrationValidator.validateName(name.value) as? RegistrationValidationResult.Failure)?.message
-                        }
+                        if (it.isFocused) isFabFocused.value = false
                     }
             )
             CustomTextField(
@@ -98,9 +100,7 @@ fun RegistrationForm(
                     .focusRequester(surnameFocusRequester)
                     .onFocusChanged {
                         surnameFocused.value = it.isFocused
-                        if (it.isFocused) {
-                            surnameError.value = (RegistrationValidator.validateSurname(surname.value) as? RegistrationValidationResult.Failure)?.message
-                        }
+                        if (it.isFocused) isFabFocused.value = false
                     }
             )
         }
@@ -122,13 +122,11 @@ fun RegistrationForm(
                 .focusRequester(emailFocusRequester)
                 .onFocusChanged {
                     emailFocused.value = it.isFocused
-                    if (it.isFocused) {
-                        emailError.value = (RegistrationValidator.validateEmail(email.value) as? RegistrationValidationResult.Failure)?.message
-                    }
+                    if (it.isFocused) isFabFocused.value = false
                 }
         )
 
-        Spacer(modifier = Modifier.padding(top = 4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -146,42 +144,35 @@ fun RegistrationForm(
                 isPasswordField = true,
                 modifier = Modifier
                     .focusRequester(passwordFocusRequester)
-                    .weight(1.0f)
+                    .weight(1f)
                     .onFocusChanged {
                         passwordFocused.value = it.isFocused
-                        if (it.isFocused) {
-                            passwordError.value = (RegistrationValidator.validatePassword(password.value) as? RegistrationValidationResult.Failure)?.message
-                        }
+                        if (it.isFocused) isFabFocused.value = false
                     }
             )
 
             CustomFAB(
-                modifier = Modifier
-                    .padding(top = 8.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 icon = painterResource(id = R.drawable.outline_keyboard_arrow_right_24),
                 contentDescription = stringResource(id = R.string.registration_FAB_description),
                 onClick = {
                     if (isFormValid) {
+                        focusManager.clearFocus()
                         onRegisterClick(email.value, password.value)
+                        isFabFocused.value = true
                     }
                 },
-                containerColor = if (isFormValid) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.secondary
-                },
-                contentColor = if (isFormValid) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSecondary
-                }
+                containerColor = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                contentColor = if (isFormValid) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            registrationState is RegistrationScreenViewModel.RegistrationState.Error -> registrationState.message
+            isFabFocused.value && registrationState is RegistrationScreenViewModel.RegistrationState.Error -> {
+                registrationState.message
+            }
             nameFocused.value -> nameError.value
             surnameFocused.value -> surnameError.value
             emailFocused.value -> emailError.value
@@ -194,8 +185,7 @@ fun RegistrationForm(
                 text = it,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .padding(start = 12.dp, end = 64.dp)
+                modifier = Modifier.padding(start = 12.dp, end = 64.dp)
             )
         }
     }
