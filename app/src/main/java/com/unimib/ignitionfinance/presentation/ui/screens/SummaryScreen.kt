@@ -43,11 +43,3 @@ fun SummaryScreen(navController: NavController) {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SummaryScreenPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-        SummaryScreen(navController = navController)
-    }
-}
