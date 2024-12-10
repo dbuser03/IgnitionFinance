@@ -114,17 +114,13 @@ class SearchStockServiceTest {
         val searchStockService = retrofit.create(SearchStockService::class.java)
         val realApiKey = BuildConfig.ALPHAVANTAGE_API_KEY
 
-        // Make the real API call
         val response = searchStockService.getSearchStockData(symbol = "Apple", apiKey = realApiKey)
 
-        // Verify that the response code is 200 (OK)
         assertEquals(200, response.code())
 
-        // Check that the response body is not null and print the JSON
         val responseBody = response.body()
         assertNotNull(responseBody)
 
-        // Print the JSON response for debugging/inspection
         println("Response JSON: ${Gson().toJson(responseBody)}")
     }
 }
