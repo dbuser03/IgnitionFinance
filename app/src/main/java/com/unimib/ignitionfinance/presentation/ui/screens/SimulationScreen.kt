@@ -60,12 +60,3 @@ fun SimulationScreen(navController: NavController) {
         }
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-fun SimulationScreenPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-        SimulationScreen(navController = navController)
-    }
-}
