@@ -14,9 +14,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
+import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
@@ -24,7 +26,8 @@ import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewM
 @Composable
 fun RegistrationForm(
     onRegisterClick: (String, String) -> Unit,
-    registrationState: RegistrationScreenViewModel.RegistrationState
+    registrationState: RegistrationScreenViewModel.RegistrationState,
+    navController: NavController
 ) {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
@@ -56,6 +59,14 @@ fun RegistrationForm(
 
     LaunchedEffect(Unit) {
         nameFocusRequester.requestFocus()
+    }
+
+    LaunchedEffect(registrationState) {
+        if (registrationState is RegistrationScreenViewModel.RegistrationState.Success) {
+            navController.navigate(Destinations.PortfolioScreen.route) {
+                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
+            }
+        }
     }
 
     Column(

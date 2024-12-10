@@ -41,18 +41,10 @@ fun RegistrationScreen(
                     onRegisterClick = { email, password ->
                         viewModel.register(email, password)
                     },
-                    registrationState = registrationState
+                    registrationState = registrationState,
+                    navController
                 )
             }
         }
     )
-
-    when (registrationState) {
-        is RegistrationScreenViewModel.RegistrationState.Success -> {
-            navController.navigate(Destinations.PortfolioScreen.route) {
-                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
-            }
-        }
-        else -> Unit
-    }
 }
