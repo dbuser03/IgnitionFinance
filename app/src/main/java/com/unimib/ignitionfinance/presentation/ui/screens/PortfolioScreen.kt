@@ -54,12 +54,3 @@ fun PortfolioScreen(navController: NavController) {
         }
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PortfolioScreenPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-        PortfolioScreen(navController = navController)
-    }
-}
