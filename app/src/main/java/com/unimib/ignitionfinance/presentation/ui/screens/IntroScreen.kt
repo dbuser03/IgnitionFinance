@@ -74,17 +74,3 @@ fun IntroScreen(navController: NavController, introScreenViewModel: IntroScreenV
         }
     )
 }
-
-@Preview
-@Composable
-fun IntroScreenPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-        val viewModel: IntroScreenViewModel = viewModel()
-        IntroScreen(
-            navController = navController,
-            introScreenViewModel = viewModel
-        )
-    }
-}
-
