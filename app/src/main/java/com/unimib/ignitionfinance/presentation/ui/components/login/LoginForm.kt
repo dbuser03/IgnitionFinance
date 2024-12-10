@@ -24,6 +24,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 
 @Composable
 fun LoginForm(
@@ -55,6 +56,14 @@ fun LoginForm(
         emailFocusRequester.requestFocus()
     }
 
+    LaunchedEffect(loginState) {
+        if (loginState is LoginScreenViewModel.LoginState.Success) {
+            navController.navigate(Destinations.PortfolioScreen.route) {
+                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,7 +87,7 @@ fun LoginForm(
                 }
         )
 
-        Spacer(modifier = Modifier.padding(top = 4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

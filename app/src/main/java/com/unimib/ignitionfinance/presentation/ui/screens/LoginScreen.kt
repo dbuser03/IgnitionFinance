@@ -42,13 +42,4 @@ fun LoginScreen(
             }
         }
     )
-
-    when (loginState) {
-        is LoginScreenViewModel.LoginState.Success -> {
-            navController.navigate(Destinations.PortfolioScreen.route) {
-                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
-            }
-        }
-        else -> Unit
-    }
 }
