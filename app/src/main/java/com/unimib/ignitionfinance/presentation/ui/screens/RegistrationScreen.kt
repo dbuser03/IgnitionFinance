@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.registration.RegistrationForm
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDescription
 import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
