@@ -202,12 +202,3 @@ fun SettingsScreen(navController: NavController) {
         }
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    IgnitionFinanceTheme {
-        val navController = rememberNavController()
-        SettingsScreen(navController = navController)
-    }
-}
