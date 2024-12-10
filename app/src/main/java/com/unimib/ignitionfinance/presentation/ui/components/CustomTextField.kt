@@ -33,7 +33,8 @@ fun CustomTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isPasswordField: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onImeActionPerformed: (() -> Unit)? = null
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -63,6 +64,7 @@ fun CustomTextField(
                 onDone = {
                     if (!isError) {
                         keyboardController?.hide()
+                        onImeActionPerformed?.invoke()
                     }
                 }
             ),

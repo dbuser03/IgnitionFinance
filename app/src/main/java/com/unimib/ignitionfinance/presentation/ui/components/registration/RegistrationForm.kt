@@ -153,6 +153,13 @@ fun RegistrationForm(
                 isError = passwordError.value != null,
                 imeAction = ImeAction.Done,
                 isPasswordField = true,
+                onImeActionPerformed = {
+                    if (isFormValid) {
+                        focusManager.clearFocus() // Chiude la tastiera
+                        onRegisterClick(email.value, password.value) // Simula il click del FAB
+                        isFabFocused.value = true
+                    }
+                },
                 modifier = Modifier
                     .focusRequester(passwordFocusRequester)
                     .weight(1f)
@@ -161,6 +168,7 @@ fun RegistrationForm(
                         if (it.isFocused) isFabFocused.value = false
                     }
             )
+
 
             CustomFAB(
                 modifier = Modifier.padding(top = 8.dp),
