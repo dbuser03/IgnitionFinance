@@ -27,7 +27,8 @@ import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewM
 fun RegistrationForm(
     onRegisterClick: (String, String) -> Unit,
     registrationState: RegistrationScreenViewModel.RegistrationState,
-    navController: NavController
+    navController: NavController,
+    viewModel: RegistrationScreenViewModel
 ) {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
@@ -66,8 +67,17 @@ fun RegistrationForm(
             navController.navigate(Destinations.PortfolioScreen.route) {
                 popUpTo(Destinations.LoginScreen.route) { inclusive = true }
             }
+
+            registrationState.authData.let { authData ->
+                viewModel.storeUserData(
+                    name = name.value,
+                    surname = surname.value,
+                    authData = authData
+                )
+            }
         }
     }
+
 
     Column(
         modifier = Modifier

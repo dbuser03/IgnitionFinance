@@ -41,7 +41,8 @@ fun RegistrationScreen(
                         viewModel.register(email, password)
                     },
                     registrationState = registrationState,
-                    navController
+                    navController,
+                    viewModel
                 )
             }
         }
