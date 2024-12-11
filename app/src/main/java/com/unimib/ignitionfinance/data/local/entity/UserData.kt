@@ -8,9 +8,9 @@ import com.unimib.ignitionfinance.data.model.Settings
 
 @Entity(tableName = "users")
 data class UserData (
-    @PrimaryKey val id: Int,
+    @PrimaryKey val id: String,
     @ColumnInfo(name = "name") val name: String?,
     @ColumnInfo(name = "surname") val surname: String?,
-    @ColumnInfo(name = "authData") val authData: AuthData,
-    @ColumnInfo(name = "settings") val settings: Settings
+    @ColumnInfo(name = "authData") val authData: AuthData?,
+    @ColumnInfo(name = "settings") val settings: Settings?
 )
