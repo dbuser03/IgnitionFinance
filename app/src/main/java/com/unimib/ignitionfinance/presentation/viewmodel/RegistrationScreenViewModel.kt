@@ -55,7 +55,7 @@ class RegistrationScreenViewModel @Inject constructor(
     }
 
     // TO DO: It would be nice to improve error and state handling
-    fun storeUserData(name: String, surname: String, authData: AuthData) {
+    /*fun storeUserData(name: String, surname: String, authData: AuthData) {
 
         val settings = SetDefaultSettingsUseCase().execute()
 
@@ -82,7 +82,7 @@ class RegistrationScreenViewModel @Inject constructor(
                 )
             }
         }
-    }
+    }*/
 }
 
 private fun mapErrorToMessage(throwable: Throwable): String {

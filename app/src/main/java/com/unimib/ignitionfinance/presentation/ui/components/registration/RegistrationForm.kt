@@ -68,13 +68,13 @@ fun RegistrationForm(
                 popUpTo(Destinations.LoginScreen.route) { inclusive = true }
             }
 
-            registrationState.authData.let { authData ->
+            /*registrationState.authData.let { authData ->
                 viewModel.storeUserData(
                     name = name.value,
                     surname = surname.value,
                     authData = authData
                 )
-            }
+            }*/
         }
     }
 
