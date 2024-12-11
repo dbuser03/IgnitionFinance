@@ -2,7 +2,6 @@ package com.unimib.ignitionfinance.di
 
 import com.unimib.ignitionfinance.data.local.database.UserDao
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService

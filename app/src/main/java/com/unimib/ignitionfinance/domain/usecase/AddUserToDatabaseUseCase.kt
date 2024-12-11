@@ -19,6 +19,7 @@ class AddUserToDatabaseUseCase @Inject constructor(
         val dataMap = userMapper.mapUserToDocument(userData)
 
         val firestoreFlow = firestoreRepository.addDocument(collectionPath, dataMap, documentId)
+        val user = userMapper.mapUserDataToUser(userData)
 
         firestoreFlow.collect { firestoreResult ->
             if (firestoreResult.isSuccess) {
