@@ -18,19 +18,14 @@ class AddUserToDatabaseUseCase @Inject constructor(
         val documentId = userData.authData.id
         val dataMap = userMapper.mapUserToDocument(userData)
 
-        // Iniziamo l'operazione su Firestore
         val firestoreFlow = firestoreRepository.addDocument(collectionPath, dataMap, documentId)
 
-        // Raccogliamo il risultato di Firestore
         firestoreFlow.collect { firestoreResult ->
             if (firestoreResult.isSuccess) {
-                // Se Firestore ha avuto successo, salviamo l'utente nel DB locale
                 val localSaveFlow = localDatabaseRepository.add(userData)
 
-                // Emettiamo il risultato dell'inserimento nel DB locale
                 emitAll(localSaveFlow)
             } else {
-                // Se Firestore fallisce, emettiamo il risultato di fallimento
                 emit(firestoreResult)
             }
         }
