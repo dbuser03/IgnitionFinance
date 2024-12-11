@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.unimib.ignitionfinance.data.model.AuthData
+import com.unimib.ignitionfinance.data.model.Settings
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,8 +55,17 @@ class RegistrationScreenViewModel @Inject constructor(
         }
     }
 
+    // TO DO: It would be nice to improve error and state handling
     fun storeUserData(name: String, surname: String, authData: AuthData) {
-        val userData = UserData(name = name, surname = surname, authData = authData)
+
+        val settings = SetDefaultSettingsUseCase().execute()
+
+        val userData = UserData(
+            name = name,
+            surname = surname,
+            authData = authData,
+            settings = settings
+        )
 
         val collectionPath = "users"
 
