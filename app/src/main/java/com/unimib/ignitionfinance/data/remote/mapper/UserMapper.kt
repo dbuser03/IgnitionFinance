@@ -10,31 +10,37 @@ import com.unimib.ignitionfinance.data.model.Withdrawals
 
 object UserMapper {
 
-    fun mapToUserData(document: DocumentSnapshot): UserData? {
+    fun mapToUserData(document: DocumentSnapshot?): UserData? {
         return try {
+            if (document == null) return null
+
             val name = document.getString("name") ?: ""
             val surname = document.getString("surname") ?: ""
 
-            val id = document.getString("authData.id") ?: ""
-            val email = document.getString("authData.email") ?: ""
-            val displayName = document.getString("authData.displayName") ?: ""
+            val authData = document.get("authData") as? Map<*, *>
+            val id = authData?.get("id") as? String ?: ""
+            val email = authData?.get("email") as? String ?: ""
+            val displayName = authData?.get("displayName") as? String ?: ""
 
-            val withPension = document.getString("settings.withdrawals.withPension") ?: ""
-            val withoutPension = document.getString("settings.withdrawals.withoutPension") ?: ""
+            val withdrawals = document.get("settings.withdrawals") as? Map<*, *>
+            val withPension = withdrawals?.get("withPension") as? String ?: ""
+            val withoutPension = withdrawals?.get("withoutPension") as? String ?: ""
 
             val inflationModel = document.getString("settings.inflationModel") ?: ""
 
-            val taxRatePercentage = document.getString("settings.expenses.taxRatePercentage") ?: ""
-            val stampDutyPercentage = document.getString("settings.expenses.stampDutyPercentage") ?: ""
-            val loadPercentage = document.getString("settings.expenses.loadPercentage") ?: ""
+            val expenses = document.get("settings.expenses") as? Map<*, *>
+            val taxRatePercentage = expenses?.get("taxRatePercentage") as? String ?: ""
+            val stampDutyPercentage = expenses?.get("stampDutyPercentage") as? String ?: ""
+            val loadPercentage = expenses?.get("loadPercentage") as? String ?: ""
 
-            val yearsInFIRE = document.getString("settings.intervals.yearsInFIRE") ?: ""
-            val yearsInPaidRetirement = document.getString("settings.intervals.yearsInPaidRetirement") ?: ""
-            val yearsOfBuffer = document.getString("settings.intervals.yearsOfBuffer") ?: ""
+            val intervals = document.get("settings.intervals") as? Map<*, *>
+            val yearsInFIRE = intervals?.get("yearsInFIRE") as? String ?: ""
+            val yearsInPaidRetirement = intervals?.get("yearsInPaidRetirement") as? String ?: ""
+            val yearsOfBuffer = intervals?.get("yearsOfBuffer") as? String ?: ""
 
             val numberOfSimulations = document.getString("settings.numberOfSimulations") ?: ""
 
-            val authData = AuthData(
+            val authDataObj = AuthData(
                 id = id,
                 email = email,
                 displayName = displayName
@@ -62,7 +68,7 @@ object UserMapper {
             UserData(
                 name = name,
                 surname = surname,
-                authData = authData,
+                authData = authDataObj,
                 settings = settings
             )
         } catch (e: Exception) {

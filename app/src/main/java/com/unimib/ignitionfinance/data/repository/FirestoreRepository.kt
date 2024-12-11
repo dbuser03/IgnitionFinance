@@ -9,7 +9,7 @@ import javax.inject.Inject
 interface FirestoreRepository {
     suspend fun getDocumentById(collectionPath: String, documentId: String): Flow<Result<Map<String, Any>?>>
     suspend fun getAllDocuments(collectionPath: String): Flow<Result<QuerySnapshot?>>
-    suspend fun addDocument(collectionPath: String, data: Map<String, Any>): Flow<Result<String?>>
+    suspend fun addDocument(collectionPath: String, data: Map<String, Any>, documentId: String? = null): Flow<Result<String?>>
     suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>>
     suspend fun deleteDocument(collectionPath: String, documentId: String): Flow<Result<Unit>>
 }
@@ -36,14 +36,19 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addDocument(collectionPath: String, data: Map<String, Any>): Flow<Result<String?>> = flow {
+    override suspend fun addDocument(
+        collectionPath: String,
+        data: Map<String, Any>,
+        documentId: String?
+    ): Flow<Result<String?>> = flow {
         try {
-            val documentId = firestoreService.addDocument(collectionPath, data)
-            emit(Result.success(documentId))
+            val documentIdResult = firestoreService.addDocument(collectionPath, data, documentId)
+            emit(Result.success(documentIdResult))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
     }
+
 
     override suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>> = flow {
         try {

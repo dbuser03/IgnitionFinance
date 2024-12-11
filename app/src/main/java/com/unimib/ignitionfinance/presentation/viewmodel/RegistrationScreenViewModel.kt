@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.unimib.ignitionfinance.data.model.AuthData
-import com.unimib.ignitionfinance.data.model.Settings
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase

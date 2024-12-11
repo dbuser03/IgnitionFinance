@@ -11,6 +11,7 @@ import com.unimib.ignitionfinance.data.repository.FirestoreRepositoryImpl
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.RetrieveUserSettingsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,11 +53,6 @@ object AppModule {
     ): FirestoreRepository = FirestoreRepositoryImpl(firestoreService)
 
     @Provides
-    fun provideRegisterNewUserUseCase(authRepository: AuthRepository): RegisterNewUserUseCase {
-        return RegisterNewUserUseCase(authRepository)
-    }
-
-    @Provides
     fun provideLoginUserUseCase(authRepository: AuthRepository): LoginUserUseCase {
         return LoginUserUseCase(authRepository)
     }
@@ -64,5 +60,15 @@ object AppModule {
     @Provides
     fun provideAddUserToDatabaseUseCase(firestoreRepository: FirestoreRepository, userMapper: UserMapper): AddUserToDatabaseUseCase {
         return AddUserToDatabaseUseCase(firestoreRepository, userMapper)
+    }
+
+    @Provides
+    fun provideRegisterNewUserUseCase(authRepository: AuthRepository): RegisterNewUserUseCase {
+        return RegisterNewUserUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideRetrieveUserSettingsUseCase(firestoreRepository: FirestoreRepository, authRepository: AuthRepository, userMapper: UserMapper): RetrieveUserSettingsUseCase {
+        return RetrieveUserSettingsUseCase(firestoreRepository, authRepository, userMapper)
     }
 }

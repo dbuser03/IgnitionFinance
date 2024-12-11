@@ -28,14 +28,25 @@ class FirestoreService {
         }
     }
 
-    suspend fun addDocument(collectionPath: String, data: Map<String, Any>): String? {
+    suspend fun addDocument(
+        collectionPath: String,
+        data: Map<String, Any>,
+        documentId: String? = null
+    ): String? {
         return try {
-            val documentReference = firestore.collection(collectionPath).add(data).await()
+            val collectionReference = firestore.collection(collectionPath)
+            val documentReference = if (documentId != null) {
+                collectionReference.document(documentId).set(data).await()
+                collectionReference.document(documentId)
+            } else {
+                collectionReference.add(data).await()
+            }
             documentReference.id
         } catch (e: Exception) {
             throw e
         }
     }
+
 
     suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>) {
         try {
