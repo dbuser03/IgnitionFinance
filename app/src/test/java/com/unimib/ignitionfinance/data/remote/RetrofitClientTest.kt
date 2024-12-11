@@ -12,6 +12,12 @@ class RetrofitClientTest {
     }
 
     @Test
+    fun `test searchStockApiService is correctly initialized`() {
+        val searchStockService = RetrofitClient.searchStockService
+        assertNotNull(searchStockService)
+    }
+
+    @Test
     fun `test inflationApiService is correctly initialized`() {
         val inflationService = RetrofitClient.inflationService
         assertNotNull(inflationService)
