@@ -7,16 +7,16 @@ import javax.inject.Inject
 interface LocalDatabaseRepository<T> {
     suspend fun getById(id: String): Flow<Result<T?>>
     suspend fun getAll(): Flow<Result<List<T>>>
-    suspend fun add(entity: T): Flow<Result<String>>
+    suspend fun add(entity: T): Flow<Result<Unit>>
     suspend fun update(entity: T): Flow<Result<Unit>>
-    suspend fun deleteById(id: Long): Flow<Result<Unit>>
+    suspend fun delete(entity: T): Flow<Result<Unit>>
 }
 
 class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     private val dao: DAO,
-    private val addFn: suspend DAO.(T) -> String,
+    private val addFn: suspend DAO.(T) -> Unit,
     private val updateFn: suspend DAO.(T) -> Unit,
-    private val deleteByIdFn: suspend DAO.(Long) -> Unit,
+    private val deleteFn: suspend DAO.(T) -> Unit,
     private val getByIdFn: suspend DAO.(String) -> T?,
     private val getAllFn: suspend DAO.() -> List<T>
 ) : LocalDatabaseRepository<T> {
@@ -39,7 +39,7 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         }
     }
 
-    override suspend fun add(entity: T): Flow<Result<String>> = flow {
+    override suspend fun add(entity: T): Flow<Result<Unit>> = flow {
         try {
             val result = dao.addFn(entity)
             emit(Result.success(result))
@@ -57,9 +57,9 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         }
     }
 
-    override suspend fun deleteById(id: Long): Flow<Result<Unit>> = flow {
+    override suspend fun delete(entity: T): Flow<Result<Unit>> = flow {
         try {
-            dao.deleteByIdFn(id)
+            dao.deleteFn(entity)
             emit(Result.success(Unit))
         } catch (e: Exception) {
             emit(Result.failure(e))

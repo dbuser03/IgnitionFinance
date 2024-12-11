@@ -5,19 +5,23 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.unimib.ignitionfinance.data.local.entity.UserData
+import com.unimib.ignitionfinance.data.local.entity.User
 
 @Dao
-interface UserDataDao {
+interface UserDao {
     @Insert
-    fun insert(user: UserData)
+    fun add(user: User)
 
     @Delete
-    fun delete(user: UserData)
+    fun delete(user: User)
 
     @Update
-    fun update(user: UserData)
+    fun update(user: User)
 
     @Query("SELECT * FROM users WHERE id = :userId")
-    fun getUserById(userId: String): UserData?
+    fun getUserById(userId: String): User?
+
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
+
 }

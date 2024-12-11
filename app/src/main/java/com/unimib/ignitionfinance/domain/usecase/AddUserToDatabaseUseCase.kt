@@ -1,20 +1,20 @@
 package com.unimib.ignitionfinance.domain.usecase
 
+import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.data.remote.mapper.UserMapper
 import com.unimib.ignitionfinance.data.repository.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AddUserToDatabaseUseCase @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
     private val userMapper: UserMapper,
-    private val localDatabaseRepository: LocalDatabaseRepository<UserData>
+    private val localDatabaseRepository: LocalDatabaseRepository<User>
 ) {
-    suspend fun execute(collectionPath: String, userData: UserData): Flow<Result<String?>> = flow {
+    fun execute(collectionPath: String, userData: UserData): Flow<Result<String?>> = flow {
         val documentId = userData.authData.id
         val dataMap = userMapper.mapUserToDocument(userData)
 
@@ -22,12 +22,20 @@ class AddUserToDatabaseUseCase @Inject constructor(
 
         firestoreFlow.collect { firestoreResult ->
             if (firestoreResult.isSuccess) {
-                val localSaveFlow = localDatabaseRepository.add(userData)
+                val localSaveFlow = localDatabaseRepository.add(user)
 
-                emitAll(localSaveFlow)
+                localSaveFlow.collect { localSaveResult ->
+                    if (localSaveResult.isSuccess) {
+                        emit(Result.success(documentId))
+                    } else {
+                        emit(Result.failure(localSaveResult.exceptionOrNull() ?: Throwable("Unknown error in local database")))
+                    }
+                }
             } else {
                 emit(firestoreResult)
             }
         }
     }
 }
+
+

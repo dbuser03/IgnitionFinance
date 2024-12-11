@@ -1,5 +1,8 @@
 package com.unimib.ignitionfinance.di
 
+import com.unimib.ignitionfinance.data.local.database.UserDao
+import com.unimib.ignitionfinance.data.local.entity.User
+import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
@@ -8,6 +11,8 @@ import com.unimib.ignitionfinance.data.repository.AuthRepository
 import com.unimib.ignitionfinance.data.repository.AuthRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.FirestoreRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepository
+import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepositoryImpl
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
@@ -52,14 +57,26 @@ object AppModule {
         firestoreService: FirestoreService
     ): FirestoreRepository = FirestoreRepositoryImpl(firestoreService)
 
+    fun provideLocalDatabaseRepository(userDao: UserDao): LocalDatabaseRepository<User> {
+        return LocalDatabaseRepositoryImpl(
+            dao = userDao,
+            addFn = UserDao::add,
+            updateFn = UserDao::update,
+            deleteFn = UserDao::delete,
+            getByIdFn = UserDao::getUserById,
+            getAllFn = UserDao::getAllUsers
+        )
+    }
+
+
     @Provides
     fun provideLoginUserUseCase(authRepository: AuthRepository): LoginUserUseCase {
         return LoginUserUseCase(authRepository)
     }
 
     @Provides
-    fun provideAddUserToDatabaseUseCase(firestoreRepository: FirestoreRepository, userMapper: UserMapper): AddUserToDatabaseUseCase {
-        return AddUserToDatabaseUseCase(firestoreRepository, userMapper)
+    fun provideAddUserToDatabaseUseCase(firestoreRepository: FirestoreRepository, userMapper: UserMapper, localDatabaseRepository: LocalDatabaseRepository<User>): AddUserToDatabaseUseCase {
+        return AddUserToDatabaseUseCase(firestoreRepository, userMapper, localDatabaseRepository)
     }
 
     @Provides

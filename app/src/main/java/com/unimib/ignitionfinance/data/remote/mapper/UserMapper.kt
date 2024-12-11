@@ -7,9 +7,11 @@ import com.unimib.ignitionfinance.data.model.Intervals
 import com.unimib.ignitionfinance.data.model.Settings
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.data.model.Withdrawals
+import com.unimib.ignitionfinance.data.local.entity.User
 
 object UserMapper {
 
+    // Funzione esistente per mappare da DocumentSnapshot a UserData
     fun mapToUserData(document: DocumentSnapshot?): UserData? {
         return try {
             if (document == null) return null
@@ -77,6 +79,7 @@ object UserMapper {
         }
     }
 
+    // Funzione esistente per mappare da UserData a Document
     fun mapUserToDocument(userData: UserData): Map<String, Any> {
         return mapOf(
             "name" to userData.name,
@@ -104,6 +107,27 @@ object UserMapper {
                 ),
                 "numberOfSimulations" to userData.settings.numberOfSimulations
             )
+        )
+    }
+
+    // Funzione aggiunta per mappare da UserData a User (per la Room Database)
+    fun mapUserDataToUser(userData: UserData): User {
+        return User(
+            id = userData.authData.id, // Usa l'ID presente in authData come chiave primaria
+            name = userData.name,
+            surname = userData.surname,
+            authData = userData.authData,
+            settings = userData.settings
+        )
+    }
+
+    // Funzione aggiunta per mappare da User a UserData (per aggiornamenti a livello di logica)
+    fun mapUserToUserData(user: User): UserData {
+        return UserData(
+            name = user.name,
+            surname = user.surname,
+            authData = user.authData,
+            settings = user.settings
         )
     }
 }
