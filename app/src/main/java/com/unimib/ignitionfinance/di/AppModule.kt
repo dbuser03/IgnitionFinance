@@ -124,7 +124,7 @@ object AppModule {
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(
-            context,
+            context.applicationContext,
             AppDatabase::class.java,
             name = "ignition_finance_database"
         ).build()
