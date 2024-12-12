@@ -1,5 +1,8 @@
 package com.unimib.ignitionfinance.di
 
+import android.content.Context
+import androidx.room.Room
+import com.unimib.ignitionfinance.data.local.database.AppDatabase
 import com.unimib.ignitionfinance.data.local.database.UserDao
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
@@ -20,6 +23,7 @@ import com.unimib.ignitionfinance.domain.usecase.RetrieveUserSettingsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @Module
@@ -42,16 +46,6 @@ object AppModule {
     }
 
     @Provides
-    fun provideUserDataMapper(): UserDataMapper {
-        return UserDataMapper
-    }
-
-    @Provides
-    fun provideUserMapper(): UserMapper {
-        return UserMapper
-    }
-
-    @Provides
     fun provideAuthRepository(
         authService: AuthService,
         authMapper: AuthMapper
@@ -61,6 +55,11 @@ object AppModule {
     fun provideFirestoreRepository(
         firestoreService: FirestoreService
     ): FirestoreRepository = FirestoreRepositoryImpl(firestoreService)
+
+    @Provides
+    fun provideUserDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao()
+    }
 
     @Provides
     fun provideLocalDatabaseRepository(userDao: UserDao): LocalDatabaseRepository<User> {
@@ -80,8 +79,18 @@ object AppModule {
     }
 
     @Provides
-    fun provideAddUserToDatabaseUseCase(firestoreRepository: FirestoreRepository, userMapper: UserMapper, userDataMapper: UserDataMapper, localDatabaseRepository: LocalDatabaseRepository<User>): AddUserToDatabaseUseCase {
-        return AddUserToDatabaseUseCase(firestoreRepository, userMapper, userDataMapper, localDatabaseRepository)
+    fun provideAddUserToDatabaseUseCase(
+        firestoreRepository: FirestoreRepository,
+        userMapper: UserMapper,
+        userDataMapper: UserDataMapper,
+        localDatabaseRepository: LocalDatabaseRepository<User>
+    ): AddUserToDatabaseUseCase {
+        return AddUserToDatabaseUseCase(
+            firestoreRepository,
+            userMapper,
+            userDataMapper,
+            localDatabaseRepository
+        )
     }
 
     @Provides
@@ -90,7 +99,34 @@ object AppModule {
     }
 
     @Provides
-    fun provideRetrieveUserSettingsUseCase(firestoreRepository: FirestoreRepository, authRepository: AuthRepository, userMapper: UserDataMapper): RetrieveUserSettingsUseCase {
-        return RetrieveUserSettingsUseCase(firestoreRepository, authRepository, userMapper)
+    fun provideRetrieveUserSettingsUseCase(
+        firestoreRepository: FirestoreRepository,
+        authRepository: AuthRepository,
+        userMapper: UserDataMapper
+    ): RetrieveUserSettingsUseCase {
+        return RetrieveUserSettingsUseCase(
+            firestoreRepository,
+            authRepository,
+            userMapper
+        )
+    }
+
+    @Provides
+    fun provideUserMapper(): UserMapper {
+        return UserMapper
+    }
+
+    @Provides
+    fun provideUserDataMapper(): UserDataMapper {
+        return UserDataMapper
+    }
+
+    @Provides
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            name = "ignition_finance_database"
+        ).build()
     }
 }

@@ -6,5 +6,5 @@ import com.unimib.ignitionfinance.data.local.entity.User
 
 @Database(entities = [User::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun userDataDao(): UserDao
+    abstract fun userDao(): UserDao
 }
