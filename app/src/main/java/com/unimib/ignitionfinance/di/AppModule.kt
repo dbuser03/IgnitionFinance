@@ -62,6 +62,7 @@ object AppModule {
         firestoreService: FirestoreService
     ): FirestoreRepository = FirestoreRepositoryImpl(firestoreService)
 
+    @Provides
     fun provideLocalDatabaseRepository(userDao: UserDao): LocalDatabaseRepository<User> {
         return LocalDatabaseRepositoryImpl(
             dao = userDao,
@@ -72,7 +73,6 @@ object AppModule {
             getAllFn = UserDao::getAllUsers
         )
     }
-
 
     @Provides
     fun provideLoginUserUseCase(authRepository: AuthRepository): LoginUserUseCase {
