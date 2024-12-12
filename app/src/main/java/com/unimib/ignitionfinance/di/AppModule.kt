@@ -42,8 +42,13 @@ object AppModule {
     }
 
     @Provides
-    fun provideUserMapper(): UserDataMapper {
+    fun provideUserDataMapper(): UserDataMapper {
         return UserDataMapper
+    }
+
+    @Provides
+    fun provideUserMapper(): UserMapper {
+        return UserMapper
     }
 
     @Provides
