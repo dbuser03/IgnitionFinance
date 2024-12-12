@@ -2,8 +2,9 @@ package com.unimib.ignitionfinance.di
 
 import com.unimib.ignitionfinance.data.local.database.UserDao
 import com.unimib.ignitionfinance.data.local.entity.User
+import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
-import com.unimib.ignitionfinance.data.remote.mapper.UserMapper
+import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
 import com.unimib.ignitionfinance.data.repository.AuthRepository
@@ -41,8 +42,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideUserMapper(): UserMapper {
-        return UserMapper
+    fun provideUserMapper(): UserDataMapper {
+        return UserDataMapper
     }
 
     @Provides
@@ -74,8 +75,8 @@ object AppModule {
     }
 
     @Provides
-    fun provideAddUserToDatabaseUseCase(firestoreRepository: FirestoreRepository, userMapper: UserMapper, localDatabaseRepository: LocalDatabaseRepository<User>): AddUserToDatabaseUseCase {
-        return AddUserToDatabaseUseCase(firestoreRepository, userMapper, localDatabaseRepository)
+    fun provideAddUserToDatabaseUseCase(firestoreRepository: FirestoreRepository, userMapper: UserMapper, userDataMapper: UserDataMapper, localDatabaseRepository: LocalDatabaseRepository<User>): AddUserToDatabaseUseCase {
+        return AddUserToDatabaseUseCase(firestoreRepository, userMapper, userDataMapper, localDatabaseRepository)
     }
 
     @Provides
@@ -84,7 +85,7 @@ object AppModule {
     }
 
     @Provides
-    fun provideRetrieveUserSettingsUseCase(firestoreRepository: FirestoreRepository, authRepository: AuthRepository, userMapper: UserMapper): RetrieveUserSettingsUseCase {
+    fun provideRetrieveUserSettingsUseCase(firestoreRepository: FirestoreRepository, authRepository: AuthRepository, userMapper: UserDataMapper): RetrieveUserSettingsUseCase {
         return RetrieveUserSettingsUseCase(firestoreRepository, authRepository, userMapper)
     }
 }
