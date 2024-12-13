@@ -12,6 +12,7 @@ interface AuthRepository {
     suspend fun createUserWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>>
     suspend fun resetPassword(email: String): Flow<Result<Unit>>
     suspend fun signOut(): Flow<Result<Unit>>
+    suspend fun getCurrentUser(): Flow<Result<AuthData>>
 }
 
 class AuthRepositoryImpl @Inject constructor(
@@ -64,4 +65,19 @@ class AuthRepositoryImpl @Inject constructor(
             emit(Result.failure(e))
         }
     }
+
+    override suspend fun getCurrentUser(): Flow<Result<AuthData>> = flow {
+        try {
+            val firebaseUser = authService.getCurrentUser()
+            if (firebaseUser != null) {
+                val authData = authMapper.mapToUser(firebaseUser)
+                emit(Result.success(authData))
+            } else {
+                emit(Result.failure(Throwable("Error: User not logged in")))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
 }

@@ -1,3 +1,5 @@
+package com.unimib.ignitionfinance.firestore
+
 import com.google.firebase.firestore.FirebaseFirestore
 import org.junit.Before
 import org.junit.Test

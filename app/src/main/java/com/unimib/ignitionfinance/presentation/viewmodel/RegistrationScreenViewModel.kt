@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.unimib.ignitionfinance.data.model.AuthData
+import com.unimib.ignitionfinance.data.model.UserData
+import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationScreenViewModel @Inject constructor(
-    private val registerNewUserUseCase: RegisterNewUserUseCase
+    private val registerNewUserUseCase: RegisterNewUserUseCase,
 ) : ViewModel() {
 
     sealed class RegistrationState {
@@ -43,12 +46,12 @@ class RegistrationScreenViewModel @Inject constructor(
             }
         }
     }
+}
 
-    private fun mapErrorToMessage(throwable: Throwable): String {
-        return when (throwable) {
-            is FirebaseAuthUserCollisionException -> "The account is already registered. Try logging in."
-            is FirebaseAuthException -> "Error during registration: ${throwable.message}"
-            else -> "Unknown error: ${throwable.localizedMessage ?: "No details available"}"
-        }
+private fun mapErrorToMessage(throwable: Throwable): String {
+    return when (throwable) {
+        is FirebaseAuthUserCollisionException -> "The account is already registered. Try logging in."
+        is FirebaseAuthException -> "Error during registration: ${throwable.message}"
+        else -> "Unknown error: ${throwable.localizedMessage ?: "No details available"}"
     }
 }

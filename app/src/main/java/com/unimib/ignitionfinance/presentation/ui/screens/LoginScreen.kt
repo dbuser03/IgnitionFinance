@@ -17,6 +17,8 @@ import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 @Composable
 fun LoginScreen(
     navController: NavController,
+    name: String = "",
+    surname: String = "",
     viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
     val loginState by viewModel.loginState.collectAsState()
@@ -32,11 +34,14 @@ fun LoginScreen(
                     .padding(innerPadding)
             ) {
                 LoginForm(
-                    navController,
                     onLoginClick = { email, password ->
                         viewModel.login(email, password)
                     },
-                    loginState = loginState
+                    loginState = loginState,
+                    navController = navController,
+                    viewModel = viewModel,
+                    name = name,
+                    surname = surname
                 )
             }
         }

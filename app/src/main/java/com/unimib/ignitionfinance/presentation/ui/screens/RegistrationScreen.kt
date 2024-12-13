@@ -15,13 +15,14 @@ import com.unimib.ignitionfinance.presentation.ui.components.registration.Regist
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDescription
 import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 
 @Composable
 fun RegistrationScreen(
     navController: NavController,
-    viewModel: RegistrationScreenViewModel = hiltViewModel()
+    registrationViewModel: RegistrationScreenViewModel = hiltViewModel(),
 ) {
-    val registrationState by viewModel.registrationState.collectAsState()
+    val registrationState by registrationViewModel.registrationState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -38,7 +39,7 @@ fun RegistrationScreen(
             ) {
                 RegistrationForm(
                     onRegisterClick = { email, password ->
-                        viewModel.register(email, password)
+                        registrationViewModel.register(email, password)
                     },
                     registrationState = registrationState,
                     navController
