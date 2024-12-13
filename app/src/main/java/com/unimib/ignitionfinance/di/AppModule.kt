@@ -19,6 +19,7 @@ import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepositoryImpl
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
 import com.unimib.ignitionfinance.domain.usecase.RetrieveUserSettingsUseCase
 import dagger.Module
 import dagger.Provides
@@ -76,6 +77,11 @@ object AppModule {
     @Provides
     fun provideLoginUserUseCase(authRepository: AuthRepository): LoginUserUseCase {
         return LoginUserUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideResetPasswordUseCase(authRepository: AuthRepository): ResetPasswordUseCase {
+        return ResetPasswordUseCase(authRepository)
     }
 
     @Provides
