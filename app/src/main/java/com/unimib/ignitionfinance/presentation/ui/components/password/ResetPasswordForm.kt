@@ -25,6 +25,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.viewmodel.ResetPasswordScreenViewModel
 
 @Composable
+// File crasha in preview controllare in modo meticoloso
 fun ResetPasswordForm(
     onResetClick: (String) -> Unit,
     resetState: ResetPasswordScreenViewModel.ResetState,

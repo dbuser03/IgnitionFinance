@@ -15,19 +15,19 @@ class ResetPasswordScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class ResetState {
-        data object Idle : ResetState()
-        data object Loading : ResetState()
+        data object Idle : ResetState() //
+        data object Loading : ResetState() //
         data class Success(val successMessage: String) : ResetState()
         data class Error(val errorMessage: String) : ResetState()
     }
 
-    private val _resetState = MutableStateFlow<ResetState>(ResetState.Idle)
+    private val _resetState = MutableStateFlow<ResetState>(ResetState.Idle) //
 
-    val resetState: StateFlow<ResetState> = _resetState
+    val resetState: StateFlow<ResetState> = _resetState //
 
     fun reset(email: String) {
         viewModelScope.launch {
-            _resetState.value = ResetState.Loading
+            _resetState.value = ResetState.Loading //
             resetPasswordUseCase.execute(email).collect { result ->
                 result.fold(
                     onSuccess = {

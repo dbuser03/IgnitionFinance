@@ -39,7 +39,7 @@ fun NavGraph(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
-            ResetPasswordScreen(navController)
+            ResetPasswordScreen(navController) //
         }
 
         composable(
