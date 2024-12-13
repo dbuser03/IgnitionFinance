@@ -5,8 +5,10 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.unimib.ignitionfinance.presentation.ui.screens.IntroScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.LoginScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.PortfolioScreen
@@ -33,10 +35,26 @@ fun NavGraph(
 
         composable(
             route = Destinations.LoginScreen.route,
+            arguments = listOf(
+                navArgument("name") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("surname") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            ),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
-        ) {
-            LoginScreen(navController)
+        ) { backStackEntry ->
+            LoginScreen(
+                navController = navController,
+                name = backStackEntry.arguments?.getString("name") ?: "",
+                surname = backStackEntry.arguments?.getString("surname") ?: ""
+            )
         }
         composable(
             route = Destinations.PortfolioScreen.route,

@@ -28,7 +28,6 @@ fun RegistrationForm(
     onRegisterClick: (String, String) -> Unit,
     registrationState: RegistrationScreenViewModel.RegistrationState,
     navController: NavController,
-    viewModel: RegistrationScreenViewModel
 ) {
     val name = remember { mutableStateOf("") }
     val surname = remember { mutableStateOf("") }
@@ -64,19 +63,17 @@ fun RegistrationForm(
 
     LaunchedEffect(registrationState) {
         if (registrationState is RegistrationScreenViewModel.RegistrationState.Success) {
-            navController.navigate(Destinations.PortfolioScreen.route) {
-                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
-            }
-
-            /*registrationState.authData.let { authData ->
-                viewModel.storeUserData(
+            navController.navigate(
+                Destinations.LoginScreen.createRoute(
                     name = name.value,
-                    surname = surname.value,
-                    authData = authData
+                    surname = surname.value
                 )
-            }*/
+            ) {
+                popUpTo(Destinations.RegistrationScreen.route) { inclusive = true }
+            }
         }
     }
+
 
 
     Column(

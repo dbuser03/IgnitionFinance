@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.unimib.ignitionfinance.data.model.AuthData
+import com.unimib.ignitionfinance.data.model.UserData
+import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
+import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel.StoreState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val loginUserUseCase: LoginUserUseCase
+    private val loginUserUseCase: LoginUserUseCase,
+    private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase
 ) : ViewModel() {
 
     sealed class LoginState {
@@ -23,6 +27,11 @@ class LoginScreenViewModel @Inject constructor(
         object Loading : LoginState()
         data class Success(val authData: AuthData) : LoginState()
         data class Error(val message: String) : LoginState()
+    }
+
+    sealed class StoreState {
+        data class Success(val successMessage: String) : StoreState()
+        data class Error(val errorMessage: String) : StoreState()
     }
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -38,6 +47,35 @@ class LoginScreenViewModel @Inject constructor(
                     },
                     onFailure = { throwable ->
                         _loginState.value = LoginState.Error(mapErrorToMessage(throwable))
+                    }
+                )
+            }
+        }
+    }
+
+    fun storeUserData(name: String, surname: String, authData: AuthData) {
+
+        val settings = SetDefaultSettingsUseCase().execute()
+
+        val userData = UserData(
+            name = name,
+            surname = surname,
+            authData = authData,
+            settings = settings
+        )
+
+        val collectionPath = "users"
+
+        viewModelScope.launch {
+            addUserToDatabaseUseCase.execute(collectionPath, userData).collect { result ->
+                result.fold(
+                    onSuccess = {
+                        val successMessage = "User added to database"
+                        print(StoreState.Success(successMessage))
+                    },
+                    onFailure = {
+                        val errorMessage = "Failure"
+                        print(StoreState.Error(errorMessage))
                     }
                 )
             }

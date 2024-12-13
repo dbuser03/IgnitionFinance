@@ -16,32 +16,36 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>
 ) {
-    fun execute(collectionPath: String, userData: UserData): Flow<Result<String?>> = flow {
+    fun execute(collectionPath: String, userData: UserData): Flow<Result<Pair<String?, String?>>> = flow {
         val documentId = userData.authData.id
         val user = userMapper.mapUserDataToUser(userData)
+        var remoteResult: Result<String?> = Result.failure(Throwable("Remote operation not executed"))
+        var localResult: Result<String?> = Result.failure(Throwable("Local operation not executed"))
 
         try {
-            val localSaveResult = localDatabaseRepository.add(user)
-            localSaveResult.collect { saveResult ->
-                if (saveResult.isSuccess) {
-                    val dataMap = userDataMapper.mapUserDataToDocument(userData)
-                    val firestoreResult = firestoreRepository.addDocument(collectionPath, dataMap, documentId)
-                    firestoreResult.collect { result ->
-                        when {
-                            result.isSuccess -> {
-                                emit(Result.success(documentId))
-                            }
-                            result.isFailure -> {
-                                emit(Result.failure(result.exceptionOrNull() ?: Throwable("Unknown error in remote database")))
-                            }
-                        }
-                    }
+            val dataMap = userDataMapper.mapUserDataToDocument(userData)
+
+            localDatabaseRepository.add(user).collect { result ->
+                localResult = if (result.isSuccess) {
+                    Result.success(documentId)
                 } else {
-                    emit(Result.failure(saveResult.exceptionOrNull() ?: Throwable("Unknown error in local database")))
+                    Result.failure(result.exceptionOrNull() ?: Throwable("Errore sconosciuto nel database locale"))
                 }
             }
+
+            firestoreRepository.addDocument(collectionPath, dataMap, documentId).collect { result ->
+                remoteResult = if (result.isSuccess) {
+                    Result.success(documentId)
+                } else {
+                    Result.failure(result.exceptionOrNull() ?: Throwable("Errore sconosciuto nel database remoto"))
+                }
+            }
+
+
+            emit(Result.success(Pair(remoteResult.getOrNull(), localResult.getOrNull())))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
     }
 }
+

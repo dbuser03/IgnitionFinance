@@ -28,9 +28,12 @@ import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewM
 
 @Composable
 fun LoginForm(
-    navController: NavController,
     onLoginClick: (String, String) -> Unit,
-    loginState: LoginScreenViewModel.LoginState
+    loginState: LoginScreenViewModel.LoginState,
+    navController: NavController,
+    viewModel: LoginScreenViewModel,
+    name: String,
+    surname: String
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -58,11 +61,22 @@ fun LoginForm(
 
     LaunchedEffect(loginState) {
         if (loginState is LoginScreenViewModel.LoginState.Success) {
+            val authData = loginState.authData
+            val name = name
+            val surname = surname
+
+            viewModel.storeUserData(
+                name = name,
+                surname = surname,
+                authData = authData
+            )
+
             navController.navigate(Destinations.PortfolioScreen.route) {
                 popUpTo(Destinations.LoginScreen.route) { inclusive = true }
             }
         }
     }
+
 
     Column(
         modifier = Modifier

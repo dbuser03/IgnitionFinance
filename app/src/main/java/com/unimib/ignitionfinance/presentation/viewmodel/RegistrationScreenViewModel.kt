@@ -18,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class RegistrationScreenViewModel @Inject constructor(
     private val registerNewUserUseCase: RegisterNewUserUseCase,
-    private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase
 ) : ViewModel() {
 
     sealed class RegistrationState {
@@ -27,12 +26,6 @@ class RegistrationScreenViewModel @Inject constructor(
         data class Success(val authData: AuthData) : RegistrationState()
         data class Error(val message: String) : RegistrationState()
     }
-
-    sealed class StoreState {
-        data class Success(val successMessage: String) : StoreState()
-        data class Error(val errorMessage: String) : StoreState()
-    }
-
 
     private val _registrationState = MutableStateFlow<RegistrationState>(RegistrationState.Idle)
     val registrationState: StateFlow<RegistrationState> = _registrationState
@@ -53,36 +46,6 @@ class RegistrationScreenViewModel @Inject constructor(
             }
         }
     }
-
-    // TO DO: It would be nice to improve error and state handling
-    /*fun storeUserData(name: String, surname: String, authData: AuthData) {
-
-        val settings = SetDefaultSettingsUseCase().execute()
-
-        val userData = UserData(
-            name = name,
-            surname = surname,
-            authData = authData,
-            settings = settings
-        )
-
-        val collectionPath = "users"
-
-        viewModelScope.launch {
-            addUserToDatabaseUseCase.execute(collectionPath, userData).collect { result ->
-                result.fold(
-                    onSuccess = {
-                        val successMessage = "User added to database"
-                        print(StoreState.Success(successMessage))
-                    },
-                    onFailure = {
-                        val errorMessage = "Failure"
-                        print(StoreState.Error(errorMessage))
-                    }
-                )
-            }
-        }
-    }*/
 }
 
 private fun mapErrorToMessage(throwable: Throwable): String {
