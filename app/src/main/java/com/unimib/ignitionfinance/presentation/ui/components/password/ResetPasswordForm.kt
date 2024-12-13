@@ -1,11 +1,9 @@
-package com.unimib.ignitionfinance.presentation.ui.components.login
+package com.unimib.ignitionfinance.presentation.ui.components.password
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -14,28 +12,23 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
-import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.domain.validation.ResetValidationResult
 import com.unimib.ignitionfinance.domain.validation.ResetValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
-import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
-import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
-import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.ResetPasswordScreenViewModel
 
 @Composable
 fun ResetPasswordForm(
     onResetClick: (String) -> Unit,
-    //resetState: ResetPasswordScreenViewModel.resetState,
-    navController: NavController,
-    viewModel: ResetPasswordScreenViewModel
-
+    resetState: ResetPasswordScreenViewModel.ResetState,
+    navController: NavController
 ) {
     val email = remember { mutableStateOf("") }
     val emailError = remember { mutableStateOf<String?>(null) }
@@ -122,8 +115,8 @@ fun ResetPasswordForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && resetState is ResetPasswordScreenViewModel.resetState.Error -> {
-                resetState.message
+            isFabFocused.value && resetState is ResetPasswordScreenViewModel.ResetState.Error -> {
+                resetState.errorMessage
             }
             emailFocused.value -> emailError.value
             else -> null
