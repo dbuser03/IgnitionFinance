@@ -10,16 +10,16 @@ import com.unimib.ignitionfinance.data.local.entity.User
 @Dao
 interface UserDao {
     @Insert
-    fun add(user: User)
+    suspend fun add(user: User)
 
     @Delete
-    fun delete(user: User)
+    suspend fun delete(user: User)
 
     @Update
-    fun update(user: User)
+    suspend fun update(user: User)
 
     @Query("SELECT * FROM users WHERE id = :userId")
-    fun getUserById(userId: String): User?
+    suspend fun getUserById(userId: String): User?
 
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<User>

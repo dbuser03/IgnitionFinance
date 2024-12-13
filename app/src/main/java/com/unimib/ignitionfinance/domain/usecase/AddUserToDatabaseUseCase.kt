@@ -33,14 +33,13 @@ class AddUserToDatabaseUseCase @Inject constructor(
                 }
             }
 
-            /*firestoreRepository.addDocument(collectionPath, dataMap, documentId).collect { result ->
+            firestoreRepository.addDocument(collectionPath, dataMap, documentId).collect { result ->
                 remoteResult = if (result.isSuccess) {
                     Result.success(documentId)
                 } else {
                     Result.failure(result.exceptionOrNull() ?: Throwable("Errore sconosciuto nel database remoto"))
                 }
             }
-*/
 
             emit(Result.success(Pair(remoteResult.getOrNull(), localResult.getOrNull())))
         } catch (e: Exception) {
