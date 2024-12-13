@@ -65,8 +65,6 @@ fun ResetPasswordForm(
             .padding(horizontal = 16.dp, vertical = 32.dp)
     ) {
 
-        Spacer(modifier = Modifier.height(4.dp))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
