@@ -13,6 +13,7 @@ import com.unimib.ignitionfinance.presentation.ui.screens.IntroScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.LoginScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.PortfolioScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.RegistrationScreen
+import com.unimib.ignitionfinance.presentation.ui.screens.ResetPasswordScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SettingsScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SimulationScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SummaryScreen
@@ -31,6 +32,14 @@ fun NavGraph(
             exitTransition = { ExitTransition.None }
         ) {
             RegistrationScreen(navController)
+        }
+
+        composable(
+            route = Destinations.ResetPasswordScreen.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ) {
+            ResetPasswordScreen(navController)
         }
 
         composable(

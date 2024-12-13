@@ -181,7 +181,7 @@ fun LoginForm(
 
         TextButton(
             onClick = {
-                //navController.navigate(Destinations.ForgotPasswordScreen.route)
+                navController.navigate(Destinations.ResetPasswordScreen.route)
             },
             modifier = Modifier
                 .align(Alignment.Start)
