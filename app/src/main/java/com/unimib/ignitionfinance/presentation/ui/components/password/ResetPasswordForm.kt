@@ -19,6 +19,8 @@ import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
+import com.unimib.ignitionfinance.domain.validation.ResetValidationResult
+import com.unimib.ignitionfinance.domain.validation.ResetValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
@@ -29,8 +31,8 @@ import com.unimib.ignitionfinance.presentation.viewmodel.ResetPasswordScreenView
 
 @Composable
 fun ResetPasswordForm(
-    onLoginClick: (String) -> Unit,
-    //resetPasswordState: ResetPasswordScreenViewModel.resetPasswordState,
+    onResetClick: (String) -> Unit,
+    //resetState: ResetPasswordScreenViewModel.resetState,
     navController: NavController,
     viewModel: ResetPasswordScreenViewModel
 
@@ -43,55 +45,25 @@ fun ResetPasswordForm(
     val focusManager = LocalFocusManager.current
 
     val isFormValid = remember(email.value) {
-        val result = LoginValidator.validateLoginForm(email.value)
-        result is LoginValidationResult.Success
+        val result = ResetValidator.validateResetForm(email.value)
+        result is ResetValidationResult.Success
     }
 
     LaunchedEffect(Unit) {
         emailFocusRequester.requestFocus()
     }
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginScreenViewModel.LoginState.Success) {
-            val authData = loginState.authData
-            val name = name
-            val surname = surname
-
-            viewModel.storeUserData(
-                name = name,
-                surname = surname,
-                authData = authData
-            )
-
-            navController.navigate(Destinations.PortfolioScreen.route) {
-                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
-            }
+    LaunchedEffect(resetState) {
+        navController.navigate(Destinations.PortfolioScreen.route) {
+            popUpTo(Destinations.LoginScreen.route) { inclusive = true }
         }
     }
-
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 32.dp)
     ) {
-        CustomTextField(
-            value = email.value,
-            onValueChange = {
-                email.value = it
-                emailError.value = (LoginValidator.validateEmail(it) as? LoginValidationResult.Failure)?.message
-            },
-            label = "Email",
-            isError = emailError.value != null,
-            nextFocusRequester = passwordFocusRequester,
-            imeAction = ImeAction.Next,
-            modifier = Modifier
-                .focusRequester(emailFocusRequester)
-                .onFocusChanged {
-                    emailFocused.value = it.isFocused
-                    if (it.isFocused) isFabFocused.value = false
-                }
-        )
 
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -100,27 +72,26 @@ fun ResetPasswordForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CustomTextField(
-                value = password.value,
+                value = email.value,
                 onValueChange = {
-                    password.value = it
-                    passwordError.value = (LoginValidator.validatePassword(it) as? LoginValidationResult.Failure)?.message
+                    email.value = it
+                    emailError.value = (ResetValidator.validateEmail(it) as? ResetValidationResult.Failure)?.message
                 },
-                label = "Password",
-                isError = passwordError.value != null,
+                label = "Email",
+                isError = emailError.value != null,
                 imeAction = ImeAction.Done,
-                isPasswordField = true,
                 onImeActionPerformed = {
                     if (isFormValid) {
                         focusManager.clearFocus()
-                        onLoginClick(email.value, password.value)
+                        onResetClick(email.value)
                         isFabFocused.value = true
                     }
                 },
                 modifier = Modifier
-                    .focusRequester(passwordFocusRequester)
+                    .focusRequester(emailFocusRequester)
                     .weight(1.0f)
                     .onFocusChanged {
-                        passwordFocused.value = it.isFocused
+                        emailFocused.value = it.isFocused
                         if (it.isFocused) isFabFocused.value = false
                     }
             )
@@ -134,7 +105,7 @@ fun ResetPasswordForm(
                     if (isFormValid) {
                         focusManager.clearFocus()
                         isFabFocused.value = true
-                        onLoginClick(email.value, password.value)
+                        onResetClick(email.value)
                     }
                 },
                 containerColor = if (isFormValid) {
@@ -153,11 +124,10 @@ fun ResetPasswordForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && loginState is LoginScreenViewModel.LoginState.Error -> {
-                loginState.message
+            isFabFocused.value && resetState is ResetPasswordScreenViewModel.resetState.Error -> {
+                resetState.message
             }
             emailFocused.value -> emailError.value
-            passwordFocused.value -> passwordError.value
             else -> null
         }
 
@@ -168,34 +138,6 @@ fun ResetPasswordForm(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .padding(start = 12.dp, end = 64.dp)
-            )
-        }
-
-        TextButton(
-            onClick = {
-                //navController.navigate(Destinations.ForgotPasswordScreen.route)
-            },
-            modifier = Modifier
-                .align(Alignment.Start)
-        ) {
-            Text(
-                "Forgot Password?",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-
-        TextButton(
-            onClick = {
-                navController.navigate(Destinations.RegistrationScreen.route)
-            },
-            modifier = Modifier
-                .align(Alignment.Start)
-        ) {
-            Text(
-                "Create Account",
-                style = TypographyMedium.bodySmall,
-                color = MaterialTheme.colorScheme.primary
             )
         }
     }
