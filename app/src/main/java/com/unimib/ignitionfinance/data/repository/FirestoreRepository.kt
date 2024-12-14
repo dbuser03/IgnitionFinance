@@ -12,6 +12,7 @@ interface FirestoreRepository {
     suspend fun addDocument(collectionPath: String, data: Map<String, Any>, documentId: String? = null): Flow<Result<String?>>
     suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>>
     suspend fun deleteDocument(collectionPath: String, documentId: String): Flow<Result<Unit>>
+    suspend fun deleteAllDocuments(collectionPath: String): Flow<Result<Unit>>
 }
 
 class FirestoreRepositoryImpl @Inject constructor(
@@ -49,7 +50,6 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
-
     override suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>> = flow {
         try {
             firestoreService.updateDocument(collectionPath, documentId, data)
@@ -62,6 +62,15 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun deleteDocument(collectionPath: String, documentId: String): Flow<Result<Unit>> = flow {
         try {
             firestoreService.deleteDocument(collectionPath, documentId)
+            emit(Result.success(Unit))
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
+    override suspend fun deleteAllDocuments(collectionPath: String): Flow<Result<Unit>> = flow {
+        try {
+            firestoreService.deleteAllDocuments(collectionPath)
             emit(Result.success(Unit))
         } catch (e: Exception) {
             emit(Result.failure(e))

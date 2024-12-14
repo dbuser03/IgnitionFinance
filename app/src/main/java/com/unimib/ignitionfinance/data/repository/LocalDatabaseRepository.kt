@@ -10,6 +10,7 @@ interface LocalDatabaseRepository<T> {
     suspend fun add(entity: T): Flow<Result<Unit>>
     suspend fun update(entity: T): Flow<Result<Unit>>
     suspend fun delete(entity: T): Flow<Result<Unit>>
+    suspend fun deleteAll(): Flow<Result<Unit>>
 }
 
 class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
@@ -18,7 +19,9 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     private val updateFn: suspend DAO.(T) -> Unit,
     private val deleteFn: suspend DAO.(T) -> Unit,
     private val getByIdFn: suspend DAO.(String) -> T?,
-    private val getAllFn: suspend DAO.() -> List<T>
+    private val getAllFn: suspend DAO.() -> List<T>,
+    private val deleteAllFn: suspend DAO.() -> Unit
+
 ) : LocalDatabaseRepository<T> {
 
     override suspend fun getById(id: String): Flow<Result<T?>> = flow {
@@ -60,6 +63,15 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     override suspend fun delete(entity: T): Flow<Result<Unit>> = flow {
         try {
             dao.deleteFn(entity)
+            emit(Result.success(Unit))
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
+    override suspend fun deleteAll(): Flow<Result<Unit>> = flow {
+        try {
+            dao.deleteAllFn()
             emit(Result.success(Unit))
         } catch (e: Exception) {
             emit(Result.failure(e))

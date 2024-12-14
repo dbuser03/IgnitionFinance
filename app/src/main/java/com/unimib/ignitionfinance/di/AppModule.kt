@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.di
 
 import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
 import com.unimib.ignitionfinance.data.local.database.AppDatabase
 import com.unimib.ignitionfinance.data.local.database.UserDao
@@ -17,6 +18,7 @@ import com.unimib.ignitionfinance.data.repository.FirestoreRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepositoryImpl
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
+import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
@@ -70,7 +72,8 @@ object AppModule {
             updateFn = UserDao::update,
             deleteFn = UserDao::delete,
             getByIdFn = UserDao::getUserById,
-            getAllFn = UserDao::getAllUsers
+            getAllFn = UserDao::getAllUsers,
+            deleteAllFn = UserDao::deleteAllUsers
         )
     }
 
@@ -102,6 +105,14 @@ object AppModule {
     @Provides
     fun provideRegisterNewUserUseCase(authRepository: AuthRepository): RegisterNewUserUseCase {
         return RegisterNewUserUseCase(authRepository)
+    }
+
+    @Provides
+    fun provideDeleteAllUsersUseCase(
+        localDatabaseRepository: LocalDatabaseRepository<User>,
+        firestoreRepository: FirestoreRepository
+    ): DeleteAllUsersUseCase {
+        return DeleteAllUsersUseCase(localDatabaseRepository, firestoreRepository)
     }
 
     @Provides

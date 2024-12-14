@@ -24,7 +24,6 @@ import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
-import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 
 @Composable
 fun LoginForm(

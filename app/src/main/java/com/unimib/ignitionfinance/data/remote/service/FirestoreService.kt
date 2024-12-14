@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.service
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
 
 class FirestoreService {
@@ -20,12 +19,10 @@ class FirestoreService {
         }
     }
 
-    suspend fun getCollection(collectionPath: String): QuerySnapshot? {
-        return try {
-            firestore.collection(collectionPath).get().await()
-        } catch (e: Exception) {
-            throw e
-        }
+    suspend fun getCollection(collectionPath: String) = try {
+        firestore.collection(collectionPath).get().await()
+    } catch (e: Exception) {
+        throw e
     }
 
     suspend fun addDocument(
@@ -47,7 +44,6 @@ class FirestoreService {
         }
     }
 
-
     suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>) {
         try {
             firestore.collection(collectionPath).document(documentId).update(data).await()
@@ -59,6 +55,17 @@ class FirestoreService {
     suspend fun deleteDocument(collectionPath: String, documentId: String) {
         try {
             firestore.collection(collectionPath).document(documentId).delete().await()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun deleteAllDocuments(collectionPath: String) {
+        try {
+            val documents = firestore.collection(collectionPath).get().await()
+            for (document in documents) {
+                document.reference.delete().await()
+            }
         } catch (e: Exception) {
             throw e
         }

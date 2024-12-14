@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.unimib.ignitionfinance.data.model.AuthData
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
+import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel.StoreState
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
     private val loginUserUseCase: LoginUserUseCase,
-    private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase
+    private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase,
+    private val deleteAllUsersUseCase: DeleteAllUsersUseCase
 ) : ViewModel() {
 
     sealed class LoginState {
@@ -75,6 +77,23 @@ class LoginScreenViewModel @Inject constructor(
                     },
                     onFailure = {
                         val errorMessage = "Failure"
+                        print(StoreState.Error(errorMessage))
+                    }
+                )
+            }
+        }
+    }
+
+    fun deleteAllUsers() {
+        viewModelScope.launch {
+            deleteAllUsersUseCase().collect { result ->
+                result.fold(
+                    onSuccess = {
+                        val successMessage = "All user data has been deleted successfully"
+                        print(StoreState.Success(successMessage))
+                    },
+                    onFailure = { throwable ->
+                        val errorMessage = "Failed to delete user data: ${throwable.message}"
                         print(StoreState.Error(errorMessage))
                     }
                 )
