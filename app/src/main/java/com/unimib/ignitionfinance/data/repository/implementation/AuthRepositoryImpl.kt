@@ -3,6 +3,7 @@ package com.unimib.ignitionfinance.data.repository.implementation
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
+import com.unimib.ignitionfinance.data.remote.service.excpetion.AuthServiceException
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,8 @@ class AuthRepositoryImpl @Inject constructor(
             } else {
                 emit(Result.failure(Throwable("Error: Failed to sign in user")))
             }
+        } catch (e: AuthServiceException) {
+            emit(Result.failure(e))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
@@ -38,6 +41,8 @@ class AuthRepositoryImpl @Inject constructor(
             } else {
                 emit(Result.failure(Throwable("Error: Failed to create user")))
             }
+        } catch (e: AuthServiceException) {
+            emit(Result.failure(e))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
@@ -47,6 +52,8 @@ class AuthRepositoryImpl @Inject constructor(
         try {
             authService.resetPassword(email)
             emit(Result.success(Unit))
+        } catch (e: AuthServiceException) {
+            emit(Result.failure(e))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
@@ -56,6 +63,8 @@ class AuthRepositoryImpl @Inject constructor(
         try {
             authService.signOut()
             emit(Result.success(Unit))
+        } catch (e: AuthServiceException) {
+            emit(Result.failure(e))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
@@ -70,6 +79,8 @@ class AuthRepositoryImpl @Inject constructor(
             } else {
                 emit(Result.failure(Throwable("Error: User not logged in")))
             }
+        } catch (e: AuthServiceException) {
+            emit(Result.failure(e))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }

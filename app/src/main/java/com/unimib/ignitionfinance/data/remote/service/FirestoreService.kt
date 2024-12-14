@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.service
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreServiceException
 import kotlinx.coroutines.tasks.await
 
 class FirestoreService {
@@ -9,20 +10,16 @@ class FirestoreService {
     suspend fun getDocument(collectionPath: String, documentId: String): Map<String, Any>? {
         return try {
             val documentSnapshot = firestore.collection(collectionPath).document(documentId).get().await()
-            if (documentSnapshot.exists()) {
-                documentSnapshot.data
-            } else {
-                null
-            }
+            documentSnapshot.data
         } catch (e: Exception) {
-            throw e
+            throw FirestoreServiceException("Failed to get document", e)
         }
     }
 
     suspend fun getCollection(collectionPath: String) = try {
         firestore.collection(collectionPath).get().await()
     } catch (e: Exception) {
-        throw e
+        throw FirestoreServiceException("Failed to get collection", e)
     }
 
     suspend fun addDocument(
@@ -40,7 +37,7 @@ class FirestoreService {
             }
             documentReference.id
         } catch (e: Exception) {
-            throw e
+            throw FirestoreServiceException("Failed to add document", e)
         }
     }
 
@@ -48,7 +45,7 @@ class FirestoreService {
         try {
             firestore.collection(collectionPath).document(documentId).update(data).await()
         } catch (e: Exception) {
-            throw e
+            throw FirestoreServiceException("Failed to update document", e)
         }
     }
 
@@ -56,7 +53,7 @@ class FirestoreService {
         try {
             firestore.collection(collectionPath).document(documentId).delete().await()
         } catch (e: Exception) {
-            throw e
+            throw FirestoreServiceException("Failed to delete document", e)
         }
     }
 
@@ -67,7 +64,7 @@ class FirestoreService {
                 document.reference.delete().await()
             }
         } catch (e: Exception) {
-            throw e
+            throw FirestoreServiceException("Failed to delete all documents", e)
         }
     }
 }

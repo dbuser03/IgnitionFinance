@@ -17,55 +17,17 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     private val deleteAllFn: suspend DAO.() -> Unit
 ) : LocalDatabaseRepository<T> {
 
-    override suspend fun getById(id: String): Flow<Result<T?>> = flow {
+    override suspend fun getById(id: String): Flow<Result<T?>> = performDbOperation { dao.getByIdFn(id) }
+    override suspend fun getAll(): Flow<Result<List<T>>> = performDbOperation { dao.getAllFn() }
+    override suspend fun add(entity: T): Flow<Result<Unit>> = performDbOperation { dao.addFn(entity) }
+    override suspend fun update(entity: T): Flow<Result<Unit>> = performDbOperation { dao.updateFn(entity) }
+    override suspend fun delete(entity: T): Flow<Result<Unit>> = performDbOperation { dao.deleteFn(entity) }
+    override suspend fun deleteAll(): Flow<Result<Unit>> = performDbOperation { dao.deleteAllFn() }
+
+    private fun <R> performDbOperation(action: suspend DAO.() -> R): Flow<Result<R>> = flow {
         try {
-            val result = dao.getByIdFn(id)
+            val result = dao.action()
             emit(Result.success(result))
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun getAll(): Flow<Result<List<T>>> = flow {
-        try {
-            val result = dao.getAllFn()
-            emit(Result.success(result))
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun add(entity: T): Flow<Result<Unit>> = flow {
-        try {
-            val result = dao.addFn(entity)
-            emit(Result.success(result))
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun update(entity: T): Flow<Result<Unit>> = flow {
-        try {
-            dao.updateFn(entity)
-            emit(Result.success(Unit))
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun delete(entity: T): Flow<Result<Unit>> = flow {
-        try {
-            dao.deleteFn(entity)
-            emit(Result.success(Unit))
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun deleteAll(): Flow<Result<Unit>> = flow {
-        try {
-            dao.deleteAllFn()
-            emit(Result.success(Unit))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }

@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.data.repository.implementation
 
 import com.google.firebase.firestore.QuerySnapshot
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
+import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreServiceException
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,8 +18,10 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             val document = firestoreService.getDocument(collectionPath, documentId)
             emit(Result.success(document))
-        } catch (e: Exception) {
+        } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -26,8 +29,10 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             val documents = firestoreService.getCollection(collectionPath)
             emit(Result.success(documents))
-        } catch (e: Exception) {
+        } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -39,8 +44,10 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             val documentIdResult = firestoreService.addDocument(collectionPath, data, documentId)
             emit(Result.success(documentIdResult))
-        } catch (e: Exception) {
+        } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -48,8 +55,10 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             firestoreService.updateDocument(collectionPath, documentId, data)
             emit(Result.success(Unit))
-        } catch (e: Exception) {
+        } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -57,8 +66,10 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             firestoreService.deleteDocument(collectionPath, documentId)
             emit(Result.success(Unit))
-        } catch (e: Exception) {
+        } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -66,8 +77,10 @@ class FirestoreRepositoryImpl @Inject constructor(
         try {
             firestoreService.deleteAllDocuments(collectionPath)
             emit(Result.success(Unit))
-        } catch (e: Exception) {
+        } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
 }
