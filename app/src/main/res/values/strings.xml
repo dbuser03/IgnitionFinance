@@ -16,9 +16,9 @@
         correctly set in the settings.</string>
     <string name="login_description">Sign in using the email and password \nyou used to sign up the
         first time.</string>
-    <string name="registration_description">Make sure to check all the information you provide and
+    <string name="registration_description">Make sure to check all the information \nyou provide and
         accept the terms and conditions.</string>
-    <string name="reset_password_description">Add the email you used to register to receive the
+    <string name="reset_password_description">Add the email you used to register to \nreceive the
         reset password link</string>
     <string name="add_FAB_description">Add</string>
     <string name="swipe_up_FAB_description">Swipe Up</string>
