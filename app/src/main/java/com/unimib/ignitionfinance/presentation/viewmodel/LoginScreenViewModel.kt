@@ -2,8 +2,6 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
@@ -32,8 +30,17 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     sealed class StoreState {
+        object Idle : StoreState()
+        object Loading : StoreState()
         data class Success(val successMessage: String) : StoreState()
         data class Error(val errorMessage: String) : StoreState()
+    }
+
+    sealed class DeleteState {
+        object Idle : DeleteState()
+        object Loading : DeleteState()
+        data class Success(val successMessage: String) : DeleteState()
+        data class Error(val errorMessage: String) : DeleteState()
     }
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -48,12 +55,16 @@ class LoginScreenViewModel @Inject constructor(
                         _loginState.value = LoginState.Success(authData)
                     },
                     onFailure = { throwable ->
-                        _loginState.value = LoginState.Error(mapErrorToMessage(throwable))
+                        val errorMessage = throwable.localizedMessage ?: "No details available"
+                        _loginState.value =
+                            LoginState.Error(errorMessage)
                     }
                 )
             }
         }
     }
+
+    private val _storeState = MutableStateFlow<StoreState>(StoreState.Idle)
 
     fun storeUserData(name: String, surname: String, authData: AuthData) {
 
@@ -67,45 +78,38 @@ class LoginScreenViewModel @Inject constructor(
         )
 
         val collectionPath = "users"
-
         viewModelScope.launch {
+            _storeState.value = StoreState.Loading
             addUserToDatabaseUseCase.execute(collectionPath, userData).collect { result ->
                 result.fold(
                     onSuccess = {
-                        val successMessage = "User added to database"
-                        print(StoreState.Success(successMessage))
+                        _storeState.value = StoreState.Success("User data stored successfully")
                     },
-                    onFailure = {
-                        val errorMessage = "Failure"
-                        print(StoreState.Error(errorMessage))
+                    onFailure = { throwable ->
+                        val errorMessage = throwable.localizedMessage ?: "No details available"
+                        _storeState.value = StoreState.Error(errorMessage)
                     }
                 )
             }
         }
     }
+
+    private val _deleteState = MutableStateFlow<DeleteState>(DeleteState.Idle)
 
     fun deleteAllUsers() {
         viewModelScope.launch {
-            deleteAllUsersUseCase().collect { result ->
+            _deleteState.value = DeleteState.Loading
+            deleteAllUsersUseCase.execute().collect { result ->
                 result.fold(
                     onSuccess = {
-                        val successMessage = "All user data has been deleted successfully"
-                        print(StoreState.Success(successMessage))
+                        _deleteState.value = DeleteState.Success("User data deleted successfully")
                     },
                     onFailure = { throwable ->
-                        val errorMessage = "Failed to delete user data: ${throwable.message}"
-                        print(StoreState.Error(errorMessage))
+                        val errorMessage = throwable.localizedMessage ?: "No details available"
+                        _deleteState.value = DeleteState.Error(errorMessage)
                     }
                 )
             }
-        }
-    }
-
-    private fun mapErrorToMessage(throwable: Throwable): String {
-        return when (throwable) {
-            is FirebaseAuthInvalidCredentialsException -> "Invalid credentials. If you've forgotten your password, please use 'Forgot Password?' to reset it, or register a new account."
-            is FirebaseAuthException -> "Authentication error: ${throwable.message}"
-            else -> "Unknown error: ${throwable.localizedMessage ?: "No details available"}"
         }
     }
 }

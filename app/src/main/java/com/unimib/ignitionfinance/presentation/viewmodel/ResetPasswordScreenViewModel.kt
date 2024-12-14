@@ -32,23 +32,14 @@ class ResetPasswordScreenViewModel @Inject constructor(
             resetPasswordUseCase.execute(email).collect { result ->
                 result.fold(
                     onSuccess = {
-                        val successMessage = "Password reset successful"
-                        _resetState.value = ResetState.Success(successMessage)
+                        _resetState.value = ResetState.Success("Password reset successful")
                     },
                     onFailure = {throwable ->
-                        val errorMessage = mapErrorToMessage(throwable)
+                        val errorMessage = throwable.localizedMessage ?: "No details available"
                         _resetState.value = ResetState.Error(errorMessage)
                     }
                 )
             }
-        }
-    }
-
-    private fun mapErrorToMessage(throwable: Throwable): String {
-        return when (throwable) {
-            is FirebaseAuthInvalidCredentialsException -> "Invalid credentials. There's no account linked to this email"
-            is FirebaseAuthException -> "Error during password reset: ${throwable.message}"
-            else -> "Unknown error: ${throwable.localizedMessage ?: "No details available"}"
         }
     }
 }

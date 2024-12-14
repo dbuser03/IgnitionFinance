@@ -1,19 +1,17 @@
 package com.unimib.ignitionfinance.domain.validation
 
-import com.unimib.ignitionfinance.domain.validation.rules.InputValidationRules
-
 object InputValidator {
     fun validate(value: String?, prefix: String): InputValidationResult {
         if (value.isNullOrBlank()) return InputValidationResult.Success
 
         return when {
-            !InputValidationRules.validateInput(value, prefix) -> {
+            !ValidationRules.validateInput(value, prefix) -> {
                 when (prefix) {
-                    "€" -> InputValidationResult.Failure("Input should be greater than 0 €")
-                    "%" -> InputValidationResult.Failure("Input should be between 0 and 100 %")
-                    "YRS" -> InputValidationResult.Failure("Input should be < 100 YRS")
-                    "N°" -> InputValidationResult.Failure("Input should be between 1 and 10000 N°")
-                    else -> InputValidationResult.Failure("Invalid input for prefix $prefix")
+                    "€" -> InputValidationResult.Failure(ValidationErrors.Input.POSITIVE_EURO)
+                    "%" -> InputValidationResult.Failure(ValidationErrors.Input.PERCENTAGE_RANGE)
+                    "YRS" -> InputValidationResult.Failure(ValidationErrors.Input.YEARS_LIMIT)
+                    "N°" -> InputValidationResult.Failure(ValidationErrors.Input.NUMBER_RANGE)
+                    else -> InputValidationResult.Failure(String.format(ValidationErrors.Input.INVALID_INPUT, prefix))
                 }
             }
             else -> InputValidationResult.Success

@@ -1,12 +1,10 @@
 package com.unimib.ignitionfinance.domain.validation
 
-import com.unimib.ignitionfinance.domain.validation.rules.RegistrationValidationRules
-
 object RegistrationValidator {
     fun validateName(name: String?): RegistrationValidationResult {
         return when {
             name.isNullOrBlank() -> RegistrationValidationResult.Success
-            !RegistrationValidationRules.validateName(name) -> RegistrationValidationResult.Failure("Name should be at least 2 characters and not contain numbers")
+            !ValidationRules.validateName(name) -> RegistrationValidationResult.Failure(ValidationErrors.Registration.INVALID_NAME)
             else -> RegistrationValidationResult.Success
         }
     }
@@ -14,7 +12,7 @@ object RegistrationValidator {
     fun validateSurname(surname: String?): RegistrationValidationResult {
         return when {
             surname.isNullOrBlank() -> RegistrationValidationResult.Success
-            !RegistrationValidationRules.validateSurname(surname) -> RegistrationValidationResult.Failure("Surname should be at least 2 characters and not contain numbers")
+            !ValidationRules.validateName(surname) -> RegistrationValidationResult.Failure(ValidationErrors.Registration.INVALID_SURNAME)
             else -> RegistrationValidationResult.Success
         }
     }
@@ -22,7 +20,7 @@ object RegistrationValidator {
     fun validateEmail(email: String?): RegistrationValidationResult {
         return when {
             email.isNullOrBlank() -> RegistrationValidationResult.Success
-            !RegistrationValidationRules.validateEmail(email) -> RegistrationValidationResult.Failure("Email should be valid and follow the standard format (e.g., user@example.com)")
+            !ValidationRules.validateEmail(email) -> RegistrationValidationResult.Failure(ValidationErrors.Registration.INVALID_EMAIL)
             else -> RegistrationValidationResult.Success
         }
     }
@@ -30,21 +28,18 @@ object RegistrationValidator {
     fun validatePassword(password: String?): RegistrationValidationResult {
         return when {
             password.isNullOrBlank() -> RegistrationValidationResult.Success
-            !RegistrationValidationRules.validatePassword(password) -> RegistrationValidationResult.Failure("Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., @, !, ?, #, \$, etc.).\"")
+            !ValidationRules.validatePassword(password) -> RegistrationValidationResult.Failure(ValidationErrors.Registration.INVALID_PASSWORD)
             else -> RegistrationValidationResult.Success
         }
     }
 
     fun validateRegistrationForm(name: String?, surname: String?, email: String?, password: String?): RegistrationValidationResult {
         return when {
-            !RegistrationValidationRules.validateRegistrationForm(name, surname, email, password) -> RegistrationValidationResult.Failure("")
+            !ValidationRules.validateRegistrationForm(name, surname, email, password) -> RegistrationValidationResult.Failure(ValidationErrors.Registration.INVALID_FORM)
             else -> RegistrationValidationResult.Success
-
         }
     }
-
 }
-
 sealed class RegistrationValidationResult {
     data object Success : RegistrationValidationResult()
     data class Failure(val message: String) : RegistrationValidationResult()

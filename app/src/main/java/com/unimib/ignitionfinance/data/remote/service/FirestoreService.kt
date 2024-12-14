@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.service
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreServiceException
 import kotlinx.coroutines.tasks.await
 
@@ -11,15 +12,19 @@ class FirestoreService {
         return try {
             val documentSnapshot = firestore.collection(collectionPath).document(documentId).get().await()
             documentSnapshot.data
+        } catch (e: FirebaseFirestoreException) {
+            throw FirestoreServiceException("Firestore specific error occurred while getting document", e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("Failed to get document", e)
+            throw FirestoreServiceException("General error occurred while getting document", e)
         }
     }
 
     suspend fun getCollection(collectionPath: String) = try {
         firestore.collection(collectionPath).get().await()
+    } catch (e: FirebaseFirestoreException) {
+        throw FirestoreServiceException("Firestore specific error occurred while getting collection", e)
     } catch (e: Exception) {
-        throw FirestoreServiceException("Failed to get collection", e)
+        throw FirestoreServiceException("General error occurred while getting collection", e)
     }
 
     suspend fun addDocument(
@@ -36,24 +41,30 @@ class FirestoreService {
                 collectionReference.add(data).await()
             }
             documentReference.id
+        } catch (e: FirebaseFirestoreException) {
+            throw FirestoreServiceException("Firestore specific error occurred while adding document", e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("Failed to add document", e)
+            throw FirestoreServiceException("General error occurred while adding document", e)
         }
     }
 
     suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>) {
         try {
             firestore.collection(collectionPath).document(documentId).update(data).await()
+        } catch (e: FirebaseFirestoreException) {
+            throw FirestoreServiceException("Firestore specific error occurred while updating document", e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("Failed to update document", e)
+            throw FirestoreServiceException("General error occurred while updating document", e)
         }
     }
 
     suspend fun deleteDocument(collectionPath: String, documentId: String) {
         try {
             firestore.collection(collectionPath).document(documentId).delete().await()
+        } catch (e: FirebaseFirestoreException) {
+            throw FirestoreServiceException("Firestore specific error occurred while deleting document", e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("Failed to delete document", e)
+            throw FirestoreServiceException("General error occurred while deleting document", e)
         }
     }
 
@@ -63,8 +74,10 @@ class FirestoreService {
             for (document in documents) {
                 document.reference.delete().await()
             }
+        } catch (e: FirebaseFirestoreException) {
+            throw FirestoreServiceException("Firestore specific error occurred while deleting all documents", e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("Failed to delete all documents", e)
+            throw FirestoreServiceException("General error occurred while deleting all documents", e)
         }
     }
 }
