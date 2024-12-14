@@ -6,8 +6,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
-import com.unimib.ignitionfinance.data.remote.service.excpetion.AuthErrors
-import com.unimib.ignitionfinance.data.remote.service.excpetion.AuthServiceException
+import com.unimib.ignitionfinance.data.remote.service.utils.AuthErrors
+import com.unimib.ignitionfinance.data.remote.service.utils.AuthServiceException
 import kotlinx.coroutines.tasks.await
 
 class AuthService {

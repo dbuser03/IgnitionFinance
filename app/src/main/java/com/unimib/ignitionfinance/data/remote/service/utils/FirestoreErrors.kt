@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.service.excpetion
+package com.unimib.ignitionfinance.data.remote.service.utils
 
 object FirestoreErrors {
     const val FIRESTORE_SPECIFIC_ERROR = "Firestore specific error occurred while "

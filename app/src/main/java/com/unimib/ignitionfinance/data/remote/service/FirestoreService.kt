@@ -2,8 +2,8 @@ package com.unimib.ignitionfinance.data.remote.service
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreErrors
-import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreServiceException
+import com.unimib.ignitionfinance.data.remote.service.utils.FirestoreErrors
+import com.unimib.ignitionfinance.data.remote.service.utils.FirestoreServiceException
 import kotlinx.coroutines.tasks.await
 
 class FirestoreService {

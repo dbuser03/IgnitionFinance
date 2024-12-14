@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.remote.service.excpetion
+package com.unimib.ignitionfinance.data.remote.service.utils
 
 object AuthErrors {
     const val INVALID_CREDENTIALS = "Invalid email or password."

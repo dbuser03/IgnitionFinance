@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.data.repository.implementation
 
 import com.google.firebase.firestore.QuerySnapshot
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
-import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreServiceException
+import com.unimib.ignitionfinance.data.remote.service.utils.FirestoreServiceException
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
