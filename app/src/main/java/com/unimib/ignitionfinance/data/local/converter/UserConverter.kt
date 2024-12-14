@@ -5,29 +5,26 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.Settings
+import javax.inject.Inject
 
-class UserConverter {
-    private val gson = Gson()
+inline fun <reified T> Gson.toJsonString(data: T): String = this.toJson(data)
+inline fun <reified T> Gson.fromJsonString(json: String): T? = try {
+    this.fromJson(json, object : TypeToken<T>() {}.type)
+} catch (_: Exception) {
+    null
+}
 
-    @TypeConverter
-    fun fromAuthData(authData: AuthData): String {
-        return gson.toJson(authData)
-    }
-
-    @TypeConverter
-    fun toAuthData(authDataString: String): AuthData {
-        val type = object : TypeToken<AuthData>() {}.type
-        return gson.fromJson(authDataString, type)
-    }
+class UserConverter @Inject constructor(private val gson: Gson) {
 
     @TypeConverter
-    fun fromSettings(settings: Settings): String {
-        return gson.toJson(settings)
-    }
+    fun fromAuthData(authData: AuthData): String = gson.toJsonString(authData)
 
     @TypeConverter
-    fun toSettings(settingsString: String): Settings {
-        val type = object : TypeToken<Settings>() {}.type
-        return gson.fromJson(settingsString, type)
-    }
+    fun toAuthData(authDataString: String): AuthData? = gson.fromJsonString(authDataString)
+
+    @TypeConverter
+    fun fromSettings(settings: Settings): String = gson.toJsonString(settings)
+
+    @TypeConverter
+    fun toSettings(settingsString: String): Settings? = gson.fromJsonString(settingsString)
 }

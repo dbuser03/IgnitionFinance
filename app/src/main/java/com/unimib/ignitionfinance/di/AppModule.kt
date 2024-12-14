@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.gson.Gson
 import com.unimib.ignitionfinance.data.local.database.AppDatabase
 import com.unimib.ignitionfinance.data.local.database.UserDao
 import com.unimib.ignitionfinance.data.local.entity.User
@@ -31,6 +32,9 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    fun provideGson(): Gson = Gson()
 
     @Provides
     fun provideAuthService(): AuthService {
