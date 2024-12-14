@@ -32,14 +32,14 @@ class LoginScreenViewModel @Inject constructor(
     sealed class StoreState {
         object Idle : StoreState()
         object Loading : StoreState()
-        data class Success(val successMessage: String) : StoreState()
+        data class Success(val storePair: Pair<String?, Unit?>) : StoreState()
         data class Error(val errorMessage: String) : StoreState()
     }
 
     sealed class DeleteState {
         object Idle : DeleteState()
         object Loading : DeleteState()
-        data class Success(val successMessage: String) : DeleteState()
+        data class Success(val deletePair: Pair<Unit?, Unit?>) : DeleteState()
         data class Error(val errorMessage: String) : DeleteState()
     }
 
@@ -82,8 +82,8 @@ class LoginScreenViewModel @Inject constructor(
             _storeState.value = StoreState.Loading
             addUserToDatabaseUseCase.execute(collectionPath, userData).collect { result ->
                 result.fold(
-                    onSuccess = {
-                        _storeState.value = StoreState.Success("User data stored successfully")
+                    onSuccess = { pair ->
+                        _storeState.value = StoreState.Success(pair)
                     },
                     onFailure = { throwable ->
                         val errorMessage = throwable.localizedMessage ?: "No details available"
@@ -101,8 +101,8 @@ class LoginScreenViewModel @Inject constructor(
             _deleteState.value = DeleteState.Loading
             deleteAllUsersUseCase.execute().collect { result ->
                 result.fold(
-                    onSuccess = {
-                        _deleteState.value = DeleteState.Success("User data deleted successfully")
+                    onSuccess = { deletePair ->
+                        _deleteState.value = DeleteState.Success(deletePair)
                     },
                     onFailure = { throwable ->
                         val errorMessage = throwable.localizedMessage ?: "No details available"

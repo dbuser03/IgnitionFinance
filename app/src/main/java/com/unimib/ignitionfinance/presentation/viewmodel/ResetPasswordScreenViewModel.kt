@@ -19,7 +19,7 @@ class ResetPasswordScreenViewModel @Inject constructor(
     sealed class ResetState {
         object Idle : ResetState()
         object Loading : ResetState()
-        data class Success(val successMessage: String) : ResetState()
+        data class Success(val success: Unit) : ResetState()
         data class Error(val errorMessage: String) : ResetState()
     }
 
@@ -31,8 +31,8 @@ class ResetPasswordScreenViewModel @Inject constructor(
             _resetState.value = ResetState.Loading
             resetPasswordUseCase.execute(email).collect { result ->
                 result.fold(
-                    onSuccess = {
-                        _resetState.value = ResetState.Success("Password reset successful")
+                    onSuccess = { success ->
+                        _resetState.value = ResetState.Success(success)
                     },
                     onFailure = {throwable ->
                         val errorMessage = throwable.localizedMessage ?: "No details available"
