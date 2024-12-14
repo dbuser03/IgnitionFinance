@@ -51,7 +51,12 @@ fun RegistrationForm(
     val focusManager = LocalFocusManager.current
 
     val isFormValid = remember(name.value, surname.value, email.value, password.value) {
-        val result = RegistrationValidator.validateRegistrationForm(name.value, surname.value, email.value, password.value)
+        val result = RegistrationValidator.validateRegistrationForm(
+            name.value,
+            surname.value,
+            email.value,
+            password.value
+        )
         result is RegistrationValidationResult.Success
     }
 
