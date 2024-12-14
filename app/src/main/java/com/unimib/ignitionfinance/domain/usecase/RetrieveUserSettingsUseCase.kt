@@ -2,9 +2,9 @@ package com.unimib.ignitionfinance.domain.usecase
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
-import com.unimib.ignitionfinance.data.repository.FirestoreRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.model.Settings
-import com.unimib.ignitionfinance.data.repository.AuthRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

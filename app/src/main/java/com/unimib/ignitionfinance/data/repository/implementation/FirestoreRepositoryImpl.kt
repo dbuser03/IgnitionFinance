@@ -1,19 +1,13 @@
-package com.unimib.ignitionfinance.data.repository
+package com.unimib.ignitionfinance.data.repository.implementation
 
 import com.google.firebase.firestore.QuerySnapshot
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
-
-interface FirestoreRepository {
-    suspend fun getDocumentById(collectionPath: String, documentId: String): Flow<Result<Map<String, Any>?>>
-    suspend fun getAllDocuments(collectionPath: String): Flow<Result<QuerySnapshot?>>
-    suspend fun addDocument(collectionPath: String, data: Map<String, Any>, documentId: String? = null): Flow<Result<String?>>
-    suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>>
-    suspend fun deleteDocument(collectionPath: String, documentId: String): Flow<Result<Unit>>
-    suspend fun deleteAllDocuments(collectionPath: String): Flow<Result<Unit>>
-}
 
 class FirestoreRepositoryImpl @Inject constructor(
     private val firestoreService: FirestoreService
@@ -26,7 +20,7 @@ class FirestoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getAllDocuments(collectionPath: String): Flow<Result<QuerySnapshot?>> = flow {
         try {
@@ -35,7 +29,7 @@ class FirestoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun addDocument(
         collectionPath: String,
@@ -48,7 +42,7 @@ class FirestoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>> = flow {
         try {
@@ -57,7 +51,7 @@ class FirestoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteDocument(collectionPath: String, documentId: String): Flow<Result<Unit>> = flow {
         try {
@@ -66,7 +60,7 @@ class FirestoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteAllDocuments(collectionPath: String): Flow<Result<Unit>> = flow {
         try {
@@ -75,5 +69,5 @@ class FirestoreRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

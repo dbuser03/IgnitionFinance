@@ -1,17 +1,11 @@
-package com.unimib.ignitionfinance.data.repository
+package com.unimib.ignitionfinance.data.repository.implementation
 
+import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
-
-interface LocalDatabaseRepository<T> {
-    suspend fun getById(id: String): Flow<Result<T?>>
-    suspend fun getAll(): Flow<Result<List<T>>>
-    suspend fun add(entity: T): Flow<Result<Unit>>
-    suspend fun update(entity: T): Flow<Result<Unit>>
-    suspend fun delete(entity: T): Flow<Result<Unit>>
-    suspend fun deleteAll(): Flow<Result<Unit>>
-}
 
 class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     private val dao: DAO,
@@ -21,7 +15,6 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     private val getByIdFn: suspend DAO.(String) -> T?,
     private val getAllFn: suspend DAO.() -> List<T>,
     private val deleteAllFn: suspend DAO.() -> Unit
-
 ) : LocalDatabaseRepository<T> {
 
     override suspend fun getById(id: String): Flow<Result<T?>> = flow {
@@ -31,7 +24,7 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getAll(): Flow<Result<List<T>>> = flow {
         try {
@@ -40,7 +33,7 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun add(entity: T): Flow<Result<Unit>> = flow {
         try {
@@ -49,7 +42,7 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun update(entity: T): Flow<Result<Unit>> = flow {
         try {
@@ -58,7 +51,7 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun delete(entity: T): Flow<Result<Unit>> = flow {
         try {
@@ -67,7 +60,7 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteAll(): Flow<Result<Unit>> = flow {
         try {
@@ -76,5 +69,5 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

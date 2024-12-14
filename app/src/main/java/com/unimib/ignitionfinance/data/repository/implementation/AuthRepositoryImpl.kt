@@ -1,19 +1,14 @@
-package com.unimib.ignitionfinance.data.repository
+package com.unimib.ignitionfinance.data.repository.implementation
 
 import com.unimib.ignitionfinance.data.model.AuthData
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
+import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
-
-interface AuthRepository {
-    suspend fun signInWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>>
-    suspend fun createUserWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>>
-    suspend fun resetPassword(email: String): Flow<Result<Unit>>
-    suspend fun signOut(): Flow<Result<Unit>>
-    suspend fun getCurrentUser(): Flow<Result<AuthData>>
-}
 
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
@@ -32,7 +27,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun createUserWithEmailAndPassword(email: String, password: String): Flow<Result<AuthData>> = flow {
         try {
@@ -46,7 +41,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun resetPassword(email: String): Flow<Result<Unit>> = flow {
         try {
@@ -55,7 +50,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun signOut(): Flow<Result<Unit>> = flow {
         try {
@@ -64,7 +59,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getCurrentUser(): Flow<Result<AuthData>> = flow {
         try {
@@ -78,6 +73,5 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
-
+    }.flowOn(Dispatchers.IO)
 }

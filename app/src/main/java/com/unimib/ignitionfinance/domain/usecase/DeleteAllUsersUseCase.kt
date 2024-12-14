@@ -1,8 +1,8 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.repository.FirestoreRepository
-import com.unimib.ignitionfinance.data.repository.LocalDatabaseRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

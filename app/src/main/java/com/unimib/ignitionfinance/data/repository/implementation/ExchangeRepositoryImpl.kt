@@ -1,16 +1,13 @@
-package com.unimib.ignitionfinance.data.repository
+package com.unimib.ignitionfinance.data.repository.implementation
 
 import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
 import com.unimib.ignitionfinance.data.model.ExchangeData
+import com.unimib.ignitionfinance.data.repository.interfaces.ExchangeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-
-interface ExchangeRepository {
-    suspend fun fetchExchangeData(seriesKey: String): Flow<Result<List<ExchangeData>>>
-}
 
 class ExchangeRepositoryImpl(
     private val apiService: ExchangeService,
