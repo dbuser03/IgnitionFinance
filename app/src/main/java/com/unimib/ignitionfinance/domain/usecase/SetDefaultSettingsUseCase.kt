@@ -1,9 +1,9 @@
 package com.unimib.ignitionfinance.domain.usecase
 
-import com.unimib.ignitionfinance.data.model.Settings
-import com.unimib.ignitionfinance.data.model.Withdrawals
-import com.unimib.ignitionfinance.data.model.Expenses
-import com.unimib.ignitionfinance.data.model.Intervals
+import com.unimib.ignitionfinance.data.model.user.Settings
+import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
+import com.unimib.ignitionfinance.data.model.user.settings.Expenses
+import com.unimib.ignitionfinance.data.model.user.settings.Intervals
 
 class SetDefaultSettingsUseCase {
 

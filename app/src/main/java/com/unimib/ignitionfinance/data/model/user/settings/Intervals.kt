@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.model
+package com.unimib.ignitionfinance.data.model.user.settings
 
 data class Intervals (
     val yearsInFIRE: String,

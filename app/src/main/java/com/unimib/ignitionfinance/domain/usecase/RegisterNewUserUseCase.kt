@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
-import com.unimib.ignitionfinance.data.model.AuthData
+import com.unimib.ignitionfinance.data.model.user.AuthData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

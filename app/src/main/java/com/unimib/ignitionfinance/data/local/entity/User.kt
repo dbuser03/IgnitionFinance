@@ -3,8 +3,8 @@ package com.unimib.ignitionfinance.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.unimib.ignitionfinance.data.model.AuthData
-import com.unimib.ignitionfinance.data.model.Settings
+import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.Settings
 
 @Entity(tableName = "users")
 data class User (

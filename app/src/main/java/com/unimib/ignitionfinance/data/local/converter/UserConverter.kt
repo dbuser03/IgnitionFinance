@@ -3,8 +3,8 @@ package com.unimib.ignitionfinance.data.local.converter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.unimib.ignitionfinance.data.model.AuthData
-import com.unimib.ignitionfinance.data.model.Settings
+import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.Settings
 
 class UserConverter {
     private val gson = Gson()

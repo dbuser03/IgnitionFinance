@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
 import com.google.firebase.auth.FirebaseUser
-import com.unimib.ignitionfinance.data.model.AuthData
+import com.unimib.ignitionfinance.data.model.user.AuthData
 
 object AuthMapper {
     fun mapToUser(firebaseUser: FirebaseUser): AuthData {

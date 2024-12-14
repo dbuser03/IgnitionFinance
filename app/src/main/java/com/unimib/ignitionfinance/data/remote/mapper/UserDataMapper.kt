@@ -1,12 +1,12 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
 import com.google.firebase.firestore.DocumentSnapshot
-import com.unimib.ignitionfinance.data.model.AuthData
-import com.unimib.ignitionfinance.data.model.Expenses
-import com.unimib.ignitionfinance.data.model.Intervals
-import com.unimib.ignitionfinance.data.model.Settings
+import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.settings.Expenses
+import com.unimib.ignitionfinance.data.model.user.settings.Intervals
+import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.UserData
-import com.unimib.ignitionfinance.data.model.Withdrawals
+import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
 
 object UserDataMapper {
 
