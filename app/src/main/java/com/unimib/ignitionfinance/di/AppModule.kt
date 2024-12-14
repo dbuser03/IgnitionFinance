@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.di
 
 import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
 import com.unimib.ignitionfinance.data.local.database.AppDatabase
 import com.unimib.ignitionfinance.data.local.database.UserDao
