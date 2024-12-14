@@ -3,7 +3,6 @@ package com.unimib.ignitionfinance.domain.validation.utils
 import android.util.Patterns
 
 object ValidationRules {
-    // Validation Configurations
     private object Configs {
         val EMAIL_PATTERN = Patterns.EMAIL_ADDRESS
 

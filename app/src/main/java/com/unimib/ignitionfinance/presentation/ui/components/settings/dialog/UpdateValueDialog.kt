@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.domain.validation.InputValidationResult
-import com.unimib.ignitionfinance.domain.validation.InputValidator
+import com.unimib.ignitionfinance.domain.validation.SettingsValidator
 
 @Composable
 fun UpdateValueDialog(
@@ -77,7 +77,7 @@ fun UpdateValueDialog(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChange = { input ->
                         textInput = input
-                        val validationResult = InputValidator.validate(input, prefix)
+                        val validationResult = SettingsValidator.validate(input, prefix)
                         errorMessage = if (validationResult is InputValidationResult.Failure) {
                             validationResult.message
                         } else null

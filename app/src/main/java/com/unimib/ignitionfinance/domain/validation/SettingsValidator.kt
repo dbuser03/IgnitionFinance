@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.domain.validation
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationErrors
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationRules
 
-object InputValidator {
+object SettingsValidator {
     fun validate(value: String?, prefix: String): InputValidationResult {
         if (value.isNullOrBlank()) return InputValidationResult.Success
 

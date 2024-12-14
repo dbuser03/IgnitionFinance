@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.data.remote.service
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreErrors
 import com.unimib.ignitionfinance.data.remote.service.excpetion.FirestoreServiceException
 import kotlinx.coroutines.tasks.await
 
@@ -13,18 +14,18 @@ class FirestoreService {
             val documentSnapshot = firestore.collection(collectionPath).document(documentId).get().await()
             documentSnapshot.data
         } catch (e: FirebaseFirestoreException) {
-            throw FirestoreServiceException("Firestore specific error occurred while getting document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.GETTING_DOCUMENT, true), e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("General error occurred while getting document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.GETTING_DOCUMENT, false), e)
         }
     }
 
     suspend fun getCollection(collectionPath: String) = try {
         firestore.collection(collectionPath).get().await()
     } catch (e: FirebaseFirestoreException) {
-        throw FirestoreServiceException("Firestore specific error occurred while getting collection", e)
+        throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.GETTING_COLLECTION, true), e)
     } catch (e: Exception) {
-        throw FirestoreServiceException("General error occurred while getting collection", e)
+        throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.GETTING_COLLECTION, false), e)
     }
 
     suspend fun addDocument(
@@ -42,9 +43,9 @@ class FirestoreService {
             }
             documentReference.id
         } catch (e: FirebaseFirestoreException) {
-            throw FirestoreServiceException("Firestore specific error occurred while adding document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.ADDING_DOCUMENT, true), e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("General error occurred while adding document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.ADDING_DOCUMENT, false), e)
         }
     }
 
@@ -52,9 +53,9 @@ class FirestoreService {
         try {
             firestore.collection(collectionPath).document(documentId).update(data).await()
         } catch (e: FirebaseFirestoreException) {
-            throw FirestoreServiceException("Firestore specific error occurred while updating document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.UPDATING_DOCUMENT, true), e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("General error occurred while updating document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.UPDATING_DOCUMENT, false), e)
         }
     }
 
@@ -62,9 +63,9 @@ class FirestoreService {
         try {
             firestore.collection(collectionPath).document(documentId).delete().await()
         } catch (e: FirebaseFirestoreException) {
-            throw FirestoreServiceException("Firestore specific error occurred while deleting document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.DELETING_DOCUMENT, true), e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("General error occurred while deleting document", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.DELETING_DOCUMENT, false), e)
         }
     }
 
@@ -75,9 +76,9 @@ class FirestoreService {
                 document.reference.delete().await()
             }
         } catch (e: FirebaseFirestoreException) {
-            throw FirestoreServiceException("Firestore specific error occurred while deleting all documents", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.DELETING_ALL_DOCUMENTS, true), e)
         } catch (e: Exception) {
-            throw FirestoreServiceException("General error occurred while deleting all documents", e)
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.DELETING_ALL_DOCUMENTS, false), e)
         }
     }
 }

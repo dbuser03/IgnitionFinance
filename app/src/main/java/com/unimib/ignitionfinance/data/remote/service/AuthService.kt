@@ -5,8 +5,8 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
+import com.unimib.ignitionfinance.data.remote.service.excpetion.AuthErrors
 import com.unimib.ignitionfinance.data.remote.service.excpetion.AuthServiceException
 import kotlinx.coroutines.tasks.await
 
@@ -18,13 +18,13 @@ class AuthService {
             val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             authResult.user
         } catch (e: FirebaseAuthInvalidCredentialsException) {
-            throw AuthServiceException("Invalid email or password.", e)
+            throw AuthServiceException(AuthErrors.INVALID_CREDENTIALS, e)
         } catch (e: FirebaseAuthInvalidUserException) {
-            throw AuthServiceException("No account found with this email address.", e)
+            throw AuthServiceException(AuthErrors.NO_ACCOUNT_FOUND, e)
         } catch (e: FirebaseAuthException) {
-            throw AuthServiceException("Failed to sign in with email and password", e)
+            throw AuthServiceException(AuthErrors.SIGN_IN_FAILED, e)
         } catch (e: Exception) {
-            throw AuthServiceException("An unexpected error occurred", e)
+            throw AuthServiceException(AuthErrors.GENERIC_ERROR, e)
         }
     }
 
@@ -33,11 +33,11 @@ class AuthService {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             authResult.user
         } catch (e: FirebaseAuthUserCollisionException) {
-            throw AuthServiceException("Email is already in use by another account.", e)
+            throw AuthServiceException(AuthErrors.EMAIL_ALREADY_IN_USE, e)
         } catch (e: FirebaseAuthException) {
-            throw AuthServiceException("Failed to create user with email and password", e)
+            throw AuthServiceException(AuthErrors.CREATE_USER_FAILED, e)
         } catch (e: Exception) {
-            throw AuthServiceException("An unexpected error occurred", e)
+            throw AuthServiceException(AuthErrors.GENERIC_ERROR, e)
         }
     }
 
@@ -45,7 +45,7 @@ class AuthService {
         try {
             firebaseAuth.sendPasswordResetEmail(email).await()
         } catch (e: Exception) {
-            throw AuthServiceException("An unexpected error occurred", e)
+            throw AuthServiceException(AuthErrors.RESET_PASSWORD_FAILED, e)
         }
     }
 
