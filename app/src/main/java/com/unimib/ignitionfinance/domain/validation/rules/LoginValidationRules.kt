@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.validation
+package com.unimib.ignitionfinance.domain.validation.rules
 
 import android.util.Patterns
 

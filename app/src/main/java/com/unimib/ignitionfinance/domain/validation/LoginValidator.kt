@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import com.unimib.ignitionfinance.domain.validation.rules.LoginValidationRules
+
 object LoginValidator {
 
     fun validateEmail(email: String?): LoginValidationResult {

@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.validation
+package com.unimib.ignitionfinance.domain.validation.rules
 
 object InputValidationRules {
     fun validateInput(value: String?, prefix: String): Boolean {

@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import com.unimib.ignitionfinance.domain.validation.rules.InputValidationRules
+
 object InputValidator {
     fun validate(value: String?, prefix: String): InputValidationResult {
         if (value.isNullOrBlank()) return InputValidationResult.Success

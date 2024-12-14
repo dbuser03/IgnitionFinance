@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import com.unimib.ignitionfinance.domain.validation.rules.RegistrationValidationRules
+
 object RegistrationValidator {
     fun validateName(name: String?): RegistrationValidationResult {
         return when {
