@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.registration
+package com.unimib.ignitionfinance.presentation.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -19,8 +19,6 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
-import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 
 @Composable

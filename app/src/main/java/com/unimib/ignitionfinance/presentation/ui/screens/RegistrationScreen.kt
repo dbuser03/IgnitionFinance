@@ -11,11 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.components.registration.RegistrationForm
+import com.unimib.ignitionfinance.presentation.ui.components.RegistrationForm
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDescription
 import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 
 @Composable
 fun RegistrationScreen(

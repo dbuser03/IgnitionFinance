@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.components.login.LoginForm
+import com.unimib.ignitionfinance.presentation.ui.components.LoginForm
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithDescription
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 

@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.password
+package com.unimib.ignitionfinance.presentation.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -12,16 +12,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.ResetValidationResult
 import com.unimib.ignitionfinance.domain.validation.ResetValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
-import com.unimib.ignitionfinance.presentation.ui.components.CustomTextField
 import com.unimib.ignitionfinance.presentation.viewmodel.ResetPasswordScreenViewModel
 
 @Composable
