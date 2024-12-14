@@ -6,11 +6,11 @@ import com.unimib.ignitionfinance.data.model.SearchStockData
 class SearchStockMapper {
 
     fun mapToDomain(response: SearchStockResponse): List<SearchStockData> {
-        return response.bestMatches.map { symbolMatch ->
+        return response.bestMatches.map { match ->
             SearchStockData(
-                symbol = symbolMatch.symbol,
-                currency = symbolMatch.currency,
-                matchScore = symbolMatch.matchScore
+                symbol = match.symbol,
+                currency = match.currency,
+                matchScore = match.matchScore
             )
         }
     }

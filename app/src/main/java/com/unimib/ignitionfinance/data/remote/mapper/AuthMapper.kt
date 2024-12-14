@@ -4,11 +4,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.unimib.ignitionfinance.data.model.user.AuthData
 
 object AuthMapper {
-    fun mapToUser(firebaseUser: FirebaseUser): AuthData {
+    fun mapToUserData(firebaseUser: FirebaseUser): AuthData {
+
         return AuthData(
             id = firebaseUser.uid,
-            email = firebaseUser.email ?: "",
-            displayName = firebaseUser.displayName ?: ""
+            email = firebaseUser.email.orEmpty(),
+            displayName = firebaseUser.displayName.orEmpty()
         )
     }
 }

@@ -10,7 +10,8 @@ import javax.inject.Inject
 inline fun <reified T> Gson.toJsonString(data: T): String = this.toJson(data)
 inline fun <reified T> Gson.fromJsonString(json: String): T? = try {
     this.fromJson(json, object : TypeToken<T>() {}.type)
-} catch (_: Exception) {
+} catch (e: Exception) {
+    e.printStackTrace()
     null
 }
 
