@@ -105,7 +105,7 @@ class LoginScreenViewModel @Inject constructor(
         return when (throwable) {
             is FirebaseAuthInvalidCredentialsException -> "Invalid credentials. If you've forgotten your password, please use 'Forgot Password?' to reset it, or register a new account."
             is FirebaseAuthException -> "Authentication error: ${throwable.message}"
-            else -> "Unknown error"
+            else -> "Unknown error: ${throwable.localizedMessage ?: "No details available"}"
         }
     }
 }
