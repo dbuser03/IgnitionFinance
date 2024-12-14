@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
@@ -23,14 +25,18 @@ fun ResetPasswordScreen(
 
     Scaffold(
         topBar = {
-            TitleWithDescription(title = stringResource(id = R.string.app_title), description = stringResource(id = R.string.login_description))
+            TitleWithDescription(
+                title = stringResource(id = R.string.reset_password_title),
+                description = stringResource(id = R.string.reset_password_description)
+            )
         },
         content = { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
+                Spacer(modifier = Modifier.height(16.dp))
                 ResetPasswordForm(
                     onResetClick = { email ->
                         viewModel.reset(email)

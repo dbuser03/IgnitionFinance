@@ -9,6 +9,7 @@
     <string name="portfolio_title">My \nPortfolio</string>
     <string name="summary_title">Your \nNet Worth</string>
     <string name="simulation_title">FIRE \nSimulation</string>
+    <string name="reset_password_title">Reset Your\nPassword</string>
     <string name="settings_title">Settings</string>
     <string name="intro_bg_description">Intro Screen Background</string>
     <string name="simulation_description">Before starting the simulation, ensure \nall parameters are
@@ -17,6 +18,8 @@
         first time.</string>
     <string name="registration_description">Make sure to check all the information you provide and
         accept the terms and conditions.</string>
+    <string name="reset_password_description">Add the email you used to register to receive the
+        reset password link</string>
     <string name="add_FAB_description">Add</string>
     <string name="swipe_up_FAB_description">Swipe Up</string>
     <string name="settings_FAB_description">Settings</string>

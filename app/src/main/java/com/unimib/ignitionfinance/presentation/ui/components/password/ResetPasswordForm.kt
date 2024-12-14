@@ -28,7 +28,7 @@ import com.unimib.ignitionfinance.presentation.viewmodel.ResetPasswordScreenView
 fun ResetPasswordForm(
     onResetClick: (String) -> Unit,
     resetState: ResetPasswordScreenViewModel.ResetState,
-    navController: NavController
+    navController: NavController,
 ) {
     val email = remember { mutableStateOf("") }
     val emailError = remember { mutableStateOf<String?>(null) }
