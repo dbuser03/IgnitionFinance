@@ -1,5 +1,8 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import com.unimib.ignitionfinance.domain.validation.utils.ValidationErrors
+import com.unimib.ignitionfinance.domain.validation.utils.ValidationRules
+
 object ResetValidator {
     fun validateEmail(email: String?): ResetValidationResult {
         return when {
@@ -11,7 +14,8 @@ object ResetValidator {
 
     fun validateResetForm(email: String?): ResetValidationResult {
         return when {
-            !ValidationRules.validateResetForm(email) -> ResetValidationResult.Failure(ValidationErrors.Reset.INVALID_FORM)
+            !ValidationRules.validateResetForm(email) -> ResetValidationResult.Failure(
+                ValidationErrors.Reset.INVALID_FORM)
             else -> ResetValidationResult.Success
         }
     }

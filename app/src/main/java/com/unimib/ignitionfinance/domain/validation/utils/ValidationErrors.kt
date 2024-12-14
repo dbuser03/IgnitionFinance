@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.validation
+package com.unimib.ignitionfinance.domain.validation.utils
 
 object ValidationErrors {
     object Input {
