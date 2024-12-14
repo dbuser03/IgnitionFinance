@@ -7,7 +7,7 @@ object LoginValidator {
     fun validateEmail(email: String?): LoginValidationResult {
         return when {
             email.isNullOrBlank() -> LoginValidationResult.Success
-            !ValidationRules.validateEmail(email) -> LoginValidationResult.Failure(ValidationErrors.Login.INVALID_EMAIL)
+            !ValidationRules.validateEmail(email) -> LoginValidationResult.Failure(ValidationErrors.Login.EMAIL_ERROR)
             else -> LoginValidationResult.Success
         }
     }
@@ -16,7 +16,7 @@ object LoginValidator {
         return when {
             password.isNullOrBlank() -> LoginValidationResult.Success
             !ValidationRules.validatePassword(password) -> LoginValidationResult.Failure(
-                ValidationErrors.Login.INVALID_PASSWORD)
+                ValidationErrors.Login.PASSWORD_ERROR)
             else -> LoginValidationResult.Success
         }
     }

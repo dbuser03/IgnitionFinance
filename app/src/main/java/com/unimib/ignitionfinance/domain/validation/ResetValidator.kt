@@ -7,7 +7,7 @@ object ResetValidator {
     fun validateEmail(email: String?): ResetValidationResult {
         return when {
             email.isNullOrBlank() -> ResetValidationResult.Success
-            !ValidationRules.validateEmail(email) -> ResetValidationResult.Failure(ValidationErrors.Reset.INVALID_EMAIL)
+            !ValidationRules.validateEmail(email) -> ResetValidationResult.Failure(ValidationErrors.Reset.EMAIL_ERROR)
             else -> ResetValidationResult.Success
         }
     }

@@ -26,7 +26,7 @@ object RegistrationValidator {
         return when {
             email.isNullOrBlank() -> RegistrationValidationResult.Success
             !ValidationRules.validateEmail(email) -> RegistrationValidationResult.Failure(
-                ValidationErrors.Registration.INVALID_EMAIL)
+                ValidationErrors.Registration.EMAIL_ERROR)
             else -> RegistrationValidationResult.Success
         }
     }
@@ -35,7 +35,7 @@ object RegistrationValidator {
         return when {
             password.isNullOrBlank() -> RegistrationValidationResult.Success
             !ValidationRules.validatePassword(password) -> RegistrationValidationResult.Failure(
-                ValidationErrors.Registration.INVALID_PASSWORD)
+                ValidationErrors.Registration.PASSWORD_ERROR)
             else -> RegistrationValidationResult.Success
         }
     }
