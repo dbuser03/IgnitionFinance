@@ -3,13 +3,14 @@ package com.unimib.ignitionfinance.data.local.database
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.unimib.ignitionfinance.data.local.entity.User
 
 @Dao
 interface UserDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun add(user: User)
 
     @Delete

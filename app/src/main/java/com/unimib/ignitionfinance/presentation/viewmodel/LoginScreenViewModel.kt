@@ -2,8 +2,8 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
@@ -70,17 +70,18 @@ class LoginScreenViewModel @Inject constructor(
 
         val settings = SetDefaultSettingsUseCase().execute()
 
-        val userData = UserData(
-            name = name,
-            surname = surname,
+        val user = User(
             authData = authData,
-            settings = settings
+            id = authData.id,
+            name = name,
+            settings = settings,
+            surname = surname
         )
 
         val collectionPath = "users"
         viewModelScope.launch {
             _storeState.value = StoreState.Loading
-            addUserToDatabaseUseCase.execute(collectionPath, userData).collect { result ->
+            addUserToDatabaseUseCase.execute(collectionPath, user).collect { result ->
                 result.fold(
                     onSuccess = { pair ->
                         _storeState.value = StoreState.Success(pair)

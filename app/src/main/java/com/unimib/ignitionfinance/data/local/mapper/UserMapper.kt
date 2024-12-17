@@ -5,14 +5,14 @@ import com.unimib.ignitionfinance.data.model.UserData
 
 object UserMapper {
 
-    /*fun mapUserToUserData(user: User): UserData {
+    fun mapUserToUserData(user: User): UserData {
         return UserData(
             name = user.name,
             surname = user.surname,
             authData = user.authData,
             settings = user.settings
         )
-    }*/
+    }
 
     fun mapUserDataToUser(userData: UserData): User {
         return User(

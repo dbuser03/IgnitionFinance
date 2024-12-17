@@ -17,13 +17,15 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>
 ) {
-    fun execute(collectionPath: String, userData: UserData): Flow<Result<Pair<String?, Unit?>>> = flow {
-        val documentId = userData.authData.id
-        val user = userMapper.mapUserDataToUser(userData)
-        val dataMap = userDataMapper.mapUserDataToDocument(userData)
+    fun execute(collectionPath: String, user: User): Flow<Result<Pair<String?, Unit?>>> = flow {
 
         val localResult = localDatabaseRepository.add(user).first()
-        val remoteResult = firestoreRepository.addDocument(collectionPath, dataMap, documentId).first()
+
+        val userData = userMapper.mapUserToUserData(user)
+        val document = userDataMapper.mapUserDataToDocument(userData)
+        val documentId = userData.authData.id
+
+        val remoteResult = firestoreRepository.addDocument(collectionPath, document, documentId).first()
 
         emit(Result.success(Pair(remoteResult.getOrNull(), localResult.getOrNull())))
     }
