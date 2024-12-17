@@ -51,9 +51,9 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>): Flow<Result<Unit>> = flow {
+    override suspend fun updateDocument(collectionPath: String, data: Map<String, Any>, documentId: String): Flow<Result<Unit>> = flow {
         try {
-            firestoreService.updateDocument(collectionPath, documentId, data)
+            firestoreService.updateDocument(collectionPath, data, documentId)
             emit(Result.success(Unit))
         } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))

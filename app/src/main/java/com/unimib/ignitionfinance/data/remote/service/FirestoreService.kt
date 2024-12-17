@@ -49,7 +49,7 @@ class FirestoreService {
         }
     }
 
-    suspend fun updateDocument(collectionPath: String, documentId: String, data: Map<String, Any>) {
+    suspend fun updateDocument(collectionPath: String, data: Map<String, Any>, documentId: String) {
         try {
             firestore.collection(collectionPath).document(documentId).update(data).await()
         } catch (e: FirebaseFirestoreException) {
