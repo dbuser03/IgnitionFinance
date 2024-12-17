@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
 import com.unimib.ignitionfinance.data.local.database.AppDatabase
+import com.unimib.ignitionfinance.data.local.database.SyncQueueItemDao
 import com.unimib.ignitionfinance.data.local.database.UserDao
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
@@ -65,6 +66,11 @@ object AppModule {
     @Provides
     fun provideUserDao(appDatabase: AppDatabase): UserDao {
         return appDatabase.userDao()
+    }
+
+    @Provides
+    fun provideSyncItemQueueDao(appDatabase: AppDatabase): SyncQueueItemDao {
+        return appDatabase.syncQueueItemDao()
     }
 
     @Provides
@@ -147,6 +153,8 @@ object AppModule {
             context.applicationContext,
             AppDatabase::class.java,
             name = "ignition_finance_database"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 }
