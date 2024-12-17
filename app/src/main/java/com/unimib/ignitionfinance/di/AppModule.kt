@@ -40,6 +40,9 @@ object AppModule {
     fun provideGson(): Gson = Gson()
 
     @Provides
+    fun provideContext(@ApplicationContext context: Context): Context = context
+
+    @Provides
     fun provideAuthService(): AuthService = AuthService()
 
     @Provides
@@ -115,15 +118,17 @@ object AppModule {
 
     @Provides
     fun provideAddUserToDatabaseUseCase(
-        firestoreRepository: FirestoreRepository,
+        syncQueueItemRepository: SyncQueueItemRepository,
         userMapper: UserMapper,
         userDataMapper: UserDataMapper,
-        localDatabaseRepository: LocalDatabaseRepository<User>
+        localDatabaseRepository: LocalDatabaseRepository<User>,
+        context: Context
     ): AddUserToDatabaseUseCase = AddUserToDatabaseUseCase(
-        firestoreRepository,
+        syncQueueItemRepository,
         userMapper,
         userDataMapper,
-        localDatabaseRepository
+        localDatabaseRepository,
+        context
     )
 
     @Provides
