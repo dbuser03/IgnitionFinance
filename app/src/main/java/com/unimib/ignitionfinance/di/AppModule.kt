@@ -18,6 +18,8 @@ import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.implementation.FirestoreRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.implementation.LocalDatabaseRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
@@ -62,6 +64,11 @@ object AppModule {
     fun provideFirestoreRepository(
         firestoreService: FirestoreService
     ): FirestoreRepository = FirestoreRepositoryImpl(firestoreService)
+
+    @Provides
+    fun provideSyncQueueItemRepository(syncQueueItemDao: SyncQueueItemDao): SyncQueueItemRepository {
+        return SyncQueueItemRepositoryImpl(syncQueueItemDao)
+    }
 
     @Provides
     fun provideUserDao(appDatabase: AppDatabase): UserDao {
