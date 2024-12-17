@@ -11,6 +11,7 @@ data class SyncQueueItem (
     @ColumnInfo(name = "collection") val collection: String,
     @ColumnInfo(name = "payload") val payload: Map<String, Any>,
 
+    @ColumnInfo(name = "operation") val operationType: String,
     @ColumnInfo(name = "status") val status: SyncStatus = SyncStatus.PENDING,
     @ColumnInfo(name = "attempts") val attempts: Int = 0,
     @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis()
