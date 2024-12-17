@@ -13,14 +13,4 @@ object UserMapper {
             settings = user.settings
         )
     }
-
-    fun mapUserDataToUser(userData: UserData): User {
-        return User(
-            id = userData.authData.id,
-            name = userData.name,
-            surname = userData.surname,
-            authData = userData.authData,
-            settings = userData.settings
-        )
-    }
 }
