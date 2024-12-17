@@ -40,19 +40,19 @@ object AppModule {
     fun provideGson(): Gson = Gson()
 
     @Provides
-    fun provideAuthService(): AuthService {
-        return AuthService()
-    }
+    fun provideAuthService(): AuthService = AuthService()
 
     @Provides
-    fun provideFirestoreService(): FirestoreService {
-        return FirestoreService()
-    }
+    fun provideFirestoreService(): FirestoreService = FirestoreService()
 
     @Provides
-    fun provideAuthMapper(): AuthMapper {
-        return AuthMapper
-    }
+    fun provideAuthMapper(): AuthMapper = AuthMapper
+
+    @Provides
+    fun provideUserMapper(): UserMapper = UserMapper
+
+    @Provides
+    fun provideUserDataMapper(): UserDataMapper = UserDataMapper
 
     @Provides
     fun provideAuthRepository(
@@ -66,42 +66,52 @@ object AppModule {
     ): FirestoreRepository = FirestoreRepositoryImpl(firestoreService)
 
     @Provides
-    fun provideSyncQueueItemRepository(syncQueueItemDao: SyncQueueItemDao): SyncQueueItemRepository {
-        return SyncQueueItemRepositoryImpl(syncQueueItemDao)
-    }
+    fun provideSyncQueueItemRepository(
+        syncQueueItemDao: SyncQueueItemDao
+    ): SyncQueueItemRepository = SyncQueueItemRepositoryImpl(syncQueueItemDao)
 
     @Provides
-    fun provideUserDao(appDatabase: AppDatabase): UserDao {
-        return appDatabase.userDao()
-    }
+    fun provideLocalDatabaseRepository(
+        userDao: UserDao
+    ): LocalDatabaseRepository<User> = LocalDatabaseRepositoryImpl(
+        dao = userDao,
+        addFn = UserDao::add,
+        updateFn = UserDao::update,
+        deleteFn = UserDao::delete,
+        getByIdFn = UserDao::getUserById,
+        getAllFn = UserDao::getAllUsers,
+        deleteAllFn = UserDao::deleteAllUsers
+    )
 
     @Provides
-    fun provideSyncItemQueueDao(appDatabase: AppDatabase): SyncQueueItemDao {
-        return appDatabase.syncQueueItemDao()
-    }
-
-    @Provides
-    fun provideLocalDatabaseRepository(userDao: UserDao): LocalDatabaseRepository<User> {
-        return LocalDatabaseRepositoryImpl(
-            dao = userDao,
-            addFn = UserDao::add,
-            updateFn = UserDao::update,
-            deleteFn = UserDao::delete,
-            getByIdFn = UserDao::getUserById,
-            getAllFn = UserDao::getAllUsers,
-            deleteAllFn = UserDao::deleteAllUsers
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(
+            context.applicationContext,
+            AppDatabase::class.java,
+            name = "ignition_finance_database"
         )
-    }
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
-    fun provideLoginUserUseCase(authRepository: AuthRepository): LoginUserUseCase {
-        return LoginUserUseCase(authRepository)
-    }
+    fun provideUserDao(appDatabase: AppDatabase): UserDao =
+        appDatabase.userDao()
 
     @Provides
-    fun provideResetPasswordUseCase(authRepository: AuthRepository): ResetPasswordUseCase {
-        return ResetPasswordUseCase(authRepository)
-    }
+    fun provideSyncItemQueueDao(appDatabase: AppDatabase): SyncQueueItemDao =
+        appDatabase.syncQueueItemDao()
+
+    @Provides
+    fun provideLoginUserUseCase(authRepository: AuthRepository): LoginUserUseCase =
+        LoginUserUseCase(authRepository)
+
+    @Provides
+    fun provideResetPasswordUseCase(authRepository: AuthRepository): ResetPasswordUseCase =
+        ResetPasswordUseCase(authRepository)
+
+    @Provides
+    fun provideRegisterNewUserUseCase(authRepository: AuthRepository): RegisterNewUserUseCase =
+        RegisterNewUserUseCase(authRepository)
 
     @Provides
     fun provideAddUserToDatabaseUseCase(
@@ -109,59 +119,30 @@ object AppModule {
         userMapper: UserMapper,
         userDataMapper: UserDataMapper,
         localDatabaseRepository: LocalDatabaseRepository<User>
-    ): AddUserToDatabaseUseCase {
-        return AddUserToDatabaseUseCase(
-            firestoreRepository,
-            userMapper,
-            userDataMapper,
-            localDatabaseRepository
-        )
-    }
-
-    @Provides
-    fun provideRegisterNewUserUseCase(authRepository: AuthRepository): RegisterNewUserUseCase {
-        return RegisterNewUserUseCase(authRepository)
-    }
+    ): AddUserToDatabaseUseCase = AddUserToDatabaseUseCase(
+        firestoreRepository,
+        userMapper,
+        userDataMapper,
+        localDatabaseRepository
+    )
 
     @Provides
     fun provideDeleteAllUsersUseCase(
         localDatabaseRepository: LocalDatabaseRepository<User>,
         firestoreRepository: FirestoreRepository
-    ): DeleteAllUsersUseCase {
-        return DeleteAllUsersUseCase(localDatabaseRepository, firestoreRepository)
-    }
+    ): DeleteAllUsersUseCase = DeleteAllUsersUseCase(
+        localDatabaseRepository,
+        firestoreRepository
+    )
 
     @Provides
     fun provideRetrieveUserSettingsUseCase(
         firestoreRepository: FirestoreRepository,
         authRepository: AuthRepository,
         userMapper: UserDataMapper
-    ): RetrieveUserSettingsUseCase {
-        return RetrieveUserSettingsUseCase(
-            firestoreRepository,
-            authRepository,
-            userMapper
-        )
-    }
-
-    @Provides
-    fun provideUserMapper(): UserMapper {
-        return UserMapper
-    }
-
-    @Provides
-    fun provideUserDataMapper(): UserDataMapper {
-        return UserDataMapper
-    }
-
-    @Provides
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java,
-            name = "ignition_finance_database"
-        )
-        .fallbackToDestructiveMigration()
-        .build()
-    }
+    ): RetrieveUserSettingsUseCase = RetrieveUserSettingsUseCase(
+        firestoreRepository,
+        authRepository,
+        userMapper
+    )
 }
