@@ -34,9 +34,11 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <provider
-            android:authorities="${applicationId}.adoridx-startup"
             android:name="androidx.startup.InitializationProvider"
-            tools:node="remove"/>
+            android:authorities="${applicationId}.adoridx-startup"
+            android:exported="false"
+            tools:node="remove"
+            tools:replace="android:authorities" />
     </application>
 
 </manifest>
