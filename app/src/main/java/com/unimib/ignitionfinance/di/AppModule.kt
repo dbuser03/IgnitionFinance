@@ -122,12 +122,14 @@ object AppModule {
         firestoreRepository: FirestoreRepository,
         userMapper: UserMapper,
         userDataMapper: UserDataMapper,
-        localDatabaseRepository: LocalDatabaseRepository<User>
+        localDatabaseRepository: LocalDatabaseRepository<User>,
+        syncQueueItemRepository: SyncQueueItemRepository
     ): AddUserToDatabaseUseCase = AddUserToDatabaseUseCase(
         firestoreRepository,
         userMapper,
         userDataMapper,
-        localDatabaseRepository
+        localDatabaseRepository,
+        syncQueueItemRepository
     )
 
     @Provides
