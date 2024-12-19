@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.di
 
-import SyncWorkerFactory
+import com.unimib.ignitionfinance.SyncWorkerFactory
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson

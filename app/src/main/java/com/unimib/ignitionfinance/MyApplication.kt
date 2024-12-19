@@ -1,5 +1,7 @@
 // MyApplication.kt
 
+package com.unimib.ignitionfinance
+
 import android.app.Application
 import android.content.Context
 import android.util.Log
