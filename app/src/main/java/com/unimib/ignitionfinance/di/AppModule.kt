@@ -1,8 +1,10 @@
 package com.unimib.ignitionfinance.di
 
+import SyncWorkerFactory
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
+import com.unimib.ignitionfinance.SyncWorkerFactory
 import com.unimib.ignitionfinance.data.local.database.AppDatabase
 import com.unimib.ignitionfinance.data.local.database.SyncQueueItemDao
 import com.unimib.ignitionfinance.data.local.database.UserDao
@@ -149,5 +151,16 @@ object AppModule {
         firestoreRepository,
         authRepository,
         userMapper
+    )
+
+    @Provides
+    fun provideSyncWorkerFactory(
+        firestoreService: FirestoreService,
+        firestoreRepository: FirestoreRepository,
+        syncQueueItemRepository: SyncQueueItemRepository
+    ): SyncWorkerFactory = SyncWorkerFactory(
+        firestoreService,
+        firestoreRepository,
+        syncQueueItemRepository
     )
 }
