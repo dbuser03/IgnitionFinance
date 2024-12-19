@@ -4,7 +4,6 @@ import SyncWorkerFactory
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
-import com.unimib.ignitionfinance.SyncWorkerFactory
 import com.unimib.ignitionfinance.data.local.database.AppDatabase
 import com.unimib.ignitionfinance.data.local.database.SyncQueueItemDao
 import com.unimib.ignitionfinance.data.local.database.UserDao
@@ -120,17 +119,26 @@ object AppModule {
 
     @Provides
     fun provideAddUserToDatabaseUseCase(
-        syncQueueItemRepository: SyncQueueItemRepository,
+        firestoreRepository: FirestoreRepository,
         userMapper: UserMapper,
         userDataMapper: UserDataMapper,
-        localDatabaseRepository: LocalDatabaseRepository<User>,
-        context: Context
+        localDatabaseRepository: LocalDatabaseRepository<User>
     ): AddUserToDatabaseUseCase = AddUserToDatabaseUseCase(
-        syncQueueItemRepository,
+        firestoreRepository,
         userMapper,
         userDataMapper,
-        localDatabaseRepository,
-        context
+        localDatabaseRepository
+    )
+
+    @Provides
+    fun provideSyncWorkerFactory(
+        firestoreService: FirestoreService,
+        syncQueueItemRepository: SyncQueueItemRepository,
+        firestoreRepository: FirestoreRepository
+    ): SyncWorkerFactory = SyncWorkerFactory(
+        firestoreService = firestoreService,
+        syncQueueItemRepository = syncQueueItemRepository,
+        firestoreRepository = firestoreRepository
     )
 
     @Provides
@@ -151,16 +159,5 @@ object AppModule {
         firestoreRepository,
         authRepository,
         userMapper
-    )
-
-    @Provides
-    fun provideSyncWorkerFactory(
-        firestoreService: FirestoreService,
-        firestoreRepository: FirestoreRepository,
-        syncQueueItemRepository: SyncQueueItemRepository
-    ): SyncWorkerFactory = SyncWorkerFactory(
-        firestoreService,
-        firestoreRepository,
-        syncQueueItemRepository
     )
 }

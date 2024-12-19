@@ -28,8 +28,8 @@ class MyApplication : Application(), Configuration.Provider {
 
 class SyncWorkerFactory @Inject constructor(
     private val firestoreService: FirestoreService,
-    private val firestoreRepository: FirestoreRepository,
-    private val syncQueueItemRepository: SyncQueueItemRepository
+    private val syncQueueItemRepository: SyncQueueItemRepository,
+    private val firestoreRepository: FirestoreRepository
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
