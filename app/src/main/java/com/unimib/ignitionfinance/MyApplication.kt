@@ -21,8 +21,13 @@ class MyApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: SyncWorkerFactory
 
-    override val workManagerConfiguration =
-        Configuration.Builder()
+    // val workManagerConfiguration =
+        //Configuration.Builder()
+            //.setMinimumLoggingLevel(Log.DEBUG)
+            //.setWorkerFactory(workerFactory)
+            //.build()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
             .setWorkerFactory(workerFactory)
             .build()
