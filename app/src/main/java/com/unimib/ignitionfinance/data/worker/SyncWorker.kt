@@ -16,6 +16,7 @@ import kotlinx.coroutines.*
 
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
+    @Assisted private val api :DemoApi,//
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val syncQueueItemRepository: SyncQueueItemRepository,
