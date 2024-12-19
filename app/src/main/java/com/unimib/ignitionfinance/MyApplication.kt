@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
@@ -18,7 +19,7 @@ class MyApplication : Application(), Configuration.Provider {
 
     override val workManagerConfiguration =
         Configuration.Builder()
-            .setMinimumLoggingLevel(log.DEBUG)
+            .setMinimumLoggingLevel(Log.DEBUG)
             .setWorkerFactory(workerFactory)
             .build()
 
