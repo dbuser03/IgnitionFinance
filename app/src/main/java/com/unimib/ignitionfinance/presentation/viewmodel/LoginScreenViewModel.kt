@@ -87,6 +87,7 @@ class LoginScreenViewModel @Inject constructor(
                 result.fold(
                     onSuccess = { pair ->
                         _storeState.value = StoreState.Success(pair)
+                        SyncOperationScheduler.scheduleOneTime(context)
                     },
                     onFailure = { throwable ->
                         val errorMessage = throwable.localizedMessage ?: "No details available"
