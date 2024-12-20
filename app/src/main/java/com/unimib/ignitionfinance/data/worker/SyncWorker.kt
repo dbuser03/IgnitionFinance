@@ -21,22 +21,41 @@ class SyncWorker @AssistedInject constructor(
     private val syncQueueItemRepository: SyncQueueItemRepository,
     private val firestoreRepository: FirestoreRepository
 ) : CoroutineWorker(context, workerParams) {
+    companion object {
+        private const val TAG = "SyncWorker"
+    }
 
     override suspend fun doWork(): Result = coroutineScope {
         try {
+            Log.d(TAG, "Starting sync work")
             cleanupStuckSyncingItems()
 
             val pendingItems = syncQueueItemRepository.getByStatus(SyncStatus.PENDING)
+            Log.d(TAG, "Found ${pendingItems.size} pending items")
 
             if (pendingItems.isEmpty()) {
+                Log.d(TAG, "No pending items, completing successfully")
                 return@coroutineScope Result.success()
             }
 
             val results = processBatches(pendingItems)
+            Log.d(TAG, "Processed ${results.size} items")
+
+            val errorCount = results.count { it is SyncOperationResult.Error }
+            val successCount = results.count { it is SyncOperationResult.Success }
+            val retryCount = results.count { it is SyncOperationResult.Retry }
+
+            Log.d(TAG, "Sync results - Success: $successCount, Errors: $errorCount, Retries: $retryCount")
 
             return@coroutineScope when {
-                results.any { it is SyncOperationResult.Error } -> Result.retry()
-                else -> Result.success()
+                errorCount > 0 -> {
+                    Log.w(TAG, "Some operations failed, scheduling retry")
+                    Result.retry()
+                }
+                else -> {
+                    Log.d(TAG, "All operations completed successfully")
+                    Result.success()
+                }
             }
         } catch (e: Exception) {
             handleWorkerError(e)
@@ -45,9 +64,12 @@ class SyncWorker @AssistedInject constructor(
 
     private suspend fun cleanupStuckSyncingItems() {
         val stuckSyncingItems = syncQueueItemRepository.getByStatus(SyncStatus.SYNCING)
+        Log.d(TAG, "Found ${stuckSyncingItems.size} stuck items")
+
         val currentTime = System.currentTimeMillis()
         stuckSyncingItems.forEach { item ->
             if (currentTime - item.createdAt > SyncOperationScheduler.SYNC_TIMEOUT_MS) {
+                Log.w(TAG, "Item ${item.id} stuck in SYNCING state, marking as ABANDONED")
                 syncQueueItemRepository.updateStatusAndIncrementAttempts(
                     item.id,
                     SyncStatus.ABANDONED
@@ -56,16 +78,23 @@ class SyncWorker @AssistedInject constructor(
         }
     }
 
-    private suspend fun processBatches(items: List<SyncQueueItem>): List<SyncOperationResult> =
-        items.chunked(SyncOperationScheduler.BATCH_SIZE).flatMap { batch ->
+    private suspend fun processBatches(items: List<SyncQueueItem>): List<SyncOperationResult> {
+        Log.d(TAG, "Processing ${items.size} items in batches of ${SyncOperationScheduler.BATCH_SIZE}")
+        return items.chunked(SyncOperationScheduler.BATCH_SIZE).flatMap { batch ->
+            Log.d(TAG, "Processing batch of ${batch.size} items")
             batch.map { item ->
-                processItem(item)
+                processItem(item).also { result ->
+                    Log.d(TAG, "Item ${item.id} processed with result: $result")
+                }
             }.also {
                 delay(SyncOperationScheduler.BATCH_DELAY_MS)
             }
         }
+    }
 
     private suspend fun processItem(item: SyncQueueItem): SyncOperationResult {
+        Log.d(TAG, "Processing item ${item.id} of type ${item.operationType}")
+
         syncQueueItemRepository.updateStatusAndIncrementAttempts(
             item.id,
             SyncStatus.SYNCING
@@ -79,14 +108,18 @@ class SyncWorker @AssistedInject constructor(
                 else -> throw IllegalArgumentException("Unknown operation type: ${item.operationType}")
             }
 
+            Log.d(TAG, "Operation ${item.operationType} completed successfully for item ${item.id}")
             syncQueueItemRepository.delete(item)
             result
         } catch (e: Exception) {
+            Log.e(TAG, "Error processing item ${item.id}", e)
             handleItemError(item, e)
         }
     }
 
     private suspend fun performAddOperation(item: SyncQueueItem): SyncOperationResult {
+        Log.d(TAG, "Performing ADD operation for item ${item.id}")
+
         val addResult = firestoreRepository.addDocument(
             collectionPath = item.collection,
             data = item.payload,
@@ -95,15 +128,19 @@ class SyncWorker @AssistedInject constructor(
 
         return addResult.fold(
             onSuccess = {
+                Log.d(TAG, "ADD operation successful for item ${item.id}")
                 SyncOperationResult.Success(item.id)
             },
-            onFailure = {
-                throw it
+            onFailure = { error ->
+                Log.e(TAG, "ADD operation failed for item ${item.id}", error)
+                throw error
             }
         )
     }
 
     private suspend fun performUpdateOperation(item: SyncQueueItem): SyncOperationResult {
+        Log.d(TAG, "Performing UPDATE operation for item ${item.id}")
+
         val updateResult = firestoreRepository.updateDocument(
             collectionPath = item.collection,
             data = item.payload,
@@ -112,15 +149,19 @@ class SyncWorker @AssistedInject constructor(
 
         return updateResult.fold(
             onSuccess = {
+                Log.d(TAG, "UPDATE operation successful for item ${item.id}")
                 SyncOperationResult.Success(item.id)
             },
-            onFailure = {
-                throw it
+            onFailure = { error ->
+                Log.e(TAG, "UPDATE operation failed for item ${item.id}", error)
+                throw error
             }
         )
     }
 
     private suspend fun performDeleteOperation(item: SyncQueueItem): SyncOperationResult {
+        Log.d(TAG, "Performing DELETE operation for item ${item.id}")
+
         val deleteResult = firestoreRepository.deleteDocument(
             collectionPath = item.collection,
             documentId = item.id
@@ -128,17 +169,22 @@ class SyncWorker @AssistedInject constructor(
 
         return deleteResult.fold(
             onSuccess = {
+                Log.d(TAG, "DELETE operation successful for item ${item.id}")
                 SyncOperationResult.Success(item.id)
             },
-            onFailure = {
-                throw it
+            onFailure = { error ->
+                Log.e(TAG, "DELETE operation failed for item ${item.id}", error)
+                throw error
             }
         )
     }
 
     private suspend fun handleItemError(item: SyncQueueItem, error: Throwable): SyncOperationResult {
+        Log.e(TAG, "Error handling item ${item.id} (attempt ${item.attempts + 1}/${SyncOperationScheduler.MAX_RETRIES})", error)
+
         return when {
             item.attempts < SyncOperationScheduler.MAX_RETRIES -> {
+                Log.d(TAG, "Scheduling retry for item ${item.id}")
                 syncQueueItemRepository.updateStatusAndIncrementAttempts(
                     item.id,
                     SyncStatus.PENDING
@@ -146,6 +192,7 @@ class SyncWorker @AssistedInject constructor(
                 SyncOperationResult.Retry(item.id, item.attempts + 1)
             }
             else -> {
+                Log.e(TAG, "Max retries exceeded for item ${item.id}, marking as FAILED")
                 syncQueueItemRepository.updateStatusAndIncrementAttempts(
                     item.id,
                     SyncStatus.FAILED
@@ -156,8 +203,7 @@ class SyncWorker @AssistedInject constructor(
     }
 
     private fun handleWorkerError(error: Throwable): Result {
-        Log.e("SyncWorker", "Sync worker error", error)
-
+        Log.e(TAG, "Critical worker error", error)
         return Result.retry()
     }
 }

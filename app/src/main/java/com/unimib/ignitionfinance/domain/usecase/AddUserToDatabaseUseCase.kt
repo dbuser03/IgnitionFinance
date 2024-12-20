@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase
 
+import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
@@ -18,24 +19,39 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val syncQueueItemRepository: SyncQueueItemRepository
 ) {
-    fun execute(collectionPath: String, user: User): Flow<Result<Pair<String?, Unit?>>> = flow {
+    suspend fun execute(collectionPath: String, user: User): Result<Unit> {
+        return try {
+            Log.d("AddUserUseCase", "Adding user ${user.id} to local database")
 
-        val localResult = localDatabaseRepository.add(user).first()
+            // Execute operations sequentially
+            val localResult = localDatabaseRepository.add(user).first()
 
-        val userData = userMapper.mapUserToUserData(user)
-        val document = userDataMapper.mapUserDataToDocument(userData)
-        val documentId = userData.authData.id
+            Log.d("AddUserUseCase", "Local database result: $localResult")
 
-        val syncQueueItem = SyncQueueItem(
-            id = documentId,
-            collection = collectionPath,
-            payload = document,
-            operationType = "ADD",
-            status = SyncStatus.PENDING
-        )
+            // Only proceed if local operation was successful
+            if (localResult.isSuccess) {
+                Log.d("AddUserUseCase", "Creating sync queue item for user ${user.id}")
+                val userData = userMapper.mapUserToUserData(user)
+                val document = userDataMapper.mapUserDataToDocument(userData)
+                val documentId = userData.authData.id
 
-        syncQueueItemRepository.insert(syncQueueItem)
+                val syncQueueItem = SyncQueueItem(
+                    id = documentId,
+                    collection = collectionPath,
+                    payload = document,
+                    operationType = "ADD",
+                    status = SyncStatus.PENDING
+                )
 
-        emit(Result.success(Pair(null, localResult.getOrNull())))
+                Log.d("AddUserUseCase", "Inserting sync queue item: $syncQueueItem")
+                syncQueueItemRepository.insert(syncQueueItem)
+                Log.d("AddUserUseCase", "Sync queue item inserted successfully")
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("AddUserUseCase", "Error in execute", e)
+            Result.failure(e)
+        }
     }
 }
