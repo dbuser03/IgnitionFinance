@@ -7,7 +7,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
-import com.unimib.ignitionfinance.data.remote.service.FirestoreService
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import dagger.assisted.Assisted
@@ -17,7 +16,6 @@ import kotlinx.coroutines.*
 
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
-    @Assisted private val firestoreService: FirestoreService,
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val syncQueueItemRepository: SyncQueueItemRepository,

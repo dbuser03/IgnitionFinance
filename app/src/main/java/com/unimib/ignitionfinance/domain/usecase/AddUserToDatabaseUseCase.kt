@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AddUserToDatabaseUseCase @Inject constructor(
-    private val firestoreRepository: FirestoreRepository,
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,

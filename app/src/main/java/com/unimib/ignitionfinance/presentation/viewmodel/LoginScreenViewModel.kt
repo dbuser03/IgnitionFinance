@@ -1,9 +1,12 @@
 package com.unimib.ignitionfinance.presentation.viewmodel
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
@@ -65,8 +68,7 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     private val _storeState = MutableStateFlow<StoreState>(StoreState.Idle)
-
-    fun storeUserData(name: String, surname: String, authData: AuthData) {
+    fun storeUserData(name: String, surname: String, authData: AuthData, context: Context) {
 
         val settings = SetDefaultSettingsUseCase().execute()
 
