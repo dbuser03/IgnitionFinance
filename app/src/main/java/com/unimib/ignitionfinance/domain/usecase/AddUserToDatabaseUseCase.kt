@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
