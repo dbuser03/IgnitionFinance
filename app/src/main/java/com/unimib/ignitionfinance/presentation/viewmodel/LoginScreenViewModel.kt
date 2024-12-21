@@ -13,12 +13,11 @@ import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel.StoreState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -72,14 +71,14 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     private val _storeState = MutableStateFlow<StoreState>(StoreState.Idle)
-    val storeState: StateFlow<StoreState> = _storeState.asStateFlow()
-    private val TAG = "IgnitionFinance_UserViewModel"
 
     fun storeUserData(name: String, surname: String, authData: AuthData, context: Context) {
-        Log.d(TAG, "Starting storeUserData for user: ${authData.id}")
-
-        val settings = SetDefaultSettingsUseCase().execute()
-        Log.d(TAG, "Default settings created")
+        val settings = try {
+            SetDefaultSettingsUseCase().execute()
+        } catch (_: Exception) {
+            _storeState.value = StoreState.Error("Failed to create default settings")
+            return
+        }
 
         val user = User(
             authData = authData,
@@ -88,47 +87,32 @@ class LoginScreenViewModel @Inject constructor(
             settings = settings,
             surname = surname
         )
-        Log.d(TAG, "User object created: $user")
-
-        val collectionPath = "users"
 
         viewModelScope.launch {
             try {
-                Log.d(TAG, "Launching coroutine for database operations")
                 _storeState.value = StoreState.Loading
 
-                withContext(Dispatchers.IO) {
-                    val result = addUserToDatabaseUseCase.execute(collectionPath, user)
-
-                    result.fold(
-                        onSuccess = {
-                            Log.d(TAG, "Database operation successful, scheduling sync")
-                            _storeState.value = StoreState.Success(Unit)
-                            try {
-                                Log.d(TAG, "Attempting to schedule one-time sync")
-                                SyncOperationScheduler.scheduleOneTime(context)
-                                Log.d(TAG, "Sync scheduled successfully")
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Failed to schedule sync", e)
+                addUserToDatabaseUseCase.execute("users", user)
+                    .collect { result ->
+                        result.fold(
+                            onSuccess = {
+                                _storeState.value = StoreState.Success(it)
+                                try {
+                                    SyncOperationScheduler.scheduleOneTime(context)
+                                } catch (_: Exception) { }
+                            },
+                            onFailure = { throwable ->
+                                _storeState.value = StoreState.Error(throwable.localizedMessage ?: "Database operation failed")
                             }
-                        },
-                        onFailure = { throwable ->
-                            val errorMessage = throwable.localizedMessage ?: "No details available"
-                            Log.e(TAG, "Database operation failed: $errorMessage", throwable)
-                            _storeState.value = StoreState.Error(errorMessage)
-                        }
-                    )
-                }
-            } catch (e: CancellationException) {
-                throw e
+                        )
+                    }
             } catch (e: Exception) {
-                Log.e(TAG, "Error in coroutine scope", e)
-                _storeState.value = StoreState.Error(e.localizedMessage ?: "Error in coroutine scope")
+                _storeState.value = StoreState.Error(e.localizedMessage ?: "Unexpected error occurred")
             }
         }
     }
 
-private val _deleteState = MutableStateFlow<DeleteState>(DeleteState.Idle)
+    private val _deleteState = MutableStateFlow<DeleteState>(DeleteState.Idle)
 
     fun deleteAllUsers() {
         viewModelScope.launch {

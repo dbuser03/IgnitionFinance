@@ -23,8 +23,6 @@ import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 
 @Composable
 fun LoginForm(
@@ -67,16 +65,12 @@ fun LoginForm(
             val name = name
             val surname = surname
 
-            supervisorScope {
-                launch {
-                    viewModel.storeUserData(
-                        name = name,
-                        surname = surname,
-                        authData = authData,
-                        context = context
-                    )
-                }
-            }
+            viewModel.storeUserData(
+                name = name,
+                surname = surname,
+                authData = authData,
+                context = context
+            )
 
             navController.navigate(Destinations.PortfolioScreen.route) {
                 popUpTo(Destinations.LoginScreen.route) { inclusive = true }
