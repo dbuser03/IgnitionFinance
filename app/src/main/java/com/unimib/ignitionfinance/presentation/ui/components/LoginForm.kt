@@ -68,7 +68,7 @@ fun LoginForm(
             is UiState.Success -> {
                 val authData = loginState.data
 
-                val result = firestoreRepository.getDocumentById(authData.id, "users").firstOrNull()
+                val result = firestoreRepository.getDocumentById("users", authData.id).firstOrNull()
                 Log.d("LoginScreen", "Remote user: $result")
 
                 if (result?.getOrNull() != null) {
