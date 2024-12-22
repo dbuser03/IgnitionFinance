@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import android.content.Context
-import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
@@ -66,22 +65,16 @@ class AddUserToDatabaseUseCase @Inject constructor(
 
             val id = (user?.get("authData") as? Map<*, *>)?.get("id") as? String
                 ?: throw IllegalArgumentException("User ID is missing or invalid")
-            Log.d("LoginScreen", id)
 
             val localUser = localDatabaseRepository.getById(id).first()
-            Log.d("LoginScreen", "$localUser")
 
             val updatedUserData = UserDataMapper.mapDocumentToUserData(user)
-            Log.d("LoginScreen", "$updatedUserData")
 
             val updatedUser = UserMapper.mapUserDataToUser(updatedUserData)
-            Log.d("LoginScreen", "$updatedUser")
 
             if (localUser.getOrNull() != null) {
-                Log.d("LoginScreen", "Local user is success")
                 localDatabaseRepository.update(updatedUser).first()
             } else {
-                Log.d("LoginScreen", "Local user is failure")
                 localDatabaseRepository.add(updatedUser).first()
             }
 
