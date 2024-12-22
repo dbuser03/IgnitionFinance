@@ -18,14 +18,19 @@ object SyncOperationScheduler {
     const val SYNC_TIMEOUT_MS = 30000L
     const val BATCH_SIZE = 10
     const val BATCH_DELAY_MS = 1000L
-    private const val INITIAL_BACKOFF_DELAY_MS = 10000L
+    const val INITIAL_BACKOFF_DELAY_MS = 10000L
+    private const val PERIODIC_SYNC_INTERVAL = 15L
+    private const val MIN_BACKOFF_DELAY_MS = 5000L
+    private const val MAX_BACKOFF_DELAY_MS = 300000L
 
     fun schedule(context: Context, constraints: Constraints = getDefaultConstraints()) {
-        Log.d(TAG, "Scheduling periodic sync work with interval: 15 minutes")
+        Log.d(TAG, "Scheduling periodic sync work with interval: $PERIODIC_SYNC_INTERVAL minutes")
         try {
             val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(
-                repeatInterval = 15,
-                repeatIntervalTimeUnit = TimeUnit.MINUTES
+                repeatInterval = PERIODIC_SYNC_INTERVAL,
+                repeatIntervalTimeUnit = TimeUnit.MINUTES,
+                flexTimeInterval = 5,
+                flexTimeIntervalUnit = TimeUnit.MINUTES
             )
                 .setConstraints(constraints)
                 .setBackoffCriteria(
@@ -48,16 +53,21 @@ object SyncOperationScheduler {
         }
     }
 
-    fun scheduleOneTime(context: Context, constraints: Constraints = getDefaultConstraints()) {
-        Log.d(TAG, "Scheduling one-time sync work")
+    fun scheduleOneTime(
+        context: Context,
+        constraints: Constraints = getDefaultConstraints(),
+        initialDelay: Long = 0L
+    ) {
+        Log.d(TAG, "Scheduling one-time sync work with initial delay: $initialDelay ms")
         try {
             val syncWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()
                 .setConstraints(constraints)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
-                    INITIAL_BACKOFF_DELAY_MS,
+                    INITIAL_BACKOFF_DELAY_MS.coerceIn(MIN_BACKOFF_DELAY_MS, MAX_BACKOFF_DELAY_MS),
                     TimeUnit.MILLISECONDS
                 )
+                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
                 .build()
 
             Log.d(TAG, "One-time work request built with constraints: ${constraints.requiredNetworkType}")

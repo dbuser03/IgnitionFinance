@@ -60,9 +60,13 @@ class SyncQueueItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateStatusAndIncrementAttempts(id: String, newStatus: SyncStatus) {
+    override suspend fun updateStatusAndIncrementAttempts(
+        id: String,
+        newStatus: SyncStatus,
+        nextAttemptTime: Long
+    ) {
         withContext(Dispatchers.IO) {
-            syncQueueItemDao.updateStatusAndIncrementAttempts(id, newStatus)
+            syncQueueItemDao.updateStatusAndIncrementAttempts(id, newStatus, nextAttemptTime)
         }
     }
 
@@ -75,6 +79,28 @@ class SyncQueueItemRepositoryImpl @Inject constructor(
     override suspend fun deleteOlderThan(timestamp: Long) {
         withContext(Dispatchers.IO) {
             syncQueueItemDao.deleteOlderThan(timestamp)
+        }
+    }
+
+    override suspend fun getPendingItems(timestamp: Long): List<SyncQueueItem> {
+        return withContext(Dispatchers.IO) {
+            syncQueueItemDao.getPendingItems(timestamp, SyncStatus.PENDING)
+        }
+    }
+
+    override suspend fun getFailedItems(maxAttempts: Int): List<SyncQueueItem> {
+        return withContext(Dispatchers.IO) {
+            syncQueueItemDao.getFailedItems(maxAttempts, SyncStatus.FAILED)
+        }
+    }
+
+    companion object {
+        const val MAX_ATTEMPTS = 5
+        const val INITIAL_BACKOFF_MS = 1000L
+
+        fun calculateNextAttemptTime(attempts: Int): Long {
+            val backoffMs = INITIAL_BACKOFF_MS * (1 shl (attempts - 1))
+            return System.currentTimeMillis() + backoffMs
         }
     }
 }

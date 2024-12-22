@@ -12,7 +12,13 @@ interface SyncQueueItemRepository {
     suspend fun getByStatusAndCollection(status: SyncStatus, collection: String): List<SyncQueueItem>
     suspend fun getAllOrderedByCreatedAt(): List<SyncQueueItem>
     suspend fun countByStatus(status: SyncStatus): Int
-    suspend fun updateStatusAndIncrementAttempts(id: String, newStatus: SyncStatus)
+    suspend fun updateStatusAndIncrementAttempts(
+        id: String,
+        newStatus: SyncStatus,
+        nextAttemptTime: Long = System.currentTimeMillis()
+    )
     suspend fun deleteByStatus(status: SyncStatus)
     suspend fun deleteOlderThan(timestamp: Long)
+    suspend fun getPendingItems(timestamp: Long = System.currentTimeMillis()): List<SyncQueueItem>
+    suspend fun getFailedItems(maxAttempts: Int): List<SyncQueueItem>
 }

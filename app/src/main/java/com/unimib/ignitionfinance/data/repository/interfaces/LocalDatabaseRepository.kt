@@ -9,4 +9,7 @@ interface LocalDatabaseRepository<T> {
     suspend fun update(entity: T): Flow<Result<Unit>>
     suspend fun delete(entity: T): Flow<Result<Unit>>
     suspend fun deleteAll(): Flow<Result<Unit>>
+    suspend fun getUpdatedAfter(timestamp: Long): Flow<Result<List<T>>>
+    suspend fun getUnsyncedEntities(): Flow<Result<List<T>>>
+    suspend fun updateLastSyncTimestamp(id: String, timestamp: Long = System.currentTimeMillis()): Flow<Result<Unit>>
 }

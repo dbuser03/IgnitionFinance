@@ -30,8 +30,9 @@ class SyncWorker @AssistedInject constructor(
             Log.d(TAG, "Starting sync work")
             cleanupStuckSyncingItems()
 
-            val pendingItems = syncQueueItemRepository.getByStatus(SyncStatus.PENDING)
-            Log.d(TAG, "Found ${pendingItems.size} pending items")
+            val currentTime = System.currentTimeMillis()
+            val pendingItems = syncQueueItemRepository.getPendingItems(currentTime)
+            Log.d(TAG, "Found ${pendingItems.size} pending items ready for processing")
 
             if (pendingItems.isEmpty()) {
                 Log.d(TAG, "No pending items, completing successfully")
@@ -46,6 +47,8 @@ class SyncWorker @AssistedInject constructor(
             val retryCount = results.count { it is SyncOperationResult.Retry }
 
             Log.d(TAG, "Sync results - Success: $successCount, Errors: $errorCount, Retries: $retryCount")
+
+            handleFailedItems()
 
             return@coroutineScope when {
                 errorCount > 0 -> {
@@ -70,12 +73,19 @@ class SyncWorker @AssistedInject constructor(
         stuckSyncingItems.forEach { item ->
             if (currentTime - item.createdAt > SyncOperationScheduler.SYNC_TIMEOUT_MS) {
                 Log.w(TAG, "Item ${item.id} stuck in SYNCING state, marking as ABANDONED")
+                val nextAttemptTime = calculateNextAttemptTime(item.attempts + 1)
                 syncQueueItemRepository.updateStatusAndIncrementAttempts(
                     item.id,
-                    SyncStatus.ABANDONED
+                    SyncStatus.ABANDONED,
+                    nextAttemptTime
                 )
             }
         }
+    }
+
+    private suspend fun handleFailedItems() {
+        val failedItems = syncQueueItemRepository.getFailedItems(SyncOperationScheduler.MAX_RETRIES)
+        Log.d(TAG, "Found ${failedItems.size} permanently failed items")
     }
 
     private suspend fun processBatches(items: List<SyncQueueItem>): List<SyncOperationResult> {
@@ -97,7 +107,8 @@ class SyncWorker @AssistedInject constructor(
 
         syncQueueItemRepository.updateStatusAndIncrementAttempts(
             item.id,
-            SyncStatus.SYNCING
+            SyncStatus.SYNCING,
+            System.currentTimeMillis()
         )
 
         return try {
@@ -184,10 +195,12 @@ class SyncWorker @AssistedInject constructor(
 
         return when {
             item.attempts < SyncOperationScheduler.MAX_RETRIES -> {
-                Log.d(TAG, "Scheduling retry for item ${item.id}")
+                val nextAttemptTime = calculateNextAttemptTime(item.attempts + 1)
+                Log.d(TAG, "Scheduling retry for item ${item.id} at $nextAttemptTime")
                 syncQueueItemRepository.updateStatusAndIncrementAttempts(
                     item.id,
-                    SyncStatus.PENDING
+                    SyncStatus.PENDING,
+                    nextAttemptTime
                 )
                 SyncOperationResult.Retry(item.id, item.attempts + 1)
             }
@@ -195,11 +208,17 @@ class SyncWorker @AssistedInject constructor(
                 Log.e(TAG, "Max retries exceeded for item ${item.id}, marking as FAILED")
                 syncQueueItemRepository.updateStatusAndIncrementAttempts(
                     item.id,
-                    SyncStatus.FAILED
+                    SyncStatus.FAILED,
+                    System.currentTimeMillis()
                 )
                 SyncOperationResult.Error(item.id, error)
             }
         }
+    }
+
+    private fun calculateNextAttemptTime(attempts: Int): Long {
+        val backoffMs = SyncOperationScheduler.INITIAL_BACKOFF_DELAY_MS * (1 shl (attempts - 1))
+        return System.currentTimeMillis() + backoffMs
     }
 
     private fun handleWorkerError(error: Throwable): Result {
