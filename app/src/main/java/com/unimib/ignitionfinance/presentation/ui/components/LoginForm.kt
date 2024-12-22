@@ -69,21 +69,17 @@ fun LoginForm(
                 val authData = loginState.data
 
                 val result = firestoreRepository.getDocumentById("users", authData.id).firstOrNull()
-                Log.d("LoginScreen", "Remote user: $result")
 
                 if (result?.getOrNull() != null) {
-                    Log.d("LoginScreen", "User found in Firestore: ${result.getOrNull()}")
 
                     viewModel.storeUserDataLocal(result.getOrNull())
                 } else {
-                    Log.d("LoginScreen", "User not found in Firestore: $result")
                     val name = name
                     val surname = surname
 
                     val settings = try {
                         SetDefaultSettingsUseCase().execute()
                     } catch (_: Exception) {
-                        Log.e("LoginScreen", "Failed to set default settings")
                         return@LaunchedEffect
                     }
 
