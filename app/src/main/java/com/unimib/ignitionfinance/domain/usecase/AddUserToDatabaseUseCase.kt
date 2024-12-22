@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import android.content.Context
+import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
@@ -8,7 +9,6 @@ import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseReposi
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
-import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -27,7 +27,6 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val syncQueueItemRepository: SyncQueueItemRepository,
-    private val firestoreRepository: FirestoreRepository,
     @ApplicationContext private val context: Context
 ) {
     fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
@@ -62,35 +61,31 @@ class AddUserToDatabaseUseCase @Inject constructor(
         emit(Result.failure(e))
     }
 
-    fun executeExistingUser(collectionPath: String, id: String): Flow<Result<Unit?>> = flow {
+    fun executeExistingUser(user: Map<String, Any>?): Flow<Result<Unit?>> = flow {
         try {
-            coroutineScope {
-                val remoteUserDeferred = async {
-                    firestoreRepository.getDocumentById(id, collectionPath).first().getOrNull()
-                }
 
-                val localUserDeferred = async {
-                    localDatabaseRepository.getById(id).first()
-                }
+            val id = (user?.get("authData") as? Map<*, *>)?.get("id") as? String
+                ?: throw IllegalArgumentException("User ID is missing or invalid")
+            Log.d("LoginScreen", id)
 
-                val remoteUser = remoteUserDeferred.await()
-                val localUser = localUserDeferred.await()
+            val localUser = localDatabaseRepository.getById(id).first()
+            Log.d("LoginScreen", "$localUser")
 
-                if (remoteUser != null) {
-                    val updatedUserData = UserDataMapper.mapDocumentToUserData(remoteUser)
-                    val updatedUser = UserMapper.mapUserDataToUser(updatedUserData)
+            val updatedUserData = UserDataMapper.mapDocumentToUserData(user)
+            Log.d("LoginScreen", "$updatedUserData")
 
-                    if (localUser.isSuccess) {
-                        localDatabaseRepository.update(updatedUser).first()
-                    } else {
-                        localDatabaseRepository.add(updatedUser).first()
-                    }
+            val updatedUser = UserMapper.mapUserDataToUser(updatedUserData)
+            Log.d("LoginScreen", "$updatedUser")
 
-                    emit(Result.success(Unit))
-                } else {
-                    emit(Result.failure(Exception("User not found in Firestore")))
-                }
+            if (localUser.getOrNull() != null) {
+                Log.d("LoginScreen", "Local user is success")
+                localDatabaseRepository.update(updatedUser).first()
+            } else {
+                Log.d("LoginScreen", "Local user is failure")
+                localDatabaseRepository.add(updatedUser).first()
             }
+
+            emit(Result.success(Unit))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

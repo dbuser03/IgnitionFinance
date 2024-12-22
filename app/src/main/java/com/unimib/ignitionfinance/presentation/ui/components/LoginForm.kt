@@ -72,8 +72,9 @@ fun LoginForm(
                 Log.d("LoginScreen", "Remote user: $result")
 
                 if (result?.getOrNull() != null) {
-                    Log.d("LoginScreen", "User found in Firestore: $result")
-                    viewModel.storeUserDataLocal(authData.id)
+                    Log.d("LoginScreen", "User found in Firestore: ${result.getOrNull()}")
+
+                    viewModel.storeUserDataLocal(result.getOrNull())
                 } else {
                     Log.d("LoginScreen", "User not found in Firestore: $result")
                     val name = name

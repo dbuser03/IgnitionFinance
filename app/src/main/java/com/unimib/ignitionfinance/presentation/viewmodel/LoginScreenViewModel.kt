@@ -86,12 +86,12 @@ class LoginScreenViewModel @Inject constructor(
         }
     }
 
-    fun storeUserDataLocal(id: String) {
+    fun storeUserDataLocal(user: Map<String, Any>?) {
         viewModelScope.launch {
             try {
                 _storeState.value = UiState.Loading
 
-                addUserToDatabaseUseCase.executeExistingUser("users", id).collect { result ->
+                addUserToDatabaseUseCase.executeExistingUser(user).collect { result ->
                     result.fold(
                         onSuccess = {
                             _storeState.value = UiState.Success(Unit)

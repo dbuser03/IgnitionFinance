@@ -125,14 +125,12 @@ object AppModule {
         userDataMapper: UserDataMapper,
         localDatabaseRepository: LocalDatabaseRepository<User>,
         syncQueueItemRepository: SyncQueueItemRepository,
-        firestoreRepository: FirestoreRepository,
         context: Context
     ): AddUserToDatabaseUseCase = AddUserToDatabaseUseCase(
         userMapper,
         userDataMapper,
         localDatabaseRepository,
         syncQueueItemRepository,
-        firestoreRepository,
         context
     )
 
