@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "9769084d5f02425e207185ccc0c9e1cf",
+    "identityHash": "9b70811425b9d1b502544bf60aff4050",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `authData` TEXT NOT NULL, `settings` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `authData` TEXT NOT NULL, `settings` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `last_sync_timestamp` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,24 @@
             "columnName": "settings",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSyncTimestamp",
+            "columnName": "last_sync_timestamp",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -50,7 +68,7 @@
       },
       {
         "tableName": "sync_queue_items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `collection` TEXT NOT NULL, `payload` TEXT NOT NULL, `operation` TEXT NOT NULL, `status` TEXT NOT NULL, `attempts` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `collection` TEXT NOT NULL, `payload` TEXT NOT NULL, `operation` TEXT NOT NULL, `status` TEXT NOT NULL, `attempts` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `scheduled_for` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -93,6 +111,12 @@
             "columnName": "created_at",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "scheduledFor",
+            "columnName": "scheduled_for",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -108,7 +132,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9769084d5f02425e207185ccc0c9e1cf')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9b70811425b9d1b502544bf60aff4050')"
     ]
   }
 }

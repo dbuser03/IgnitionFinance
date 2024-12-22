@@ -26,7 +26,6 @@ import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
-import com.unimib.ignitionfinance.domain.usecase.RetrieveUserSettingsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -84,7 +83,10 @@ object AppModule {
         deleteFn = UserDao::delete,
         getByIdFn = UserDao::getUserById,
         getAllFn = UserDao::getAllUsers,
-        deleteAllFn = UserDao::deleteAllUsers
+        deleteAllFn = UserDao::deleteAllUsers,
+        getUnsyncedFn = UserDao::getUnsyncedUsers,
+        getUpdatedAfterFn = UserDao::getUsersUpdatedAfter,
+        updateLastSyncFn = UserDao::updateLastSyncTimestamp
     )
 
     @Provides
@@ -146,16 +148,5 @@ object AppModule {
     ): DeleteAllUsersUseCase = DeleteAllUsersUseCase(
         localDatabaseRepository,
         firestoreRepository
-    )
-
-    @Provides
-    fun provideRetrieveUserSettingsUseCase(
-        firestoreRepository: FirestoreRepository,
-        authRepository: AuthRepository,
-        userMapper: UserDataMapper
-    ): RetrieveUserSettingsUseCase = RetrieveUserSettingsUseCase(
-        firestoreRepository,
-        authRepository,
-        userMapper
     )
 }

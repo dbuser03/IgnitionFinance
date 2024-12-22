@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
+import com.unimib.ignitionfinance.presentation.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,28 +17,28 @@ class ResetPasswordScreenViewModel @Inject constructor(
     private val resetPasswordUseCase: ResetPasswordUseCase
 ) : ViewModel() {
 
-    sealed class ResetState {
-        object Idle : ResetState()
-        object Loading : ResetState()
-        data class Success(val success: Unit) : ResetState()
-        data class Error(val errorMessage: String) : ResetState()
-    }
-
-    private val _resetState = MutableStateFlow<ResetState>(ResetState.Idle)
-    val resetState: StateFlow<ResetState> = _resetState
+    private val _resetState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val resetState: StateFlow<UiState<Unit>> = _resetState
 
     fun reset(email: String) {
         viewModelScope.launch {
-            _resetState.value = ResetState.Loading
-            resetPasswordUseCase.execute(email).collect { result ->
-                result.fold(
-                    onSuccess = { success ->
-                        _resetState.value = ResetState.Success(success)
-                    },
-                    onFailure = {throwable ->
-                        val errorMessage = throwable.localizedMessage ?: "No details available"
-                        _resetState.value = ResetState.Error(errorMessage)
-                    }
+            try {
+                _resetState.value = UiState.Loading
+                resetPasswordUseCase.execute(email).collect { result ->
+                    result.fold(
+                        onSuccess = { success ->
+                            _resetState.value = UiState.Success(success)
+                        },
+                        onFailure = { throwable ->
+                            _resetState.value = UiState.Error(
+                                throwable.localizedMessage ?: "Reset password failed"
+                            )
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                _resetState.value = UiState.Error(
+                    e.localizedMessage ?: "Unexpected error occurred during password reset"
                 )
             }
         }

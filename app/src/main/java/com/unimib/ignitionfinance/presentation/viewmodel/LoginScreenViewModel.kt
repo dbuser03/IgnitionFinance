@@ -1,16 +1,14 @@
 package com.unimib.ignitionfinance.presentation.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
-import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel.StoreState
+import com.unimib.ignitionfinance.presentation.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,106 +22,98 @@ class LoginScreenViewModel @Inject constructor(
     private val deleteAllUsersUseCase: DeleteAllUsersUseCase
 ) : ViewModel() {
 
-    sealed class LoginState {
-        object Idle : LoginState()
-        object Loading : LoginState()
-        data class Success(val authData: AuthData) : LoginState()
-        data class Error(val message: String) : LoginState()
-    }
-
-    sealed class StoreState {
-        object Idle : StoreState()
-        object Loading : StoreState()
-        data class Success(val storePair: Unit?) : StoreState()
-        data class Error(val errorMessage: String) : StoreState()
-    }
-
-    sealed class DeleteState {
-        object Idle : DeleteState()
-        object Loading : DeleteState()
-        data class Success(val deletePair: Pair<Unit?, Unit?>) : DeleteState()
-        data class Error(val errorMessage: String) : DeleteState()
-    }
-
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
-    val loginState: StateFlow<LoginState> = _loginState
+    private val _loginState = MutableStateFlow<UiState<AuthData>>(UiState.Idle)
+    val loginState: StateFlow<UiState<AuthData>> = _loginState
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            _loginState.value = LoginState.Loading
-            loginUserUseCase.execute(email, password).collect { result ->
-                result.fold(
-                    onSuccess = { authData ->
-                        _loginState.value = LoginState.Success(authData)
-                    },
-                    onFailure = { throwable ->
-                        val errorMessage = throwable.localizedMessage ?: "No details available"
-                        _loginState.value =
-                            LoginState.Error(errorMessage)
-                    }
+            try {
+                _loginState.value = UiState.Loading
+                loginUserUseCase.execute(email, password).collect { result ->
+                    result.fold(
+                        onSuccess = { authData ->
+                            _loginState.value = UiState.Success(authData)
+                        },
+                        onFailure = { throwable ->
+                            _loginState.value = UiState.Error(
+                                throwable.localizedMessage ?: "No details available"
+                            )
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                _loginState.value = UiState.Error(
+                    e.localizedMessage ?: "Unexpected error occurred during login"
                 )
             }
         }
     }
 
-    private val _storeState = MutableStateFlow<StoreState>(StoreState.Idle)
+    private val _storeState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
 
-    fun storeUserData(name: String, surname: String, authData: AuthData, context: Context) {
-        val settings = try {
-            SetDefaultSettingsUseCase().execute()
-        } catch (_: Exception) {
-            _storeState.value = StoreState.Error("Failed to create default settings")
-            return
-        }
-
-        val user = User(
-            authData = authData,
-            id = authData.id,
-            name = name,
-            settings = settings,
-            surname = surname
-        )
-
+    fun storeUserData(name: String, surname: String, authData: AuthData) {
         viewModelScope.launch {
             try {
-                _storeState.value = StoreState.Loading
+                _storeState.value = UiState.Loading
+                val settings = try {
+                    SetDefaultSettingsUseCase().execute()
+                } catch (_: Exception) {
+                    _storeState.value = UiState.Error("Failed to create default settings")
+                    return@launch
+                }
 
-                addUserToDatabaseUseCase.execute("users", user)
-                    .collect { result ->
-                        result.fold(
-                            onSuccess = {
-                                _storeState.value = StoreState.Success(it)
-                                try {
-                                    SyncOperationScheduler.scheduleOneTime(context)
-                                } catch (_: Exception) { }
-                            },
-                            onFailure = { throwable ->
-                                _storeState.value = StoreState.Error(throwable.localizedMessage ?: "Database operation failed")
-                            }
-                        )
-                    }
+                val user = User(
+                    authData = authData,
+                    id = authData.id,
+                    name = name,
+                    settings = settings,
+                    surname = surname
+                )
+
+                addUserToDatabaseUseCase.execute("users", user).collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            _storeState.value = UiState.Success(Unit)
+                        },
+                        onFailure = { throwable ->
+                            _storeState.value = UiState.Error(
+                                throwable.localizedMessage ?: "Database operation failed"
+                            )
+                        }
+                    )
+                }
             } catch (e: Exception) {
-                _storeState.value = StoreState.Error(e.localizedMessage ?: "Unexpected error occurred")
+                _storeState.value = UiState.Error(
+                    e.localizedMessage ?: "Unexpected error occurred during user storage"
+                )
             }
         }
     }
 
-    private val _deleteState = MutableStateFlow<DeleteState>(DeleteState.Idle)
+    private val _deleteState = MutableStateFlow<UiState<Pair<Unit?, Unit?>>>(UiState.Idle)
 
     fun deleteAllUsers() {
         viewModelScope.launch {
-            _deleteState.value = DeleteState.Loading
-            deleteAllUsersUseCase.execute().collect { result ->
-                result.fold(
-                    onSuccess = { deletePair ->
-                        _deleteState.value = DeleteState.Success(deletePair)
-                    },
-                    onFailure = { throwable ->
-                        val errorMessage = throwable.localizedMessage ?: "No details available"
-                        _deleteState.value = DeleteState.Error(errorMessage)
-                    }
+            try {
+                _deleteState.value = UiState.Loading
+                deleteAllUsersUseCase.execute().collect { result ->
+                    result.fold(
+                        onSuccess = { deletePair ->
+                            _deleteState.value = UiState.Success(deletePair)
+                        },
+                        onFailure = { throwable ->
+                            _deleteState.value = UiState.Error(
+                                throwable.localizedMessage ?: "No details available"
+                            )
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                _deleteState.value = UiState.Error(
+                    e.localizedMessage ?: "Unexpected error occurred during deletion"
                 )
             }
         }
     }
 }
+

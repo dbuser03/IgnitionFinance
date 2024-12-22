@@ -120,6 +120,11 @@ class SyncWorker @AssistedInject constructor(
             }
 
             Log.d(TAG, "Operation ${item.operationType} completed successfully for item ${item.id}")
+            syncQueueItemRepository.updateStatusAndIncrementAttempts(
+                item.id,
+                SyncStatus.SUCCEEDED,
+                System.currentTimeMillis()
+            )
             syncQueueItemRepository.delete(item)
             result
         } catch (e: Exception) {

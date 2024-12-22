@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,8 +47,6 @@ fun LoginForm(
     val isFabFocused = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    val context = LocalContext.current
-
     val isFormValid = remember(email.value, password.value) {
         val result = LoginValidator.validateLoginForm(email.value, password.value)
         result is LoginValidationResult.Success
@@ -69,7 +66,6 @@ fun LoginForm(
                 name = name,
                 surname = surname,
                 authData = authData,
-                context = context
             )
 
             navController.navigate(Destinations.PortfolioScreen.route) {
