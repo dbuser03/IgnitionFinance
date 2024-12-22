@@ -83,4 +83,15 @@ class FirestoreRepositoryImpl @Inject constructor(
             emit(Result.failure(Exception("An unexpected error occurred", e)))
         }
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun userExists(collectionPath: String, userId: String): Flow<Result<Boolean>> = flow {
+        try {
+            val exists = firestoreService.userExists(collectionPath, userId)
+            emit(Result.success(exists))
+        } catch (e: FirestoreServiceException) {
+            emit(Result.failure(e))
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("An unexpected error occurred", e)))
+        }
+    }.flowOn(Dispatchers.IO)
 }

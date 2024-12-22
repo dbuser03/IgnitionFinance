@@ -10,4 +10,5 @@ interface FirestoreRepository {
     suspend fun updateDocument(collectionPath: String, data: Map<String, Any>, documentId: String): Flow<Result<Unit>>
     suspend fun deleteDocument(collectionPath: String, documentId: String): Flow<Result<Unit>>
     suspend fun deleteAllDocuments(collectionPath: String): Flow<Result<Unit>>
+    suspend fun userExists(collectionPath: String, userId: String): Flow<Result<Boolean>>
 }

@@ -16,15 +16,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
+import com.unimib.ignitionfinance.presentation.utils.UiState
 
 @Composable
 fun RegistrationForm(
     onRegisterClick: (String, String) -> Unit,
-    registrationState: RegistrationScreenViewModel.RegistrationState,
+    registrationState: UiState<AuthData>,
     navController: NavController,
 ) {
     val name = remember { mutableStateOf("") }
@@ -65,7 +66,7 @@ fun RegistrationForm(
     }
 
     LaunchedEffect(registrationState) {
-        if (registrationState is RegistrationScreenViewModel.RegistrationState.Success) {
+        if (registrationState is UiState.Success) {
             navController.navigate(
                 Destinations.LoginScreen.createRoute(
                     name = name.value,
@@ -76,8 +77,6 @@ fun RegistrationForm(
             }
         }
     }
-
-
 
     Column(
         modifier = Modifier
@@ -199,7 +198,7 @@ fun RegistrationForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && registrationState is RegistrationScreenViewModel.RegistrationState.Error -> {
+            isFabFocused.value && registrationState is UiState.Error -> {
                 registrationState.message
             }
             nameFocused.value -> nameError.value

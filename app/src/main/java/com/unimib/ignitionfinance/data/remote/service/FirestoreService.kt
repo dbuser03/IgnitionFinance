@@ -81,4 +81,16 @@ class FirestoreService {
             throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.DELETING_ALL_DOCUMENTS, false), e)
         }
     }
+
+    suspend fun userExists(collectionPath: String, userId: String): Boolean {
+        return try {
+            val documentSnapshot = firestore.collection(collectionPath).document(userId).get().await()
+            documentSnapshot.exists()
+        } catch (e: FirebaseFirestoreException) {
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.CHECKING_USER_EXISTS, true), e)
+        } catch (e: Exception) {
+            throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.CHECKING_USER_EXISTS, false), e)
+        }
+    }
+
 }

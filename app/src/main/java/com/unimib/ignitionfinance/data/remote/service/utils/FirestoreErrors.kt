@@ -10,6 +10,7 @@ object FirestoreErrors {
     const val UPDATING_DOCUMENT = "updating document"
     const val DELETING_DOCUMENT = "deleting document"
     const val DELETING_ALL_DOCUMENTS = "deleting all documents"
+    const val CHECKING_USER_EXISTS = "checking if user exists"
 
     fun getErrorMessage(operationType: String, isSpecificError: Boolean): String {
         return if (isSpecificError) {
@@ -19,3 +20,4 @@ object FirestoreErrors {
         }
     }
 }
+

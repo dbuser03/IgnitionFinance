@@ -18,12 +18,12 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.ResetValidationResult
 import com.unimib.ignitionfinance.domain.validation.ResetValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.viewmodel.ResetPasswordScreenViewModel
+import com.unimib.ignitionfinance.presentation.utils.UiState
 
 @Composable
 fun ResetPasswordForm(
     onResetClick: (String) -> Unit,
-    resetState: ResetPasswordScreenViewModel.ResetState,
+    resetState: UiState<Unit>,
     navController: NavController,
 ) {
     val email = remember { mutableStateOf("") }
@@ -43,13 +43,12 @@ fun ResetPasswordForm(
     }
 
     LaunchedEffect(resetState) {
-        if (resetState is ResetPasswordScreenViewModel.ResetState.Success) {
+        if (resetState is UiState.Success) {
             navController.navigate(Destinations.LoginScreen.route) {
                 popUpTo(Destinations.ResetPasswordScreen.route) { inclusive = true }
             }
         }
     }
-
 
     Column(
         modifier = Modifier
@@ -114,8 +113,8 @@ fun ResetPasswordForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && resetState is ResetPasswordScreenViewModel.ResetState.Error -> {
-                resetState.errorMessage
+            isFabFocused.value && resetState is UiState.Error -> {
+                resetState.message
             }
             emailFocused.value -> emailError.value
             else -> null

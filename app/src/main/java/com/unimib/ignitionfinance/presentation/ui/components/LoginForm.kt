@@ -17,16 +17,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
+import com.unimib.ignitionfinance.presentation.utils.UiState
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 
 @Composable
 fun LoginForm(
     onLoginClick: (String, String) -> Unit,
-    loginState: LoginScreenViewModel.LoginState,
+    loginState: UiState<AuthData>,
     navController: NavController,
     viewModel: LoginScreenViewModel,
     name: String,
@@ -57,20 +60,35 @@ fun LoginForm(
     }
 
     LaunchedEffect(loginState) {
-        if (loginState is LoginScreenViewModel.LoginState.Success) {
-            val authData = loginState.authData
-            val name = name
-            val surname = surname
+        when (loginState) {
+            is UiState.Success -> {
+                val authData = loginState.data
+                val name = name
+                val surname = surname
 
-            viewModel.storeUserData(
-                name = name,
-                surname = surname,
-                authData = authData,
-            )
+                val settings = try {
+                    SetDefaultSettingsUseCase().execute()
+                } catch (_: Exception) {
+                    println("Failed to create default settings")
+                    return@LaunchedEffect
+                }
 
-            navController.navigate(Destinations.PortfolioScreen.route) {
-                popUpTo(Destinations.LoginScreen.route) { inclusive = true }
+                viewModel.storeUserData(
+                    name = name,
+                    surname = surname,
+                    authData = authData,
+                    settings = settings
+                )
+
+                navController.navigate(Destinations.PortfolioScreen.route) {
+                    popUpTo(Destinations.LoginScreen.route) { inclusive = true }
+                }
             }
+            is UiState.Error -> {
+                val errorMessage = loginState.message
+                println("Login error: $errorMessage")
+            }
+            else -> {}
         }
     }
 
@@ -158,7 +176,7 @@ fun LoginForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && loginState is LoginScreenViewModel.LoginState.Error -> {
+            isFabFocused.value && loginState is UiState.Error -> {
                 loginState.message
             }
             emailFocused.value -> emailError.value

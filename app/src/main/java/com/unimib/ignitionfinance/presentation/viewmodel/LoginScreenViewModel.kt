@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
-import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.presentation.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,16 +51,10 @@ class LoginScreenViewModel @Inject constructor(
 
     private val _storeState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
 
-    fun storeUserData(name: String, surname: String, authData: AuthData) {
+    fun storeUserData(name: String, surname: String, authData: AuthData, settings: Settings) {
         viewModelScope.launch {
             try {
                 _storeState.value = UiState.Loading
-                val settings = try {
-                    SetDefaultSettingsUseCase().execute()
-                } catch (_: Exception) {
-                    _storeState.value = UiState.Error("Failed to create default settings")
-                    return@launch
-                }
 
                 val user = User(
                     authData = authData,
@@ -89,6 +83,7 @@ class LoginScreenViewModel @Inject constructor(
             }
         }
     }
+
 
     private val _deleteState = MutableStateFlow<UiState<Pair<Unit?, Unit?>>>(UiState.Idle)
 

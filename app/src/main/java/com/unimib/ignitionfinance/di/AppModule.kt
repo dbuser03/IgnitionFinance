@@ -124,12 +124,14 @@ object AppModule {
         userMapper: UserMapper,
         userDataMapper: UserDataMapper,
         localDatabaseRepository: LocalDatabaseRepository<User>,
-        syncQueueItemRepository: SyncQueueItemRepository
+        syncQueueItemRepository: SyncQueueItemRepository,
+        context: Context
     ): AddUserToDatabaseUseCase = AddUserToDatabaseUseCase(
         userMapper,
         userDataMapper,
         localDatabaseRepository,
-        syncQueueItemRepository
+        syncQueueItemRepository,
+        context
     )
 
     @Provides
