@@ -24,6 +24,7 @@ fun LoginScreen(
     name: String = "",
     surname: String = "",
     viewModel: LoginScreenViewModel = hiltViewModel()
+
 ) {
     val loginState by viewModel.loginState.collectAsState()
 
@@ -45,7 +46,8 @@ fun LoginScreen(
                     navController = navController,
                     viewModel = viewModel,
                     name = name,
-                    surname = surname
+                    surname = surname,
+                    firestoreRepository = viewModel.firestoreRepository
                 )
 
                 Button(

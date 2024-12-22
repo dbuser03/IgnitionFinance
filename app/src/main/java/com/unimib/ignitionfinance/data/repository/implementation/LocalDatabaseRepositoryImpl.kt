@@ -47,6 +47,16 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
     override suspend fun updateLastSyncTimestamp(id: String, timestamp: Long): Flow<Result<Unit>> =
         performDbOperation { dao.updateLastSyncFn(id, timestamp) }
 
+    override suspend fun exists(id: String): Flow<Result<Boolean>> =
+        flow {
+            try {
+                val entity = dao.getByIdFn(id)
+                emit(Result.success(entity != null))
+            } catch (e: Exception) {
+                emit(Result.failure(e))
+            }
+        }.flowOn(Dispatchers.IO)
+
     private fun <R> performDbOperation(action: suspend DAO.() -> R): Flow<Result<R>> = flow {
         try {
             val result = dao.action()

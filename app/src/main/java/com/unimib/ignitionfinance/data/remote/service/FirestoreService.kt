@@ -82,7 +82,7 @@ class FirestoreService {
         }
     }
 
-    suspend fun userExists(collectionPath: String, userId: String): Boolean {
+    suspend fun documentExists(collectionPath: String, userId: String): Boolean {
         return try {
             val documentSnapshot = firestore.collection(collectionPath).document(userId).get().await()
             documentSnapshot.exists()

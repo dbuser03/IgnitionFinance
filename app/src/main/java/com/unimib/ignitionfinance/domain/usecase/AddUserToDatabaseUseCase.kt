@@ -8,6 +8,7 @@ import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseReposi
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -26,9 +27,10 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val syncQueueItemRepository: SyncQueueItemRepository,
+    private val firestoreRepository: FirestoreRepository,
     @ApplicationContext private val context: Context
 ) {
-    fun execute(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
+    fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
         val syncQueueItem = createSyncQueueItem(user, collectionPath)
 
         try {
@@ -58,6 +60,42 @@ class AddUserToDatabaseUseCase @Inject constructor(
     }.catch { e ->
         if (e is CancellationException) throw e
         emit(Result.failure(e))
+    }
+
+    fun executeExistingUser(collectionPath: String, id: String): Flow<Result<Unit?>> = flow {
+        try {
+            coroutineScope {
+                val remoteUserDeferred = async {
+                    firestoreRepository.getDocumentById(id, collectionPath).first().getOrNull()
+                }
+
+                val localUserDeferred = async {
+                    localDatabaseRepository.getById(id).first()
+                }
+
+                val remoteUser = remoteUserDeferred.await()
+                val localUser = localUserDeferred.await()
+
+                if (remoteUser != null) {
+                    val updatedUserData = UserDataMapper.mapDocumentToUserData(remoteUser)
+                    val updatedUser = UserMapper.mapUserDataToUser(updatedUserData)
+
+                    if (localUser.isSuccess) {
+                        localDatabaseRepository.update(updatedUser).first()
+                    } else {
+                        localDatabaseRepository.add(updatedUser).first()
+                    }
+
+                    emit(Result.success(Unit))
+                } else {
+                    emit(Result.failure(Exception("User not found in Firestore")))
+                }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
     }
 
     private fun createSyncQueueItem(user: User, collectionPath: String): SyncQueueItem {

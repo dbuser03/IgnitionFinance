@@ -84,9 +84,9 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun userExists(collectionPath: String, userId: String): Flow<Result<Boolean>> = flow {
+    override suspend fun documentExists(collectionPath: String, userId: String): Flow<Result<Boolean>> = flow {
         try {
-            val exists = firestoreService.userExists(collectionPath, userId)
+            val exists = firestoreService.documentExists(collectionPath, userId)
             emit(Result.success(exists))
         } catch (e: FirestoreServiceException) {
             emit(Result.failure(e))

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.Settings
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class LoginScreenViewModel @Inject constructor(
     private val loginUserUseCase: LoginUserUseCase,
     private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase,
-    private val deleteAllUsersUseCase: DeleteAllUsersUseCase
+    private val deleteAllUsersUseCase: DeleteAllUsersUseCase,
+    val firestoreRepository: FirestoreRepository
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<UiState<AuthData>>(UiState.Idle)
@@ -51,7 +53,7 @@ class LoginScreenViewModel @Inject constructor(
 
     private val _storeState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
 
-    fun storeUserData(name: String, surname: String, authData: AuthData, settings: Settings) {
+    fun storeUserDataRemote(name: String, surname: String, authData: AuthData, settings: Settings) {
         viewModelScope.launch {
             try {
                 _storeState.value = UiState.Loading
@@ -64,7 +66,7 @@ class LoginScreenViewModel @Inject constructor(
                     surname = surname
                 )
 
-                addUserToDatabaseUseCase.execute("users", user).collect { result ->
+                addUserToDatabaseUseCase.executeNewUser("users", user).collect { result ->
                     result.fold(
                         onSuccess = {
                             _storeState.value = UiState.Success(Unit)
@@ -84,6 +86,31 @@ class LoginScreenViewModel @Inject constructor(
         }
     }
 
+    fun storeUserDataLocal(id: String) {
+        viewModelScope.launch {
+            try {
+                _storeState.value = UiState.Loading
+
+                addUserToDatabaseUseCase.executeExistingUser("users", id).collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            _storeState.value = UiState.Success(Unit)
+                        },
+                        onFailure = { throwable ->
+                            _storeState.value = UiState.Error(
+                                throwable.localizedMessage ?: "Database operation failed"
+                            )
+                        }
+                    )
+
+                }
+            } catch (e: Exception) {
+                _storeState.value = UiState.Error(
+                    e.localizedMessage ?: "Unexpected error occurred during user storage"
+                )
+            }
+        }
+    }
 
     private val _deleteState = MutableStateFlow<UiState<Pair<Unit?, Unit?>>>(UiState.Idle)
 

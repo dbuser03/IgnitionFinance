@@ -1,6 +1,7 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.google.firebase.firestore.DocumentSnapshot
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.settings.Expenses
 import com.unimib.ignitionfinance.data.model.user.settings.Intervals
@@ -10,45 +11,46 @@ import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
 
 object UserDataMapper {
 
-    fun mapDocumentToUserData(document: DocumentSnapshot?): UserData? {
+    fun mapDocumentToUserData(document: Map<String, Any>?): UserData? {
         return document?.run {
             UserData(
-                name = getString("name").orEmpty(),
-                surname = getString("surname").orEmpty(),
-                authData = mapAuthData(get("authData") as? Map<*, *>),
-                settings = mapSettings(get("settings") as? Map<*, *>)
+                name = (this["name"] as? String).orEmpty(),
+                surname = (this["surname"] as? String).orEmpty(),
+                authData = mapAuthData(this["authData"] as? Map<String, Any>),
+                settings = mapSettings(this["settings"] as? Map<String, Any>)
             )
         }
     }
 
-    private fun mapAuthData(authData: Map<*, *>?): AuthData {
+    private fun mapAuthData(authData: Map<String, Any>?): AuthData {
         return AuthData(
-            id = authData?.get("id") as? String ?: "",
-            email = authData?.get("email") as? String ?: "",
-            displayName = authData?.get("displayName") as? String ?: ""
+            id = (authData?.get("id") as? String).orEmpty(),
+            email = (authData?.get("email") as? String).orEmpty(),
+            displayName = (authData?.get("displayName") as? String).orEmpty()
         )
     }
 
-    private fun mapSettings(settings: Map<*, *>?): Settings {
+    private fun mapSettings(settings: Map<String, Any>?): Settings {
         return Settings(
             withdrawals = Withdrawals(
-                withPension = settings?.get("withdrawals.withPension") as? String ?: "",
-                withoutPension = settings?.get("withdrawals.withoutPension") as? String ?: ""
+                withPension = (settings?.get("withdrawals.withPension") as? String).orEmpty(),
+                withoutPension = (settings?.get("withdrawals.withoutPension") as? String).orEmpty()
             ),
-            inflationModel = settings?.get("inflationModel") as? String ?: "",
+            inflationModel = (settings?.get("inflationModel") as? String).orEmpty(),
             expenses = Expenses(
-                taxRatePercentage = settings?.get("expenses.taxRatePercentage") as? String ?: "",
-                stampDutyPercentage = settings?.get("expenses.stampDutyPercentage") as? String ?: "",
-                loadPercentage = settings?.get("expenses.loadPercentage") as? String ?: ""
+                taxRatePercentage = (settings?.get("expenses.taxRatePercentage") as? String).orEmpty(),
+                stampDutyPercentage = (settings?.get("expenses.stampDutyPercentage") as? String).orEmpty(),
+                loadPercentage = (settings?.get("expenses.loadPercentage") as? String).orEmpty()
             ),
             intervals = Intervals(
-                yearsInFIRE = settings?.get("intervals.yearsInFIRE") as? String ?: "",
-                yearsInPaidRetirement = settings?.get("intervals.yearsInPaidRetirement") as? String ?: "",
-                yearsOfBuffer = settings?.get("intervals.yearsOfBuffer") as? String ?: ""
+                yearsInFIRE = (settings?.get("intervals.yearsInFIRE") as? String).orEmpty(),
+                yearsInPaidRetirement = (settings?.get("intervals.yearsInPaidRetirement") as? String).orEmpty(),
+                yearsOfBuffer = (settings?.get("intervals.yearsOfBuffer") as? String).orEmpty()
             ),
-            numberOfSimulations = settings?.get("numberOfSimulations") as? String ?: ""
+            numberOfSimulations = (settings?.get("numberOfSimulations") as? String).orEmpty()
         )
     }
+
 
     fun mapUserDataToDocument(userData: UserData): Map<String, Any> {
         return mapOf(

@@ -12,4 +12,5 @@ interface LocalDatabaseRepository<T> {
     suspend fun getUpdatedAfter(timestamp: Long): Flow<Result<List<T>>>
     suspend fun getUnsyncedEntities(): Flow<Result<List<T>>>
     suspend fun updateLastSyncTimestamp(id: String, timestamp: Long = System.currentTimeMillis()): Flow<Result<Unit>>
+    suspend fun exists(id: String): Flow<Result<Boolean>>
 }

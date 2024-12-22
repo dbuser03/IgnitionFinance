@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.presentation.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
@@ -25,6 +27,7 @@ import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.presentation.utils.UiState
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
+import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
 fun LoginForm(
@@ -33,7 +36,8 @@ fun LoginForm(
     navController: NavController,
     viewModel: LoginScreenViewModel,
     name: String,
-    surname: String
+    surname: String,
+    firestoreRepository: FirestoreRepository
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -63,22 +67,32 @@ fun LoginForm(
         when (loginState) {
             is UiState.Success -> {
                 val authData = loginState.data
-                val name = name
-                val surname = surname
 
-                val settings = try {
-                    SetDefaultSettingsUseCase().execute()
-                } catch (_: Exception) {
-                    println("Failed to create default settings")
-                    return@LaunchedEffect
+                val result = firestoreRepository.getDocumentById(authData.id, "users").firstOrNull()
+                Log.d("LoginScreen", "Remote user: $result")
+
+                if (result?.getOrNull() != null) {
+                    Log.d("LoginScreen", "User found in Firestore: $result")
+                    viewModel.storeUserDataLocal(authData.id)
+                } else {
+                    Log.d("LoginScreen", "User not found in Firestore: $result")
+                    val name = name
+                    val surname = surname
+
+                    val settings = try {
+                        SetDefaultSettingsUseCase().execute()
+                    } catch (_: Exception) {
+                        Log.e("LoginScreen", "Failed to set default settings")
+                        return@LaunchedEffect
+                    }
+
+                    viewModel.storeUserDataRemote(
+                        name = name,
+                        surname = surname,
+                        authData = authData,
+                        settings = settings
+                    )
                 }
-
-                viewModel.storeUserData(
-                    name = name,
-                    surname = surname,
-                    authData = authData,
-                    settings = settings
-                )
 
                 navController.navigate(Destinations.PortfolioScreen.route) {
                     popUpTo(Destinations.LoginScreen.route) { inclusive = true }
@@ -91,7 +105,6 @@ fun LoginForm(
             else -> {}
         }
     }
-
 
     Column(
         modifier = Modifier
