@@ -39,10 +39,6 @@ fun LoginScreen(
                     .padding(innerPadding)
             ) {
                 LoginForm(
-                    onLoginClick = { email, password ->
-                        viewModel.login(email, password)
-                    },
-                    loginState = loginState,
                     navController = navController,
                     viewModel = viewModel,
                     name = name,
