@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.presentation.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,15 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
-import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.presentation.utils.UiState
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
-import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
 fun LoginForm(
@@ -37,7 +33,6 @@ fun LoginForm(
     viewModel: LoginScreenViewModel,
     name: String,
     surname: String,
-    firestoreRepository: FirestoreRepository
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -64,44 +59,18 @@ fun LoginForm(
     }
 
     LaunchedEffect(loginState) {
-        when (loginState) {
-            is UiState.Success -> {
-                val authData = loginState.data
-
-                val result = firestoreRepository.getDocumentById("users", authData.id).firstOrNull()
-
-                if (result?.getOrNull() != null) {
-
-                    viewModel.storeUserDataLocal(result.getOrNull())
-                } else {
-                    val name = name
-                    val surname = surname
-
-                    val settings = try {
-                        SetDefaultSettingsUseCase().execute()
-                    } catch (_: Exception) {
-                        return@LaunchedEffect
-                    }
-
-                    viewModel.storeUserDataRemote(
-                        name = name,
-                        surname = surname,
-                        authData = authData,
-                        settings = settings
-                    )
-                }
-
+        viewModel.handleLoginState(
+            loginState = loginState,
+            name = name,
+            surname = surname,
+            onNavigateToPortfolio = {
                 navController.navigate(Destinations.PortfolioScreen.route) {
                     popUpTo(Destinations.LoginScreen.route) { inclusive = true }
                 }
             }
-            is UiState.Error -> {
-                val errorMessage = loginState.message
-                println("Login error: $errorMessage")
-            }
-            else -> {}
-        }
+        )
     }
+
 
     Column(
         modifier = Modifier

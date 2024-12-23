@@ -47,7 +47,6 @@ fun LoginScreen(
                     viewModel = viewModel,
                     name = name,
                     surname = surname,
-                    firestoreRepository = viewModel.firestoreRepository
                 )
 
                 Button(

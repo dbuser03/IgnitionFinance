@@ -9,10 +9,12 @@ import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.presentation.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -134,6 +136,46 @@ class LoginScreenViewModel @Inject constructor(
                 _deleteState.value = UiState.Error(
                     e.localizedMessage ?: "Unexpected error occurred during deletion"
                 )
+            }
+        }
+    }
+
+    fun handleLoginState(
+        loginState: UiState<AuthData>,
+        name: String,
+        surname: String,
+        onNavigateToPortfolio: () -> Unit
+    ) {
+        viewModelScope.launch {
+            when (loginState) {
+                is UiState.Success -> {
+                    val authData = loginState.data
+
+                    val result = firestoreRepository.getDocumentById("users", authData.id).firstOrNull()
+
+                    if (result?.getOrNull() != null) {
+                        storeUserDataLocal(result.getOrNull())
+                    } else {
+                        val settings = try {
+                            SetDefaultSettingsUseCase().execute()
+                        } catch (_: Exception) {
+                            return@launch
+                        }
+
+                        storeUserDataRemote(
+                            name = name,
+                            surname = surname,
+                            authData = authData,
+                            settings = settings
+                        )
+                    }
+                    onNavigateToPortfolio()
+                }
+                is UiState.Error -> {
+                    val errorMessage = loginState.message
+                    println("Login error: $errorMessage")
+                }
+                else -> {}
             }
         }
     }
