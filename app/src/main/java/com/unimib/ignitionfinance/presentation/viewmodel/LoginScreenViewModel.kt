@@ -9,7 +9,8 @@ import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.domain.usecase.*
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator
-import com.unimib.ignitionfinance.presentation.utils.UiState
+import com.unimib.ignitionfinance.presentation.viewmodel.state.LoginFormState
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +18,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class LoginFormState(
-    val email: String = "",
-    val password: String = "",
-    val emailError: String? = null,
-    val passwordError: String? = null,
-    val isValid: Boolean = false
-)
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(

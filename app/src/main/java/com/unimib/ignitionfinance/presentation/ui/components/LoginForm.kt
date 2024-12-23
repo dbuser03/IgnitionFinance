@@ -19,7 +19,7 @@ import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
-import com.unimib.ignitionfinance.presentation.utils.UiState
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 
 @Composable

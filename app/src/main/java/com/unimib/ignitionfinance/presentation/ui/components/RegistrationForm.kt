@@ -20,7 +20,7 @@ import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
 import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.utils.UiState
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
 fun RegistrationForm(

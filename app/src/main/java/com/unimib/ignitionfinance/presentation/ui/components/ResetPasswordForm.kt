@@ -18,7 +18,7 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.validation.ResetValidationResult
 import com.unimib.ignitionfinance.domain.validation.ResetValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.utils.UiState
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
 fun ResetPasswordForm(

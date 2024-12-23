@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.utils
+package com.unimib.ignitionfinance.presentation.viewmodel.state
 
 sealed class UiState<out T> {
     object Idle : UiState<Nothing>()
