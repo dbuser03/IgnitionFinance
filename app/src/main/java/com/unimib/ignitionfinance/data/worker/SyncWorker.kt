@@ -8,6 +8,7 @@ import androidx.work.WorkerParameters
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -15,11 +16,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.*
 
 @HiltWorker
-class SyncWorker @AssistedInject constructor(
+class SyncWorker<T> @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val syncQueueItemRepository: SyncQueueItemRepository,
-    private val firestoreRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
+    private val localRepository: LocalDatabaseRepository<T>
 ) : CoroutineWorker(context, workerParams) {
     companion object {
         private const val TAG = "SyncWorker"
@@ -120,11 +122,22 @@ class SyncWorker @AssistedInject constructor(
             }
 
             Log.d(TAG, "Operation ${item.operationType} completed successfully for item ${item.id}")
+
             syncQueueItemRepository.updateStatusAndIncrementAttempts(
                 item.id,
                 SyncStatus.SUCCEEDED,
                 System.currentTimeMillis()
             )
+
+            localRepository.updateLastSyncTimestamp(item.id).first().fold(
+                onSuccess = {
+                    Log.d(TAG, "Updated last sync timestamp for entity ${item.id}")
+                },
+                onFailure = { error ->
+                    Log.e(TAG, "Failed to update last sync timestamp for entity ${item.id}", error)
+                }
+            )
+
             syncQueueItemRepository.delete(item)
             result
         } catch (e: Exception) {
@@ -230,4 +243,5 @@ class SyncWorker @AssistedInject constructor(
         Log.e(TAG, "Critical worker error", error)
         return Result.retry()
     }
+
 }
