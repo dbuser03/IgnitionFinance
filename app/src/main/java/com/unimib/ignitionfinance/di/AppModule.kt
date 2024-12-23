@@ -22,7 +22,6 @@ import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRe
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
-import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
@@ -141,14 +140,5 @@ object AppModule {
     ): SyncWorkerFactory = SyncWorkerFactory(
         syncQueueItemRepository = syncQueueItemRepository,
         firestoreRepository = firestoreRepository
-    )
-
-    @Provides
-    fun provideDeleteAllUsersUseCase(
-        localDatabaseRepository: LocalDatabaseRepository<User>,
-        firestoreRepository: FirestoreRepository
-    ): DeleteAllUsersUseCase = DeleteAllUsersUseCase(
-        localDatabaseRepository,
-        firestoreRepository
     )
 }

@@ -23,7 +23,6 @@ import javax.inject.Inject
 class LoginScreenViewModel @Inject constructor(
     private val loginUserUseCase: LoginUserUseCase,
     private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase,
-    private val deleteAllUsersUseCase: DeleteAllUsersUseCase,
     val firestoreRepository: FirestoreRepository
 ) : ViewModel() {
 
@@ -142,32 +141,6 @@ class LoginScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 _storeState.value = UiState.Error(
                     e.localizedMessage ?: "Unexpected error occurred during user storage"
-                )
-            }
-        }
-    }
-
-    private val _deleteState = MutableStateFlow<UiState<Pair<Unit?, Unit?>>>(UiState.Idle)
-
-    fun deleteAllUsers() {
-        viewModelScope.launch {
-            try {
-                _deleteState.value = UiState.Loading
-                deleteAllUsersUseCase.execute().collect { result ->
-                    result.fold(
-                        onSuccess = { deletePair ->
-                            _deleteState.value = UiState.Success(deletePair)
-                        },
-                        onFailure = { throwable ->
-                            _deleteState.value = UiState.Error(
-                                throwable.localizedMessage ?: "No details available"
-                            )
-                        }
-                    )
-                }
-            } catch (e: Exception) {
-                _deleteState.value = UiState.Error(
-                    e.localizedMessage ?: "Unexpected error occurred during deletion"
                 )
             }
         }
