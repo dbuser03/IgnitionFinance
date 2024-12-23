@@ -17,9 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
-import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.presentation.utils.UiState
@@ -27,32 +24,21 @@ import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 
 @Composable
 fun LoginForm(
-    onLoginClick: (String, String) -> Unit,
-    loginState: UiState<AuthData>,
-    navController: NavController,
     viewModel: LoginScreenViewModel,
+    navController: NavController,
     name: String,
     surname: String,
 ) {
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-
-    val emailError = remember { mutableStateOf<String?>(null) }
-    val passwordError = remember { mutableStateOf<String?>(null) }
+    val loginState by viewModel.loginState.collectAsState()
+    val formState by viewModel.formState.collectAsState()
 
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     val emailFocused = remember { mutableStateOf(false) }
     val passwordFocused = remember { mutableStateOf(false) }
-
     val isFabFocused = remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
-
-    val isFormValid = remember(email.value, password.value) {
-        val result = LoginValidator.validateLoginForm(email.value, password.value)
-        result is LoginValidationResult.Success
-    }
 
     LaunchedEffect(Unit) {
         emailFocusRequester.requestFocus()
@@ -71,20 +57,16 @@ fun LoginForm(
         )
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 32.dp)
     ) {
         CustomTextField(
-            value = email.value,
-            onValueChange = {
-                email.value = it
-                emailError.value = (LoginValidator.validateEmail(it) as? LoginValidationResult.Failure)?.message
-            },
+            value = formState.email,
+            onValueChange = { viewModel.updateEmail(it) },
             label = "Email",
-            isError = emailError.value != null,
+            isError = formState.emailError != null,
             nextFocusRequester = passwordFocusRequester,
             imeAction = ImeAction.Next,
             modifier = Modifier
@@ -102,19 +84,16 @@ fun LoginForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CustomTextField(
-                value = password.value,
-                onValueChange = {
-                    password.value = it
-                    passwordError.value = (LoginValidator.validatePassword(it) as? LoginValidationResult.Failure)?.message
-                },
+                value = formState.password,
+                onValueChange = { viewModel.updatePassword(it) },
                 label = "Password",
-                isError = passwordError.value != null,
+                isError = formState.passwordError != null,
                 imeAction = ImeAction.Done,
                 isPasswordField = true,
                 onImeActionPerformed = {
-                    if (isFormValid) {
+                    if (formState.isValid) {
                         focusManager.clearFocus()
-                        onLoginClick(email.value, password.value)
+                        viewModel.login()
                         isFabFocused.value = true
                     }
                 },
@@ -128,23 +107,22 @@ fun LoginForm(
             )
 
             CustomFAB(
-                modifier = Modifier
-                    .padding(top = 8.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 icon = painterResource(id = R.drawable.outline_keyboard_arrow_right_24),
                 contentDescription = stringResource(id = R.string.login_FAB_description),
                 onClick = {
-                    if (isFormValid) {
+                    if (formState.isValid) {
                         focusManager.clearFocus()
                         isFabFocused.value = true
-                        onLoginClick(email.value, password.value)
+                        viewModel.login()
                     }
                 },
-                containerColor = if (isFormValid) {
+                containerColor = if (formState.isValid) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.secondary
                 },
-                contentColor = if (isFormValid) {
+                contentColor = if (formState.isValid) {
                     MaterialTheme.colorScheme.onPrimary
                 } else {
                     MaterialTheme.colorScheme.onSecondary
@@ -155,11 +133,9 @@ fun LoginForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && loginState is UiState.Error -> {
-                loginState.message
-            }
-            emailFocused.value -> emailError.value
-            passwordFocused.value -> passwordError.value
+            isFabFocused.value && loginState is UiState.Error -> (loginState as UiState.Error).message
+            emailFocused.value -> formState.emailError
+            passwordFocused.value -> formState.passwordError
             else -> null
         }
 
@@ -168,17 +144,13 @@ fun LoginForm(
                 text = it,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .padding(start = 12.dp, end = 64.dp)
+                modifier = Modifier.padding(start = 12.dp, end = 64.dp)
             )
         }
 
         TextButton(
-            onClick = {
-                navController.navigate(Destinations.ResetPasswordScreen.route)
-            },
-            modifier = Modifier
-                .align(Alignment.Start)
+            onClick = { navController.navigate(Destinations.ResetPasswordScreen.route) },
+            modifier = Modifier.align(Alignment.Start)
         ) {
             Text(
                 "Forgot Password?",
@@ -188,11 +160,8 @@ fun LoginForm(
         }
 
         TextButton(
-            onClick = {
-                navController.navigate(Destinations.RegistrationScreen.route)
-            },
-            modifier = Modifier
-                .align(Alignment.Start)
+            onClick = { navController.navigate(Destinations.RegistrationScreen.route) },
+            modifier = Modifier.align(Alignment.Start)
         ) {
             Text(
                 "Create Account",

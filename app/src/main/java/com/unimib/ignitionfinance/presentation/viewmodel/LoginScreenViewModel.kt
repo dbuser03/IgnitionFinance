@@ -6,17 +6,25 @@ import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
-import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
-import com.unimib.ignitionfinance.domain.usecase.DeleteAllUsersUseCase
-import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
-import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.*
+import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
+import com.unimib.ignitionfinance.domain.validation.LoginValidator
 import com.unimib.ignitionfinance.presentation.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class LoginFormState(
+    val email: String = "",
+    val password: String = "",
+    val emailError: String? = null,
+    val passwordError: String? = null,
+    val isValid: Boolean = false
+)
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
@@ -29,33 +37,65 @@ class LoginScreenViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<UiState<AuthData>>(UiState.Idle)
     val loginState: StateFlow<UiState<AuthData>> = _loginState
 
-    fun login(email: String, password: String) {
-        viewModelScope.launch {
-            try {
-                _loginState.value = UiState.Loading
-                loginUserUseCase.execute(email, password).collect { result ->
-                    result.fold(
-                        onSuccess = { authData ->
-                            _loginState.value = UiState.Success(authData)
-                        },
-                        onFailure = { throwable ->
-                            _loginState.value = UiState.Error(
-                                throwable.localizedMessage ?: "No details available"
-                            )
-                        }
+    private val _formState = MutableStateFlow(LoginFormState())
+    val formState: StateFlow<LoginFormState> = _formState
+
+    fun updateEmail(email: String) {
+        val emailValidation = LoginValidator.validateEmail(email)
+        _formState.update { currentState ->
+            currentState.copy(
+                email = email,
+                emailError = (emailValidation as? LoginValidationResult.Failure)?.message,
+                isValid = isFormValid(email, currentState.password)
+            )
+        }
+    }
+
+    fun updatePassword(password: String) {
+        val passwordValidation = LoginValidator.validatePassword(password)
+        _formState.update { currentState ->
+            currentState.copy(
+                password = password,
+                passwordError = (passwordValidation as? LoginValidationResult.Failure)?.message,
+                isValid = isFormValid(currentState.email, password)
+            )
+        }
+    }
+
+    private fun isFormValid(email: String, password: String): Boolean {
+        return LoginValidator.validateLoginForm(email, password) is LoginValidationResult.Success
+    }
+
+    fun login() {
+        val currentState = _formState.value
+        if (currentState.isValid) {
+            viewModelScope.launch {
+                try {
+                    _loginState.value = UiState.Loading
+                    loginUserUseCase.execute(currentState.email, currentState.password).collect { result ->
+                        result.fold(
+                            onSuccess = { authData ->
+                                _loginState.value = UiState.Success(authData)
+                            },
+                            onFailure = { throwable ->
+                                _loginState.value = UiState.Error(
+                                    throwable.localizedMessage ?: "No details available"
+                                )
+                            }
+                        )
+                    }
+                } catch (e: Exception) {
+                    _loginState.value = UiState.Error(
+                        e.localizedMessage ?: "Unexpected error occurred during login"
                     )
                 }
-            } catch (e: Exception) {
-                _loginState.value = UiState.Error(
-                    e.localizedMessage ?: "Unexpected error occurred during login"
-                )
             }
         }
     }
 
     private val _storeState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
 
-    fun storeUserDataRemote(name: String, surname: String, authData: AuthData, settings: Settings) {
+    private fun storeUserDataRemote(name: String, surname: String, authData: AuthData, settings: Settings) {
         viewModelScope.launch {
             try {
                 _storeState.value = UiState.Loading
@@ -88,7 +128,7 @@ class LoginScreenViewModel @Inject constructor(
         }
     }
 
-    fun storeUserDataLocal(user: Map<String, Any>?) {
+    private fun storeUserDataLocal(user: Map<String, Any>?) {
         viewModelScope.launch {
             try {
                 _storeState.value = UiState.Loading
