@@ -16,50 +16,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
+import com.unimib.ignitionfinance.presentation.viewmodel.RegistrationScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
 fun RegistrationForm(
-    onRegisterClick: (String, String) -> Unit,
-    registrationState: UiState<AuthData>,
+    viewModel: RegistrationScreenViewModel,
     navController: NavController,
 ) {
-    val name = remember { mutableStateOf("") }
-    val surname = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-
-    val nameError = remember { mutableStateOf<String?>(null) }
-    val surnameError = remember { mutableStateOf<String?>(null) }
-    val emailError = remember { mutableStateOf<String?>(null) }
-    val passwordError = remember { mutableStateOf<String?>(null) }
+    val registrationState by viewModel.registrationState.collectAsState()
+    val formState by viewModel.formState.collectAsState()
 
     val nameFocusRequester = remember { FocusRequester() }
     val surnameFocusRequester = remember { FocusRequester() }
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
 
-    val nameFocused = remember { mutableStateOf(false) }
-    val surnameFocused = remember { mutableStateOf(false) }
-    val emailFocused = remember { mutableStateOf(false) }
-    val passwordFocused = remember { mutableStateOf(false) }
-
+    val currentFocused = remember { mutableStateOf<String?>(null) }
     val isFabFocused = remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-
-    val isFormValid = remember(name.value, surname.value, email.value, password.value) {
-        val result = RegistrationValidator.validateRegistrationForm(
-            name.value,
-            surname.value,
-            email.value,
-            password.value
-        )
-        result is RegistrationValidationResult.Success
-    }
 
     LaunchedEffect(Unit) {
         nameFocusRequester.requestFocus()
@@ -69,8 +45,8 @@ fun RegistrationForm(
         if (registrationState is UiState.Success) {
             navController.navigate(
                 Destinations.LoginScreen.createRoute(
-                    name = name.value,
-                    surname = surname.value
+                    name = formState.name,
+                    surname = formState.surname
                 )
             ) {
                 popUpTo(Destinations.RegistrationScreen.route) { inclusive = true }
@@ -88,39 +64,38 @@ fun RegistrationForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CustomTextField(
-                value = name.value,
-                onValueChange = {
-                    name.value = it
-                    nameError.value = (RegistrationValidator.validateName(it) as? RegistrationValidationResult.Failure)?.message
-                },
+                value = formState.name,
+                onValueChange = { viewModel.updateName(it) },
                 label = "Name",
-                isError = nameError.value != null,
+                isError = formState.nameError != null,
                 nextFocusRequester = surnameFocusRequester,
                 imeAction = ImeAction.Next,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(nameFocusRequester)
                     .onFocusChanged {
-                        nameFocused.value = it.isFocused
-                        if (it.isFocused) isFabFocused.value = false
+                        if (it.isFocused) {
+                            currentFocused.value = "name"
+                            isFabFocused.value = false
+                        }
                     }
             )
+
             CustomTextField(
-                value = surname.value,
-                onValueChange = {
-                    surname.value = it
-                    surnameError.value = (RegistrationValidator.validateSurname(it) as? RegistrationValidationResult.Failure)?.message
-                },
+                value = formState.surname,
+                onValueChange = { viewModel.updateSurname(it) },
                 label = "Surname",
-                isError = surnameError.value != null,
+                isError = formState.surnameError != null,
                 nextFocusRequester = emailFocusRequester,
                 imeAction = ImeAction.Next,
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(surnameFocusRequester)
                     .onFocusChanged {
-                        surnameFocused.value = it.isFocused
-                        if (it.isFocused) isFabFocused.value = false
+                        if (it.isFocused) {
+                            currentFocused.value = "surname"
+                            isFabFocused.value = false
+                        }
                     }
             )
         }
@@ -128,21 +103,20 @@ fun RegistrationForm(
         Spacer(modifier = Modifier.height(4.dp))
 
         CustomTextField(
-            value = email.value,
-            onValueChange = {
-                email.value = it
-                emailError.value = (RegistrationValidator.validateEmail(it) as? RegistrationValidationResult.Failure)?.message
-            },
+            value = formState.email,
+            onValueChange = { viewModel.updateEmail(it) },
             label = "Email",
-            isError = emailError.value != null,
+            isError = formState.emailError != null,
             nextFocusRequester = passwordFocusRequester,
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Email,
             modifier = Modifier
                 .focusRequester(emailFocusRequester)
                 .onFocusChanged {
-                    emailFocused.value = it.isFocused
-                    if (it.isFocused) isFabFocused.value = false
+                    if (it.isFocused) {
+                        currentFocused.value = "email"
+                        isFabFocused.value = false
+                    }
                 }
         )
 
@@ -153,19 +127,16 @@ fun RegistrationForm(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CustomTextField(
-                value = password.value,
-                onValueChange = {
-                    password.value = it
-                    passwordError.value = (RegistrationValidator.validatePassword(it) as? RegistrationValidationResult.Failure)?.message
-                },
+                value = formState.password,
+                onValueChange = { viewModel.updatePassword(it) },
                 label = "Password",
-                isError = passwordError.value != null,
+                isError = formState.passwordError != null,
                 imeAction = ImeAction.Done,
                 isPasswordField = true,
                 onImeActionPerformed = {
-                    if (isFormValid) {
+                    if (formState.isValid) {
                         focusManager.clearFocus()
-                        onRegisterClick(email.value, password.value)
+                        viewModel.register()
                         isFabFocused.value = true
                     }
                 },
@@ -173,38 +144,37 @@ fun RegistrationForm(
                     .focusRequester(passwordFocusRequester)
                     .weight(1f)
                     .onFocusChanged {
-                        passwordFocused.value = it.isFocused
-                        if (it.isFocused) isFabFocused.value = false
+                        if (it.isFocused) {
+                            currentFocused.value = "password"
+                            isFabFocused.value = false
+                        }
                     }
             )
-
 
             CustomFAB(
                 modifier = Modifier.padding(top = 8.dp),
                 icon = painterResource(id = R.drawable.outline_keyboard_arrow_right_24),
                 contentDescription = stringResource(id = R.string.registration_FAB_description),
                 onClick = {
-                    if (isFormValid) {
+                    if (formState.isValid) {
                         focusManager.clearFocus()
-                        onRegisterClick(email.value, password.value)
+                        viewModel.register()
                         isFabFocused.value = true
                     }
                 },
-                containerColor = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                contentColor = if (isFormValid) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
+                containerColor = if (formState.isValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                contentColor = if (formState.isValid) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         val selectedError = when {
-            isFabFocused.value && registrationState is UiState.Error -> {
-                registrationState.message
-            }
-            nameFocused.value -> nameError.value
-            surnameFocused.value -> surnameError.value
-            emailFocused.value -> emailError.value
-            passwordFocused.value -> passwordError.value
+            isFabFocused.value && registrationState is UiState.Error -> (registrationState as UiState.Error).message
+            currentFocused.value == "name" -> formState.nameError
+            currentFocused.value == "surname" -> formState.surnameError
+            currentFocused.value == "email" -> formState.emailError
+            currentFocused.value == "password" -> formState.passwordError
             else -> null
         }
 
