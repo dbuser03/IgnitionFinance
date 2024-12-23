@@ -93,14 +93,4 @@ class SyncQueueItemRepositoryImpl @Inject constructor(
             syncQueueItemDao.getFailedItems(maxAttempts, SyncStatus.FAILED)
         }
     }
-
-    companion object {
-        const val MAX_ATTEMPTS = 5
-        const val INITIAL_BACKOFF_MS = 1000L
-
-        fun calculateNextAttemptTime(attempts: Int): Long {
-            val backoffMs = INITIAL_BACKOFF_MS * (1 shl (attempts - 1))
-            return System.currentTimeMillis() + backoffMs
-        }
-    }
 }
