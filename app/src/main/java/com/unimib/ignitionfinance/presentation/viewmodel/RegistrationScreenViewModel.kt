@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidationResult
-import com.unimib.ignitionfinance.domain.validation.RegistrationValidator
 import com.unimib.ignitionfinance.presentation.viewmodel.state.RegistrationFormState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,51 +25,47 @@ class RegistrationScreenViewModel @Inject constructor(
     val formState: StateFlow<RegistrationFormState> = _formState
 
     fun updateName(name: String) {
-        val nameValidation = RegistrationValidator.validateName(name)
         _formState.update { currentState ->
-            currentState.copy(
-                name = name,
-                nameError = (nameValidation as? RegistrationValidationResult.Failure)?.message,
-                isValid = isFormValid(currentState.email, currentState.password, name, currentState.surname)
+            registerNewUserUseCase.validateForm(
+                name,
+                currentState.surname,
+                currentState.email,
+                currentState.password
             )
         }
     }
 
     fun updateSurname(surname: String) {
-        val surnameValidation = RegistrationValidator.validateSurname(surname)
         _formState.update { currentState ->
-            currentState.copy(
-                surname = surname,
-                surnameError = (surnameValidation as? RegistrationValidationResult.Failure)?.message,
-                isValid = isFormValid(currentState.email, currentState.password, currentState.name, surname)
+            registerNewUserUseCase.validateForm(
+                currentState.name,
+                surname,
+                currentState.email,
+                currentState.password
             )
         }
     }
 
     fun updateEmail(email: String) {
-        val emailValidation = RegistrationValidator.validateEmail(email)
         _formState.update { currentState ->
-            currentState.copy(
-                email = email,
-                emailError = (emailValidation as? RegistrationValidationResult.Failure)?.message,
-                isValid = isFormValid(email, currentState.password, currentState.name, currentState.surname)
+            registerNewUserUseCase.validateForm(
+                currentState.name,
+                currentState.surname,
+                email,
+                currentState.password
             )
         }
     }
 
     fun updatePassword(password: String) {
-        val passwordValidation = RegistrationValidator.validatePassword(password)
         _formState.update { currentState ->
-            currentState.copy(
-                password = password,
-                passwordError = (passwordValidation as? RegistrationValidationResult.Failure)?.message,
-                isValid = isFormValid(currentState.email, password, currentState.name, currentState.surname)
+            registerNewUserUseCase.validateForm(
+                currentState.name,
+                currentState.surname,
+                currentState.email,
+                password
             )
         }
-    }
-
-    private fun isFormValid(email: String, password: String, name: String, surname: String): Boolean {
-        return RegistrationValidator.validateRegistrationForm(name, surname, email, password) is RegistrationValidationResult.Success
     }
 
     fun register() {
@@ -80,18 +74,17 @@ class RegistrationScreenViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     _registrationState.value = UiState.Loading
-                    registerNewUserUseCase.execute(currentState.email, currentState.password).collect { result ->
-                        result.fold(
-                            onSuccess = { authData ->
-                                _registrationState.value = UiState.Success(authData)
-                            },
-                            onFailure = { throwable ->
-                                _registrationState.value = UiState.Error(
-                                    throwable.localizedMessage ?: "Registration failed"
+                    registerNewUserUseCase.execute(currentState.email, currentState.password)
+                        .collect { result ->
+                            _registrationState.value = when {
+                                result.isSuccess -> UiState.Success(result.getOrNull()!!)
+                                result.isFailure -> UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Registration failed"
                                 )
+                                else -> UiState.Idle
                             }
-                        )
-                    }
+                        }
                 } catch (e: Exception) {
                     _registrationState.value = UiState.Error(
                         e.localizedMessage ?: "Unexpected error occurred during registration"
@@ -101,4 +94,3 @@ class RegistrationScreenViewModel @Inject constructor(
         }
     }
 }
-

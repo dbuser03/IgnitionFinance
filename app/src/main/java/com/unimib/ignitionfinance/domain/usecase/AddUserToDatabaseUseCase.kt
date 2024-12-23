@@ -8,6 +8,8 @@ import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseReposi
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
+import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -17,6 +19,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -25,9 +28,43 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
+    private val firestoreRepository: FirestoreRepository,
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
+
+    fun handleUserStorage(
+        authData: AuthData,
+        name: String,
+        surname: String
+    ): Flow<Result<Unit?>> = flow {
+        try {
+            val existingUserResult = firestoreRepository.getDocumentById("users", authData.id).firstOrNull()
+
+            if (existingUserResult?.getOrNull() != null) {
+                executeExistingUser(existingUserResult.getOrNull()).collect {
+                    emit(it)
+                }
+            } else {
+                val settings = SetDefaultSettingsUseCase().execute()
+                val user = User(
+                    authData = authData,
+                    id = authData.id,
+                    name = name,
+                    settings = settings,
+                    surname = surname
+                )
+                executeNewUser("users", user).collect {
+                    emit(it)
+                }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
     fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
         val syncQueueItem = createSyncQueueItem(user, collectionPath)
 

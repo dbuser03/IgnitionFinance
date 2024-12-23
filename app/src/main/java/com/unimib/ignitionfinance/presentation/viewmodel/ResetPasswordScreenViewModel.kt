@@ -3,8 +3,6 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
-import com.unimib.ignitionfinance.domain.validation.ResetValidationResult
-import com.unimib.ignitionfinance.domain.validation.ResetValidator
 import com.unimib.ignitionfinance.presentation.viewmodel.state.ResetPasswordFormState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,18 +24,9 @@ class ResetPasswordScreenViewModel @Inject constructor(
     val formState: StateFlow<ResetPasswordFormState> = _formState
 
     fun updateEmail(email: String) {
-        val emailValidation = ResetValidator.validateEmail(email)
-        _formState.update { currentState ->
-            currentState.copy(
-                email = email,
-                emailError = (emailValidation as? ResetValidationResult.Failure)?.message,
-                isValid = isFormValid(email)
-            )
+        _formState.update { _ ->
+            resetPasswordUseCase.validateForm(email)
         }
-    }
-
-    private fun isFormValid(email: String): Boolean {
-        return ResetValidator.validateResetForm(email) is ResetValidationResult.Success
     }
 
     fun reset() {
@@ -46,18 +35,17 @@ class ResetPasswordScreenViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     _resetState.value = UiState.Loading
-                    resetPasswordUseCase.execute(currentState.email).collect { result ->
-                        result.fold(
-                            onSuccess = { success ->
-                                _resetState.value = UiState.Success(success)
-                            },
-                            onFailure = { throwable ->
-                                _resetState.value = UiState.Error(
-                                    throwable.localizedMessage ?: "Reset password failed"
+                    resetPasswordUseCase.execute(currentState.email)
+                        .collect { result ->
+                            _resetState.value = when {
+                                result.isSuccess -> UiState.Success(result.getOrNull()!!)
+                                result.isFailure -> UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Reset password failed"
                                 )
+                                else -> UiState.Idle
                             }
-                        )
-                    }
+                        }
                 } catch (e: Exception) {
                     _resetState.value = UiState.Error(
                         e.localizedMessage ?: "Unexpected error occurred during password reset"
