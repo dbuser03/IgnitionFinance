@@ -17,7 +17,9 @@ object UserDataMapper {
                 name = (this["name"] as? String).orEmpty(),
                 surname = (this["surname"] as? String).orEmpty(),
                 authData = mapAuthData(this["authData"] as? Map<String, Any>),
-                settings = mapSettings(this["settings"] as? Map<String, Any>)
+                settings = mapSettings(this["settings"] as? Map<String, Any>),
+                createdAt = (this["createdAt"] as? Long) ?: System.currentTimeMillis(),
+                updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis()
             )
         }
     }
