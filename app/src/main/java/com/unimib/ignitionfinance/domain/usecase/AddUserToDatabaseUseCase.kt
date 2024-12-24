@@ -66,7 +66,7 @@ class AddUserToDatabaseUseCase @Inject constructor(
         }
     }
 
-    fun executeExistingUser(user: Map<String, Any>?): Flow<Result<Unit?>> = flow {
+    private fun executeExistingUser(user: Map<String, Any>?): Flow<Result<Unit?>> = flow {
         try {
             val id = (user?.get("authData") as? Map<*, *>)?.get("id") as? String
                 ?: throw IllegalArgumentException("User ID is missing or invalid")
@@ -110,7 +110,7 @@ class AddUserToDatabaseUseCase @Inject constructor(
         }
     }
 
-    fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
+    private fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
         val syncQueueItem = createSyncQueueItem(user, collectionPath)
 
         try {
