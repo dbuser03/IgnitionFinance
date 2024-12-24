@@ -63,7 +63,9 @@ object UserDataMapper {
                 "email" to userData.authData.email,
                 "displayName" to userData.authData.displayName
             ),
-            "settings" to mapSettingsToMap(userData.settings)
+            "settings" to mapSettingsToMap(userData.settings),
+            "createdAt" to userData.createdAt,
+            "updatedAt" to userData.updatedAt
         )
     }
 
