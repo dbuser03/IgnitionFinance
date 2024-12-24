@@ -8,6 +8,8 @@ data class UserData(
     val surname: String,
     val authData: AuthData,
     val settings: Settings,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
     // val cash: Cash
     // val productList: ProductList
 )
