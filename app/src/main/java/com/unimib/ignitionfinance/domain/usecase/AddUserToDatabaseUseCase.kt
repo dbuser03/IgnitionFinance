@@ -32,7 +32,6 @@ class AddUserToDatabaseUseCase @Inject constructor(
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
-
     fun handleUserStorage(
         authData: AuthData,
         name: String,
@@ -46,13 +45,16 @@ class AddUserToDatabaseUseCase @Inject constructor(
                     emit(it)
                 }
             } else {
+                val currentTime = System.currentTimeMillis()
                 val settings = SetDefaultSettingsUseCase().execute()
                 val user = User(
                     authData = authData,
                     id = authData.id,
                     name = name,
                     settings = settings,
-                    surname = surname
+                    surname = surname,
+                    createdAt = currentTime,
+                    updatedAt = currentTime
                 )
                 executeNewUser("users", user).collect {
                     emit(it)
@@ -65,13 +67,65 @@ class AddUserToDatabaseUseCase @Inject constructor(
         }
     }
 
+    fun executeExistingUser(user: Map<String, Any>?): Flow<Result<Unit?>> = flow {
+        try {
+            val id = (user?.get("authData") as? Map<*, *>)?.get("id") as? String
+                ?: throw IllegalArgumentException("User ID is missing or invalid")
+
+            val localUser = localDatabaseRepository.getById(id).first()
+            val updatedUserData = UserDataMapper.mapDocumentToUserData(user)
+            val updatedUser = UserMapper.mapUserDataToUser(updatedUserData)
+
+            if (localUser.getOrNull() != null) {
+                val localTimestamp = localUser.getOrNull()?.updatedAt ?: 0
+                val remoteTimestamp = updatedUser.updatedAt
+
+                if (remoteTimestamp > localTimestamp) {
+                    // Remote data is newer, update local but preserve original createdAt
+                    val mergedUser = updatedUser.copy(
+                        createdAt = localUser.getOrNull()?.createdAt ?: updatedUser.createdAt
+                    )
+                    localDatabaseRepository.update(mergedUser).first()
+
+                    // Ottieni e cancella gli item in pending per questo utente
+                    syncQueueItemRepository.getPendingItems().filter {
+                        it.id == id
+                    }.forEach { item ->
+                        syncQueueItemRepository.delete(item)
+                    }
+                } else if (remoteTimestamp < localTimestamp) {
+                    val syncQueueItem = createSyncQueueItem(localUser.getOrNull()!!, "users")
+                    syncQueueItemRepository.insert(syncQueueItem)
+
+                    withContext(Dispatchers.IO) {
+                        SyncOperationScheduler.scheduleOneTime<User>(context)
+                    }
+                }
+            } else {
+                localDatabaseRepository.add(updatedUser).first()
+            }
+
+            emit(Result.success(Unit))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
     fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
         val syncQueueItem = createSyncQueueItem(user, collectionPath)
 
         try {
             coroutineScope {
+                val currentTime = System.currentTimeMillis()
+                val userWithTimestamps = user.copy(
+                    createdAt = currentTime,
+                    updatedAt = currentTime
+                )
+
                 val localDbDeferred = async {
-                    localDatabaseRepository.add(user).first()
+                    localDatabaseRepository.add(userWithTimestamps).first()
                 }
 
                 val syncQueueDeferred = async {
@@ -87,35 +141,6 @@ class AddUserToDatabaseUseCase @Inject constructor(
 
                 emit(Result.success(localResult.getOrNull()))
             }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }.catch { e ->
-        if (e is CancellationException) throw e
-        emit(Result.failure(e))
-    }
-
-    fun executeExistingUser(user: Map<String, Any>?): Flow<Result<Unit?>> = flow {
-        try {
-
-            val id = (user?.get("authData") as? Map<*, *>)?.get("id") as? String
-                ?: throw IllegalArgumentException("User ID is missing or invalid")
-
-            val localUser = localDatabaseRepository.getById(id).first()
-
-            val updatedUserData = UserDataMapper.mapDocumentToUserData(user)
-
-            val updatedUser = UserMapper.mapUserDataToUser(updatedUserData)
-
-            if (localUser.getOrNull() != null) {
-                localDatabaseRepository.update(updatedUser).first()
-            } else {
-                localDatabaseRepository.add(updatedUser).first()
-            }
-
-            emit(Result.success(Unit))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
