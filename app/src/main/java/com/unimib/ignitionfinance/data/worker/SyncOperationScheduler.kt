@@ -12,21 +12,24 @@ import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 
 object SyncOperationScheduler {
-    private const val TAG = "SyncOperationScheduler"
+    const val TAG = "SyncOperationScheduler"
     const val SYNC_WORK_NAME = "sync_operation_work"
     const val MAX_RETRIES = 3
     const val SYNC_TIMEOUT_MS = 30000L
     const val BATCH_SIZE = 10
     const val BATCH_DELAY_MS = 1000L
     const val INITIAL_BACKOFF_DELAY_MS = 10000L
-    private const val PERIODIC_SYNC_INTERVAL = 15L
-    private const val MIN_BACKOFF_DELAY_MS = 5000L
-    private const val MAX_BACKOFF_DELAY_MS = 300000L
+    const val PERIODIC_SYNC_INTERVAL = 15L
+    const val MIN_BACKOFF_DELAY_MS = 5000L
+    const val MAX_BACKOFF_DELAY_MS = 300000L
 
-    fun schedule(context: Context, constraints: Constraints = getDefaultConstraints()) {
+    inline fun <reified T> schedule(
+        context: Context,
+        constraints: Constraints = getDefaultConstraints()
+    ) {
         Log.d(TAG, "Scheduling periodic sync work with interval: $PERIODIC_SYNC_INTERVAL minutes")
         try {
-            val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(
+            val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker<T>>(
                 repeatInterval = PERIODIC_SYNC_INTERVAL,
                 repeatIntervalTimeUnit = TimeUnit.MINUTES,
                 flexTimeInterval = 5,
@@ -53,14 +56,14 @@ object SyncOperationScheduler {
         }
     }
 
-    fun scheduleOneTime(
+    inline fun <reified T> scheduleOneTime(
         context: Context,
         constraints: Constraints = getDefaultConstraints(),
         initialDelay: Long = 0L
     ) {
         Log.d(TAG, "Scheduling one-time sync work with initial delay: $initialDelay ms")
         try {
-            val syncWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            val syncWorkRequest = OneTimeWorkRequestBuilder<SyncWorker<T>>()
                 .setConstraints(constraints)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
@@ -89,7 +92,7 @@ object SyncOperationScheduler {
         }
     }
 
-    private fun getDefaultConstraints() = Constraints.Builder()
+    fun getDefaultConstraints() = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .setRequiresBatteryNotLow(true)
         .build()

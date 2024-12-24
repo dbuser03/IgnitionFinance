@@ -138,9 +138,11 @@ object AppModule {
     @Provides
     fun provideSyncWorkerFactory(
         syncQueueItemRepository: SyncQueueItemRepository,
-        firestoreRepository: FirestoreRepository
+        firestoreRepository: FirestoreRepository,
+        localDatabaseRepository: LocalDatabaseRepository<User>
     ): SyncWorkerFactory = SyncWorkerFactory(
         syncQueueItemRepository = syncQueueItemRepository,
-        firestoreRepository = firestoreRepository
+        firestoreRepository = firestoreRepository,
+        localDatabaseRepository = localDatabaseRepository
     )
 }

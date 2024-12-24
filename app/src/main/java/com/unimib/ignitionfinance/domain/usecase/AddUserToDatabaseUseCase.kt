@@ -82,7 +82,7 @@ class AddUserToDatabaseUseCase @Inject constructor(
                 syncQueueDeferred.await()
 
                 withContext(Dispatchers.IO) {
-                    SyncOperationScheduler.scheduleOneTime(context)
+                    SyncOperationScheduler.scheduleOneTime<User>(context)
                 }
 
                 emit(Result.success(localResult.getOrNull()))

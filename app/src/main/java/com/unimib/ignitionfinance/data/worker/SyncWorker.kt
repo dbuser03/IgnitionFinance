@@ -243,5 +243,4 @@ class SyncWorker<T> @AssistedInject constructor(
         Log.e(TAG, "Critical worker error", error)
         return Result.retry()
     }
-
 }
