@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -81,13 +80,11 @@ class AddUserToDatabaseUseCase @Inject constructor(
                 val remoteTimestamp = updatedUser.updatedAt
 
                 if (remoteTimestamp > localTimestamp) {
-                    // Remote data is newer, update local but preserve original createdAt
                     val mergedUser = updatedUser.copy(
                         createdAt = localUser.getOrNull()?.createdAt ?: updatedUser.createdAt
                     )
                     localDatabaseRepository.update(mergedUser).first()
 
-                    // Ottieni e cancella gli item in pending per questo utente
                     syncQueueItemRepository.getPendingItems().filter {
                         it.id == id
                     }.forEach { item ->
