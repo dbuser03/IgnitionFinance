@@ -25,6 +25,7 @@ import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
+import com.unimib.ignitionfinance.domain.usecase.UpdateUserSettingsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -131,6 +132,21 @@ object AppModule {
         userDataMapper,
         localDatabaseRepository,
         firestoreRepository,
+        syncQueueItemRepository,
+        context
+    )
+
+    @Provides
+    fun provideUpdateUserSettingsUseCase(
+        userMapper: UserMapper,
+        userDataMapper: UserDataMapper,
+        localDatabaseRepository: LocalDatabaseRepository<User>,
+        syncQueueItemRepository: SyncQueueItemRepository,
+        context: Context
+    ): UpdateUserSettingsUseCase = UpdateUserSettingsUseCase(
+        userMapper,
+        userDataMapper,
+        localDatabaseRepository,
         syncQueueItemRepository,
         context
     )

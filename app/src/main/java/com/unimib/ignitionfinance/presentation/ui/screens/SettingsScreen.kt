@@ -9,20 +9,21 @@ import androidx.navigation.NavController
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleSettings
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unimib.ignitionfinance.presentation.model.SelectBoxModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
-fun SettingsScreen(navController: NavController) {
-    val settingsViewModel: SettingsScreenViewModel = viewModel()
-
+fun SettingsScreen(
+    navController: NavController,
+    settingsViewModel: SettingsScreenViewModel = hiltViewModel()
+) {
     val expandedCardIndex by remember { settingsViewModel.expandedCardIndex }
     val listState = rememberLazyListState()
 

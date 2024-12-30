@@ -12,10 +12,9 @@ import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 @Composable
 fun InputCardBody(
     inputBoxModelList: List<InputBoxModel>,
-    viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     inputBoxModelList.forEachIndexed { index, inputBoxData ->
-        InputBox(inputBoxModel = inputBoxData, isEnabled = true, viewModel = viewModel)
+        InputBox(inputBoxModel = inputBoxData, isEnabled = true)
         if (index < inputBoxModelList.size - 1) {
             Spacer(modifier = Modifier.height(24.dp))
         }

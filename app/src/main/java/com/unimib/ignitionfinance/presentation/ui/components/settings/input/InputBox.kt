@@ -21,7 +21,6 @@ import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 fun InputBox(
     inputBoxModel: InputBoxModel,
     isEnabled: Boolean,
-    viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
