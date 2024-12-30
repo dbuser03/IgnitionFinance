@@ -11,17 +11,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.settings.dialog.DialogManager
-import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
 fun InputBox(
     inputBoxModel: InputBoxModel,
     isEnabled: Boolean,
-    viewModel: SettingsScreenViewModel
+    viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -30,7 +30,7 @@ fun InputBox(
         onDismissRequest = { showDialog = false },
         onConfirmation = { newValue ->
             showDialog = false
-            
+
         },
         dialogTitle = "Update the amount",
         prefix = inputBoxModel.prefix
