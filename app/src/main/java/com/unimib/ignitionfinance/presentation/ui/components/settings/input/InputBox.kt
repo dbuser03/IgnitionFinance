@@ -14,16 +14,23 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.settings.dialog.DialogManager
+import com.unimib.ignitionfinance.presentation.viewmodel.LoginScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
-fun InputBox(inputBoxModel: InputBoxModel, isEnabled: Boolean) {
+fun InputBox(
+    inputBoxModel: InputBoxModel,
+    isEnabled: Boolean,
+    viewModel: SettingsScreenViewModel
+) {
     var showDialog by remember { mutableStateOf(false) }
 
     DialogManager(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
-        onConfirmation = { input ->
+        onConfirmation = { newValue ->
             showDialog = false
+            
         },
         dialogTitle = "Update the amount",
         prefix = inputBoxModel.prefix

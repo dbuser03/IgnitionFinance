@@ -64,12 +64,14 @@ fun SettingsScreen(navController: NavController) {
                                     title = "WITHDRAW",
                                     inputBoxModelList = listOf(
                                         InputBoxModel(
+                                            key = "monthlyWithdrawalsWithoutPension",
                                             label = "Monthly withdrawals (no pension)",
                                             prefix = "€",
                                             iconResId = R.drawable.outline_person_apron_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("----")) }
                                         ),
                                         InputBoxModel(
+                                            key = "monthlyWithdrawalsWithPension",
                                             label = "Monthly withdrawals (with pension)",
                                             prefix = "€",
                                             iconResId = R.drawable.outline_person_4_24,
@@ -112,18 +114,21 @@ fun SettingsScreen(navController: NavController) {
                                     title = "EXPENSES",
                                     inputBoxModelList = listOf(
                                         InputBoxModel(
+                                            key = "taxRatePercentage",
                                             label = "Tax Rate Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_account_balance_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("26")) }
                                         ),
                                         InputBoxModel(
+                                            key = "stampDutyPercentage",
                                             label = "Stamp Duty Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_position_top_right_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("0.2")) }
                                         ),
                                         InputBoxModel(
+                                            key = "loadPercentage",
                                             label = "Load Percentage",
                                             prefix = "%",
                                             iconResId = R.drawable.outline_weight_24,
@@ -147,18 +152,21 @@ fun SettingsScreen(navController: NavController) {
                                     title = "INTERVALS",
                                     inputBoxModelList = listOf(
                                         InputBoxModel(
+                                            key = "yearsInFire",
                                             label = "Years in FIRE",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_local_fire_department_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("----")) }
                                         ),
                                         InputBoxModel(
+                                            key = "yearsInPaidRetirement",
                                             label = "Years in paid retirement",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_send_money_24,
                                             inputValue = remember { mutableStateOf(TextFieldValue("----")) }
                                         ),
                                         InputBoxModel(
+                                            key = "yearsOfBuffer",
                                             label = "Years of buffer",
                                             prefix = "YRS",
                                             iconResId = R.drawable.outline_clock_loader_10_24,
@@ -182,6 +190,7 @@ fun SettingsScreen(navController: NavController) {
                                     title = "SIMULATIONS",
                                     inputBoxModelList = listOf(
                                         InputBoxModel(
+                                            key = "numberOfSimulations",
                                             label = "Number of simulations to perform",
                                             prefix = "N°",
                                             iconResId = R.drawable.outline_autoplay_24,
