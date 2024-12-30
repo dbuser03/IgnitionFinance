@@ -30,6 +30,7 @@ fun SettingsScreen(
     var inflationModel by remember {
         mutableStateOf(
             SelectBoxModel(
+                key = "inflationModel",
                 text = "Choose the inflation model:",
                 displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
                 selectedText = "SCALE"
@@ -99,6 +100,7 @@ fun SettingsScreen(
                                     onCardClicked = { settingsViewModel.toggleCardExpansion(1) },
                                     onTextSelected = { selectedText ->
                                         inflationModel = inflationModel.copy(selectedText = selectedText)
+                                        settingsViewModel.updateSettingsValue("inflationModel", selectedText)
                                     }
                                 )
                             }

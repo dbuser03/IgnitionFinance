@@ -29,8 +29,6 @@ fun InputBox(
         onDismissRequest = { showDialog = false },
         onConfirmation = { newValue ->
             showDialog = false
-            // On confirmation let's call the view model to update the settings
-            // -> we need to update the current settings -> create an updated settings object and use it to update the user
         },
         dialogTitle = "Update the amount",
         prefix = inputBoxModel.prefix

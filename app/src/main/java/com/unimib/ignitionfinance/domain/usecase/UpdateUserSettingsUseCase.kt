@@ -7,7 +7,7 @@ import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
-import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
@@ -23,41 +23,54 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 class UpdateUserSettingsUseCase @Inject constructor(
+    private val authRepository: AuthRepository,
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
-    fun execute(userId: String, updatedSettings: Settings): Flow<Result<Unit?>> = flow {
+    fun execute(updatedSettings: Settings): Flow<Result<Unit?>> = flow {
         try {
-            coroutineScope {
-                val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
-                    ?: throw IllegalStateException("User not found in local database")
+            val currentUserResult = authRepository.getCurrentUser().first()
 
-                val currentTime = System.currentTimeMillis()
-                val updatedUser = currentUser.copy(
-                    settings = updatedSettings,
-                    updatedAt = currentTime
-                )
-
-                val localUpdateDeferred = async {
-                    localDatabaseRepository.update(updatedUser).first()
+            currentUserResult.onSuccess { authData ->
+                val userId = authData.id
+                if (userId.isEmpty()) {
+                    throw IllegalStateException("User ID is missing")
                 }
 
-                val syncQueueItem = createSyncQueueItem(updatedUser)
-                val syncQueueDeferred = async {
-                    syncQueueItemRepository.insert(syncQueueItem)
+                coroutineScope {
+                    val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
+                        ?: throw IllegalStateException("User not found in local database")
+
+                    val currentTime = System.currentTimeMillis()
+                    val updatedUser = currentUser.copy(
+                        settings = updatedSettings,
+                        updatedAt = currentTime
+                    )
+
+                    val localUpdateDeferred = async {
+                        localDatabaseRepository.update(updatedUser).first()
+                    }
+
+                    val syncQueueItem = createSyncQueueItem(updatedUser)
+                    val syncQueueDeferred = async {
+                        syncQueueItemRepository.insert(syncQueueItem)
+                    }
+
+                    val localResult = localUpdateDeferred.await()
+                    syncQueueDeferred.await()
+
+                    withContext(Dispatchers.IO) {
+                        SyncOperationScheduler.scheduleOneTime<User>(context)
+                    }
+
+                    emit(Result.success(localResult.getOrNull()))
                 }
-
-                val localResult = localUpdateDeferred.await()
-                syncQueueDeferred.await()
-
-                withContext(Dispatchers.IO) {
-                    SyncOperationScheduler.scheduleOneTime<User>(context)
-                }
-
-                emit(Result.success(localResult.getOrNull()))
+            }
+            currentUserResult.onFailure { exception ->
+                emit(Result.failure(exception))
             }
         } catch (e: CancellationException) {
             throw e

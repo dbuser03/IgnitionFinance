@@ -138,12 +138,14 @@ object AppModule {
 
     @Provides
     fun provideUpdateUserSettingsUseCase(
+        authRepository: AuthRepository,
         userMapper: UserMapper,
         userDataMapper: UserDataMapper,
         localDatabaseRepository: LocalDatabaseRepository<User>,
         syncQueueItemRepository: SyncQueueItemRepository,
         context: Context
     ): UpdateUserSettingsUseCase = UpdateUserSettingsUseCase(
+        authRepository,
         userMapper,
         userDataMapper,
         localDatabaseRepository,
