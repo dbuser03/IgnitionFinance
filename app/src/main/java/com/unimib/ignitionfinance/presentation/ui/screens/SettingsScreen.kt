@@ -18,6 +18,7 @@ import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
 import com.unimib.ignitionfinance.presentation.model.SelectBoxModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
 fun SettingsScreen(
@@ -26,6 +27,12 @@ fun SettingsScreen(
 ) {
     val expandedCardIndex by remember { settingsViewModel.expandedCardIndex }
     val listState = rememberLazyListState()
+    val settings by settingsViewModel.settings
+    val settingsState by settingsViewModel.settingsState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        settingsViewModel.getUserSettings()
+    }
 
     var inflationModel by remember {
         mutableStateOf(
@@ -33,9 +40,13 @@ fun SettingsScreen(
                 key = "inflationModel",
                 text = "Choose the inflation model:",
                 displayedTexts = listOf("NORMAL", "SCALE", "LOGNORMAL"),
-                selectedText = "SCALE"
+                selectedText = settings.inflationModel
             )
         )
+    }
+
+    LaunchedEffect(settings.inflationModel) {
+        inflationModel = inflationModel.copy(selectedText = settings.inflationModel)
     }
 
     Scaffold(
@@ -51,160 +62,186 @@ fun SettingsScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    item {
-                        CardItem(
-                            cardIndex = 0,
-                            expandedCardIndex = expandedCardIndex,
-                            listState = listState,
-                            content = {
-                                InputCard(
-                                    label = "NORMAL, RETIREMENT",
-                                    title = "WITHDRAW",
-                                    inputBoxModelList = listOf(
-                                        InputBoxModel(
-                                            key = "monthlyWithdrawalsWithoutPension",
-                                            label = "Monthly withdrawals (no pension)",
-                                            prefix = "€",
-                                            iconResId = R.drawable.outline_person_apron_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
-                                        ),
-                                        InputBoxModel(
-                                            key = "monthlyWithdrawalsWithPension",
-                                            label = "Monthly withdrawals (with pension)",
-                                            prefix = "€",
-                                            iconResId = R.drawable.outline_person_4_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
-                                        )
-                                    ),
-                                    isExpanded = expandedCardIndex == 0,
-                                    onCardClicked = { settingsViewModel.toggleCardExpansion(0) }
-                                )
-                            }
-                        )
+                when (settingsState) {
+                    is UiState.Loading -> {
                     }
-                    item {
-                        CardItem(
-                            cardIndex = 1,
-                            expandedCardIndex = expandedCardIndex,
-                            listState = listState,
-                            content = {
-                                SelectCard(
-                                    label = "NORMAL, SCALE, LOGNORMAL",
-                                    title = "INFLATION",
-                                    model = inflationModel,
-                                    isExpanded = expandedCardIndex == 1,
-                                    onCardClicked = { settingsViewModel.toggleCardExpansion(1) },
-                                    onTextSelected = { selectedText ->
-                                        inflationModel = inflationModel.copy(selectedText = selectedText)
-                                        settingsViewModel.updateSettingsValue("inflationModel", selectedText)
+                    is UiState.Error -> {
+                    }
+                    else -> {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            item {
+                                CardItem(
+                                    cardIndex = 0,
+                                    expandedCardIndex = expandedCardIndex,
+                                    listState = listState,
+                                    content = {
+                                        InputCard(
+                                            label = "NORMAL, RETIREMENT",
+                                            title = "WITHDRAW",
+                                            inputBoxModelList = listOf(
+                                                InputBoxModel(
+                                                    key = "monthlyWithdrawalsWithoutPension",
+                                                    label = "Monthly withdrawals (no pension)",
+                                                    prefix = "€",
+                                                    iconResId = R.drawable.outline_person_apron_24,
+                                                    inputValue = remember(settings.withdrawals.withoutPension) {
+                                                        mutableStateOf(TextFieldValue(settings.withdrawals.withoutPension))
+                                                    }
+                                                ),
+                                                InputBoxModel(
+                                                    key = "monthlyWithdrawalsWithPension",
+                                                    label = "Monthly withdrawals (with pension)",
+                                                    prefix = "€",
+                                                    iconResId = R.drawable.outline_person_4_24,
+                                                    inputValue = remember(settings.withdrawals.withPension) {
+                                                        mutableStateOf(TextFieldValue(settings.withdrawals.withPension))
+                                                    }
+                                                )
+                                            ),
+                                            isExpanded = expandedCardIndex == 0,
+                                            onCardClicked = { settingsViewModel.toggleCardExpansion(0) }
+                                        )
                                     }
                                 )
                             }
-                        )
-                    }
-                    item {
-                        CardItem(
-                            cardIndex = 2,
-                            expandedCardIndex = expandedCardIndex,
-                            listState = listState,
-                            content = {
-                                InputCard(
-                                    label = "TAX RATE, STAMP DUTY, LOAD",
-                                    title = "EXPENSES",
-                                    inputBoxModelList = listOf(
-                                        InputBoxModel(
-                                            key = "taxRatePercentage",
-                                            label = "Tax Rate Percentage",
-                                            prefix = "%",
-                                            iconResId = R.drawable.outline_account_balance_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("26")) }
-                                        ),
-                                        InputBoxModel(
-                                            key = "stampDutyPercentage",
-                                            label = "Stamp Duty Percentage",
-                                            prefix = "%",
-                                            iconResId = R.drawable.outline_position_top_right_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("0.2")) }
-                                        ),
-                                        InputBoxModel(
-                                            key = "loadPercentage",
-                                            label = "Load Percentage",
-                                            prefix = "%",
-                                            iconResId = R.drawable.outline_weight_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("1")) }
+                            item {
+                                CardItem(
+                                    cardIndex = 1,
+                                    expandedCardIndex = expandedCardIndex,
+                                    listState = listState,
+                                    content = {
+                                        SelectCard(
+                                            label = "NORMAL, SCALE, LOGNORMAL",
+                                            title = "INFLATION",
+                                            model = inflationModel,
+                                            isExpanded = expandedCardIndex == 1,
+                                            onCardClicked = { settingsViewModel.toggleCardExpansion(1) },
+                                            onTextSelected = { selectedText ->
+                                                inflationModel = inflationModel.copy(selectedText = selectedText)
+                                                settingsViewModel.updateSettingsValue("inflationModel", selectedText)
+                                            }
                                         )
-                                    ),
-                                    isExpanded = expandedCardIndex == 2,
-                                    onCardClicked = { settingsViewModel.toggleCardExpansion(2) }
+                                    }
                                 )
                             }
-                        )
-                    }
-                    item {
-                        CardItem(
-                            cardIndex = 3,
-                            expandedCardIndex = expandedCardIndex,
-                            listState = listState,
-                            content = {
-                                InputCard(
-                                    label = "YEARS, RETIREMENTS YEARS, BUFFER",
-                                    title = "INTERVALS",
-                                    inputBoxModelList = listOf(
-                                        InputBoxModel(
-                                            key = "yearsInFire",
-                                            label = "Years in FIRE",
-                                            prefix = "YRS",
-                                            iconResId = R.drawable.outline_local_fire_department_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
-                                        ),
-                                        InputBoxModel(
-                                            key = "yearsInPaidRetirement",
-                                            label = "Years in paid retirement",
-                                            prefix = "YRS",
-                                            iconResId = R.drawable.outline_send_money_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
-                                        ),
-                                        InputBoxModel(
-                                            key = "yearsOfBuffer",
-                                            label = "Years of buffer",
-                                            prefix = "YRS",
-                                            iconResId = R.drawable.outline_clock_loader_10_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                            item {
+                                CardItem(
+                                    cardIndex = 2,
+                                    expandedCardIndex = expandedCardIndex,
+                                    listState = listState,
+                                    content = {
+                                        InputCard(
+                                            label = "TAX RATE, STAMP DUTY, LOAD",
+                                            title = "EXPENSES",
+                                            inputBoxModelList = listOf(
+                                                InputBoxModel(
+                                                    key = "taxRatePercentage",
+                                                    label = "Tax Rate Percentage",
+                                                    prefix = "%",
+                                                    iconResId = R.drawable.outline_account_balance_24,
+                                                    inputValue = remember(settings.expenses.taxRatePercentage) {
+                                                        mutableStateOf(TextFieldValue(settings.expenses.taxRatePercentage))
+                                                    }
+                                                ),
+                                                InputBoxModel(
+                                                    key = "stampDutyPercentage",
+                                                    label = "Stamp Duty Percentage",
+                                                    prefix = "%",
+                                                    iconResId = R.drawable.outline_position_top_right_24,
+                                                    inputValue = remember(settings.expenses.stampDutyPercentage) {
+                                                        mutableStateOf(TextFieldValue(settings.expenses.stampDutyPercentage))
+                                                    }
+                                                ),
+                                                InputBoxModel(
+                                                    key = "loadPercentage",
+                                                    label = "Load Percentage",
+                                                    prefix = "%",
+                                                    iconResId = R.drawable.outline_weight_24,
+                                                    inputValue = remember(settings.expenses.loadPercentage) {
+                                                        mutableStateOf(TextFieldValue(settings.expenses.loadPercentage))
+                                                    }
+                                                )
+                                            ),
+                                            isExpanded = expandedCardIndex == 2,
+                                            onCardClicked = { settingsViewModel.toggleCardExpansion(2) }
                                         )
-                                    ),
-                                    isExpanded = expandedCardIndex == 3,
-                                    onCardClicked = { settingsViewModel.toggleCardExpansion(3) }
+                                    }
                                 )
                             }
-                        )
-                    }
-                    item {
-                        CardItem(
-                            cardIndex = 4,
-                            expandedCardIndex = expandedCardIndex,
-                            listState = listState,
-                            content = {
-                                InputCard(
-                                    label = "NUMBER",
-                                    title = "SIMULATIONS",
-                                    inputBoxModelList = listOf(
-                                        InputBoxModel(
-                                            key = "numberOfSimulations",
-                                            label = "Number of simulations to perform",
-                                            prefix = "N°",
-                                            iconResId = R.drawable.outline_autoplay_24,
-                                            inputValue = remember { mutableStateOf(TextFieldValue("----")) }
+                            item {
+                                CardItem(
+                                    cardIndex = 3,
+                                    expandedCardIndex = expandedCardIndex,
+                                    listState = listState,
+                                    content = {
+                                        InputCard(
+                                            label = "YEARS, RETIREMENTS YEARS, BUFFER",
+                                            title = "INTERVALS",
+                                            inputBoxModelList = listOf(
+                                                InputBoxModel(
+                                                    key = "yearsInFire",
+                                                    label = "Years in FIRE",
+                                                    prefix = "YRS",
+                                                    iconResId = R.drawable.outline_local_fire_department_24,
+                                                    inputValue = remember(settings.intervals.yearsInFIRE) {
+                                                        mutableStateOf(TextFieldValue(settings.intervals.yearsInFIRE))
+                                                    }
+                                                ),
+                                                InputBoxModel(
+                                                    key = "yearsInPaidRetirement",
+                                                    label = "Years in paid retirement",
+                                                    prefix = "YRS",
+                                                    iconResId = R.drawable.outline_send_money_24,
+                                                    inputValue = remember(settings.intervals.yearsInPaidRetirement) {
+                                                        mutableStateOf(TextFieldValue(settings.intervals.yearsInPaidRetirement))
+                                                    }
+                                                ),
+                                                InputBoxModel(
+                                                    key = "yearsOfBuffer",
+                                                    label = "Years of buffer",
+                                                    prefix = "YRS",
+                                                    iconResId = R.drawable.outline_clock_loader_10_24,
+                                                    inputValue = remember(settings.intervals.yearsOfBuffer) {
+                                                        mutableStateOf(TextFieldValue(settings.intervals.yearsOfBuffer))
+                                                    }
+                                                )
+                                            ),
+                                            isExpanded = expandedCardIndex == 3,
+                                            onCardClicked = { settingsViewModel.toggleCardExpansion(3) }
                                         )
-                                    ),
-                                    isExpanded = expandedCardIndex == 4,
-                                    onCardClicked = { settingsViewModel.toggleCardExpansion(4) }
+                                    }
                                 )
                             }
-                        )
+                            item {
+                                CardItem(
+                                    cardIndex = 4,
+                                    expandedCardIndex = expandedCardIndex,
+                                    listState = listState,
+                                    content = {
+                                        InputCard(
+                                            label = "NUMBER",
+                                            title = "SIMULATIONS",
+                                            inputBoxModelList = listOf(
+                                                InputBoxModel(
+                                                    key = "numberOfSimulations",
+                                                    label = "Number of simulations to perform",
+                                                    prefix = "N°",
+                                                    iconResId = R.drawable.outline_autoplay_24,
+                                                    inputValue = remember(settings.numberOfSimulations) {
+                                                        mutableStateOf(TextFieldValue(settings.numberOfSimulations))
+                                                    }
+                                                )
+                                            ),
+                                            isExpanded = expandedCardIndex == 4,
+                                            onCardClicked = { settingsViewModel.toggleCardExpansion(4) }
+                                        )
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
