@@ -24,13 +24,24 @@ import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 @Composable
 fun NewProductDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: (String?) -> Unit,
+    onConfirmation: (String?, String?, String?, String?) -> Unit,
     dialogTitle: String,
     prefix: String
 ) {
-    var textInput by remember { mutableStateOf<String?>(null) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    val isInputValid = errorMessage == null
+    var ISINInput by remember { mutableStateOf<String?>(null) }
+    var ISINErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    var tickerInput by remember { mutableStateOf<String?>(null) }
+    var tickerErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    var dateInput by remember { mutableStateOf<String?>(null) }
+    var dateErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    var amountInput by remember { mutableStateOf<String?>(null) }
+    var amountErrorMessage by remember { mutableStateOf<String?>(null) }
+
+    val isInputValid = ISINErrorMessage == null && tickerErrorMessage == null
+            && dateErrorMessage == null && amountErrorMessage == null
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -39,7 +50,7 @@ fun NewProductDialog(
             TextButton(
                 onClick = {
                     if (isInputValid) {
-                        onConfirmation(textInput)
+                        onConfirmation(ISINInput, tickerInput, dateInput, amountInput)
                     }
                 },
                 enabled = isInputValid,
@@ -65,6 +76,96 @@ fun NewProductDialog(
                         fontWeight = TypographyMedium.bodyMedium.fontWeight,
                         color = MaterialTheme.colorScheme.primary
                     )
+                )
+            }
+        },
+        title = {
+            Column(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+                    text = dialogTitle,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = TypographyMedium.titleLarge.fontWeight
+                    )
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                UpdateValueTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { input ->
+                        textInput = input
+                        val validationResult = SettingsValidator.validate(input, prefix)
+                        errorMessage = if (validationResult is InputValidationResult.Failure) {
+                            validationResult.message
+                        } else null
+                    },
+                    errorMessage = errorMessage
+                )
+            }
+        },
+        title = {
+            Column(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+                    text = dialogTitle,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = TypographyMedium.titleLarge.fontWeight
+                    )
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                UpdateValueTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { input ->
+                        textInput = input
+                        val validationResult = SettingsValidator.validate(input, prefix)
+                        errorMessage = if (validationResult is InputValidationResult.Failure) {
+                            validationResult.message
+                        } else null
+                    },
+                    errorMessage = errorMessage
+                )
+            }
+        },
+        title = {
+            Column(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+                    text = dialogTitle,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = TypographyMedium.titleLarge.fontWeight
+                    )
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                UpdateValueTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { input ->
+                        textInput = input
+                        val validationResult = SettingsValidator.validate(input, prefix)
+                        errorMessage = if (validationResult is InputValidationResult.Failure) {
+                            validationResult.message
+                        } else null
+                    },
+                    errorMessage = errorMessage
                 )
             }
         },
