@@ -47,8 +47,9 @@ class SyncWorker<T> @AssistedInject constructor(
             val errorCount = results.count { it is SyncOperationResult.Error }
             val successCount = results.count { it is SyncOperationResult.Success }
             val retryCount = results.count { it is SyncOperationResult.Retry }
+            val staleCount = results.count { it is SyncOperationResult.StaleData }
 
-            Log.d(TAG, "Sync results - Success: $successCount, Errors: $errorCount, Retries: $retryCount")
+            Log.d(TAG, "Sync results - Success: $successCount, Errors: $errorCount, Retries: $retryCount, Stale: $staleCount")
 
             handleFailedItems()
 
@@ -56,6 +57,10 @@ class SyncWorker<T> @AssistedInject constructor(
                 errorCount > 0 -> {
                     Log.w(TAG, "Some operations failed, scheduling retry")
                     Result.retry()
+                }
+                staleCount > 0 -> {
+                    Log.d(TAG, "Some items were stale and have been handled")
+                    Result.success()
                 }
                 else -> {
                     Log.d(TAG, "All operations completed successfully")
@@ -88,6 +93,10 @@ class SyncWorker<T> @AssistedInject constructor(
     private suspend fun handleFailedItems() {
         val failedItems = syncQueueItemRepository.getFailedItems(SyncOperationScheduler.MAX_RETRIES)
         Log.d(TAG, "Found ${failedItems.size} permanently failed items")
+        failedItems.forEach { item ->
+            Log.w(TAG, "Cleaning up permanently failed item ${item.id}")
+            syncQueueItemRepository.delete(item)
+        }
     }
 
     private suspend fun processBatches(items: List<SyncQueueItem>): List<SyncOperationResult> {
@@ -121,24 +130,7 @@ class SyncWorker<T> @AssistedInject constructor(
                 else -> throw IllegalArgumentException("Unknown operation type: ${item.operationType}")
             }
 
-            Log.d(TAG, "Operation ${item.operationType} completed successfully for item ${item.id}")
-
-            syncQueueItemRepository.updateStatusAndIncrementAttempts(
-                item.id,
-                SyncStatus.SUCCEEDED,
-                System.currentTimeMillis()
-            )
-
-            localRepository.updateLastSyncTimestamp(item.id).first().fold(
-                onSuccess = {
-                    Log.d(TAG, "Updated last sync timestamp for entity ${item.id}")
-                },
-                onFailure = { error ->
-                    Log.e(TAG, "Failed to update last sync timestamp for entity ${item.id}", error)
-                }
-            )
-
-            syncQueueItemRepository.delete(item)
+            handleOperationResult(item, result)
             result
         } catch (e: Exception) {
             Log.e(TAG, "Error processing item ${item.id}", e)
@@ -146,16 +138,44 @@ class SyncWorker<T> @AssistedInject constructor(
         }
     }
 
+    private suspend fun handleOperationResult(item: SyncQueueItem, result: SyncOperationResult) {
+        when (result) {
+            is SyncOperationResult.Success -> {
+                Log.d(TAG, "Operation ${item.operationType} completed successfully for item ${item.id}")
+                syncQueueItemRepository.updateStatusAndIncrementAttempts(
+                    item.id,
+                    SyncStatus.SUCCEEDED,
+                    System.currentTimeMillis()
+                )
+
+                localRepository.updateLastSyncTimestamp(item.id).first().fold(
+                    onSuccess = {
+                        Log.d(TAG, "Updated last sync timestamp for entity ${item.id}")
+                    },
+                    onFailure = { error ->
+                        Log.e(TAG, "Failed to update last sync timestamp for entity ${item.id}", error)
+                    }
+                )
+                syncQueueItemRepository.delete(item)
+            }
+            is SyncOperationResult.StaleData -> {
+                Log.d(TAG, "Stale data detected for item ${item.id}, cleaning up queue item")
+                syncQueueItemRepository.delete(item)
+            }
+            else -> {
+                Log.d(TAG, "Unhandled SyncOperationResult type: $result for item ${item.id}")
+            }
+        }
+    }
+
     private suspend fun performAddOperation(item: SyncQueueItem): SyncOperationResult {
         Log.d(TAG, "Performing ADD operation for item ${item.id}")
 
-        val addResult = firestoreRepository.addDocument(
+        return firestoreRepository.addDocument(
             collectionPath = item.collection,
             data = item.payload,
             documentId = item.id
-        ).first()
-
-        return addResult.fold(
+        ).first().fold(
             onSuccess = {
                 Log.d(TAG, "ADD operation successful for item ${item.id}")
                 SyncOperationResult.Success(item.id)
@@ -170,33 +190,55 @@ class SyncWorker<T> @AssistedInject constructor(
     private suspend fun performUpdateOperation(item: SyncQueueItem): SyncOperationResult {
         Log.d(TAG, "Performing UPDATE operation for item ${item.id}")
 
-        val updateResult = firestoreRepository.updateDocument(
-            collectionPath = item.collection,
-            data = item.payload,
-            documentId = item.id
-        ).first()
+        try {
+            val currentDocResult = firestoreRepository.getDocumentById(
+                collectionPath = item.collection,
+                documentId = item.id
+            ).first()
 
-        return updateResult.fold(
-            onSuccess = {
-                Log.d(TAG, "UPDATE operation successful for item ${item.id}")
-                SyncOperationResult.Success(item.id)
-            },
-            onFailure = { error ->
-                Log.e(TAG, "UPDATE operation failed for item ${item.id}", error)
-                throw error
+            val currentDoc = currentDocResult.getOrNull()
+                ?: throw IllegalStateException("Remote document not found or null")
+
+            Log.d("UpdateUserSettingsUseCase", "current doc: $currentDoc")
+
+            val remoteTimestamp = (currentDoc["updatedAt"] as? Double)?.toLong()
+                ?: throw IllegalStateException("Remote document missing updatedAt timestamp")
+            Log.d("UpdateUserSettingsUseCase", "remote $remoteTimestamp")
+            val localTimestamp = item.createdAt
+            Log.d("UpdateUserSettingsUseCase", "local $localTimestamp")
+
+            if (remoteTimestamp > localTimestamp) {
+                Log.d("UpdateUserSettingsUseCase", "Remote document is newer (remote: $remoteTimestamp, local: $localTimestamp)")
+                return SyncOperationResult.StaleData(item.id)
             }
-        )
+
+            return firestoreRepository.updateDocument(
+                collectionPath = item.collection,
+                data = item.payload,
+                documentId = item.id
+            ).first().fold(
+                onSuccess = {
+                    Log.d(TAG, "UPDATE operation successful for item ${item.id}")
+                    SyncOperationResult.Success(item.id)
+                },
+                onFailure = { error ->
+                    Log.e(TAG, "UPDATE operation failed for item ${item.id}", error)
+                    throw error
+                }
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during UPDATE operation for item ${item.id}", e)
+            throw e
+        }
     }
 
     private suspend fun performDeleteOperation(item: SyncQueueItem): SyncOperationResult {
         Log.d(TAG, "Performing DELETE operation for item ${item.id}")
 
-        val deleteResult = firestoreRepository.deleteDocument(
+        return firestoreRepository.deleteDocument(
             collectionPath = item.collection,
             documentId = item.id
-        ).first()
-
-        return deleteResult.fold(
+        ).first().fold(
             onSuccess = {
                 Log.d(TAG, "DELETE operation successful for item ${item.id}")
                 SyncOperationResult.Success(item.id)

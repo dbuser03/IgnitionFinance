@@ -29,6 +29,60 @@ fun InputBox(
         onDismissRequest = { showDialog = false },
         onConfirmation = { newValue ->
             showDialog = false
+
+            val updatedSettings = viewModel.settings.value?.let { currentSettings ->
+                val updatedSetting = when (inputBoxModel.key) {
+                    "monthlyWithdrawalsWithoutPension" -> currentSettings.copy(
+                        withdrawals = currentSettings.withdrawals.copy(
+                            withoutPension = newValue ?: currentSettings.withdrawals.withoutPension
+                        )
+                    )
+                    "monthlyWithdrawalsWithPension" -> currentSettings.copy(
+                        withdrawals = currentSettings.withdrawals.copy(
+                            withPension = newValue ?: currentSettings.withdrawals.withPension
+                        )
+                    )
+                    "taxRatePercentage" -> currentSettings.copy(
+                        expenses = currentSettings.expenses.copy(
+                            taxRatePercentage = newValue ?: currentSettings.expenses.taxRatePercentage
+                        )
+                    )
+                    "stampDutyPercentage" -> currentSettings.copy(
+                        expenses = currentSettings.expenses.copy(
+                            stampDutyPercentage = newValue ?: currentSettings.expenses.stampDutyPercentage
+                        )
+                    )
+                    "loadPercentage" -> currentSettings.copy(
+                        expenses = currentSettings.expenses.copy(
+                            loadPercentage = newValue ?: currentSettings.expenses.loadPercentage
+                        )
+                    )
+                    "yearsInFire" -> currentSettings.copy(
+                        intervals = currentSettings.intervals.copy(
+                            yearsInFIRE = newValue ?: currentSettings.intervals.yearsInFIRE
+                        )
+                    )
+                    "yearsInPaidRetirement" -> currentSettings.copy(
+                        intervals = currentSettings.intervals.copy(
+                            yearsInPaidRetirement = newValue ?: currentSettings.intervals.yearsInPaidRetirement
+                        )
+                    )
+                    "yearsOfBuffer" -> currentSettings.copy(
+                        intervals = currentSettings.intervals.copy(
+                            yearsOfBuffer = newValue ?: currentSettings.intervals.yearsOfBuffer
+                        )
+                    )
+                    "numberOfSimulations" -> currentSettings.copy(
+                        numberOfSimulations = newValue ?: currentSettings.numberOfSimulations
+                    )
+                    else -> currentSettings
+                }
+                updatedSetting
+            }
+
+            updatedSettings?.let {
+                viewModel.updateSettings(it)
+            }
         },
         dialogTitle = "Update the amount",
         prefix = inputBoxModel.prefix

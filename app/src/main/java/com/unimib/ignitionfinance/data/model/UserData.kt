@@ -10,6 +10,6 @@ data class UserData(
     val settings: Settings,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
-    // val cash: Cash
+    // val cash: String
     // val productList: ProductList
 )

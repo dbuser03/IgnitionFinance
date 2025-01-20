@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
+import kotlinx.coroutines.flow.catch
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
@@ -22,7 +24,6 @@ class SettingsScreenViewModel @Inject constructor(
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val setDefaultSettingsUseCase: SetDefaultSettingsUseCase
 ) : ViewModel() {
-
     private val _updateState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val updateState: StateFlow<UiState<Unit>> = _updateState
 
@@ -34,29 +35,6 @@ class SettingsScreenViewModel @Inject constructor(
 
     var expandedCardIndex = mutableIntStateOf(-1)
         private set
-
-    fun updateUserSettings(newSettings: Settings) {
-        viewModelScope.launch {
-            _updateState.value = UiState.Loading
-            updateUserSettingsUseCase.execute(newSettings)
-                .collect { result ->
-                    _updateState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { updatedSettings ->
-                                _settings.value = updatedSettings
-                                _settingsState.value = UiState.Success(updatedSettings)
-                            }
-                            UiState.Success(Unit)
-                        }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage
-                                ?: "Failed to update settings"
-                        )
-                        else -> UiState.Idle
-                    }
-                }
-        }
-    }
 
     fun getDefaultSettings(): Settings {
         return setDefaultSettingsUseCase.execute()
@@ -75,9 +53,40 @@ class SettingsScreenViewModel @Inject constructor(
                             } ?: UiState.Error("Settings not found")
                         }
                         result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage
-                                ?: "Failed to load settings"
+                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load settings"
                         )
+                        else -> UiState.Idle
+                    }
+                }
+        }
+    }
+
+    fun updateSettings(newSettings: Settings) {
+        viewModelScope.launch {
+            _updateState.value = UiState.Loading
+            Log.d("SettingsScreenViewModel", "Updating settings: $newSettings")
+            updateUserSettingsUseCase.execute(newSettings)
+                .catch { exception ->
+                    Log.e("SettingsScreenViewModel", "Update failed: ${exception.localizedMessage}")
+                    _updateState.value = UiState.Error(
+                        exception.localizedMessage ?: "Failed to update settings"
+                    )
+                }
+                .collect { result ->
+                    Log.d("SettingsScreenViewModel", "Update result: $result")
+                    _updateState.value = when {
+                        result.isSuccess -> {
+                            result.getOrNull()?.let { settings ->
+                                _settings.value = settings
+                                Log.d("SettingsScreenViewModel", "Settings updated successfully: $settings")
+                                UiState.Success(Unit)
+                            } ?: UiState.Error("Failed to update settings")
+                        }
+                        result.isFailure -> {
+                            UiState.Error(
+                                result.exceptionOrNull()?.localizedMessage ?: "Failed to update settings"
+                            )
+                        }
                         else -> UiState.Idle
                     }
                 }

@@ -13,14 +13,14 @@ import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemReposi
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import android.util.Log
+import kotlinx.coroutines.delay
 
 class UpdateUserSettingsUseCase @Inject constructor(
     private val authRepository: AuthRepository,
@@ -33,58 +33,56 @@ class UpdateUserSettingsUseCase @Inject constructor(
 ) {
     fun execute(updatedSettings: Settings): Flow<Result<Settings?>> = flow {
         try {
+            Log.d("UpdateUserSettingsUseCase", "Starting settings update with: $updatedSettings")
+
             val currentUserResult = authRepository.getCurrentUser().first()
+            val authData = currentUserResult.getOrNull()
+                ?: throw IllegalStateException("Failed to get current user")
 
-            currentUserResult.onSuccess { authData ->
-                val userId = authData.id
-                if (userId.isEmpty()) {
-                    throw IllegalStateException("User ID is missing")
-                }
+            val userId = authData.id.takeIf { it.isNotEmpty() }
+                ?: throw IllegalStateException("User ID is missing")
 
-                coroutineScope {
-                    val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
-                        ?: throw IllegalStateException("User not found in local database")
+            val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
+                ?: throw IllegalStateException("User not found in local database")
 
-                    val currentTime = System.currentTimeMillis()
-                    val updatedUser = currentUser.copy(
-                        settings = updatedSettings,
-                        updatedAt = currentTime
-                    )
+            Log.d("UpdateUserSettingsUseCase", "Current user found: $currentUser")
 
-                    val localUpdateDeferred = async {
-                        localDatabaseRepository.update(updatedUser).first()
-                    }
-                    val syncQueueDeferred = async {
-                        val syncQueueItem = createSyncQueueItem(updatedUser)
-                        syncQueueItemRepository.insert(syncQueueItem)
-                    }
+            val currentTime = System.currentTimeMillis()
+            val updatedUser = currentUser.copy(
+                settings = updatedSettings,
+                updatedAt = currentTime
+            )
+            Log.d("UpdateUserSettingsUseCase", "Updated User: $updatedUser")
 
-                    localUpdateDeferred.await()
-                    syncQueueDeferred.await()
+            localDatabaseRepository.update(updatedUser).first()
+            Log.d("UpdateUserSettingsUseCase", "Local database updated")
 
-                    val updatedSettingsResult = getUserSettingsUseCase.execute().first()
-                    updatedSettingsResult.onSuccess { settings ->
-                        withContext(Dispatchers.IO) {
-                            SyncOperationScheduler.scheduleOneTime<User>(context)
-                        }
-                        emit(Result.success(settings))
-                    }.onFailure { exception ->
-                        emit(Result.failure(exception))
-                    }
-                }
+            val syncQueueItem = createSyncQueueItem(updatedUser)
+            syncQueueItemRepository.insert(syncQueueItem)
+            Log.d("UpdateUserSettingsUseCase", "Sync queue item inserted: ${syncQueueItem.payload}")
+
+            withContext(Dispatchers.IO) {
+                SyncOperationScheduler.scheduleOneTime<User>(context)
             }
+            Log.d("UpdateUserSettingsUseCase", "Worker scheduled")
 
-            currentUserResult.onFailure { exception ->
-                emit(Result.failure(exception))
-            }
+            delay(500)
+
+            val settings = getUserSettingsUseCase.execute().first().getOrNull()
+            Log.d("UpdateUserSettingsUseCase", "Final settings: $settings")
+
+            emit(Result.success(settings))
+
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Log.e("UpdateUserSettingsUseCase", "Error during update: ${e.message}", e)
             emit(Result.failure(e))
         }
     }
 
     private fun createSyncQueueItem(user: User): SyncQueueItem {
+        Log.d("UpdateUserSettingsUseCase", "Creating sync queue item for user: ${user.id}")
         val userData = userMapper.mapUserToUserData(user)
         val document = userDataMapper.mapUserDataToDocument(userData)
 

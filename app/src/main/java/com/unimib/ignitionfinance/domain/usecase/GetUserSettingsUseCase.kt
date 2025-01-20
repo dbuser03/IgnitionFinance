@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import android.util.Log
-import com.google.gson.Gson
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
@@ -9,6 +8,7 @@ import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseReposi
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -21,61 +21,49 @@ class GetUserSettingsUseCase @Inject constructor(
     private val firestoreRepository: FirestoreRepository
 ) {
     fun execute(): Flow<Result<Settings>> = flow {
-        try {
-            val currentUserResult = authRepository.getCurrentUser().first()
+        val currentUserResult = authRepository.getCurrentUser().first()
+        val authData = currentUserResult.getOrNull()
+            ?: throw IllegalStateException("Failed to get current user")
 
-            currentUserResult.onSuccess { authData ->
-                val userId = authData.id
-                if (userId.isEmpty()) {
-                    throw IllegalStateException("User ID is missing")
-                }
+        val userId = authData.id.takeIf { it.isNotEmpty() }
+            ?: throw IllegalStateException("User ID is missing")
 
-                val localUser = localDatabaseRepository.getById(userId).first().getOrNull()
-                    ?: throw IllegalStateException("User not found in local database")
+        val localUser = localDatabaseRepository.getById(userId).first().getOrNull()
+            ?: throw IllegalStateException("User not found in local database")
 
-                try {
-                    val remoteUserResult =
-                        firestoreRepository.getDocumentById("users", userId).firstOrNull()
-                    val remoteUser = remoteUserResult?.getOrNull()
-                    val jsonRemote = Gson().toJson(remoteUser)
-                    Log.d("UserUpdate", "Remote User Data as JSON: $jsonRemote")
-
-                    if (remoteUser != null) {
-                        val remoteUserData = UserDataMapper.mapDocumentToUserData(remoteUser)
-
-                        if (remoteUserData != null && remoteUserData.updatedAt > localUser.updatedAt) {
-
-                            val updatedLocalUser = localUser.copy(
-                                settings = remoteUserData.settings,
-                                updatedAt = remoteUserData.updatedAt,
-                                name = remoteUserData.name,
-                                surname = remoteUserData.surname,
-                                authData = remoteUserData.authData
-                            )
-                            val json = Gson().toJson(updatedLocalUser)
-                            Log.d("UserUpdate", "Local User Data as JSON: $json")
-
-                            localDatabaseRepository.update(updatedLocalUser).first()
-
-                            emit(Result.success(remoteUserData.settings))
-                        } else {
-                            emit(Result.success(localUser.settings))
-                        }
-                    } else {
-                        emit(Result.success(localUser.settings))
-                    }
-                } catch (_: Exception) {
-                    emit(Result.success(localUser.settings))
-                }
-            }
-
-            currentUserResult.onFailure { exception ->
-                emit(Result.failure(exception))
-            }
-        } catch (e: CancellationException) {
-            throw e
+        val remoteUser = try {
+            firestoreRepository.getDocumentById("users", userId)
+                .firstOrNull()
+                ?.getOrNull()
+                ?.let { UserDataMapper.mapDocumentToUserData(it) }
         } catch (e: Exception) {
-            emit(Result.failure(e))
+            Log.e("GetUserSettingsUseCase", "Error fetching remote user: ${e.message}", e)
+            null
+        }
+
+        val settingsToEmit = when {
+            remoteUser != null && remoteUser.updatedAt > localUser.updatedAt -> {
+                val updatedLocalUser = localUser.copy(
+                    settings = remoteUser.settings,
+                    updatedAt = remoteUser.updatedAt,
+                    name = remoteUser.name,
+                    surname = remoteUser.surname,
+                    authData = remoteUser.authData
+                )
+                localDatabaseRepository.update(updatedLocalUser).first()
+                remoteUser.settings
+            }
+            else -> localUser.settings
+        }
+
+        emit(Result.success(settingsToEmit))
+    }.catch { e ->
+        when (e) {
+            is CancellationException -> throw e
+            else -> {
+                Log.e("GetUserSettingsUseCase", "Error in execute: ${e.message}", e)
+                emit(Result.failure(e))
+            }
         }
     }
 }

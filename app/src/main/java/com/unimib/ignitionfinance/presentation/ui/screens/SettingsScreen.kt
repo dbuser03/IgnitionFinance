@@ -117,6 +117,12 @@ fun SettingsScreen(
                                     onCardClicked = { settingsViewModel.toggleCardExpansion(1) },
                                     onTextSelected = { selectedText ->
                                         inflationModel = inflationModel.copy(selectedText = selectedText)
+                                        settings?.let { currentSettings ->
+                                            val updatedSettings = currentSettings.copy(
+                                                inflationModel = selectedText
+                                            )
+                                            settingsViewModel.updateSettings(updatedSettings)
+                                        }
                                     }
                                 )
                             }
