@@ -18,23 +18,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.domain.validation.InputValidationResult
-import com.unimib.ignitionfinance.domain.validation.SettingsValidator
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-// Crea questo dialog seguendo l'update value dialog come riferimento e guarda il look da figma.
-// Usa la preview -> quando il look nella preview è == a quello su figma hai finito
 @Composable
 fun NewProductDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String?, String?, String?, String?) -> Unit,
     dialogTitle: String,
-    prefix: String
 ) {
-    var ISINInput by remember { mutableStateOf<String?>(null) }
-    var ISINErrorMessage by remember { mutableStateOf<String?>(null) }
+    var isinInput by remember { mutableStateOf<String?>(null) }
+    var isinErrorMessage by remember { mutableStateOf<String?>(null) }
 
     var tickerInput by remember { mutableStateOf<String?>(null) }
     var tickerErrorMessage by remember { mutableStateOf<String?>(null) }
@@ -45,7 +40,7 @@ fun NewProductDialog(
     var amountInput by remember { mutableStateOf<String?>(null) }
     var amountErrorMessage by remember { mutableStateOf<String?>(null) }
 
-    val isInputValid = ISINErrorMessage == null && tickerErrorMessage == null
+    val isInputValid = isinErrorMessage == null && tickerErrorMessage == null
             && dateErrorMessage == null && amountErrorMessage == null
 
     AlertDialog(
@@ -55,7 +50,7 @@ fun NewProductDialog(
             TextButton(
                 onClick = {
                     if (isInputValid) {
-                        onConfirmation(ISINInput, tickerInput, dateInput, amountInput)
+                        onConfirmation(isinInput, tickerInput, dateInput, amountInput)
                     }
                 },
                 enabled = isInputValid,
@@ -105,12 +100,12 @@ fun NewProductDialog(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Product ISIN",
                     onValueChange = { input ->
-                        ISINInput = input
-                        ISINErrorMessage = if (input.isEmpty()) {
+                        isinInput = input
+                        isinErrorMessage = if (input.isEmpty()) {
                             "ISIN is required"
                         } else null
                     },
-                    errorMessage = ISINErrorMessage
+                    errorMessage = isinErrorMessage
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -155,7 +150,7 @@ fun NewProductDialog(
                     label = "€ Amount",
                     onValueChange = { input ->
                         amountInput = input
-                        amountErrorMessage = if (input.isNullOrEmpty() || input.toDoubleOrNull() == null) {
+                        amountErrorMessage = if (input.isEmpty() || input.toDoubleOrNull() == null) {
                             "Amount must be a valid number"
                         } else null
                     },
