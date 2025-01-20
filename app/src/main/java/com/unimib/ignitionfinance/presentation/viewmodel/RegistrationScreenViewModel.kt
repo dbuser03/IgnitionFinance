@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.authenticationUseCases.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.RegistrationFormState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel

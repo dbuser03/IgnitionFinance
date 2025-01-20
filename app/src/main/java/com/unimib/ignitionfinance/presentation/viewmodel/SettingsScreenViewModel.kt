@@ -6,9 +6,9 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.domain.usecase.GetUserSettingsUseCase
-import com.unimib.ignitionfinance.domain.usecase.SetDefaultSettingsUseCase
-import com.unimib.ignitionfinance.domain.usecase.UpdateUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.GetUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.SetDefaultSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.UpdateUserSettingsUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
