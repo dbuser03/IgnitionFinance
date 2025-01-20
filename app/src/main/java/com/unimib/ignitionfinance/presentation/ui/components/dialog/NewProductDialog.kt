@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -105,7 +106,7 @@ fun NewProductDialog(
                     errorMessage = errorMessage
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,7 +120,7 @@ fun NewProductDialog(
                     errorMessage = errorMessage
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -144,7 +145,7 @@ fun NewProductDialog(
                     //keyboardType = KeyboardType.Number
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -168,16 +169,18 @@ fun NewProductDialog(
 @Preview(showBackground = true)
 @Composable
 fun PreviewNewProductDialog() {
-    var showDialog by remember { mutableStateOf(true) }
+    IgnitionFinanceTheme {
+        var showDialog by remember { mutableStateOf(true) }
 
-    if (showDialog) {
-        NewProductDialog(
-            onDismissRequest = { showDialog = false },
-            onConfirmation = { isin, ticker, date, amount ->
-                println("Confirmed: ISIN=$isin, Ticker=$ticker, Date=$date, Amount=$amount")
-                showDialog = false
-            },
-            dialogTitle = "Add a new product"
-        )
+        if (showDialog) {
+            NewProductDialog(
+                onDismissRequest = { showDialog = false },
+                onConfirmation = { isin, ticker, date, amount ->
+                    println("Confirmed: ISIN=$isin, Ticker=$ticker, Date=$date, Amount=$amount")
+                    showDialog = false
+                },
+                dialogTitle = "Add a new product"
+            )
+        }
     }
 }

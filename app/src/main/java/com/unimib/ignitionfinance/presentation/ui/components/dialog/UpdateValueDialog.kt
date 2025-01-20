@@ -90,3 +90,21 @@ fun UpdateValueDialog(
         },
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateValueDialogPreview() {
+    IgnitionFinanceTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            UpdateValueDialog(
+                onDismissRequest = { /* Preview action */ },
+                onConfirmation = { /* Preview action */ },
+                dialogTitle = "Update Value",
+                prefix = "€"
+            )
+        }
+    }
+}
