@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
+import com.unimib.ignitionfinance.domain.usecase.auth.ResetPasswordUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.ResetPasswordFormState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -16,14 +16,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
+import com.unimib.ignitionfinance.presentation.ui.screens.portfolio.PortfolioScreenViewModel
 
 @Composable
-fun PortfolioScreen(navController: NavController) {
+fun PortfolioScreen(
+    navController: NavController,
+    portfolioViewModel: PortfolioScreenViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val dialogTitle = "Add your cash"
     var showDialog by remember { mutableStateOf(false) }
@@ -35,17 +40,13 @@ fun PortfolioScreen(navController: NavController) {
     DialogManager(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
-        onConfirmation = { showDialog = false },
-        // Update dati su db
-        // Aggiorno prima il model -> in data/model
-        // Aggiorno entity, mapper, aggiorna versione db = 5
-        // Aggiorno la sezione remote -> aggiorna UserDataMapper
-        // Da console firestore aggiungi un campo cash "string"
-        // Refactoring package use case -> raggruppa in un package gli use case settings, auth
-        // Scrivi lo use case GetUserCashUseCase
-        // Scrivi lo use case UpdateUserCashUseCase
-        // Modifichi il view model della portfolio screen per fare chiamate get e update
-        // Qui su portfolio screen fai in modo che si apra il dialog cash solo la prima volta che clicco il FAB -> per testarlo fai più click e assicurati che non si apra
+        onConfirmation = { newCash ->
+            showDialog = false
+            newCash?.let {
+                portfolioViewModel.updateCash(it)
+            }
+
+        },
         dialogTitle = dialogTitle,
         prefix = "€",
     )

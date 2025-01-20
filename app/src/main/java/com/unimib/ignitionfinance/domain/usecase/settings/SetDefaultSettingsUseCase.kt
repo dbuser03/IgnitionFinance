@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.settings
 
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals

@@ -19,7 +19,8 @@ object UserDataMapper {
                 authData = mapAuthData(this["authData"] as? Map<String, Any>),
                 settings = mapSettings(this["settings"] as? Map<String, Any>),
                 createdAt = (this["createdAt"] as? Long) ?: System.currentTimeMillis(),
-                updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis()
+                updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis(),
+                cash = (this["cash"] as? String) ?: "0"
             )
         }
     }
@@ -64,7 +65,8 @@ object UserDataMapper {
             ),
             "settings" to mapSettingsToMap(userData.settings),
             "createdAt" to userData.createdAt,
-            "updatedAt" to userData.updatedAt
+            "updatedAt" to userData.updatedAt,
+            "cash" to userData.cash
         )
     }
 
