@@ -109,19 +109,6 @@ fun NewProductDialog(
                 )
             }
         },
-        title = {
-            Column(
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text(
-                    text = dialogTitle,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = TypographyMedium.titleLarge.fontWeight
-                    )
-                )
-            }
-        },
         text = {
             Column(
                 modifier = Modifier.padding(top = 8.dp)
