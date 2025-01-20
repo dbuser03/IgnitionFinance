@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.authenticationUseCases
+package com.unimib.ignitionfinance.domain.usecase.auth
 
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository

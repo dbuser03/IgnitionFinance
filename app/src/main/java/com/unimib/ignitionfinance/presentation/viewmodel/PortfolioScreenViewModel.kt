@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.domain.usecase.GetUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,57 +19,59 @@ class PortfolioScreenViewModel @Inject constructor(
     private val updateUserCashUseCase: UpdateUserCashUseCase
 ) : ViewModel() {
 
-    private val _cashValue = MutableStateFlow<String>("0")
-    val cashValue: StateFlow<String> = _cashValue
+    private val _cash = MutableStateFlow<String?>("0")
+    val cash: StateFlow<String?> = _cash
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
-
-    init {
-        getCash()
-    }
+    private val _cashState = MutableStateFlow<UiState<String>>(UiState.Loading)
+    val cashState: StateFlow<UiState<String>> = _cashState
 
     private fun getCash() {
         viewModelScope.launch {
-            _error.value = null
-
+            _cashState.value = UiState.Loading
             getUserCashUseCase.execute()
-                .catch { e ->
-                    Log.e("PortfolioViewModel", "Error getting cash: ${e.message}", e)
-                    _error.value = e.message
-                }
                 .collect { result ->
-                    result.fold(
-                        onSuccess = { cash ->
-                            _cashValue.value = cash
-                        },
-                        onFailure = { e ->
-                            _error.value = e.message
+                    _cashState.value = when {
+                        result.isSuccess -> {
+                            result.getOrNull()?.let { cash ->
+                                _cash.value = cash
+                                UiState.Success(cash)
+                            } ?: UiState.Error("Cash not found")
                         }
-                    )
-
+                        result.isFailure -> UiState.Error(
+                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load cash"
+                        )
+                        else -> UiState.Idle
+                    }
                 }
         }
     }
 
-    fun updateCash(newValue: String) {
+    fun updateCash(newCash: String) {
         viewModelScope.launch {
-            _error.value = null
+            _cashState.value = UiState.Loading
 
-            updateUserCashUseCase.execute(newValue)
-                .catch { e ->
-                    Log.e("PortfolioViewModel", "Error updating cash: ${e.message}", e)
-                    _error.value = e.message
+            updateUserCashUseCase.execute(newCash)
+                .catch { exception ->
+                    Log.e("PortfolioViewModel", "Error updating cash: ${exception.localizedMessage}")
+                    _cashState.value = UiState.Error(
+                        exception.localizedMessage ?: "Failed to update cash"
+                    )
                 }
                 .collect { result ->
-                    result.fold(
-                        onSuccess = { cash ->
-                            _cashValue.value = cash ?: "0"
-                        },
-                        onFailure = { e ->
-                            _error.value = e.message
+                    _cashState.value = when {
+                        result.isSuccess -> {
+                            result.getOrNull()?.let { cash ->
+                                _cash.value = cash
+                                UiState.Success(cash)
+                            } ?: UiState.Error("Failed to update cash")
                         }
-                    )
+                        result.isFailure -> {
+                            UiState.Error(
+                                result.exceptionOrNull()?.localizedMessage ?: "Failed to update cash"
+                            )
+                        }
+                        else -> UiState.Idle
+                    }
 
                 }
         }

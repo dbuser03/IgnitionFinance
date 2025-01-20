@@ -1,19 +1,22 @@
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+package com.unimib.ignitionfinance.presentation.ui.screens
+
+import BottomNavigationBarInstance
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import android.app.Activity
-import androidx.activity.compose.BackHandler
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
@@ -24,11 +27,10 @@ import com.unimib.ignitionfinance.presentation.ui.screens.portfolio.PortfolioScr
 @Composable
 fun PortfolioScreen(
     navController: NavController,
-    viewModel: PortfolioScreenViewModel = hiltViewModel()
+    portfolioViewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val cashValue by viewModel.cashValue.collectAsState()
-    val error by viewModel.error.collectAsState()
+    val dialogTitle = "Add your cash"
     var showDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
@@ -38,15 +40,15 @@ fun PortfolioScreen(
     DialogManager(
         showDialog = showDialog,
         onDismissRequest = { showDialog = false },
-        onConfirmation = { newValue ->
-            if (newValue != null) {
-                viewModel.updateCash(newValue)
-            }
+        onConfirmation = { newCash ->
             showDialog = false
+            newCash?.let {
+                portfolioViewModel.updateCash(it)
+            }
+
         },
-        dialogTitle = stringResource(id = R.string.reset_password_title),
+        dialogTitle = dialogTitle,
         prefix = "€",
-        initialValue = cashValue
     )
 
     Scaffold(
@@ -54,49 +56,26 @@ fun PortfolioScreen(
             Title(title = stringResource(id = R.string.portfolio_title))
         },
         bottomBar = {
-            BottomNavigationBarInstance(navController = navController)
+            BottomNavigationBarInstance(
+                navController = navController
+            )
         },
         floatingActionButton = {
             CustomFAB(
                 onClick = { showDialog = true },
-                modifier = Modifier.padding(bottom = 12.dp),
+                modifier = Modifier
+                    .padding(bottom = 12.dp),
                 icon = painterResource(id = R.drawable.outline_add_24),
                 contentDescription = stringResource(id = R.string.add_FAB_description)
             )
         },
-        floatingActionButtonPosition = FabPosition.Center
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            Column(
+        floatingActionButtonPosition = FabPosition.Center,
+        content = { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(id = R.string.reset_password_title),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Text(
-                    text = "€${cashValue}",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                error?.let { errorMessage ->
-                    Text(
-                        text = errorMessage,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
         }
-    }
+    )
 }

@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.settingsUseCases
+package com.unimib.ignitionfinance.domain.usecase.settings
 
 import android.content.Context
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem

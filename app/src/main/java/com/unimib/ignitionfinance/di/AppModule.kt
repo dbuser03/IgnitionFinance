@@ -22,11 +22,11 @@ import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRe
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
-import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.GetUserSettingsUseCase
-import com.unimib.ignitionfinance.domain.usecase.authenticationUseCases.LoginUserUseCase
-import com.unimib.ignitionfinance.domain.usecase.authenticationUseCases.RegisterNewUserUseCase
-import com.unimib.ignitionfinance.domain.usecase.authenticationUseCases.ResetPasswordUseCase
-import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.UpdateUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.auth.LoginUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.auth.RegisterNewUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.auth.ResetPasswordUseCase
+import com.unimib.ignitionfinance.domain.usecase.settings.UpdateUserSettingsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

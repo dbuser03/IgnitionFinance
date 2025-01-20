@@ -11,7 +11,7 @@ import com.unimib.ignitionfinance.data.local.utils.SyncStatus
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
-import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.SetDefaultSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settings.SetDefaultSettingsUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers

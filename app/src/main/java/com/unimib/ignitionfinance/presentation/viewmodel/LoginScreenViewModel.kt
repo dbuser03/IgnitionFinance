@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.domain.usecase.*
-import com.unimib.ignitionfinance.domain.usecase.authenticationUseCases.LoginUserUseCase
+import com.unimib.ignitionfinance.domain.usecase.auth.LoginUserUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.LoginFormState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel

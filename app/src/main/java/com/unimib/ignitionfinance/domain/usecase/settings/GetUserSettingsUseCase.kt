@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.settingsUseCases
+package com.unimib.ignitionfinance.domain.usecase.settings
 
 import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
@@ -46,9 +46,6 @@ class GetUserSettingsUseCase @Inject constructor(
                 val updatedLocalUser = localUser.copy(
                     settings = remoteUser.settings,
                     updatedAt = remoteUser.updatedAt,
-                    name = remoteUser.name,
-                    surname = remoteUser.surname,
-                    authData = remoteUser.authData
                 )
                 localDatabaseRepository.update(updatedLocalUser).first()
                 remoteUser.settings

@@ -6,9 +6,9 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.GetUserSettingsUseCase
-import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.SetDefaultSettingsUseCase
-import com.unimib.ignitionfinance.domain.usecase.settingsUseCases.UpdateUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settings.SetDefaultSettingsUseCase
+import com.unimib.ignitionfinance.domain.usecase.settings.UpdateUserSettingsUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +24,6 @@ class SettingsScreenViewModel @Inject constructor(
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val setDefaultSettingsUseCase: SetDefaultSettingsUseCase
 ) : ViewModel() {
-    private val _updateState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val updateState: StateFlow<UiState<Unit>> = _updateState
-
     private val _settingsState = MutableStateFlow<UiState<Settings>>(UiState.Loading)
     val settingsState: StateFlow<UiState<Settings>> = _settingsState
 
@@ -63,23 +60,23 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun updateSettings(newSettings: Settings) {
         viewModelScope.launch {
-            _updateState.value = UiState.Loading
+            _settingsState.value = UiState.Loading
             Log.d("SettingsScreenViewModel", "Updating settings: $newSettings")
             updateUserSettingsUseCase.execute(newSettings)
                 .catch { exception ->
                     Log.e("SettingsScreenViewModel", "Update failed: ${exception.localizedMessage}")
-                    _updateState.value = UiState.Error(
+                    _settingsState.value = UiState.Error(
                         exception.localizedMessage ?: "Failed to update settings"
                     )
                 }
                 .collect { result ->
                     Log.d("SettingsScreenViewModel", "Update result: $result")
-                    _updateState.value = when {
+                    _settingsState.value = when {
                         result.isSuccess -> {
                             result.getOrNull()?.let { settings ->
                                 _settings.value = settings
                                 Log.d("SettingsScreenViewModel", "Settings updated successfully: $settings")
-                                UiState.Success(Unit)
+                                UiState.Success(settings)
                             } ?: UiState.Error("Failed to update settings")
                         }
                         result.isFailure -> {

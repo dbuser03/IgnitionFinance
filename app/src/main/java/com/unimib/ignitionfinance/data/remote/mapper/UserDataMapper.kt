@@ -65,7 +65,8 @@ object UserDataMapper {
             ),
             "settings" to mapSettingsToMap(userData.settings),
             "createdAt" to userData.createdAt,
-            "updatedAt" to userData.updatedAt
+            "updatedAt" to userData.updatedAt,
+            "cash" to userData.cash
         )
     }
 
