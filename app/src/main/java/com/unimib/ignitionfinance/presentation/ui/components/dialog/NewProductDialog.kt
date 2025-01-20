@@ -29,7 +29,8 @@ fun NewProductDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String?, String?, String?, String?) -> Unit,
     dialogTitle: String,
-    prefix: String
+    prefix: String,
+    label: String
 ) {
     var ISINInput by remember { mutableStateOf<String?>(null) }
     var ISINErrorMessage by remember { mutableStateOf<String?>(null) }
@@ -99,13 +100,13 @@ fun NewProductDialog(
             Column(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                ISINTextField(
+                UpdateValueTextField(
                     modifier = Modifier.fillMaxWidth(),
+                    label = "product ISIN",
                     onValueChange = { input ->
                         ISINInput = input
-                        val validationResult = SettingsValidator.validate(input, prefix)
-                        ISINErrorMessage = if (validationResult is InputValidationResult.Failure) {
-                            validationResult.message
+                        ISINErrorMessage = if (input.isEmpty()) {
+                            "ISIN is required"
                         } else null
                     },
                     errorMessage = ISINErrorMessage
@@ -113,23 +114,49 @@ fun NewProductDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-
+                UpdateValueTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { input ->
+                        emailInput = input
+                        // Validazione email (ad esempio, solo un formato base)
+                        emailErrorMessage = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
+                            "Invalid email address"
+                        } else null
+                    },
+                    errorMessage = emailErrorMessage
+                )
             }
         },
     )
 }
 
 @Composable
-fun ISINTextField(
+fun UpdateValueTextField(
     modifier: Modifier,
+    label: String,
     onValueChange: (String) -> Unit,
-    errorMessage: String?
+    errorMessage: String?,
+    //keyboardType: KeyboardType = KeyboardType.Text
 ) {
     TextField(
         value = "",
         onValueChange = onValueChange,
         modifier = modifier,
-        label = { Text("Product ISIN") },
-        isError = errorMessage != null
+        label = { Text(label) },
+        isError = errorMessage != null,
+        /*keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions.Default.copy(keyboardType = keyboardType),
+        visualTransformation = if (keyboardType == KeyboardType.Number) {
+            androidx.compose.ui.text.input.VisualTransformation.None
+        } else {
+            androidx.compose.ui.text.input.VisualTransformation.None
+        }*/
     )
+    if (errorMessage != null) {
+        Text(
+            text = errorMessage,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
 }
