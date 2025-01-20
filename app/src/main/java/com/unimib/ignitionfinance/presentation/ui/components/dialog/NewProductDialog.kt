@@ -2,12 +2,15 @@ package com.unimib.ignitionfinance.presentation.ui.components.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -96,95 +99,37 @@ fun NewProductDialog(
             Column(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                UpdateValueTextField(
+                ISINTextField(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChange = { input ->
-                        textInput = input
+                        ISINInput = input
                         val validationResult = SettingsValidator.validate(input, prefix)
-                        errorMessage = if (validationResult is InputValidationResult.Failure) {
+                        ISINErrorMessage = if (validationResult is InputValidationResult.Failure) {
                             validationResult.message
                         } else null
                     },
-                    errorMessage = errorMessage
+                    errorMessage = ISINErrorMessage
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
             }
         },
-        text = {
-            Column(
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                UpdateValueTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    onValueChange = { input ->
-                        textInput = input
-                        val validationResult = SettingsValidator.validate(input, prefix)
-                        errorMessage = if (validationResult is InputValidationResult.Failure) {
-                            validationResult.message
-                        } else null
-                    },
-                    errorMessage = errorMessage
-                )
-            }
-        },
-        title = {
-            Column(
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text(
-                    text = dialogTitle,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = TypographyMedium.titleLarge.fontWeight
-                    )
-                )
-            }
-        },
-        text = {
-            Column(
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                UpdateValueTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    onValueChange = { input ->
-                        textInput = input
-                        val validationResult = SettingsValidator.validate(input, prefix)
-                        errorMessage = if (validationResult is InputValidationResult.Failure) {
-                            validationResult.message
-                        } else null
-                    },
-                    errorMessage = errorMessage
-                )
-            }
-        },
-        title = {
-            Column(
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text(
-                    text = dialogTitle,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = TypographyMedium.titleLarge.fontWeight
-                    )
-                )
-            }
-        },
-        text = {
-            Column(
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                UpdateValueTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    onValueChange = { input ->
-                        textInput = input
-                        val validationResult = SettingsValidator.validate(input, prefix)
-                        errorMessage = if (validationResult is InputValidationResult.Failure) {
-                            validationResult.message
-                        } else null
-                    },
-                    errorMessage = errorMessage
-                )
-            }
-        },
+    )
+}
+
+@Composable
+fun ISINTextField(
+    modifier: Modifier,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?
+) {
+    TextField(
+        value = "",
+        onValueChange = onValueChange,
+        modifier = modifier,
+        label = { Text("Product ISIN") },
+        isError = errorMessage != null
     )
 }
