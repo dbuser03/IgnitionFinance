@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.domain.validation.InputValidationResult
 import com.unimib.ignitionfinance.domain.validation.SettingsValidator
+import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun UpdateValueDialog(

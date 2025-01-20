@@ -18,6 +18,7 @@ import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 @Composable
 fun NewProductTextField(
     modifier: Modifier = Modifier,
+    label: String,
     onValueChange: (String?) -> Unit,
     errorMessage: String? = null
 ) {
@@ -35,7 +36,7 @@ fun NewProductTextField(
             text = input
             onValueChange(if (input.isBlank()) null else input)
         },
-        label = { Text("New value") },
+        label = { Text(label) },
         shape = RoundedCornerShape(56.dp),
         colors = getTextFieldColors(isError = errorMessage != null),
         keyboardOptions = KeyboardOptions(

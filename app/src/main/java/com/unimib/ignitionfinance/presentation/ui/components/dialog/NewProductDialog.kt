@@ -10,8 +10,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,19 +30,13 @@ fun NewProductDialog(
     dialogTitle: String,
 ) {
     var isinInput by remember { mutableStateOf<String?>(null) }
-    var isinErrorMessage by remember { mutableStateOf<String?>(null) }
-
     var tickerInput by remember { mutableStateOf<String?>(null) }
-    var tickerErrorMessage by remember { mutableStateOf<String?>(null) }
-
     var dateInput by remember { mutableStateOf<String?>(null) }
-    var dateErrorMessage by remember { mutableStateOf<String?>(null) }
-
     var amountInput by remember { mutableStateOf<String?>(null) }
-    var amountErrorMessage by remember { mutableStateOf<String?>(null) }
 
-    val isInputValid = isinErrorMessage == null && tickerErrorMessage == null
-            && dateErrorMessage == null && amountErrorMessage == null
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val isInputValid = errorMessage == null
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -99,103 +91,78 @@ fun NewProductDialog(
             Column(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                UpdateValueTextField(
+                NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Product ISIN",
                     onValueChange = { input ->
                         isinInput = input
-                        isinErrorMessage = if (input.isEmpty()) {
-                            "ISIN is required"
-                        } else null
+                        if (input != null) {
+                            errorMessage = if (input.isEmpty()) {
+                                "ISIN is required"
+                            } else null
+                        }
                     },
-                    errorMessage = isinErrorMessage
+                    errorMessage = errorMessage
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                UpdateValueTextField(
+                NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Product TICKER",
                     onValueChange = { input ->
                         tickerInput = input
-                        tickerErrorMessage = if (input.length != 4) {
+                        errorMessage = if (input?.length != 4) {
                             "Ticker must be exactly 4 characters"
                         } else null
                     },
-                    errorMessage = tickerErrorMessage
+                    errorMessage = errorMessage
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                UpdateValueTextField(
+                NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Purchase Date",
                     onValueChange = { input ->
                         dateInput = input
                         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                         val parsedDate = try {
-                            dateFormat.parse(input)
+                            if (input != null) {
+                                dateFormat.parse(input)
+                            } else {
+                                null
+                            }
                         } catch (e: Exception) {
                             null
                         }
-                        dateErrorMessage = if (parsedDate == null) {
+                        errorMessage = if (parsedDate == null) {
                             "Invalid date format"
                         } else null
                     },
-                    errorMessage = dateErrorMessage,
+                    errorMessage = errorMessage,
                     //keyboardType = KeyboardType.Number
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                UpdateValueTextField(
+                NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "€ Amount",
                     onValueChange = { input ->
                         amountInput = input
-                        amountErrorMessage = if (input.isEmpty() || input.toDoubleOrNull() == null) {
-                            "Amount must be a valid number"
-                        } else null
+                        if (input != null) {
+                            errorMessage = if (input.isEmpty() || input.toDoubleOrNull() == null) {
+                                "Amount must be a valid number"
+                            } else null
+                        }
                     },
-                    errorMessage = amountErrorMessage,
+                    errorMessage = errorMessage,
                     //keyboardType = KeyboardType.Number
                 )
             }
         },
     )
-}
-
-@Composable
-fun UpdateValueTextField(
-    modifier: Modifier,
-    label: String,
-    onValueChange: (String) -> Unit,
-    errorMessage: String?,
-    //keyboardType: KeyboardType = KeyboardType.Text
-) {
-    TextField(
-        value = "",
-        onValueChange = onValueChange,
-        modifier = modifier,
-        label = { Text(label) },
-        isError = errorMessage != null,
-        colors = TextFieldDefaults.colors(),
-        shape = TextFieldDefaults.shape
-        /*keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions.Default.copy(keyboardType = keyboardType),
-        visualTransformation = if (keyboardType == KeyboardType.Number) {
-            androidx.compose.ui.text.input.VisualTransformation.None
-        } else {
-            androidx.compose.ui.text.input.VisualTransformation.None
-        }*/
-    )
-    if (errorMessage != null) {
-        Text(
-            text = errorMessage,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
 }
 
 @Preview(showBackground = true)
