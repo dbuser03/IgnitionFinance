@@ -147,6 +147,21 @@ fun NewProductDialog(
                     errorMessage = dateErrorMessage,
                     //keyboardType = KeyboardType.Number
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                UpdateValueTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = "€ Amount",
+                    onValueChange = { input ->
+                        amountInput = input
+                        amountErrorMessage = if (input.isNullOrEmpty() || input.toDoubleOrNull() == null) {
+                            "Amount must be a valid number"
+                        } else null
+                    },
+                    errorMessage = amountErrorMessage,
+                    //keyboardType = KeyboardType.Number
+                )
             }
         },
     )
