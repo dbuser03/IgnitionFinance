@@ -15,5 +15,6 @@ data class User (
     @ColumnInfo(name = "settings") val settings: Settings,
     @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis(),
-    @ColumnInfo(name = "last_sync_timestamp") val lastSyncTimestamp: Long? = null
+    @ColumnInfo(name = "last_sync_timestamp") val lastSyncTimestamp: Long? = null,
+    @ColumnInfo(name = "cash") val cash: String = "0"
 )

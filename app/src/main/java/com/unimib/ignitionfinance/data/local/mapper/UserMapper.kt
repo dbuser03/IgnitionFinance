@@ -9,13 +9,13 @@ import com.unimib.ignitionfinance.data.model.user.settings.Intervals
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
 
 object UserMapper {
-
     fun mapUserToUserData(user: User): UserData {
         return UserData(
             name = user.name,
             surname = user.surname,
             authData = user.authData,
-            settings = user.settings
+            settings = user.settings,
+            cash = user.cash
         )
     }
 
@@ -31,7 +31,8 @@ object UserMapper {
                 expenses = Expenses("", "", ""),
                 intervals = Intervals("", "", ""),
                 numberOfSimulations = ""
-            )
+            ),
+            cash = userData?.cash ?: "0"
         )
     }
 }
