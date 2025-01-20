@@ -116,14 +116,14 @@ fun NewProductDialog(
 
                 UpdateValueTextField(
                     modifier = Modifier.fillMaxWidth(),
+                    label = "product TICKER",
                     onValueChange = { input ->
-                        emailInput = input
-                        // Validazione email (ad esempio, solo un formato base)
-                        emailErrorMessage = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()) {
-                            "Invalid email address"
+                        tickerInput = input
+                        tickerErrorMessage = if (input.length != 4) {
+                            "Ticker must be exactly 4 characters"
                         } else null
                     },
-                    errorMessage = emailErrorMessage
+                    errorMessage = tickerErrorMessage
                 )
             }
         },
