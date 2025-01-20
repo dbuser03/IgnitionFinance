@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.domain.validation.InputValidationResult
 import com.unimib.ignitionfinance.domain.validation.SettingsValidator
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 // Crea questo dialog seguendo l'update value dialog come riferimento e guarda il look da figma.
 // Usa la preview -> quando il look nella preview è == a quello su figma hai finito
@@ -29,8 +31,7 @@ fun NewProductDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: (String?, String?, String?, String?) -> Unit,
     dialogTitle: String,
-    prefix: String,
-    label: String
+    prefix: String
 ) {
     var ISINInput by remember { mutableStateOf<String?>(null) }
     var ISINErrorMessage by remember { mutableStateOf<String?>(null) }
@@ -102,7 +103,7 @@ fun NewProductDialog(
             ) {
                 UpdateValueTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "product ISIN",
+                    label = "Product ISIN",
                     onValueChange = { input ->
                         ISINInput = input
                         ISINErrorMessage = if (input.isEmpty()) {
@@ -116,7 +117,7 @@ fun NewProductDialog(
 
                 UpdateValueTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "product TICKER",
+                    label = "Product TICKER",
                     onValueChange = { input ->
                         tickerInput = input
                         tickerErrorMessage = if (input.length != 4) {
@@ -124,6 +125,27 @@ fun NewProductDialog(
                         } else null
                     },
                     errorMessage = tickerErrorMessage
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                UpdateValueTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = "Purchase Date",
+                    onValueChange = { input ->
+                        dateInput = input
+                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        val parsedDate = try {
+                            dateFormat.parse(input)
+                        } catch (e: Exception) {
+                            null
+                        }
+                        dateErrorMessage = if (parsedDate == null) {
+                            "Invalid date format"
+                        } else null
+                    },
+                    errorMessage = dateErrorMessage,
+                    //keyboardType = KeyboardType.Number
                 )
             }
         },
