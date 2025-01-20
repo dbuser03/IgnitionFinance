@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.domain.validation.InputValidationResult
@@ -87,5 +88,24 @@ fun UpdateValueDialog(
             }
         },
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewUpdateValueDialog() {
+    var showDialog by remember { mutableStateOf(true) }
+
+    if (showDialog) {
+        UpdateValueDialog(
+            onDismissRequest = { showDialog = false },
+            onConfirmation = { textInput ->
+                // Handle confirmation, you can log or show a Toast
+                println("Confirmed: $textInput")
+                showDialog = false
+            },
+            dialogTitle = "Update Product Value",
+            prefix = "PROD"
+        )
+    }
 }
 

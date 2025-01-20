@@ -11,16 +11,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 @Composable
 fun NewProductDialog(
@@ -176,6 +179,8 @@ fun UpdateValueTextField(
         modifier = modifier,
         label = { Text(label) },
         isError = errorMessage != null,
+        colors = TextFieldDefaults.colors(),
+        shape = TextFieldDefaults.shape
         /*keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions.Default.copy(keyboardType = keyboardType),
         visualTransformation = if (keyboardType == KeyboardType.Number) {
             androidx.compose.ui.text.input.VisualTransformation.None
@@ -189,6 +194,23 @@ fun UpdateValueTextField(
             color = MaterialTheme.colorScheme.error,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewNewProductDialog() {
+    var showDialog by remember { mutableStateOf(true) }
+
+    if (showDialog) {
+        NewProductDialog(
+            onDismissRequest = { showDialog = false },
+            onConfirmation = { isin, ticker, date, amount ->
+                println("Confirmed: ISIN=$isin, Ticker=$ticker, Date=$date, Amount=$amount")
+                showDialog = false
+            },
+            dialogTitle = "Add a new product"
         )
     }
 }
