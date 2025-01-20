@@ -35,24 +35,23 @@ object UserDataMapper {
     private fun mapSettings(settings: Map<String, Any>?): Settings {
         return Settings(
             withdrawals = Withdrawals(
-                withPension = (settings?.get("withdrawals.withPension") as? String).orEmpty(),
-                withoutPension = (settings?.get("withdrawals.withoutPension") as? String).orEmpty()
+                withPension = (settings?.get("withdrawals") as? Map<String, Any>)?.get("withPension") as? String ?: "",
+                withoutPension = (settings?.get("withdrawals") as? Map<String, Any>)?.get("withoutPension") as? String ?: ""
             ),
             inflationModel = (settings?.get("inflationModel") as? String).orEmpty(),
             expenses = Expenses(
-                taxRatePercentage = (settings?.get("expenses.taxRatePercentage") as? String).orEmpty(),
-                stampDutyPercentage = (settings?.get("expenses.stampDutyPercentage") as? String).orEmpty(),
-                loadPercentage = (settings?.get("expenses.loadPercentage") as? String).orEmpty()
+                taxRatePercentage = (settings?.get("expenses") as? Map<String, Any>)?.get("taxRatePercentage") as? String ?: "",
+                stampDutyPercentage = (settings?.get("expenses") as? Map<String, Any>)?.get("stampDutyPercentage") as? String ?: "",
+                loadPercentage = (settings?.get("expenses") as? Map<String, Any>)?.get("loadPercentage") as? String ?: ""
             ),
             intervals = Intervals(
-                yearsInFIRE = (settings?.get("intervals.yearsInFIRE") as? String).orEmpty(),
-                yearsInPaidRetirement = (settings?.get("intervals.yearsInPaidRetirement") as? String).orEmpty(),
-                yearsOfBuffer = (settings?.get("intervals.yearsOfBuffer") as? String).orEmpty()
+                yearsInFIRE = (settings?.get("intervals") as? Map<String, Any>)?.get("yearsInFIRE") as? String ?: "",
+                yearsInPaidRetirement = (settings?.get("intervals") as? Map<String, Any>)?.get("yearsInPaidRetirement") as? String ?: "",
+                yearsOfBuffer = (settings?.get("intervals") as? Map<String, Any>)?.get("yearsOfBuffer") as? String ?: ""
             ),
             numberOfSimulations = (settings?.get("numberOfSimulations") as? String).orEmpty()
         )
     }
-
 
     fun mapUserDataToDocument(userData: UserData): Map<String, Any> {
         return mapOf(

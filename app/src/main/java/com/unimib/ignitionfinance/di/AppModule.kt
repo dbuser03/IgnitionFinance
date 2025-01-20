@@ -22,6 +22,7 @@ import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRe
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
 import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
+import com.unimib.ignitionfinance.domain.usecase.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.ResetPasswordUseCase
@@ -143,6 +144,7 @@ object AppModule {
         userDataMapper: UserDataMapper,
         localDatabaseRepository: LocalDatabaseRepository<User>,
         syncQueueItemRepository: SyncQueueItemRepository,
+        getUserSettingsUseCase: GetUserSettingsUseCase,
         context: Context
     ): UpdateUserSettingsUseCase = UpdateUserSettingsUseCase(
         authRepository,
@@ -150,6 +152,7 @@ object AppModule {
         userDataMapper,
         localDatabaseRepository,
         syncQueueItemRepository,
+        getUserSettingsUseCase,
         context
     )
 

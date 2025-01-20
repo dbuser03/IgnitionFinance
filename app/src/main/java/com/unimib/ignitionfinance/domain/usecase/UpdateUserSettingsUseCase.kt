@@ -28,9 +28,10 @@ class UpdateUserSettingsUseCase @Inject constructor(
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val syncQueueItemRepository: SyncQueueItemRepository,
+    private val getUserSettingsUseCase: GetUserSettingsUseCase,
     @ApplicationContext private val context: Context
 ) {
-    fun execute(updatedSettings: Settings): Flow<Result<Unit?>> = flow {
+    fun execute(updatedSettings: Settings): Flow<Result<Settings?>> = flow {
         try {
             val currentUserResult = authRepository.getCurrentUser().first()
 
@@ -53,22 +54,26 @@ class UpdateUserSettingsUseCase @Inject constructor(
                     val localUpdateDeferred = async {
                         localDatabaseRepository.update(updatedUser).first()
                     }
-
-                    val syncQueueItem = createSyncQueueItem(updatedUser)
                     val syncQueueDeferred = async {
+                        val syncQueueItem = createSyncQueueItem(updatedUser)
                         syncQueueItemRepository.insert(syncQueueItem)
                     }
 
-                    val localResult = localUpdateDeferred.await()
+                    localUpdateDeferred.await()
                     syncQueueDeferred.await()
 
-                    withContext(Dispatchers.IO) {
-                        SyncOperationScheduler.scheduleOneTime<User>(context)
+                    val updatedSettingsResult = getUserSettingsUseCase.execute().first()
+                    updatedSettingsResult.onSuccess { settings ->
+                        withContext(Dispatchers.IO) {
+                            SyncOperationScheduler.scheduleOneTime<User>(context)
+                        }
+                        emit(Result.success(settings))
+                    }.onFailure { exception ->
+                        emit(Result.failure(exception))
                     }
-
-                    emit(Result.success(localResult.getOrNull()))
                 }
             }
+
             currentUserResult.onFailure { exception ->
                 emit(Result.failure(exception))
             }

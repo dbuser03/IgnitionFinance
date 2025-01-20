@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase
 
+import android.util.Log
+import com.google.gson.Gson
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
@@ -35,11 +37,14 @@ class GetUserSettingsUseCase @Inject constructor(
                     val remoteUserResult =
                         firestoreRepository.getDocumentById("users", userId).firstOrNull()
                     val remoteUser = remoteUserResult?.getOrNull()
+                    val jsonRemote = Gson().toJson(remoteUser)
+                    Log.d("UserUpdate", "Remote User Data as JSON: $jsonRemote")
 
                     if (remoteUser != null) {
                         val remoteUserData = UserDataMapper.mapDocumentToUserData(remoteUser)
 
                         if (remoteUserData != null && remoteUserData.updatedAt > localUser.updatedAt) {
+
                             val updatedLocalUser = localUser.copy(
                                 settings = remoteUserData.settings,
                                 updatedAt = remoteUserData.updatedAt,
@@ -47,6 +52,8 @@ class GetUserSettingsUseCase @Inject constructor(
                                 surname = remoteUserData.surname,
                                 authData = remoteUserData.authData
                             )
+                            val json = Gson().toJson(updatedLocalUser)
+                            Log.d("UserUpdate", "Local User Data as JSON: $json")
 
                             localDatabaseRepository.update(updatedLocalUser).first()
 

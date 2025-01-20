@@ -4,8 +4,9 @@ import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
 import com.unimib.ignitionfinance.data.model.user.settings.Expenses
 import com.unimib.ignitionfinance.data.model.user.settings.Intervals
+import javax.inject.Inject
 
-class SetDefaultSettingsUseCase {
+class SetDefaultSettingsUseCase @Inject constructor(){
 
     fun execute(): Settings {
         return Settings(
