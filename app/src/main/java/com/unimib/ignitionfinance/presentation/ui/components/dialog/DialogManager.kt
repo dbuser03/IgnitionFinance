@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.settings.dialog
+package com.unimib.ignitionfinance.presentation.ui.components.dialog
 
 import androidx.compose.runtime.*
 
