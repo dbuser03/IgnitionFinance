@@ -19,7 +19,8 @@ import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 fun UpdateValueTextField(
     modifier: Modifier = Modifier,
     onValueChange: (String?) -> Unit,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    onDone: (() -> Unit)? = null
 ) {
     var text by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -44,8 +45,9 @@ fun UpdateValueTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
+                keyboardController?.hide()
                 if (errorMessage == null) {
-                    keyboardController?.hide()
+                    onDone?.invoke()
                 }
             }
         ),
@@ -65,4 +67,3 @@ fun UpdateValueTextField(
         )
     }
 }
-

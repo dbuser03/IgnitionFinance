@@ -4,12 +4,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.domain.validation.InputValidationResult
 import com.unimib.ignitionfinance.domain.validation.SettingsValidator
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 @Composable
 fun UpdateValueDialog(
@@ -84,27 +82,14 @@ fun UpdateValueDialog(
                             validationResult.message
                         } else null
                     },
-                    errorMessage = errorMessage
+                    errorMessage = errorMessage,
+                    onDone = {
+                        if (isInputValid) {
+                            onConfirmation(textInput)
+                        }
+                    }
                 )
             }
         },
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UpdateValueDialogPreview() {
-    IgnitionFinanceTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            UpdateValueDialog(
-                onDismissRequest = { /* Preview action */ },
-                onConfirmation = { /* Preview action */ },
-                dialogTitle = "Update Value",
-                prefix = "€"
-            )
-        }
-    }
 }

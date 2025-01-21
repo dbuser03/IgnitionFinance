@@ -31,6 +31,7 @@ fun PortfolioScreen(
 ) {
     val context = LocalContext.current
     val dialogTitle = "Add your cash"
+    var firstAdded = false
     var showDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
@@ -45,11 +46,17 @@ fun PortfolioScreen(
             newCash?.let {
                 portfolioViewModel.updateCash(it)
             }
-
+            firstAdded = true
+        },
+        onProductConfirmation = { isin, ticker, date, amount ->
+            showDialog = false
+            // portfolioViewModel.addNewProduct(isin, ticker, date, amount)
         },
         dialogTitle = dialogTitle,
         prefix = "€",
+        firstAdded = firstAdded
     )
+
 
     Scaffold(
         topBar = {
