@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +35,13 @@ fun PortfolioScreen(
     val context = LocalContext.current
     val dialogTitle = "Add your cash"
     var showDialog by remember { mutableStateOf(false) }
+
     val firstAdded by viewModel.firstAdded.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getFirstAdded()
+        viewModel.getCash()
+    }
 
     BackHandler(enabled = true) {
         (context as? Activity)?.moveTaskToBack(true)
@@ -48,7 +55,6 @@ fun PortfolioScreen(
             newCash?.let {
                 viewModel.updateCash(it)
             }
-            viewModel.updateFirstAdded(newFirstAdded = true)
         },
         onProductConfirmation = { isin, ticker, purchaseDate, amount ->
             showDialog = false
@@ -95,4 +101,3 @@ fun PortfolioScreen(
         }
     )
 }
-

@@ -48,7 +48,7 @@ class PortfolioScreenViewModel @Inject constructor(
     private val _productsState = MutableStateFlow<UiState<List<Product>>>(UiState.Loading)
     val productsState: StateFlow<UiState<List<Product>>> = _productsState
 
-    private fun getCash() {
+    fun getCash() {
         viewModelScope.launch {
             _cashState.value = UiState.Loading
             getUserCashUseCase.execute()
@@ -85,6 +85,7 @@ class PortfolioScreenViewModel @Inject constructor(
                         result.isSuccess -> {
                             result.getOrNull()?.let { cash ->
                                 _cash.value = cash
+                                updateFirstAdded(true)
                                 UiState.Success(cash)
                             } ?: UiState.Error("Failed to update cash")
                         }

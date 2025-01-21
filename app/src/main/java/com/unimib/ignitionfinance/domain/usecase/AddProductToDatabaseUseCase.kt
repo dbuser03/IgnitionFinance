@@ -16,6 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -122,6 +123,8 @@ class AddProductToDatabaseUseCase @Inject constructor(
                 withContext(Dispatchers.IO) {
                     SyncOperationScheduler.scheduleOneTime<User>(context)
                 }
+
+                delay(500)
 
                 emit(Result.success(Unit))
             }

@@ -13,6 +13,7 @@ import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemReposi
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -53,6 +54,8 @@ class UpdateFirstAddedUseCase @Inject constructor(
             withContext(Dispatchers.IO) {
                 SyncOperationScheduler.scheduleOneTime<User>(context)
             }
+
+            delay(500)
 
             emit(Result.success(value))
 
