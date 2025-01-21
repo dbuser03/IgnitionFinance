@@ -9,6 +9,8 @@ import com.unimib.ignitionfinance.domain.usecase.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.usecase.UpdateProductListUseCase
 import com.unimib.ignitionfinance.domain.usecase.cash.GetUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.cash.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.flag.GetFirstAddedUseCase
+import com.unimib.ignitionfinance.domain.usecase.flag.UpdateFirstAddedUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +25,9 @@ class PortfolioScreenViewModel @Inject constructor(
     private val updateUserCashUseCase: UpdateUserCashUseCase,
     private val getProductListUseCase: GetProductListUseCase,
     private val updateProductListUseCase: UpdateProductListUseCase,
-    private val addProductToDatabaseUseCase: AddProductToDatabaseUseCase
+    private val addProductToDatabaseUseCase: AddProductToDatabaseUseCase,
+    private val getFirstAddedUseCase: GetFirstAddedUseCase,
+    private val updateFirstAddedUseCase: UpdateFirstAddedUseCase
 ) : ViewModel() {
 
     private val _cash = MutableStateFlow<String?>("0")
@@ -32,16 +36,17 @@ class PortfolioScreenViewModel @Inject constructor(
     private val _cashState = MutableStateFlow<UiState<String>>(UiState.Loading)
     val cashState: StateFlow<UiState<String>> = _cashState
 
+    private val _firstAddedState = MutableStateFlow<UiState<Boolean>>(UiState.Loading)
+    val fistAddedState: StateFlow<UiState<Boolean>> = _firstAddedState
+
+    private val _firstAdded = MutableStateFlow<Boolean?>(false)
+    val firstAdded: StateFlow<Boolean?> = _firstAdded
+
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> = _products
 
     private val _productsState = MutableStateFlow<UiState<List<Product>>>(UiState.Loading)
     val productsState: StateFlow<UiState<List<Product>>> = _productsState
-
-    init {
-        getCash()
-        getProducts()
-    }
 
     private fun getCash() {
         viewModelScope.launch {
@@ -178,4 +183,53 @@ class PortfolioScreenViewModel @Inject constructor(
                 }
         }
     }
+
+    fun getFirstAdded(){
+        viewModelScope.launch {
+            _firstAddedState.value = UiState.Loading
+            getFirstAddedUseCase.execute()
+                .collect { result ->
+                    _firstAddedState.value = when {
+                        result.isSuccess -> {
+                            result.getOrNull()?.let { firstAdded ->
+                                _firstAdded.value = firstAdded
+                                UiState.Success(firstAdded)
+                            } ?: UiState.Error("FirstAdded not found")
+                        }
+                        result.isFailure -> UiState.Error(
+                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load firstAdded"
+                        )
+                        else -> UiState.Idle
+                    }
+                }
+        }
+    }
+
+    fun updateFirstAdded(newFirstAdded: Boolean){
+        viewModelScope.launch {
+            _firstAddedState.value = UiState.Loading
+
+            updateFirstAddedUseCase.execute(newFirstAdded)
+                .catch { exception ->
+                    _firstAddedState.value = UiState.Error(
+                        exception.localizedMessage ?: "Failed to update cash"
+                    )
+                }
+                .collect { result ->
+                    _firstAddedState.value = when {
+                        result.isSuccess -> {
+                            result.getOrNull()?.let { firstAdded ->
+                                _firstAdded.value = firstAdded
+                                UiState.Success(firstAdded)
+                            } ?: UiState.Error("Failed to update cash")
+                        }
+                        result.isFailure -> UiState.Error(
+                            result.exceptionOrNull()?.localizedMessage ?: "Failed to update cash"
+                        )
+                        else -> UiState.Idle
+                    }
+                }
+        }
+    }
+
 }
