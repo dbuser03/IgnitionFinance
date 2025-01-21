@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.domain.usecase.*
+import com.unimib.ignitionfinance.domain.usecase.auth.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.LoginUserUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.LoginFormState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState

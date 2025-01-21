@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.model
 
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.Settings
 
 data class UserData(
@@ -10,6 +11,7 @@ data class UserData(
     val settings: Settings,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val cash: String = "0"
-    // val productList: ProductList
+    val cash: String = "0",
+    val productList: List<Product> = emptyList(),
+    val firstAdded: Boolean = false
 )

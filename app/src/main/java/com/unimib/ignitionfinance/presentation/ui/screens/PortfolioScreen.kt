@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,20 +21,27 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
-import com.unimib.ignitionfinance.presentation.ui.screens.portfolio.PortfolioScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 
 @Composable
 fun PortfolioScreen(
     navController: NavController,
-    portfolioViewModel: PortfolioScreenViewModel = hiltViewModel()
+    viewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val dialogTitle = "Add your cash"
-    var firstAdded = false
     var showDialog by remember { mutableStateOf(false) }
+
+    val firstAdded by viewModel.firstAdded.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getFirstAdded()
+        viewModel.getCash()
+    }
 
     BackHandler(enabled = true) {
         (context as? Activity)?.moveTaskToBack(true)
@@ -44,19 +53,25 @@ fun PortfolioScreen(
         onConfirmation = { newCash ->
             showDialog = false
             newCash?.let {
-                portfolioViewModel.updateCash(it)
+                viewModel.updateCash(it)
             }
-            firstAdded = true
         },
-        onProductConfirmation = { isin, ticker, date, amount ->
+        onProductConfirmation = { isin, ticker, purchaseDate, amount ->
             showDialog = false
-            // portfolioViewModel.addNewProduct(isin, ticker, date, amount)
+            if (isin != null && ticker != null && purchaseDate != null && amount != null) {
+                val newProduct = Product(
+                    isin = isin,
+                    ticker = ticker,
+                    purchaseDate = purchaseDate,
+                    amount = amount
+                )
+                viewModel.addNewProduct(newProduct)
+            }
         },
         dialogTitle = dialogTitle,
         prefix = "€",
-        firstAdded = firstAdded
+        firstAdded = firstAdded == true
     )
-
 
     Scaffold(
         topBar = {

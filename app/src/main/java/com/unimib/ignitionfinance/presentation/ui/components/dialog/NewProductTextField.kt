@@ -34,7 +34,7 @@ fun NewProductTextField(
         value = text,
         onValueChange = { input ->
             text = input
-            onValueChange(if (input.isBlank()) null else input)
+            onValueChange(input.ifBlank { null })
         },
         label = { Text(label) },
         shape = RoundedCornerShape(56.dp),

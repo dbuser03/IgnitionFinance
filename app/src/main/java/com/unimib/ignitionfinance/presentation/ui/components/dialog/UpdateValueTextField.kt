@@ -34,7 +34,7 @@ fun UpdateValueTextField(
         value = text,
         onValueChange = { input ->
             text = input
-            onValueChange(if (input.isBlank()) null else input)
+            onValueChange(input.ifBlank { null })
         },
         label = { Text("New value") },
         shape = RoundedCornerShape(56.dp),

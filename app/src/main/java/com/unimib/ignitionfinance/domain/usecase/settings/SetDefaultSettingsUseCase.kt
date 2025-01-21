@@ -14,7 +14,7 @@ class SetDefaultSettingsUseCase @Inject constructor(){
                 withPension = "----",
                 withoutPension = "----"
             ),
-            inflationModel = "lognormal",
+            inflationModel = "LOGNORMAL",
             expenses = Expenses(
                 taxRatePercentage = "26",
                 stampDutyPercentage = "0.2",

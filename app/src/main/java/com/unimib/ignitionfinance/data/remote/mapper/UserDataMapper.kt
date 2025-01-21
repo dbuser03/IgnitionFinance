@@ -7,6 +7,7 @@ import com.unimib.ignitionfinance.data.model.user.settings.Expenses
 import com.unimib.ignitionfinance.data.model.user.settings.Intervals
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.UserData
+import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
 
 object UserDataMapper {
@@ -20,9 +21,22 @@ object UserDataMapper {
                 settings = mapSettings(this["settings"] as? Map<String, Any>),
                 createdAt = (this["createdAt"] as? Long) ?: System.currentTimeMillis(),
                 updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis(),
-                cash = (this["cash"] as? String) ?: "0"
+                cash = (this["cash"] as? String) ?: "0",
+                productList = mapProductList(this["productList"] as? List<Map<String, Any>>),
+                firstAdded = (this["firstAdded"] as? Boolean) ?: false
             )
         }
+    }
+
+    private fun mapProductList(products: List<Map<String, Any>>?): List<Product> {
+        return products?.map { productMap ->
+            Product(
+                isin = (productMap["isin"] as? String).orEmpty(),
+                ticker = (productMap["ticker"] as? String).orEmpty(),
+                purchaseDate = (productMap["purchaseDate"] as? String).orEmpty(),
+                amount = (productMap["amount"] as? String).orEmpty(),
+            )
+        } ?: emptyList()
     }
 
     private fun mapAuthData(authData: Map<String, Any>?): AuthData {
@@ -66,7 +80,16 @@ object UserDataMapper {
             "settings" to mapSettingsToMap(userData.settings),
             "createdAt" to userData.createdAt,
             "updatedAt" to userData.updatedAt,
-            "cash" to userData.cash
+            "cash" to userData.cash,
+            "productList" to userData.productList.map { product ->
+                mapOf(
+                    "isin" to product.isin,
+                    "ticker" to product.ticker,
+                    "amount" to product.amount,
+                    "purchaseDate" to product.purchaseDate,
+                )
+            },
+            "firstAdded" to userData.firstAdded
         )
     }
 
