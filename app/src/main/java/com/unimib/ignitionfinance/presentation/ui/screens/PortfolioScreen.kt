@@ -64,7 +64,7 @@ fun PortfolioScreen(
         },
         dialogTitle = dialogTitle,
         prefix = "€",
-        firstAdded = firstAdded ?: false
+        firstAdded = firstAdded == true
     )
 
     Scaffold(

@@ -94,6 +94,7 @@ class AddProductToDatabaseUseCase @Inject constructor(
         }
     }
 
+    // Cercare errore qui
     private fun executeNewProduct(
         currentUser: User,
         product: Product
@@ -104,7 +105,6 @@ class AddProductToDatabaseUseCase @Inject constructor(
                 val updatedUser = currentUser.copy(
                     productList = updatedProductList,
                     updatedAt = System.currentTimeMillis(),
-                    firstAdded = true  // Set firstAdded to true when adding first product
                 )
 
                 val localDbDeferred = async {
