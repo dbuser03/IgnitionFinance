@@ -3,10 +3,8 @@ package com.unimib.ignitionfinance.data.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.unimib.ignitionfinance.data.local.converter.DatasetConverter
 import com.unimib.ignitionfinance.data.local.converter.SyncQueueItemConverter
 import com.unimib.ignitionfinance.data.local.converter.UserConverter
-import com.unimib.ignitionfinance.data.local.entity.Dataset
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.entity.User
 
@@ -14,18 +12,15 @@ import com.unimib.ignitionfinance.data.local.entity.User
     entities = [
         User::class,
         SyncQueueItem::class,
-        Dataset::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(
     UserConverter::class,
     SyncQueueItemConverter::class,
-    DatasetConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun syncQueueItemDao(): SyncQueueItemDao
-    abstract fun datasetDao(): DatasetDao
 }

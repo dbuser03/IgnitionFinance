@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.Settings
+import java.math.BigDecimal
 
 class UserConverter {
     private val gson = Gson()
@@ -28,4 +29,18 @@ class UserConverter {
     @TypeConverter
     fun toProductList(productListString: String): List<Product>? =
         gson.fromJson(productListString, object : TypeToken<List<Product>>() {}.type)
+
+    @TypeConverter
+    fun fromDateList(datesList: List<String> ): String = gson.toJson(datesList)
+
+    @TypeConverter
+    fun toDateList (datesListString: String ): List<String>? =
+        gson.fromJson(datesListString, object : com.google.common.reflect.TypeToken<List<String>>() {}.type)
+
+    @TypeConverter
+    fun fromWeightedReturnsList(weightedReturnsList: List<BigDecimal> ): String = gson.toJson(weightedReturnsList)
+
+    @TypeConverter
+    fun toWeightedReturnsList(weightedReturnsString: String): List<BigDecimal>? =
+        gson.fromJson(weightedReturnsString, object : com.google.common.reflect.TypeToken<List<BigDecimal>>() {}.type)
 }

@@ -15,6 +15,6 @@ data class UserData(
     val cash: String = "0",
     val productList: List<Product> = emptyList(),
     val firstAdded: Boolean = false,
-    val dataset: List<List<Pair<String, BigDecimal>>> = emptyList()
+    val dataset: List<Pair<String, BigDecimal>> = emptyList()
 
 )
