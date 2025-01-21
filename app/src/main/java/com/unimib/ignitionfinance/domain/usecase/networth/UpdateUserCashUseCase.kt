@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.cash
+package com.unimib.ignitionfinance.domain.usecase.networth
 
 import android.content.Context
 import android.util.Log

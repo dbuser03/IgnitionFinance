@@ -7,8 +7,8 @@ import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.AddProductToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.usecase.UpdateProductListUseCase
-import com.unimib.ignitionfinance.domain.usecase.cash.GetUserCashUseCase
-import com.unimib.ignitionfinance.domain.usecase.cash.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.UpdateUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.flag.GetFirstAddedUseCase
 import com.unimib.ignitionfinance.domain.usecase.flag.UpdateFirstAddedUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
