@@ -3,6 +3,8 @@ package com.unimib.ignitionfinance.domain.validation.utils
 import android.util.Patterns
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object ValidationRules {
@@ -165,4 +167,16 @@ object ValidationRules {
     fun validateResetForm(email: String?): Boolean {
         return !email.isNullOrBlank() && validateEmail(email)
     }
+    // Function to validate if the date is older than a certain number of years
+    fun isDateOlderThan(dateStr: String, yearsThreshold: Long): Boolean {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return try {
+            val date = LocalDate.parse(dateStr, formatter)
+            val currentDate = LocalDate.now()
+            date.isBefore(currentDate.minusYears(yearsThreshold))
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 }
