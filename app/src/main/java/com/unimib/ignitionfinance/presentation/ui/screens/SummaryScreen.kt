@@ -6,13 +6,18 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.presentation.model.InputBoxModel
+import com.unimib.ignitionfinance.presentation.ui.components.NetworthDisplay
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
@@ -37,7 +42,15 @@ fun SummaryScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-
+                NetworthDisplay(
+                    inputBoxModel = InputBoxModel(
+                        label = "Net Worth",
+                        prefix = "$",
+                        inputValue = remember{mutableStateOf(TextFieldValue("150,000"))},
+                        key = "Networth",
+                        iconResId = R.drawable.outline_person_apron_24
+                    ),
+                )
             }
         }
     )
