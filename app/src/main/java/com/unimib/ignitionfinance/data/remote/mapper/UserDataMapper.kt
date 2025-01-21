@@ -9,6 +9,7 @@ import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.UserData
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
+import java.math.BigDecimal
 
 object UserDataMapper {
 
@@ -23,9 +24,18 @@ object UserDataMapper {
                 updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis(),
                 cash = (this["cash"] as? String) ?: "0",
                 productList = mapProductList(this["productList"] as? List<Map<String, Any>>),
-                firstAdded = (this["firstAdded"] as? Boolean) ?: false
+                firstAdded = (this["firstAdded"] as? Boolean) ?: false,
+                dataset = mapDataset(this["dataset"] as? List<Pair<String, BigDecimal>>),
             )
         }
+    }
+    private fun mapDataset(dataset: List<Any>?): List<Pair<String, BigDecimal>> {
+        return dataset?.map { pair ->
+            val map = pair as? Map<String, Any>
+            val date = (map?.get("first") as? String).orEmpty()
+            val value = (map?.get("second") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            Pair(date, value)
+        } ?: emptyList()
     }
 
     private fun mapProductList(products: List<Map<String, Any>>?): List<Product> {
@@ -89,7 +99,13 @@ object UserDataMapper {
                     "purchaseDate" to product.purchaseDate,
                 )
             },
-            "firstAdded" to userData.firstAdded
+            "firstAdded" to userData.firstAdded,
+            "dataset" to userData.dataset.map { (date, value) ->
+                mapOf(
+                    "first" to date,
+                    "second" to value.toString()
+                )
+            }
         )
     }
 
