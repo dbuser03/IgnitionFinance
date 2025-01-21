@@ -15,7 +15,9 @@ object UserMapper {
             surname = user.surname,
             authData = user.authData,
             settings = user.settings,
-            cash = user.cash
+            cash = user.cash,
+            productList = user.productList,
+            firstAdded = user.firstAdded
         )
     }
 
@@ -32,7 +34,9 @@ object UserMapper {
                 intervals = Intervals("", "", ""),
                 numberOfSimulations = ""
             ),
-            cash = userData?.cash ?: "0"
+            cash = userData?.cash ?: "0",
+            productList = userData?.productList ?: emptyList(),
+            firstAdded = userData?.firstAdded ?: false
         )
     }
 }
