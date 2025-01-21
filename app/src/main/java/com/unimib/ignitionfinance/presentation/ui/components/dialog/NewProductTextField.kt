@@ -20,34 +20,36 @@ fun NewProductTextField(
     modifier: Modifier = Modifier,
     label: String,
     onValueChange: (String?) -> Unit,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    focusRequester: FocusRequester,
+    nextFocusRequester: FocusRequester? = null,
+    isLastField: Boolean = false,
+    onDone: (() -> Unit)? = null
 ) {
     var text by remember { mutableStateOf("") }
-    val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
 
     OutlinedTextField(
         value = text,
         onValueChange = { input ->
             text = input
-            onValueChange(if (input.isBlank()) null else input)
+            onValueChange(input.ifBlank { null })
         },
         label = { Text(label) },
         shape = RoundedCornerShape(56.dp),
         colors = getTextFieldColors(isError = errorMessage != null),
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
+            keyboardType = keyboardType,
+            imeAction = if (isLastField) ImeAction.Done else ImeAction.Next
         ),
         keyboardActions = KeyboardActions(
+            onNext = {
+                nextFocusRequester?.requestFocus()
+            },
             onDone = {
-                if (errorMessage == null) {
-                    keyboardController?.hide()
-                }
+                keyboardController?.hide()
+                onDone?.invoke()
             }
         ),
         modifier = modifier

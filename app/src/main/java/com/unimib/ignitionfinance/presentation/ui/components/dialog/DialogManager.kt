@@ -6,16 +6,30 @@ import androidx.compose.runtime.*
 fun DialogManager(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    onConfirmation: (String?) -> Unit,
+    onConfirmation: ((String?) -> Unit)? = null,
+    onProductConfirmation: ((String?, String?, String?, String?) -> Unit)? = null,
     dialogTitle: String,
-    prefix: String
+    prefix: String,
+    firstAdded: Boolean = false
 ) {
     if (showDialog) {
-        UpdateValueDialog(
-            onDismissRequest = onDismissRequest,
-            onConfirmation = onConfirmation,
-            dialogTitle = dialogTitle,
-            prefix = prefix
-        )
+        if (!firstAdded) {
+            requireNotNull(onConfirmation) { "onConfirmation must be provided when showing UpdateValueDialog" }
+
+            UpdateValueDialog(
+                onDismissRequest = onDismissRequest,
+                onConfirmation = onConfirmation,
+                dialogTitle = dialogTitle,
+                prefix = prefix
+            )
+        } else {
+            requireNotNull(onProductConfirmation) { "onProductConfirmation must be provided when showing NewProductDialog" }
+
+            NewProductDialog(
+                onDismissRequest = onDismissRequest,
+                onProductConfirmation = onProductConfirmation,
+                dialogTitle = dialogTitle
+            )
+        }
     }
 }

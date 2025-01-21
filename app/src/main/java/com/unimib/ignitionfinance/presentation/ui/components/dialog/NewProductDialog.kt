@@ -11,33 +11,50 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
+import com.unimib.ignitionfinance.domain.validation.ProductValidationResult
+import com.unimib.ignitionfinance.domain.validation.ProductValidator
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
-import java.text.SimpleDateFormat
-import java.util.Locale
-
 
 @Composable
 fun NewProductDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: (String?, String?, String?, String?) -> Unit,
+    onProductConfirmation: (String?, String?, String?, String?) -> Unit,
     dialogTitle: String,
 ) {
     var isinInput by remember { mutableStateOf<String?>(null) }
     var tickerInput by remember { mutableStateOf<String?>(null) }
-    var dateInput by remember { mutableStateOf<String?>(null) }
+    var purchaseDateInput by remember { mutableStateOf<String?>(null) }
     var amountInput by remember { mutableStateOf<String?>(null) }
 
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isinError by remember { mutableStateOf<String?>(null) }
+    var tickerError by remember { mutableStateOf<String?>(null) }
+    var purchaseDateError by remember { mutableStateOf<String?>(null) }
+    var amountError by remember { mutableStateOf<String?>(null) }
 
-    val isInputValid = errorMessage == null
+    val isinFocusRequester = remember { FocusRequester() }
+    val tickerFocusRequester = remember { FocusRequester() }
+    val purchaseDateFocusRequester = remember { FocusRequester() }
+    val amountFocusRequester = remember { FocusRequester() }
+
+    val isFormValid = remember(isinInput, tickerInput, purchaseDateInput, amountInput) {
+        when (ProductValidator.validateNewProductForm(isinInput, tickerInput, purchaseDateInput, amountInput)) {
+            is ProductValidationResult.Success -> true
+            is ProductValidationResult.Failure -> false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        isinFocusRequester.requestFocus()
+    }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -45,18 +62,18 @@ fun NewProductDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (isInputValid) {
-                        onConfirmation(isinInput, tickerInput, dateInput, amountInput)
+                    if (isFormValid) {
+                        onProductConfirmation(isinInput, tickerInput, purchaseDateInput, amountInput)
                     }
                 },
-                enabled = isInputValid,
+                enabled = isFormValid,
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text(
                     "Confirm",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = TypographyMedium.bodyMedium.fontWeight,
-                        color = if (isInputValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isFormValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
@@ -94,30 +111,36 @@ fun NewProductDialog(
             ) {
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Product ISIN",
+                    label = "ISIN",
+                    keyboardType = KeyboardType.Text,
                     onValueChange = { input ->
                         isinInput = input
-                        if (input != null) {
-                            errorMessage = if (input.isEmpty()) {
-                                "ISIN is required"
-                            } else null
+                        isinError = when (val result = ProductValidator.validateIsin(input)) {
+                            is ProductValidationResult.Success -> null
+                            is ProductValidationResult.Failure -> result.message
                         }
                     },
-                    errorMessage = errorMessage
+                    errorMessage = isinError,
+                    focusRequester = isinFocusRequester,
+                    nextFocusRequester = tickerFocusRequester
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
 
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Product TICKER",
+                    label = "TICKER",
+                    keyboardType = KeyboardType.Text,
                     onValueChange = { input ->
                         tickerInput = input
-                        errorMessage = if (input?.length != 4) {
-                            "Ticker must be exactly 4 characters"
-                        } else null
+                        tickerError = when (val result = ProductValidator.validateTicker(input)) {
+                            is ProductValidationResult.Success -> null
+                            is ProductValidationResult.Failure -> result.message
+                        }
                     },
-                    errorMessage = errorMessage
+                    errorMessage = tickerError,
+                    focusRequester = tickerFocusRequester,
+                    nextFocusRequester = purchaseDateFocusRequester
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
@@ -125,24 +148,17 @@ fun NewProductDialog(
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Purchase Date",
+                    keyboardType = KeyboardType.Text,
                     onValueChange = { input ->
-                        dateInput = input
-                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                        val parsedDate = try {
-                            if (input != null) {
-                                dateFormat.parse(input)
-                            } else {
-                                null
-                            }
-                        } catch (e: Exception) {
-                            null
+                        purchaseDateInput = input
+                        purchaseDateError = when (val result = ProductValidator.validatePurchaseDate(input)) {
+                            is ProductValidationResult.Success -> null
+                            is ProductValidationResult.Failure -> result.message
                         }
-                        errorMessage = if (parsedDate == null) {
-                            "Invalid date format"
-                        } else null
                     },
-                    errorMessage = errorMessage,
-                    //keyboardType = KeyboardType.Number
+                    errorMessage = purchaseDateError,
+                    focusRequester = purchaseDateFocusRequester,
+                    nextFocusRequester = amountFocusRequester
                 )
 
                 Spacer(modifier = Modifier.height(5.dp))
@@ -150,37 +166,24 @@ fun NewProductDialog(
                 NewProductTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "€ Amount",
+                    keyboardType = KeyboardType.Number,
                     onValueChange = { input ->
                         amountInput = input
-                        if (input != null) {
-                            errorMessage = if (input.isEmpty() || input.toDoubleOrNull() == null) {
-                                "Amount must be a valid number"
-                            } else null
+                        amountError = when (val result = ProductValidator.validateAmount(input)) {
+                            is ProductValidationResult.Success -> null
+                            is ProductValidationResult.Failure -> result.message
                         }
                     },
-                    errorMessage = errorMessage,
-                    //keyboardType = KeyboardType.Number
+                    errorMessage = amountError,
+                    focusRequester = amountFocusRequester,
+                    isLastField = true,
+                    onDone = {
+                        if (isFormValid) {
+                            onProductConfirmation(isinInput, tickerInput, purchaseDateInput, amountInput)
+                        }
+                    }
                 )
             }
-        },
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewNewProductDialog() {
-    IgnitionFinanceTheme {
-        var showDialog by remember { mutableStateOf(true) }
-
-        if (showDialog) {
-            NewProductDialog(
-                onDismissRequest = { showDialog = false },
-                onConfirmation = { isin, ticker, date, amount ->
-                    println("Confirmed: ISIN=$isin, Ticker=$ticker, Date=$date, Amount=$amount")
-                    showDialog = false
-                },
-                dialogTitle = "Add a new product"
-            )
         }
-    }
+    )
 }

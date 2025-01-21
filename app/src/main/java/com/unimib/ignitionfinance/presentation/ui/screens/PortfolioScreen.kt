@@ -19,18 +19,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
-import com.unimib.ignitionfinance.presentation.ui.screens.portfolio.PortfolioScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 
 @Composable
 fun PortfolioScreen(
     navController: NavController,
-    portfolioViewModel: PortfolioScreenViewModel = hiltViewModel()
+    viewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val dialogTitle = "Add your cash"
+    var firstAdded by remember { mutableStateOf(false) } // va recuperato tramite viewmodel
     var showDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
@@ -43,13 +45,27 @@ fun PortfolioScreen(
         onConfirmation = { newCash ->
             showDialog = false
             newCash?.let {
-                portfolioViewModel.updateCash(it)
+                viewModel.updateCash(it)
             }
-
+            firstAdded = true
+        },
+        onProductConfirmation = { isin, ticker, purchaseDate, amount ->
+            showDialog = false
+            if (isin != null && ticker != null && purchaseDate != null && amount != null) {
+                val newProduct = Product(
+                    isin = isin,
+                    ticker = ticker,
+                    purchaseDate = purchaseDate,
+                    amount = amount
+                )
+                viewModel.addNewProduct(newProduct)
+            }
         },
         dialogTitle = dialogTitle,
         prefix = "€",
+        firstAdded = firstAdded
     )
+
 
     Scaffold(
         topBar = {

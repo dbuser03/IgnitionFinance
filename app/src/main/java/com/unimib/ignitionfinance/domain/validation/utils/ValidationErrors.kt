@@ -32,4 +32,12 @@ object ValidationErrors {
         const val EMAIL_ERROR = Common.INVALID_EMAIL
         const val INVALID_FORM = "Invalid password reset form"
     }
+
+    object NewProduct {
+        const val INVALID_ISIN = "ISIN must be 12 characters: 2 letters country code, 9 alphanumeric characters, and 1 check digit"
+        const val INVALID_TICKER = "Ticker must be 1-5 uppercase letters"
+        const val INVALID_PURCHASE_DATE = "Date must be in format dd/mm/yyyy, dd-mm-yyyy, dd/mm/yy or dd-mm-yy"
+        const val INVALID_AMOUNT = "Amount must be a positive number"
+        const val INVALID_FORM = "Invalid product form"
+    }
 }

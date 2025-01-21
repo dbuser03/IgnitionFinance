@@ -1,6 +1,9 @@
 package com.unimib.ignitionfinance.domain.validation.utils
 
 import android.util.Patterns
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 object ValidationRules {
     private object Configs {
@@ -19,6 +22,15 @@ object ValidationRules {
             minLength = 3,
             allowSingleWordOnly = true
         )
+
+        val TICKER_PATTERN = Regex("^[A-Z]{1,5}$")
+        val ISIN_PATTERN = Regex("^[A-Z]{2}[A-Z0-9]{9}\\d$")
+        val DATE_PATTERNS = listOf(
+            "dd/MM/yyyy",
+            "dd-MM-yyyy",
+            "dd/MM/yy",
+            "dd-MM/yy"
+        ).map { SimpleDateFormat(it, Locale.getDefault()) }
     }
 
     data class PasswordRule(
@@ -81,6 +93,36 @@ object ValidationRules {
                 (!requireSingleWord || email.isSingleWord())
     }
 
+    fun validateTicker(ticker: String?): Boolean {
+        if (ticker.isNullOrBlank()) return false
+        return Configs.TICKER_PATTERN.matches(ticker.trim())
+    }
+
+    fun validateIsin(isin: String?): Boolean {
+        if (isin.isNullOrBlank()) return false
+        return Configs.ISIN_PATTERN.matches(isin.trim())
+    }
+
+    fun validatePurchaseDate(date: String?): Boolean {
+        if (date.isNullOrBlank()) return false
+
+        val trimmedDate = date.trim()
+        return Configs.DATE_PATTERNS.any { formatter ->
+            try {
+                formatter.isLenient = false // Ensures strict date parsing
+                formatter.parse(trimmedDate)
+                true
+            } catch (_: ParseException) {
+                false
+            }
+        }
+    }
+
+    fun validateAmount(amount: String?): Boolean {
+        if (amount.isNullOrBlank()) return false
+        return amount.trim().toDoubleOrNull()?.let { it > 0 } == true
+    }
+
     fun validateLoginForm(email: String?, password: String?): Boolean {
         return !email.isNullOrBlank() &&
                 !password.isNullOrBlank() &&
@@ -102,6 +144,22 @@ object ValidationRules {
                 surname.validateName(Configs.NAME_RULES) &&
                 validateEmail(email, requireSingleWord = true) &&
                 password.validatePassword(Configs.PASSWORD_RULES)
+    }
+
+    fun validateNewProductDialog(
+        isin: String?,
+        ticker: String?,
+        date: String?,
+        amount: String?
+    ): Boolean {
+        return !isin.isNullOrBlank() &&
+                !ticker.isNullOrBlank() &&
+                !date.isNullOrBlank() &&
+                !amount.isNullOrBlank() &&
+                validateIsin(isin) &&
+                validateTicker(ticker) &&
+                validatePurchaseDate(date) &&
+                validateAmount(amount)
     }
 
     fun validateResetForm(email: String?): Boolean {

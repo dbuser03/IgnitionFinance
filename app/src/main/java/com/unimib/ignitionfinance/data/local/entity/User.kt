@@ -18,6 +18,6 @@ data class User(
     @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "last_sync_timestamp") val lastSyncTimestamp: Long? = null,
     @ColumnInfo(name = "cash") val cash: String = "0",
-    @ColumnInfo(name = "product_list", typeAffinity = ColumnInfo.TEXT) val productList: List<Product> = emptyList(),
+    @ColumnInfo(name = "product_list") val productList: List<Product> = emptyList(),
     @ColumnInfo(name = "first_added") val firstAdded: Boolean = false
 )
