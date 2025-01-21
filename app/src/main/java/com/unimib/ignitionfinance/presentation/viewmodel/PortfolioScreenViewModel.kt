@@ -3,8 +3,8 @@ package com.unimib.ignitionfinance.presentation.ui.screens.portfolio
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.domain.usecase.GetUserCashUseCase
-import com.unimib.ignitionfinance.domain.usecase.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.cash.GetUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.cash.UpdateUserCashUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

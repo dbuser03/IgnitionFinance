@@ -8,7 +8,6 @@ import com.unimib.ignitionfinance.data.local.utils.SyncStatus
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
-import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
@@ -23,17 +22,15 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-
-class AddProductToDatabaseUseCase @Inject constructor(
+class UpdateProductListUseCase @Inject constructor(
     private val authRepository: AuthRepository,
+    private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
-    private val localDatabaseRepository: LocalDatabaseRepository<User>,
-    private val firestoreRepository: FirestoreRepository,
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
-    fun handleProductStorage(product: Product): Flow<Result<Unit?>> = flow {
+    fun addProduct(product: Product): Flow<Result<Unit>> = flow {
         try {
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
@@ -45,17 +42,18 @@ class AddProductToDatabaseUseCase @Inject constructor(
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
                 ?: throw IllegalStateException("User not found in local database")
 
-            val existingProductIndex = currentUser.productList.indexOfFirst { it.ticker == product.ticker }
-
-            if (existingProductIndex != -1) {
-                executeExistingProduct(currentUser, product, existingProductIndex).collect {
-                    emit(it)
-                }
-            } else {
-                executeNewProduct(currentUser, product).collect {
-                    emit(it)
-                }
+            if (currentUser.productList.any { it.ticker == product.ticker }) {
+                throw IllegalStateException("Product with ticker ${product.ticker} already exists")
             }
+
+            executeUpdate(currentUser) { user ->
+                user.copy(
+                    productList = user.productList + product,
+                    updatedAt = System.currentTimeMillis(),
+                    firstAdded = user.productList.isEmpty()
+                )
+            }.collect { emit(it) }
+
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -63,30 +61,29 @@ class AddProductToDatabaseUseCase @Inject constructor(
         }
     }
 
-    private fun executeExistingProduct(
-        currentUser: User,
-        product: Product,
-        index: Int
-    ): Flow<Result<Unit?>> = flow {
+    fun removeProduct(productId: String): Flow<Result<Unit>> = flow {
         try {
-            val updatedProductList = currentUser.productList.toMutableList()
-            updatedProductList[index] = product
+            val currentUserResult = authRepository.getCurrentUser().first()
+            val authData = currentUserResult.getOrNull()
+                ?: throw IllegalStateException("Failed to get current user")
 
-            val updatedUser = currentUser.copy(
-                productList = updatedProductList,
-                updatedAt = System.currentTimeMillis()
-            )
+            val userId = authData.id.takeIf { it.isNotEmpty() }
+                ?: throw IllegalStateException("User ID is missing")
 
-            localDatabaseRepository.update(updatedUser).first()
+            val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
+                ?: throw IllegalStateException("User not found in local database")
 
-            val syncQueueItem = createSyncQueueItem(updatedUser)
-            syncQueueItemRepository.insert(syncQueueItem)
-
-            withContext(Dispatchers.IO) {
-                SyncOperationScheduler.scheduleOneTime<User>(context)
+            if (!currentUser.productList.any { it.ticker == productId }) {
+                throw IllegalStateException("Product with ticker $productId not found")
             }
 
-            emit(Result.success(Unit))
+            executeUpdate(currentUser) { user ->
+                user.copy(
+                    productList = user.productList.filter { it.ticker != productId },
+                    updatedAt = System.currentTimeMillis()
+                )
+            }.collect { emit(it) }
+
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -94,18 +91,42 @@ class AddProductToDatabaseUseCase @Inject constructor(
         }
     }
 
-    private fun executeNewProduct(
-        currentUser: User,
-        product: Product
-    ): Flow<Result<Unit?>> = flow {
+    fun updateProduct(updatedProduct: Product): Flow<Result<Unit>> = flow {
+        try {
+            val currentUserResult = authRepository.getCurrentUser().first()
+            val authData = currentUserResult.getOrNull()
+                ?: throw IllegalStateException("Failed to get current user")
+
+            val userId = authData.id.takeIf { it.isNotEmpty() }
+                ?: throw IllegalStateException("User ID is missing")
+
+            val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
+                ?: throw IllegalStateException("User not found in local database")
+
+            if (!currentUser.productList.any { it.ticker == updatedProduct.ticker }) {
+                throw IllegalStateException("Product with ticker ${updatedProduct.ticker} not found")
+            }
+
+            executeUpdate(currentUser) { user ->
+                user.copy(
+                    productList = user.productList.map {
+                        if (it.ticker == updatedProduct.ticker) updatedProduct else it
+                    },
+                    updatedAt = System.currentTimeMillis()
+                )
+            }.collect { emit(it) }
+
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
+    private fun executeUpdate(currentUser: User, updateFunction: (User) -> User): Flow<Result<Unit>> = flow {
         try {
             coroutineScope {
-                val updatedProductList = currentUser.productList + product
-                val updatedUser = currentUser.copy(
-                    productList = updatedProductList,
-                    updatedAt = System.currentTimeMillis(),
-                    firstAdded = true  // Set firstAdded to true when adding first product
-                )
+                val updatedUser = updateFunction(currentUser)
 
                 val localDbDeferred = async {
                     localDatabaseRepository.update(updatedUser).first()

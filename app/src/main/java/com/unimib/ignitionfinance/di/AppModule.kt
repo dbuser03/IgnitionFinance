@@ -21,7 +21,7 @@ import com.unimib.ignitionfinance.data.repository.implementation.LocalDatabaseRe
 import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
-import com.unimib.ignitionfinance.domain.usecase.AddUserToDatabaseUseCase
+import com.unimib.ignitionfinance.domain.usecase.auth.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.RegisterNewUserUseCase

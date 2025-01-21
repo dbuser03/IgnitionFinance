@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.flag
 
 import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User

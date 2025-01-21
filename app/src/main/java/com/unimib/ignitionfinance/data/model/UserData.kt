@@ -12,6 +12,7 @@ data class UserData(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val cash: String = "0",
+    // val invested: String = "0",
     val productList: List<Product> = emptyList(),
     val firstAdded: Boolean = false
 )
