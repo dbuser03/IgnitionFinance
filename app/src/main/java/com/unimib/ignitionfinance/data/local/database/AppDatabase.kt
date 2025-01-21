@@ -13,7 +13,7 @@ import com.unimib.ignitionfinance.data.local.entity.User
         User::class,
         SyncQueueItem::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = true
 )
 @TypeConverters(

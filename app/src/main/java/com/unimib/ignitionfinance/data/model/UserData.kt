@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.model
 
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.Settings
 import java.math.BigDecimal
@@ -15,6 +16,6 @@ data class UserData(
     val cash: String = "0",
     val productList: List<Product> = emptyList(),
     val firstAdded: Boolean = false,
-    val dataset: List<Pair<String, BigDecimal>> = emptyList()
+    val dataset: List<DailyReturn> = emptyList()
 
 )
