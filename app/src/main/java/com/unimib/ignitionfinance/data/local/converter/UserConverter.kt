@@ -31,16 +31,10 @@ class UserConverter {
         gson.fromJson(productListString, object : TypeToken<List<Product>>() {}.type)
 
     @TypeConverter
-    fun fromDateList(datesList: List<String> ): String = gson.toJson(datesList)
+    fun fromDataset(dataset: List<Pair<String, BigDecimal>> ): String = gson.toJson(dataset)
 
     @TypeConverter
-    fun toDateList (datesListString: String ): List<String>? =
-        gson.fromJson(datesListString, object : com.google.common.reflect.TypeToken<List<String>>() {}.type)
+    fun toDataset (datasetString : String ): List<Pair<String, BigDecimal>>? =
+        gson.fromJson(datasetString, object : com.google.common.reflect.TypeToken<List<String>>() {}.type)
 
-    @TypeConverter
-    fun fromWeightedReturnsList(weightedReturnsList: List<BigDecimal> ): String = gson.toJson(weightedReturnsList)
-
-    @TypeConverter
-    fun toWeightedReturnsList(weightedReturnsString: String): List<BigDecimal>? =
-        gson.fromJson(weightedReturnsString, object : com.google.common.reflect.TypeToken<List<BigDecimal>>() {}.type)
 }
