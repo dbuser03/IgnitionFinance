@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
@@ -17,6 +19,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.settings.input.Inpu
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 //da qui faccio getCash
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 //scrivo metodo che usi useCase (copia getCash di stef), fare in modo che la quantità sia la somma di getCash+getInvested
 
 @Composable
@@ -25,6 +28,14 @@ fun NetworthDisplay(
     portfolioViewModel: PortfolioScreenViewModel,
     summaryScreenViewModel: SummaryScreenViewModel
 ) {
+    val cash = summaryScreenViewModel.cash.collectAsState()
+    val cashState = summaryScreenViewModel.cashState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        summaryScreenViewModel.getCash()
+        summaryScreenViewModel.getInvested()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,10 +58,36 @@ fun NetworthDisplay(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                InputBoxBody(
+                /*InputBoxBody(
                     prefix = inputBoxModel.prefix,
                     inputValue = inputBoxModel.inputValue.value.text
-                )
+                )*/
+                when (val state = cashState.value) {
+                    is UiState.Loading -> {
+                        Text(
+                            text = "Calculating...",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    is UiState.Success -> {
+                        InputBoxBody(
+                            prefix = inputBoxModel.prefix,
+                            inputValue = cash.value ?: "0"
+                        )
+                    }
+
+                    is UiState.Error -> {
+                        Text(
+                            text = "Error calculating networth",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
+                    else -> Unit
+                }
             }
         }
     }
