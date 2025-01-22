@@ -1,6 +1,6 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.networth
 
-import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.domain.usecase.GetProductListUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
