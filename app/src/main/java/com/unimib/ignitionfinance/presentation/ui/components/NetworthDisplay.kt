@@ -14,16 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxBody
-//import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 //da qui faccio getCash
-//import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 //scrivo metodo che usi useCase (copia getCash di stef), fare in modo che la quantità sia la somma di getCash+getInvested
 
 @Composable
 fun NetworthDisplay(
     inputBoxModel: InputBoxModel,
-    //portfolioViewModel: PortfolioScreenViewModel,
-    //summaryScreenViewModel: SummaryScreenViewModel
+    portfolioViewModel: PortfolioScreenViewModel,
+    summaryScreenViewModel: SummaryScreenViewModel
 ) {
     Column(
         modifier = Modifier

@@ -21,7 +21,7 @@ class SummaryScreenViewModel @Inject constructor (
     private val _investedState = MutableStateFlow<UiState<String>>(UiState.Loading)
     val investedState: StateFlow<UiState<String>> = _investedState
 
-    fun getCash() {
+    fun getInvested() {
         viewModelScope.launch {
             _investedState.value = UiState.Loading
             getUserCashUseCase.execute()
