@@ -25,7 +25,7 @@ import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 @Composable
 fun NetworthDisplay(
     inputBoxModel: InputBoxModel,
-    portfolioViewModel: PortfolioScreenViewModel,
+    portfolioScreenViewModel: PortfolioScreenViewModel,
     summaryScreenViewModel: SummaryScreenViewModel
 ) {
     val cash = summaryScreenViewModel.cash.collectAsState()
