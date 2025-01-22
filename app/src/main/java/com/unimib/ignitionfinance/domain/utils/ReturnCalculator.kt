@@ -1,29 +1,100 @@
 package com.unimib.ignitionfinance.domain.utils
 
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
+import com.unimib.ignitionfinance.data.model.dataset.HistoricalData
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class ReturnCalculator {
-    fun calculateWeightedReturns(historicalData: Map<String, List<Map<String, Any>>>): DailyReturn {
-        val weightedReturns = mutableListOf<Map<String, Any>>()
+    /**
+     * Calculates daily returns from historical data for multiple products
+     * @param historicalData Map of product ID to its historical data
+     * @param capitals Map of product ID to its capital amount
+     * @return List of DailyReturn objects
+     */
+    fun calculateDailyReturns(
+        historicalData: Map<String, List<HistoricalData>>,
+        capitals: Map<String, BigDecimal>
+    ): List<DailyReturn> {
+        // Get all unique dates from all products
+        val allDates = historicalData.values.flatten()
+            .map { it.date }
+            .distinct()
+            .sorted()
 
-        // Assuming historicalData is a map where the key is the product ID and the value is a list of daily data points
-        val dates = historicalData.values.flatten().map { it["date"] as String }.distinct()
-
-        for (date in dates) {
-            val dailyData = historicalData.values.mapNotNull { productData ->
-                productData.find { it["date"] == date }
+        return allDates.map { date ->
+            // Get data for all products on this date
+            val dailyData = historicalData.mapNotNull { (productId, data) ->
+                val dayData = data.find { it.date == date }
+                if (dayData != null) {
+                    Pair(productId, dayData)
+                } else null
             }
 
-            if (dailyData.size == 1) {
-                weightedReturns.add(dailyData.first())
-            } else if (dailyData.isNotEmpty()) {
-                val totalCapital = dailyData.sumOf { it["capital"] as Double }
-                val weightedReturn = dailyData.sumOf { (it["capital"] as Double) * (it["return"] as Double) } / totalCapital
-
-                weightedReturns.add(mapOf("date" to date, "return" to weightedReturn))
+            when {
+                // Case 4a: Only one product available for this date
+                dailyData.size == 1 -> {
+                    val (productId, data) = dailyData.first()
+                    val dailyReturn = calculateDailyReturn(data)
+                    DailyReturn(date, dailyReturn)
+                }
+                // Case 4b: Multiple products available - calculate weighted average
+                dailyData.isNotEmpty() -> {
+                    val weightedReturn = calculateWeightedReturn(dailyData, capitals)
+                    DailyReturn(date, weightedReturn)
+                }
+                // No data available for this date
+                else -> DailyReturn(date, BigDecimal.ZERO)
             }
         }
-
-        return DailyReturn(weightedReturns)
     }
+
+    /**
+     * Calculates daily return for a single product
+     */
+    private fun calculateDailyReturn(data: HistoricalData): BigDecimal {
+        return ((data.close - data.open) / data.open)
+            .setScale(6, RoundingMode.HALF_UP)
+    }
+
+    /**
+     * Calculates weighted average return for multiple products
+     */
+    private fun calculateWeightedReturn(
+        dailyData: List<Pair<String, HistoricalData>>,
+        capitals: Map<String, BigDecimal>
+    ): BigDecimal {
+        val totalCapital = dailyData
+            .sumOf { (productId, _) -> capitals[productId] ?: BigDecimal.ZERO }
+
+        if (totalCapital == BigDecimal.ZERO) {
+            return BigDecimal.ZERO
+        }
+
+        val weightedSum = dailyData.sumOf { (productId, data) ->
+            val capital = capitals[productId] ?: BigDecimal.ZERO
+            val dailyReturn = calculateDailyReturn(data)
+            capital * dailyReturn
+        }
+
+        return (weightedSum / totalCapital)
+            .setScale(6, RoundingMode.HALF_UP)
+    }
+    /*
+    To use this calculator:
+val calculator = ReturnCalculator()
+
+// Example usage
+val historicalData = mapOf(
+    "product1" to listOf(HistoricalData(...)),
+    "product2" to listOf(HistoricalData(...))
+)
+
+val capitals = mapOf(
+    "product1" to BigDecimal("1000"),
+    "product2" to BigDecimal("2000")
+)
+
+val dailyReturns = calculator.calculateDailyReturns(historicalData, capitals)
+     */
 }
