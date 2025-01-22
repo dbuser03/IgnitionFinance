@@ -88,4 +88,13 @@ class DailyReturnCalculator {
             BigDecimal.ZERO
         }
     }
+    /*
+
+Le date vengono prese dai dati dei prodotti nel metodo getAllDates. In questo metodo, viene esaminato l'input productsData, che è una mappa di tipo Map<String, Map<String, StockData>>. In questa mappa:
+
+La chiave esterna è una stringa che rappresenta il nome del prodotto.
+La chiave interna (della mappa interna) è una stringa che rappresenta la data.
+Il valore della mappa interna è un oggetto StockData che contiene informazioni sul prodotto per quella data specifica.
+Nel metodo getAllDates, si esplorano tutte le date contenute in ciascun prodotto (dove la chiave interna della mappa rappresenta la data) e si raccolgono tutte le date uniche da tutti i prodotti in un insieme (Set<String>). Queste date vengono poi utilizzate nel ciclo per calcolare i rendimenti giornalieri.
+     */
 }
