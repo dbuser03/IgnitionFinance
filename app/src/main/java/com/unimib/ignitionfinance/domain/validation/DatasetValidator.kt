@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationErrors
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationRules
 import java.time.LocalDate
@@ -7,11 +8,10 @@ import java.time.format.DateTimeFormatter
 
 object DatasetValidator {
 
-    fun validate(historicalData: Map<String, List<Map<String, Any>>>): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    fun validate(stockData: Map<String, List<Map<String, Any>>>): String {
         val currentDate = LocalDate.now()
 
-        for (productData in historicalData.values) {
+        for (productData in stockData.values) {
             if (productData.isNotEmpty()) {
                 val firstDateStr = productData.first()["date"] as? String
                 if (firstDateStr.isNullOrBlank()) {

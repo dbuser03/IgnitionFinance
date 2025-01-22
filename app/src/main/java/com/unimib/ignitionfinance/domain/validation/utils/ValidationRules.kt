@@ -167,7 +167,7 @@ object ValidationRules {
     fun validateResetForm(email: String?): Boolean {
         return !email.isNullOrBlank() && validateEmail(email)
     }
-    // Function to validate if the date is older than a certain number of years
+
     fun isDateOlderThan(dateStr: String, yearsThreshold: Long): Boolean {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return try {
