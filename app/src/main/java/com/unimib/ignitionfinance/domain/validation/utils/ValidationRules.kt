@@ -1,6 +1,8 @@
 package com.unimib.ignitionfinance.domain.validation.utils
 
+import android.os.Build
 import android.util.Patterns
+import androidx.annotation.RequiresApi
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -168,6 +170,7 @@ object ValidationRules {
         return !email.isNullOrBlank() && validateEmail(email)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun isDateOlderThan(dateStr: String, yearsThreshold: Long): Boolean {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return try {
