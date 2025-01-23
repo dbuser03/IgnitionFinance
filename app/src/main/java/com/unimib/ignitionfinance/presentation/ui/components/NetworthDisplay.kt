@@ -40,17 +40,16 @@ fun NetworthDisplay(
         summaryScreenViewModel.getInvested()
     }
 
-    LaunchedEffect(cash.value, invested.value) {
+    /*LaunchedEffect(cash.value, invested.value) {
         Log.d("NetworthDisplay", "Cash value: ${cash.value}")
         Log.d("NetworthDisplay", "Invested value: ${invested.value}")
 
-        // Calculate and log total networth
         val cashValue = cash.value?.toDoubleOrNull() ?: 0.0
         val investedValue = invested.value?.toDoubleOrNull() ?: 0.0
         val totalNetworth = cashValue + investedValue
 
         Log.d("NetworthDisplay", "Total Networth: $totalNetworth")
-    }
+    }*/
 
     Column(
         modifier = Modifier
