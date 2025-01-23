@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-@HiltViewModel
+//@HiltViewModel
 class SummaryScreenViewModel @Inject constructor (
     private val getUserCashUseCase: GetUserCashUseCase,
     private val getUserInvestedUseCase: GetUserInvestedUseCase
