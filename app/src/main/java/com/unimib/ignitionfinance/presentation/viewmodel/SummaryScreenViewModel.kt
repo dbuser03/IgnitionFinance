@@ -6,12 +6,12 @@ import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.GetUserInvestedUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-//@HiltViewModel
+@HiltViewModel
 class SummaryScreenViewModel @Inject constructor (
     private val getUserCashUseCase: GetUserCashUseCase,
     private val getUserInvestedUseCase: GetUserInvestedUseCase
