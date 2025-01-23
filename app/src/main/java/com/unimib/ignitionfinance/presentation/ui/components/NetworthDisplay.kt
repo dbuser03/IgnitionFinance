@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.presentation.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,9 @@ import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewMode
 //da qui faccio getCash
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
+import java.text.NumberFormat
+import java.util.Locale
+
 //scrivo metodo che usi useCase (copia getCash di stef), fare in modo che la quantità sia la somma di getCash+getInvested
 
 @Composable
@@ -29,27 +31,15 @@ fun NetworthDisplay(
     portfolioScreenViewModel: PortfolioScreenViewModel,
     summaryScreenViewModel: SummaryScreenViewModel
 ) {
-    val cash = portfolioScreenViewModel.cash.collectAsState()
+    //val cash = portfolioScreenViewModel.cash.collectAsState()
     val cashState = portfolioScreenViewModel.cashState.collectAsState()
-    val invested = summaryScreenViewModel.invested.collectAsState()
+    //val invested = summaryScreenViewModel.invested.collectAsState()
     val investedState = summaryScreenViewModel.investedState.collectAsState()
 
     LaunchedEffect(Unit) {
-        Log.d("NetworthDisplay", "Launching getCash and getInvested")
         portfolioScreenViewModel.getCash()
         summaryScreenViewModel.getInvested()
     }
-
-    /*LaunchedEffect(cash.value, invested.value) {
-        Log.d("NetworthDisplay", "Cash value: ${cash.value}")
-        Log.d("NetworthDisplay", "Invested value: ${invested.value}")
-
-        val cashValue = cash.value?.toDoubleOrNull() ?: 0.0
-        val investedValue = invested.value?.toDoubleOrNull() ?: 0.0
-        val totalNetworth = cashValue + investedValue
-
-        Log.d("NetworthDisplay", "Total Networth: $totalNetworth")
-    }*/
 
     Column(
         modifier = Modifier
@@ -73,12 +63,9 @@ fun NetworthDisplay(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                /*InputBoxBody(
-                    prefix = inputBoxModel.prefix,
-                    inputValue = inputBoxModel.inputValue.value.text
-                )*/
-                when (val state = cashState.value) {
-                    is UiState.Loading -> {
+
+                when {
+                    cashState.value is UiState.Loading || investedState.value is UiState.Loading -> {
                         Text(
                             text = "Calculating...",
                             color = MaterialTheme.colorScheme.onBackground,
@@ -86,28 +73,21 @@ fun NetworthDisplay(
                         )
                     }
 
-                    is UiState.Success -> {
-                        val cashValue = cash.value ?: "0"
-                        val investedValue = invested.value ?: "0"
-
-                        Log.d("NetworthDisplay", "Displaying - Cash: $cashValue, Invested: $investedValue")
-
-                        val totalNetworth = try {
-                            (cashValue.toDoubleOrNull() ?: 0.0) + (investedValue.toDoubleOrNull() ?: 0.0)
-                        } catch (e: Exception) {
-                            Log.e("NetworthDisplay", "Error calculating networth", e)
-                            0.0
-                        }
+                    cashState.value is UiState.Success && investedState.value is UiState.Success -> {
+                        val cashString = (cashState.value as UiState.Success<String>).data
+                        val cleanCashString = cashString.replace("[^0-9.]".toRegex(),"")
+                        val cash = cleanCashString.toDoubleOrNull() ?: 0.0
+                        val invested = (investedState.value as UiState.Success<Double>).data
+                        val networth = cash + invested
+                        val formattedNetworth = NumberFormat.getCurrencyInstance(Locale.US).format(networth)
 
                         InputBoxBody(
                             prefix = inputBoxModel.prefix,
-                            //inputValue = cash.value ?: "0"
-                            //inputValue = String.format("%.2f", totalNetworth)
-                            inputValue = totalNetworth.toString()
+                            inputValue = formattedNetworth
                         )
                     }
 
-                    is UiState.Error -> {
+                    else -> {
                         Text(
                             text = "Error calculating networth",
                             color = MaterialTheme.colorScheme.error,
@@ -115,7 +95,7 @@ fun NetworthDisplay(
                         )
                     }
 
-                    else -> Unit
+                    //else -> Unit
                 }
             }
         }
