@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.presentation.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,27 @@ fun NetworthDisplay(
     portfolioScreenViewModel: PortfolioScreenViewModel,
     summaryScreenViewModel: SummaryScreenViewModel
 ) {
-    val cash = summaryScreenViewModel.cash.collectAsState()
-    val cashState = summaryScreenViewModel.cashState.collectAsState()
+    val cash = portfolioScreenViewModel.cash.collectAsState()
+    val cashState = portfolioScreenViewModel.cashState.collectAsState()
+    val invested = summaryScreenViewModel.invested.collectAsState()
+    val investedState = summaryScreenViewModel.investedState.collectAsState()
 
     LaunchedEffect(Unit) {
-        summaryScreenViewModel.getCash()
+        Log.d("NetworthDisplay", "Launching getCash and getInvested")
+        portfolioScreenViewModel.getCash()
         summaryScreenViewModel.getInvested()
+    }
+
+    LaunchedEffect(cash.value, invested.value) {
+        Log.d("NetworthDisplay", "Cash value: ${cash.value}")
+        Log.d("NetworthDisplay", "Invested value: ${invested.value}")
+
+        // Calculate and log total networth
+        val cashValue = cash.value?.toDoubleOrNull() ?: 0.0
+        val investedValue = invested.value?.toDoubleOrNull() ?: 0.0
+        val totalNetworth = cashValue + investedValue
+
+        Log.d("NetworthDisplay", "Total Networth: $totalNetworth")
     }
 
     Column(
@@ -72,9 +88,23 @@ fun NetworthDisplay(
                     }
 
                     is UiState.Success -> {
+                        val cashValue = cash.value ?: "0"
+                        val investedValue = invested.value ?: "0"
+
+                        Log.d("NetworthDisplay", "Displaying - Cash: $cashValue, Invested: $investedValue")
+
+                        val totalNetworth = try {
+                            (cashValue.toDoubleOrNull() ?: 0.0) + (investedValue.toDoubleOrNull() ?: 0.0)
+                        } catch (e: Exception) {
+                            Log.e("NetworthDisplay", "Error calculating networth", e)
+                            0.0
+                        }
+
                         InputBoxBody(
                             prefix = inputBoxModel.prefix,
-                            inputValue = cash.value ?: "0"
+                            //inputValue = cash.value ?: "0"
+                            //inputValue = String.format("%.2f", totalNetworth)
+                            inputValue = totalNetworth.toString()
                         )
                     }
 
