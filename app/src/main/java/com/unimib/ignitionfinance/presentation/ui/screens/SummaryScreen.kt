@@ -51,8 +51,8 @@ fun SummaryScreen(
             ) {
                 NetworthDisplay(
                     inputBoxModel = InputBoxModel(
-                        label = "Net Worth",
-                        prefix = "$",
+                        label = "Your net worth is:",
+                        prefix = "€",
                         inputValue = remember{mutableStateOf(TextFieldValue("150,000"))},
                         key = "Networth",
                         iconResId = R.drawable.outline_person_apron_24

@@ -17,13 +17,10 @@ import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputBoxBody
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
-//da qui faccio getCash
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import java.text.NumberFormat
 import java.util.Locale
-
-//scrivo metodo che usi useCase (copia getCash di stef), fare in modo che la quantità sia la somma di getCash+getInvested
 
 @Composable
 fun NetworthDisplay(
@@ -31,9 +28,7 @@ fun NetworthDisplay(
     portfolioScreenViewModel: PortfolioScreenViewModel,
     summaryScreenViewModel: SummaryScreenViewModel
 ) {
-    //val cash = portfolioScreenViewModel.cash.collectAsState()
     val cashState = portfolioScreenViewModel.cashState.collectAsState()
-    //val invested = summaryScreenViewModel.invested.collectAsState()
     val investedState = summaryScreenViewModel.investedState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -79,11 +74,11 @@ fun NetworthDisplay(
                         val cash = cleanCashString.toDoubleOrNull() ?: 0.0
                         val invested = (investedState.value as UiState.Success<Double>).data
                         val networth = cash + invested
-                        val formattedNetworth = NumberFormat.getCurrencyInstance(Locale.US).format(networth)
+                        //val formattedNetworth = NumberFormat.getCurrencyInstance(Locale.US).format(networth)
 
                         InputBoxBody(
                             prefix = inputBoxModel.prefix,
-                            inputValue = formattedNetworth
+                            inputValue = networth.toString()
                         )
                     }
 
@@ -94,8 +89,6 @@ fun NetworthDisplay(
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
-
-                    //else -> Unit
                 }
             }
         }
