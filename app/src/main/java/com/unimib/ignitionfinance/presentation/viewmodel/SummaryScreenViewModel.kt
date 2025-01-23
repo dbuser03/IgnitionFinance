@@ -15,11 +15,11 @@ class SummaryScreenViewModel @Inject constructor (
     private val getUserInvestedUseCase: GetUserInvestedUseCase
 ): ViewModel() {
 
-    private val _invested = MutableStateFlow<String?>("0")
-    val invested: StateFlow<String?> = _invested
+    private val _invested = MutableStateFlow<Double?>(0.0)
+    val invested: StateFlow<Double?> = _invested
 
-    private val _investedState = MutableStateFlow<UiState<String>>(UiState.Loading)
-    val investedState: StateFlow<UiState<String>> = _investedState
+    private val _investedState = MutableStateFlow<UiState<Double>>(UiState.Loading)
+    val investedState: StateFlow<UiState<Double>> = _investedState
 
     fun getInvested() {
         viewModelScope.launch {
@@ -29,8 +29,8 @@ class SummaryScreenViewModel @Inject constructor (
                     _investedState.value = when {
                         result.isSuccess -> {
                             result.getOrNull()?.let { invested ->
-                                _invested.value = invested.toString()
-                                UiState.Success(invested.toString())
+                                _invested.value = invested
+                                UiState.Success(invested)
                             } ?: UiState.Error("Invested amount not found")
                         }
                         result.isFailure -> UiState.Error(
