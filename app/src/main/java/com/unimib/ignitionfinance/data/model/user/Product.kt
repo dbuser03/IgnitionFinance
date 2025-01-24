@@ -5,6 +5,6 @@ data class Product(
     val ticker: String, // identificativo
     val purchaseDate: String,
     val amount: String,
-// val symbol: String,
+    val symbol: String,
 // val averagePerformance: String
 )
