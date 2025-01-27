@@ -6,6 +6,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -15,7 +16,7 @@ fun AssetAllocationCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(232.dp)
+            .heightIn(max = 232.dp)
             .padding(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -27,12 +28,13 @@ fun AssetAllocationCard() {
                 .padding(16.dp)
         ) {
             // Left side content
-            Box(
+            Column(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
             ) {
-                Text("Contenuto Sinistro")
+                Text("Asset allocation:")
+                SummaryChart()
             }
 
             // Vertical divider
@@ -48,7 +50,7 @@ fun AssetAllocationCard() {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Text("Contenuto Destro")
+                //Text("Contenuto Destro")
             }
         }
     }

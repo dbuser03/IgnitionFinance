@@ -42,7 +42,7 @@ fun SummaryScreen(
             )
         },
         content = { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
