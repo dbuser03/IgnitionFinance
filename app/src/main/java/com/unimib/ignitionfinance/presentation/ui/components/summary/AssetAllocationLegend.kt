@@ -19,7 +19,7 @@ import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 
 @Composable
-fun Legend(
+fun AssetAllocationLegend(
     icon: Painter,
     title: String,
     percentage: Double,
@@ -61,19 +61,19 @@ fun Legend(
     backgroundColor = 0xFFFFFFFF
 )
 @Composable
-fun LegendPreviewVariants() {
+fun AssetAllocationLegendVariants() {
     IgnitionFinanceTheme {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Legend(
+            AssetAllocationLegend(
                 icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
                 title = "Invested",
                 percentage = 75.0,
                 backgroundColor = MaterialTheme.colorScheme.primary,
                 iconColor = MaterialTheme.colorScheme.onPrimary
             )
-            Legend(
+            AssetAllocationLegend(
                 icon = painterResource(id = R.drawable.outline_monetization_on_24),
                 title = "Cash",
                 percentage = 25.0,
