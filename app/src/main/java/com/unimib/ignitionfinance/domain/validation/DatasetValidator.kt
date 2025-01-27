@@ -1,10 +1,13 @@
 package com.unimib.ignitionfinance.domain.validation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationErrors
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationRules
 
 object DatasetValidator {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun validate(stockData: Map<String, List<Map<String, Any>>>): DatasetValidationResult {
         for (productData in stockData.values) {
             if (productData.isNotEmpty()) {
