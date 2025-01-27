@@ -12,15 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
-import com.unimib.ignitionfinance.presentation.ui.components.NetworthDisplay
+import com.unimib.ignitionfinance.presentation.ui.components.summary.NetworthDisplay
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 

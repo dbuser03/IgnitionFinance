@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components
+package com.unimib.ignitionfinance.presentation.ui.components.summary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
