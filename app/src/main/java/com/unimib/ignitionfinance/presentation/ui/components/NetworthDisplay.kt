@@ -19,8 +19,6 @@ import com.unimib.ignitionfinance.presentation.ui.components.settings.input.Inpu
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun NetworthDisplay(
@@ -74,7 +72,6 @@ fun NetworthDisplay(
                         val cash = cleanCashString.toDoubleOrNull() ?: 0.0
                         val invested = (investedState.value as UiState.Success<Double>).data
                         val networth = cash + invested
-                        //val formattedNetworth = NumberFormat.getCurrencyInstance(Locale.US).format(networth)
 
                         InputBoxBody(
                             prefix = inputBoxModel.prefix,
