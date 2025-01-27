@@ -6,17 +6,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun AssetAllocationCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = 232.dp)
+            .heightIn(max = 240.dp)
             .padding(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -50,7 +51,24 @@ fun AssetAllocationCard() {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                //Text("Contenuto Destro")
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    AssetAllocationLegend(
+                        icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
+                        title = "Invested",
+                        percentage = 75.0,
+                        backgroundColor = MaterialTheme.colorScheme.primary,
+                        iconColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                    AssetAllocationLegend(
+                        icon = painterResource(id = R.drawable.outline_monetization_on_24),
+                        title = "Cash",
+                        percentage = 25.0,
+                        backgroundColor = MaterialTheme.colorScheme.onSecondary,
+                        iconColor = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
     }
@@ -58,8 +76,8 @@ fun AssetAllocationCard() {
 
 @Preview(
     showBackground = true,
-    widthDp = 320,
-    heightDp = 200,
+    //widthDp = 320,
+    //heightDp = 200,
     name = "Split Card Preview"
 )
 @Composable
