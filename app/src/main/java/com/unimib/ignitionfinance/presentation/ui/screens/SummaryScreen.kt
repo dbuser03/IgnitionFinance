@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
+import com.unimib.ignitionfinance.presentation.ui.components.summary.AssetAllocationCard
 import com.unimib.ignitionfinance.presentation.ui.components.summary.NetworthDisplay
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
@@ -57,6 +58,7 @@ fun SummaryScreen(
                     portfolioScreenViewModel = portfolioViewModel,
                     summaryScreenViewModel = summaryViewModel
                 )
+                AssetAllocationCard()
             }
         }
     )
