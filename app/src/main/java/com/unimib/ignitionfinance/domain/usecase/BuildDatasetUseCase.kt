@@ -13,7 +13,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-class CalculateDailyReturnsUseCase @Inject constructor(
+class BuildDatasetUseCase @Inject constructor(
     private val fetchHistoricalDataUseCase: FetchHistoricalDataUseCase,
     private val getProductListUseCase: GetProductListUseCase,
     private val dailyReturnCalculator: DailyReturnCalculator
