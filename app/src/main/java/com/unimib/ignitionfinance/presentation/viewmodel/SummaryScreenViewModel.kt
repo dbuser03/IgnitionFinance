@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
 import com.unimib.ignitionfinance.domain.usecase.networth.GetUserInvestedUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.SummaryScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
@@ -14,15 +15,25 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SummaryScreenViewModel @Inject constructor(
-    private val getUserInvestedUseCase: GetUserInvestedUseCase
+    private val getUserInvestedUseCase: GetUserInvestedUseCase,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SummaryScreenState())
     val state: StateFlow<SummaryScreenState> = _state
 
+    init {
+        viewModelScope.launch {
+            userPreferencesRepository.isNetWorthHidden.collect { isHidden ->
+                _state.update { it.copy(isNetWorthHidden = isHidden) }
+            }
+        }
+    }
+
     fun toggleNetWorthVisibility() {
-        _state.update { currentState ->
-            currentState.copy(isNetWorthHidden = !currentState.isNetWorthHidden)
+        viewModelScope.launch {
+            val currentValue = _state.value.isNetWorthHidden
+            userPreferencesRepository.setNetWorthHidden(!currentValue)
         }
     }
 

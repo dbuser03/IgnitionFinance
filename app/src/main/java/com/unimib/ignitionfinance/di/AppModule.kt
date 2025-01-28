@@ -19,7 +19,9 @@ import com.unimib.ignitionfinance.data.repository.implementation.FirestoreReposi
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.implementation.LocalDatabaseRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.UserPreferencesRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
 import com.unimib.ignitionfinance.domain.usecase.auth.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
@@ -89,6 +91,13 @@ object AppModule {
         getUpdatedAfterFn = UserDao::getUsersUpdatedAfter,
         updateLastSyncFn = UserDao::updateLastSyncTimestamp
     )
+
+    @Provides
+    fun provideUserPreferencesRepository(
+        @ApplicationContext context: Context
+    ): UserPreferencesRepository {
+        return UserPreferencesRepositoryImpl(context)
+    }
 
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
