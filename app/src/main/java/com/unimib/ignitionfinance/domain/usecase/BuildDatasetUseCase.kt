@@ -20,7 +20,8 @@ class BuildDatasetUseCase @Inject constructor(
     private val fetchHistoricalDataUseCase: FetchHistoricalDataUseCase,
     private val getProductListUseCase: GetProductListUseCase,
     private val dailyReturnCalculator: DailyReturnCalculator,
-    private val stockRepository: StockRepository
+    private val stockRepository: StockRepository,
+    private val saveDatasetUseCase: SaveDatasetUseCase  // New injection
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
@@ -39,12 +40,11 @@ class BuildDatasetUseCase @Inject constructor(
                 return@flow
             }
 
-            // Step 3: Validate dataset
-            when (val validationResult = DatasetValidator.validate(historicalDataList)) {
+            // Step 3: Validate dataset and process
+            val dailyReturns = when (val validationResult = DatasetValidator.validate(historicalDataList)) {
                 is DatasetValidationResult.Success -> {
                     // Process data for valid dataset
-                    val dailyReturns = processData(products, historicalDataList)
-                    emit(Result.success(dailyReturns))
+                    processData(products, historicalDataList)
                 }
 
                 is DatasetValidationResult.Failure -> {
@@ -63,16 +63,24 @@ class BuildDatasetUseCase @Inject constructor(
                     val fallbackTickers = listOf("^GSPC")
                     val fallbackCapitals = mapOf("^GSPC" to totalCapital)
 
-                    // Calculate returns
-                    val dailyReturns = dailyReturnCalculator.calculateDailyReturns(
+                    // Calculate returns for fallback
+                    dailyReturnCalculator.calculateDailyReturns(
                         historicalDataList = fallbackData,
                         products = fallbackTickers,
                         productCapitals = fallbackCapitals
                     )
-
-                    emit(Result.success(dailyReturns))
                 }
             }
+
+            // Step 4: Save the dataset (whether it's the full dataset or S&P 500 fallback)
+            val saveResult = saveDatasetUseCase.execute(dailyReturns).first()
+            saveResult.getOrElse { error ->
+                emit(Result.failure(error))
+                return@flow
+            }
+
+            // Step 5: Emit the final result
+            emit(Result.success(dailyReturns))
 
         } catch (e: CancellationException) {
             throw e
