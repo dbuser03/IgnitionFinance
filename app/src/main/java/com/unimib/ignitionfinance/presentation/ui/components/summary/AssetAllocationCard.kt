@@ -6,83 +6,99 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
+import kotlin.math.roundToInt
 
 @Composable
-fun AssetAllocationCard() {
+fun AssetAllocationCard(
+    cash: Double,
+    invested: Double
+) {
+    val total = cash + invested
+
+    val cashPercentage = if (total > 0) (cash / total) * 100 else 0.0
+    if (total > 0) (invested / total) * 100 else 0.0
+    fun roundPercentages(cashPct: Double): Pair<Double, Double> {
+        val roundedCash = cashPct.roundToInt()
+        val roundedInvested = 100 - roundedCash
+        return Pair(roundedCash.toDouble(), roundedInvested.toDouble())
+    }
+
+    val (roundedCashPercentage, roundedInvestedPercentage) = roundPercentages(cashPercentage)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = 240.dp)
-            .padding(16.dp),
+            .padding(16.dp)
+            .wrapContentHeight(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        shape = MaterialTheme.shapes.extraLarge
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+                .padding(24.dp)
         ) {
-            // Left side content
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-            ) {
-                Text("Asset allocation:")
-                SummaryChart()
-            }
-
-            // Vertical divider
-            Spacer(
-                modifier = Modifier
-                    .width(1.dp)
-                    .fillMaxHeight()
+            Text(
+                text = "Asset allocation:",
+                style = TypographyMedium.bodyLarge
             )
 
-            // Right side content
-            Box(
+            Spacer(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                    .height(24.dp)
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentHeight()
                 ) {
-                    AssetAllocationLegend(
-                        icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
-                        title = "Invested",
-                        percentage = 75.0,
-                        backgroundColor = MaterialTheme.colorScheme.primary,
-                        iconColor = MaterialTheme.colorScheme.onPrimary
+                    SummaryChart(
+                        invested = roundedInvestedPercentage,
+                        cash = roundedCashPercentage
                     )
-                    AssetAllocationLegend(
-                        icon = painterResource(id = R.drawable.outline_monetization_on_24),
-                        title = "Cash",
-                        percentage = 25.0,
-                        backgroundColor = MaterialTheme.colorScheme.onSecondary,
-                        iconColor = MaterialTheme.colorScheme.primary
-                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .align(Alignment.Center)
+                    ) {
+                        AssetAllocationLegend(
+                            icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
+                            title = "Invested",
+                            percentage = roundedInvestedPercentage,
+                            backgroundColor = MaterialTheme.colorScheme.primary,
+                            iconColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                        AssetAllocationLegend(
+                            icon = painterResource(id = R.drawable.outline_monetization_on_24),
+                            title = "Cash",
+                            percentage = roundedCashPercentage,
+                            backgroundColor = MaterialTheme.colorScheme.onSecondary,
+                            iconColor = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Preview(
-    showBackground = true,
-    //widthDp = 320,
-    //heightDp = 200,
-    name = "Split Card Preview"
-)
-@Composable
-fun AssetAllocationCardPreview() {
-    MaterialTheme {
-        AssetAllocationCard()
     }
 }

@@ -1,6 +1,8 @@
 package com.unimib.ignitionfinance.presentation.ui.components.dialog
 
 import androidx.compose.runtime.*
+import com.unimib.ignitionfinance.presentation.ui.components.dialog.product.NewProductDialog
+import com.unimib.ignitionfinance.presentation.ui.components.dialog.settings.UpdateValueDialog
 
 @Composable
 fun DialogManager(

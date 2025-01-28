@@ -10,12 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
-import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
 
 
 @Composable
@@ -51,34 +47,6 @@ fun AssetAllocationLegend(
                 text = "${percentage.toInt()}%",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
-
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFFFFFFFF
-)
-@Composable
-fun AssetAllocationLegendVariants() {
-    IgnitionFinanceTheme {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            AssetAllocationLegend(
-                icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
-                title = "Invested",
-                percentage = 75.0,
-                backgroundColor = MaterialTheme.colorScheme.primary,
-                iconColor = MaterialTheme.colorScheme.onPrimary
-            )
-            AssetAllocationLegend(
-                icon = painterResource(id = R.drawable.outline_monetization_on_24),
-                title = "Cash",
-                percentage = 25.0,
-                backgroundColor = MaterialTheme.colorScheme.onSecondary,
-                iconColor = MaterialTheme.colorScheme.primary
             )
         }
     }
