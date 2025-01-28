@@ -8,7 +8,6 @@ import com.unimib.ignitionfinance.data.local.utils.SyncStatus
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
-import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
@@ -30,7 +29,6 @@ class AddProductToDatabaseUseCase @Inject constructor(
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
-    private val firestoreRepository: FirestoreRepository,
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
@@ -95,7 +93,6 @@ class AddProductToDatabaseUseCase @Inject constructor(
         }
     }
 
-    // Cercare errore qui
     private fun executeNewProduct(
         currentUser: User,
         product: Product
