@@ -1,3 +1,5 @@
+package com.unimib.ignitionfinance.domain
+
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.sqrt
@@ -101,15 +103,18 @@ class InflationCalculator(
     }
 }
 
+//prende liquidità, per testare se funzionano i modelli --> restituisce un array con i valori della liquidità eroso
+//dal % di inflazione
+
 // Example usage:
 fun main() {
     val calculator = InflationCalculator(
         num_simulazioni = 1000,
-        inflazione_media = 0.02  // 2%
+        inflazione_media = 0.03  // 3%
     )
 
     // Try different scenarios
-    val inflazioneFissa = calculator.setInflazione("fissa")
+    //val inflazioneFissa = calculator.setInflazione("fissa")
     val inflazioneReale = calculator.setInflazione("reale")
     val inflazioneRiscalata = calculator.setInflazione("reale riscalata")
     val inflazioneLognormale = calculator.setInflazione("lognormale")
