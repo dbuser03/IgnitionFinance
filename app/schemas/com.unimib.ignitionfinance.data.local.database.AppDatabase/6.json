@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "c7db553395a39ba504dfce9fe007b593",
+    "identityHash": "774d96b0d5389a20693d810fcad1c07d",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `authData` TEXT NOT NULL, `settings` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `last_sync_timestamp` INTEGER, `cash` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `surname` TEXT NOT NULL, `authData` TEXT NOT NULL, `settings` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `last_sync_timestamp` INTEGER, `cash` TEXT NOT NULL, `product_list` TEXT NOT NULL, `first_added` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -60,6 +60,18 @@
             "fieldPath": "cash",
             "columnName": "cash",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productList",
+            "columnName": "product_list",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstAdded",
+            "columnName": "first_added",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -170,7 +182,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c7db553395a39ba504dfce9fe007b593')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '774d96b0d5389a20693d810fcad1c07d')"
     ]
   }
 }

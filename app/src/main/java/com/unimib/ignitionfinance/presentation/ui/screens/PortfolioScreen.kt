@@ -4,12 +4,14 @@ import BottomNavigationBarInstance
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,6 +26,8 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
+import com.unimib.ignitionfinance.presentation.ui.components.portfolio.CashCard
+import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 
@@ -35,8 +39,11 @@ fun PortfolioScreen(
     val context = LocalContext.current
     val dialogTitle = "Add your cash"
     var showDialog by remember { mutableStateOf(false) }
-
+    var isCashCardExpanded by remember { mutableStateOf(false) }
     val state by viewModel.state.collectAsState()
+
+    var expandedCardIndex by remember { mutableIntStateOf(-1) }
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         viewModel.getFirstAdded()
@@ -93,11 +100,33 @@ fun PortfolioScreen(
         },
         floatingActionButtonPosition = FabPosition.Center,
         content = { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-            )
+            ) {
+                CardItem(
+                    cardIndex = 0,
+                    expandedCardIndex = expandedCardIndex,
+                    listState = listState
+                ) {
+                    CashCard(
+                        modifier = Modifier,
+                        isExpanded = isCashCardExpanded,
+                        onCardClicked = {
+                            isCashCardExpanded = !isCashCardExpanded
+                            expandedCardIndex = if (isCashCardExpanded) 0 else -1
+                        },
+                        viewModel = viewModel
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                )
+            }
         }
     )
 }

@@ -1,10 +1,17 @@
-package com.unimib.ignitionfinance.presentation.ui.components.settings.input
+package com.unimib.ignitionfinance.presentation.ui.components.portfolio
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -14,28 +21,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import com.unimib.ignitionfinance.presentation.model.InputBoxModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
+import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 
 @Composable
-fun InputCard(
-    label: String,
-    title: String,
-    modifier: Modifier = Modifier,
-    inputBoxModelList: List<InputBoxModel>,
+fun CashCard(
+    modifier: Modifier,
     isExpanded: Boolean,
-    onCardClicked: () -> Unit
+    onCardClicked: () -> Unit,
+    viewModel: PortfolioScreenViewModel = viewModel()
 ) {
-    val cardInputBoxHeight = 64.dp
-    val spacerHeight = 24.dp
+    val label = "BANK ACCOUNT"
+    val title = "CASH"
 
     val cardHeight = animateDpAsState(
         targetValue = if (isExpanded) {
-            val totalInputBoxHeight = cardInputBoxHeight * inputBoxModelList.size
-            val totalSpacerHeight = spacerHeight * (inputBoxModelList.size)
-            totalInputBoxHeight + totalSpacerHeight + 104.dp
+            336.dp
         } else {
-            104.dp
-        },
+            160.dp
+        }
     )
 
     Card(
@@ -68,12 +73,12 @@ fun InputCard(
                 label = label,
                 title = title,
                 isExpanded = isExpanded,
-                onCardClicked = onCardClicked
+                onCardClicked = onCardClicked,
+                titleFontSize = MaterialTheme.typography.displayLarge.fontSize
             )
 
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(24.dp))
-                InputCardBody(inputBoxModelList = inputBoxModelList)
             }
         }
     }
