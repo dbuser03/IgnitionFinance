@@ -30,6 +30,20 @@ class SummaryScreenViewModel @Inject constructor(
         }
     }
 
+    fun calculateNetWorth(cash: Double) {
+        viewModelScope.launch {
+            _state.update { it.copy(netWorthState = UiState.Loading) }
+
+            val invested = _state.value.invested
+            val netWorth = cash + invested
+
+            _state.update { it.copy(
+                netWorth = netWorth,
+                netWorthState = UiState.Success(netWorth)
+            )}
+        }
+    }
+
     fun toggleNetWorthVisibility() {
         viewModelScope.launch {
             val currentValue = _state.value.isNetWorthHidden

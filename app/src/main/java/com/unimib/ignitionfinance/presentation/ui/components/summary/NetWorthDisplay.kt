@@ -29,14 +29,11 @@ import java.util.Locale
 @Composable
 fun NetWorthDisplay(
     inputBoxModel: InputBoxModel,
-    cash: Double,
-    invested: Double,
+    netWorth: Double,
     isLoading: Boolean,
     isNetWorthHidden: Boolean,
     onVisibilityToggle: () -> Unit
 ) {
-    val netWorth = cash + invested
-
     val formattedNetWorth = remember(netWorth) {
         if (netWorth % 1 == 0.0) {
             String.format(Locale.US, "%,.0f", netWorth)
@@ -92,9 +89,7 @@ fun NetWorthDisplay(
                     .clickable { onVisibilityToggle() }
             ) {
                 IconButton(
-                    onClick = {
-                        onVisibilityToggle()
-                    }
+                    onClick = onVisibilityToggle
                 ) {
                     Icon(
                         painter = painterResource(

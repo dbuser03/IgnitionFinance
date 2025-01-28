@@ -19,6 +19,7 @@ fun AssetAllocationLegend(
     icon: Painter,
     title: String,
     percentage: Double,
+    displayDashes: Boolean = false,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.onSecondary,
     iconColor: Color = MaterialTheme.colorScheme.primary
@@ -26,7 +27,7 @@ fun AssetAllocationLegend(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         CustomIcon(
             icon = icon,
@@ -44,7 +45,7 @@ fun AssetAllocationLegend(
             )
 
             Text(
-                text = "${percentage.toInt()}%",
+                text = if (displayDashes) "----" else "${percentage.toInt()}%",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )

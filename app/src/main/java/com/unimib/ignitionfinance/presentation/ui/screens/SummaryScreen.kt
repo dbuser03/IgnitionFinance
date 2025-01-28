@@ -38,7 +38,6 @@ fun SummaryScreen(
     val isNetWorthHidden = summaryState.isNetWorthHidden
 
     val cash = remember { mutableDoubleStateOf(0.0) }
-    val invested = remember { mutableDoubleStateOf(0.0) }
     val isLoading = remember { mutableStateOf(true) }
     val valuesCalculated = remember { mutableStateOf(false) }
     var showAssetCard by remember { mutableStateOf(false) }
@@ -59,7 +58,8 @@ fun SummaryScreen(
                 val cleanCashString = cashString.replace("[^0-9.]".toRegex(), "")
                 cash.doubleValue = cleanCashString.toDoubleOrNull() ?: 0.0
 
-                invested.doubleValue = summaryState.investedState.data
+                summaryViewModel.calculateNetWorth(cash.doubleValue)
+
                 valuesCalculated.value = true
                 false
             }
@@ -99,17 +99,13 @@ fun SummaryScreen(
                         key = "NetWorth",
                         iconResId = R.drawable.outline_person_apron_24
                     ),
-                    cash = cash.doubleValue,
-                    invested = invested.doubleValue,
-                    isLoading = isLoading.value,
+                    netWorth = summaryState.netWorth,
+                    isLoading = isLoading.value || summaryState.netWorthState is UiState.Loading,
                     isNetWorthHidden = isNetWorthHidden,
                     onVisibilityToggle = { summaryViewModel.toggleNetWorthVisibility() }
                 )
 
-                Spacer(
-                    modifier = Modifier
-                        .height(24.dp)
-                )
+                Spacer(modifier = Modifier.height(24.dp))
 
                 AnimatedVisibility(
                     visible = showAssetCard,
@@ -122,7 +118,7 @@ fun SummaryScreen(
                 ) {
                     AssetAllocationCard(
                         cash = cash.doubleValue,
-                        invested = invested.doubleValue
+                        invested = summaryState.invested
                     )
                 }
             }

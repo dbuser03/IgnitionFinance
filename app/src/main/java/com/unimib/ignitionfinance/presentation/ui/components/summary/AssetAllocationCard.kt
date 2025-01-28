@@ -23,6 +23,7 @@ fun AssetAllocationCard(
 
     val cashPercentage = if (total > 0) (cash / total) * 100 else 0.0
     if (total > 0) (invested / total) * 100 else 0.0
+
     fun roundPercentages(cashPct: Double): Pair<Double, Double> {
         val roundedCash = cashPct.roundToInt()
         val roundedInvested = 100 - roundedCash
@@ -66,8 +67,8 @@ fun AssetAllocationCard(
                         .wrapContentHeight()
                 ) {
                     SummaryChart(
-                        invested = roundedInvestedPercentage,
-                        cash = roundedCashPercentage
+                        invested = if (total > 0) roundedInvestedPercentage else 0.0,
+                        cash = if (total > 0) roundedCashPercentage else 0.0
                     )
                 }
 
@@ -86,6 +87,7 @@ fun AssetAllocationCard(
                             icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
                             title = "Invested",
                             percentage = roundedInvestedPercentage,
+                            displayDashes = total == 0.0,
                             backgroundColor = MaterialTheme.colorScheme.primary,
                             iconColor = MaterialTheme.colorScheme.onPrimary
                         )
@@ -93,6 +95,7 @@ fun AssetAllocationCard(
                             icon = painterResource(id = R.drawable.outline_monetization_on_24),
                             title = "Cash",
                             percentage = roundedCashPercentage,
+                            displayDashes = total == 0.0,
                             backgroundColor = MaterialTheme.colorScheme.onSecondary,
                             iconColor = MaterialTheme.colorScheme.primary
                         )
