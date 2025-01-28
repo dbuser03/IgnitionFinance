@@ -105,20 +105,22 @@ fun PortfolioScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                CardItem(
-                    cardIndex = 0,
-                    expandedCardIndex = expandedCardIndex,
-                    listState = listState
-                ) {
-                    CashCard(
-                        modifier = Modifier,
-                        isExpanded = isCashCardExpanded,
-                        onCardClicked = {
-                            isCashCardExpanded = !isCashCardExpanded
-                            expandedCardIndex = if (isCashCardExpanded) 0 else -1
-                        },
-                        viewModel = viewModel
-                    )
+                if (state.cash.toDouble() > 0) {
+                    CardItem(
+                        cardIndex = 0,
+                        expandedCardIndex = expandedCardIndex,
+                        listState = listState
+                    ) {
+                        CashCard(
+                            modifier = Modifier,
+                            isExpanded = isCashCardExpanded,
+                            onCardClicked = {
+                                isCashCardExpanded = !isCashCardExpanded
+                                expandedCardIndex = if (isCashCardExpanded) 0 else -1
+                            },
+                            viewModel = viewModel
+                        )
+                    }
                 }
 
                 Box(
