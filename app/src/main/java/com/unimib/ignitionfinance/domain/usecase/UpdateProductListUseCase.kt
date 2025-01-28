@@ -30,7 +30,7 @@ class UpdateProductListUseCase @Inject constructor(
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
-    fun addProduct(product: Product): Flow<Result<Unit>> = flow {
+/*    fun addProduct(product: Product): Flow<Result<Unit>> = flow {
         try {
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
@@ -59,7 +59,7 @@ class UpdateProductListUseCase @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
-    }
+    }*/
 
     fun removeProduct(productId: String): Flow<Result<Unit>> = flow {
         try {
