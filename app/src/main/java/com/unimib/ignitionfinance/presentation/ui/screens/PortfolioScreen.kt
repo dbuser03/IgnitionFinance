@@ -56,14 +56,15 @@ fun PortfolioScreen(
                 viewModel.updateCash(it)
             }
         },
-        onProductConfirmation = { isin, ticker, purchaseDate, amount ->
+        onProductConfirmation = { isin: String?, ticker: String?, purchaseDate: String?, amount: String?, symbol: String? ->
             showDialog = false
-            if (isin != null && ticker != null && purchaseDate != null && amount != null) {
+            if (isin != null && ticker != null && purchaseDate != null && amount != null && symbol != null) {
                 val newProduct = Product(
                     isin = isin,
                     ticker = ticker,
                     purchaseDate = purchaseDate,
-                    amount = amount
+                    amount = amount,
+                    symbol = symbol
                 )
                 viewModel.addNewProduct(newProduct)
             }

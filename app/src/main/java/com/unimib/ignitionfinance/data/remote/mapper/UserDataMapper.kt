@@ -46,6 +46,7 @@ object UserDataMapper {
                 ticker = (productMap["ticker"] as? String).orEmpty(),
                 purchaseDate = (productMap["purchaseDate"] as? String).orEmpty(),
                 amount = (productMap["amount"] as? String).orEmpty(),
+                symbol = (productMap["symbol"] as? String).orEmpty(),
             )
         } ?: emptyList()
     }
