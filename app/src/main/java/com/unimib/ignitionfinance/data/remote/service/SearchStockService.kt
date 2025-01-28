@@ -10,7 +10,7 @@ interface SearchStockService {
     @GET("query")
     suspend fun getSearchStockData(
         @Query("function") function: String = "SYMBOL_SEARCH",
-        @Query("keywords") symbol: String,
+        @Query("keywords") ticker: String,
         @Query("datatype") datatype: String = "json",
         @Query("apikey") apiKey: String
     ): Response<SearchStockResponse>
