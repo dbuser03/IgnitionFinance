@@ -22,7 +22,8 @@ fun CustomIcon(
     modifier: Modifier = Modifier,
     backgroundSize: Dp = 40.dp,
     iconSize: Dp = 20.dp,
-    backgroundColor: Color = MaterialTheme.colorScheme.onSecondary
+    backgroundColor: Color = MaterialTheme.colorScheme.onSecondary,
+    iconColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Box(
         modifier = modifier
@@ -36,7 +37,7 @@ fun CustomIcon(
             contentDescription = null,
             modifier = Modifier.size(iconSize),
             contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+            colorFilter = ColorFilter.tint(iconColor)
         )
     }
 }

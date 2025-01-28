@@ -1,8 +1,5 @@
 package com.unimib.ignitionfinance.presentation.viewmodel
 
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.Settings
@@ -16,7 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.util.Log
+import com.unimib.ignitionfinance.presentation.viewmodel.state.SettingsScreenState
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
@@ -24,14 +23,8 @@ class SettingsScreenViewModel @Inject constructor(
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val setDefaultSettingsUseCase: SetDefaultSettingsUseCase
 ) : ViewModel() {
-    private val _settingsState = MutableStateFlow<UiState<Settings>>(UiState.Loading)
-    val settingsState: StateFlow<UiState<Settings>> = _settingsState
-
-    private val _settings = mutableStateOf<Settings?>(null)
-    val settings: State<Settings?> = _settings
-
-    var expandedCardIndex = mutableIntStateOf(-1)
-        private set
+    private val _state = MutableStateFlow(SettingsScreenState())
+    val state: StateFlow<SettingsScreenState> = _state
 
     fun getDefaultSettings(): Settings {
         return setDefaultSettingsUseCase.execute()
@@ -39,20 +32,32 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun getUserSettings() {
         viewModelScope.launch {
-            _settingsState.value = UiState.Loading
+            _state.update { it.copy(settingsState = UiState.Loading) }
             getUserSettingsUseCase.execute()
                 .collect { result ->
-                    _settingsState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { settings ->
-                                _settings.value = settings
-                                UiState.Success(settings)
-                            } ?: UiState.Error("Settings not found")
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val settings = result.getOrNull()
+                                if (settings != null) {
+                                    currentState.copy(
+                                        settings = settings,
+                                        settingsState = UiState.Success(settings)
+                                    )
+                                } else {
+                                    currentState.copy(
+                                        settingsState = UiState.Error("Settings not found")
+                                    )
+                                }
+                            }
+                            result.isFailure -> currentState.copy(
+                                settingsState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to load settings"
+                                )
+                            )
+                            else -> currentState.copy(settingsState = UiState.Idle)
                         }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load settings"
-                        )
-                        else -> UiState.Idle
                     }
                 }
         }
@@ -60,37 +65,55 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun updateSettings(newSettings: Settings) {
         viewModelScope.launch {
-            _settingsState.value = UiState.Loading
+            _state.update { it.copy(settingsState = UiState.Loading) }
             Log.d("SettingsScreenViewModel", "Updating settings: $newSettings")
             updateUserSettingsUseCase.execute(newSettings)
                 .catch { exception ->
                     Log.e("SettingsScreenViewModel", "Update failed: ${exception.localizedMessage}")
-                    _settingsState.value = UiState.Error(
-                        exception.localizedMessage ?: "Failed to update settings"
-                    )
+                    _state.update {
+                        it.copy(
+                            settingsState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to update settings"
+                            )
+                        )
+                    }
                 }
                 .collect { result ->
                     Log.d("SettingsScreenViewModel", "Update result: $result")
-                    _settingsState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { settings ->
-                                _settings.value = settings
-                                Log.d("SettingsScreenViewModel", "Settings updated successfully: $settings")
-                                UiState.Success(settings)
-                            } ?: UiState.Error("Failed to update settings")
-                        }
-                        result.isFailure -> {
-                            UiState.Error(
-                                result.exceptionOrNull()?.localizedMessage ?: "Failed to update settings"
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val settings = result.getOrNull()
+                                if (settings != null) {
+                                    Log.d("SettingsScreenViewModel", "Settings updated successfully: $settings")
+                                    currentState.copy(
+                                        settings = settings,
+                                        settingsState = UiState.Success(settings)
+                                    )
+                                } else {
+                                    currentState.copy(
+                                        settingsState = UiState.Error("Failed to update settings")
+                                    )
+                                }
+                            }
+                            result.isFailure -> currentState.copy(
+                                settingsState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to update settings"
+                                )
                             )
+                            else -> currentState.copy(settingsState = UiState.Idle)
                         }
-                        else -> UiState.Idle
                     }
                 }
         }
     }
 
     fun toggleCardExpansion(cardIndex: Int) {
-        expandedCardIndex.intValue = if (expandedCardIndex.intValue == cardIndex) -1 else cardIndex
+        _state.update {
+            it.copy(
+                expandedCardIndex = if (it.expandedCardIndex == cardIndex) -1 else cardIndex
+            )
+        }
     }
 }

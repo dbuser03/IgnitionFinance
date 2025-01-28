@@ -36,7 +36,7 @@ fun PortfolioScreen(
     val dialogTitle = "Add your cash"
     var showDialog by remember { mutableStateOf(false) }
 
-    val firstAdded by viewModel.firstAdded.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getFirstAdded()
@@ -70,7 +70,7 @@ fun PortfolioScreen(
         },
         dialogTitle = dialogTitle,
         prefix = "€",
-        firstAdded = firstAdded == true
+        firstAdded = state.isFirstAdded
     )
 
     Scaffold(

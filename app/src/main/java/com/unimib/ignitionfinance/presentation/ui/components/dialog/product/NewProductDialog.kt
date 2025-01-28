@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.dialog
+package com.unimib.ignitionfinance.presentation.ui.components.dialog.product
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -151,10 +151,11 @@ fun NewProductDialog(
                     keyboardType = KeyboardType.Text,
                     onValueChange = { input ->
                         purchaseDateInput = input
-                        purchaseDateError = when (val result = ProductValidator.validatePurchaseDate(input)) {
-                            is ProductValidationResult.Success -> null
-                            is ProductValidationResult.Failure -> result.message
-                        }
+                        purchaseDateError =
+                            when (val result = ProductValidator.validatePurchaseDate(input)) {
+                                is ProductValidationResult.Success -> null
+                                is ProductValidationResult.Failure -> result.message
+                            }
                     },
                     errorMessage = purchaseDateError,
                     focusRequester = purchaseDateFocusRequester,
@@ -179,7 +180,12 @@ fun NewProductDialog(
                     isLastField = true,
                     onDone = {
                         if (isFormValid) {
-                            onProductConfirmation(isinInput, tickerInput, purchaseDateInput, amountInput)
+                            onProductConfirmation(
+                                isinInput,
+                                tickerInput,
+                                purchaseDateInput,
+                                amountInput
+                            )
                         }
                     }
                 )

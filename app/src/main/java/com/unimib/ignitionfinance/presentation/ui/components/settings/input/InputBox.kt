@@ -23,6 +23,7 @@ fun InputBox(
     viewModel: SettingsScreenViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val state by viewModel.state.collectAsState()
 
     DialogManager(
         showDialog = showDialog,
@@ -30,7 +31,7 @@ fun InputBox(
         onConfirmation = { newValue ->
             showDialog = false
 
-            val updatedSettings = viewModel.settings.value?.let { currentSettings ->
+            val updatedSettings = state.settings?.let { currentSettings ->
                 val updatedSetting = when (inputBoxModel.key) {
                     "monthlyWithdrawalsWithoutPension" -> currentSettings.copy(
                         withdrawals = currentSettings.withdrawals.copy(

@@ -7,15 +7,17 @@ import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.AddProductToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.usecase.UpdateProductListUseCase
-import com.unimib.ignitionfinance.domain.usecase.cash.GetUserCashUseCase
-import com.unimib.ignitionfinance.domain.usecase.cash.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.UpdateUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.flag.GetFirstAddedUseCase
 import com.unimib.ignitionfinance.domain.usecase.flag.UpdateFirstAddedUseCase
+import com.unimib.ignitionfinance.presentation.viewmodel.state.PortfolioScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,40 +32,31 @@ class PortfolioScreenViewModel @Inject constructor(
     private val updateFirstAddedUseCase: UpdateFirstAddedUseCase
 ) : ViewModel() {
 
-    private val _cash = MutableStateFlow<String?>("0")
-    val cash: StateFlow<String?> = _cash
-
-    private val _cashState = MutableStateFlow<UiState<String>>(UiState.Loading)
-    val cashState: StateFlow<UiState<String>> = _cashState
-
-    private val _firstAddedState = MutableStateFlow<UiState<Boolean>>(UiState.Loading)
-    val fistAddedState: StateFlow<UiState<Boolean>> = _firstAddedState
-
-    private val _firstAdded = MutableStateFlow<Boolean?>(false)
-    val firstAdded: StateFlow<Boolean?> = _firstAdded
-
-    private val _products = MutableStateFlow<List<Product>>(emptyList())
-    val products: StateFlow<List<Product>> = _products
-
-    private val _productsState = MutableStateFlow<UiState<List<Product>>>(UiState.Loading)
-    val productsState: StateFlow<UiState<List<Product>>> = _productsState
+    private val _state = MutableStateFlow(PortfolioScreenState())
+    val state: StateFlow<PortfolioScreenState> = _state
 
     fun getCash() {
         viewModelScope.launch {
-            _cashState.value = UiState.Loading
+            _state.update { it.copy(cashState = UiState.Loading) }
             getUserCashUseCase.execute()
                 .collect { result ->
-                    _cashState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { cash ->
-                                _cash.value = cash
-                                UiState.Success(cash)
-                            } ?: UiState.Error("Cash not found")
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val cash = result.getOrNull()
+                                currentState.copy(
+                                    cash = cash ?: "0",
+                                    cashState = UiState.Success(cash ?: "0")
+                                )
+                            }
+                            result.isFailure -> currentState.copy(
+                                cashState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to load cash"
+                                )
+                            )
+                            else -> currentState.copy(cashState = UiState.Idle)
                         }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load cash"
-                        )
-                        else -> UiState.Idle
                     }
                 }
         }
@@ -71,28 +64,38 @@ class PortfolioScreenViewModel @Inject constructor(
 
     fun updateCash(newCash: String) {
         viewModelScope.launch {
-            _cashState.value = UiState.Loading
-
+            _state.update { it.copy(cashState = UiState.Loading) }
             updateUserCashUseCase.execute(newCash)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error updating cash: ${exception.localizedMessage}")
-                    _cashState.value = UiState.Error(
-                        exception.localizedMessage ?: "Failed to update cash"
-                    )
+                    _state.update {
+                        it.copy(
+                            cashState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to update cash"
+                            )
+                        )
+                    }
                 }
                 .collect { result ->
-                    _cashState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { cash ->
-                                _cash.value = cash
-                                updateFirstAdded(true)
-                                UiState.Success(cash)
-                            } ?: UiState.Error("Failed to update cash")
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val cash = result.getOrNull()
+                                currentState.copy(
+                                    cash = cash ?: currentState.cash,
+                                    cashState = UiState.Success(cash ?: currentState.cash)
+                                ).also {
+                                    updateFirstAdded(true)
+                                }
+                            }
+                            result.isFailure -> currentState.copy(
+                                cashState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to update cash"
+                                )
+                            )
+                            else -> currentState.copy(cashState = UiState.Idle)
                         }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to update cash"
-                        )
-                        else -> UiState.Idle
                     }
                 }
         }
@@ -100,20 +103,26 @@ class PortfolioScreenViewModel @Inject constructor(
 
     private fun getProducts() {
         viewModelScope.launch {
-            _productsState.value = UiState.Loading
+            _state.update { it.copy(productsState = UiState.Loading) }
             getProductListUseCase.execute()
                 .collect { result ->
-                    _productsState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { productList ->
-                                _products.value = productList
-                                UiState.Success(productList)
-                            } ?: UiState.Error("Products not found")
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val productList = result.getOrNull()
+                                currentState.copy(
+                                    products = productList ?: emptyList(),
+                                    productsState = UiState.Success(productList ?: emptyList())
+                                )
+                            }
+                            result.isFailure -> currentState.copy(
+                                productsState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to load products"
+                                )
+                            )
+                            else -> currentState.copy(productsState = UiState.Idle)
                         }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load products"
-                        )
-                        else -> UiState.Idle
                     }
                 }
         }
@@ -121,21 +130,30 @@ class PortfolioScreenViewModel @Inject constructor(
 
     fun addNewProduct(product: Product) {
         viewModelScope.launch {
-            _productsState.value = UiState.Loading
+            _state.update { it.copy(productsState = UiState.Loading) }
             addProductToDatabaseUseCase.handleProductStorage(product)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error handling product storage: ${exception.localizedMessage}")
-                    _productsState.value = UiState.Error(
-                        exception.localizedMessage ?: "Failed to handle product storage"
-                    )
+                    _state.update {
+                        it.copy(
+                            productsState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to handle product storage"
+                            )
+                        )
+                    }
                 }
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
                     } else {
-                        _productsState.value = UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to handle product storage"
-                        )
+                        _state.update {
+                            it.copy(
+                                productsState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to handle product storage"
+                                )
+                            )
+                        }
                     }
                 }
         }
@@ -143,21 +161,30 @@ class PortfolioScreenViewModel @Inject constructor(
 
     fun removeProduct(productId: String) {
         viewModelScope.launch {
-            _productsState.value = UiState.Loading
+            _state.update { it.copy(productsState = UiState.Loading) }
             updateProductListUseCase.removeProduct(productId)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error removing product: ${exception.localizedMessage}")
-                    _productsState.value = UiState.Error(
-                        exception.localizedMessage ?: "Failed to remove product"
-                    )
+                    _state.update {
+                        it.copy(
+                            productsState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to remove product"
+                            )
+                        )
+                    }
                 }
                 .collect { result ->
                     if (result.isSuccess) {
-                        getProducts() // Refresh the product list
+                        getProducts()
                     } else {
-                        _productsState.value = UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to remove product"
-                        )
+                        _state.update {
+                            it.copy(
+                                productsState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to remove product"
+                                )
+                            )
+                        }
                     }
                 }
         }
@@ -165,72 +192,97 @@ class PortfolioScreenViewModel @Inject constructor(
 
     fun updateProduct(updatedProduct: Product) {
         viewModelScope.launch {
-            _productsState.value = UiState.Loading
+            _state.update { it.copy(productsState = UiState.Loading) }
             updateProductListUseCase.updateProduct(updatedProduct)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error updating product: ${exception.localizedMessage}")
-                    _productsState.value = UiState.Error(
-                        exception.localizedMessage ?: "Failed to update product"
-                    )
+                    _state.update {
+                        it.copy(
+                            productsState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to update product"
+                            )
+                        )
+                    }
                 }
                 .collect { result ->
                     if (result.isSuccess) {
-                        getProducts() // Refresh the product list
+                        getProducts()
                     } else {
-                        _productsState.value = UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to update product"
-                        )
+                        _state.update {
+                            it.copy(
+                                productsState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to update product"
+                                )
+                            )
+                        }
                     }
                 }
         }
     }
 
-    fun getFirstAdded(){
+    fun getFirstAdded() {
         viewModelScope.launch {
-            _firstAddedState.value = UiState.Loading
+            _state.update { it.copy(firstAddedState = UiState.Loading) }
             getFirstAddedUseCase.execute()
                 .collect { result ->
-                    _firstAddedState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { firstAdded ->
-                                _firstAdded.value = firstAdded
-                                UiState.Success(firstAdded)
-                            } ?: UiState.Error("FirstAdded not found")
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val firstAdded = result.getOrNull()
+                                currentState.copy(
+                                    isFirstAdded = firstAdded == true,
+                                    firstAddedState = UiState.Success(firstAdded == true)
+                                )
+                            }
+                            result.isFailure -> currentState.copy(
+                                firstAddedState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to load firstAdded"
+                                )
+                            )
+                            else -> currentState.copy(firstAddedState = UiState.Idle)
                         }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to load firstAdded"
-                        )
-                        else -> UiState.Idle
                     }
                 }
         }
     }
 
-    fun updateFirstAdded(newFirstAdded: Boolean){
+    fun updateFirstAdded(newFirstAdded: Boolean) {
         viewModelScope.launch {
-            _firstAddedState.value = UiState.Loading
-
+            _state.update { it.copy(firstAddedState = UiState.Loading) }
             updateFirstAddedUseCase.execute(newFirstAdded)
                 .catch { exception ->
-                    _firstAddedState.value = UiState.Error(
-                        exception.localizedMessage ?: "Failed to update cash"
-                    )
+                    _state.update {
+                        it.copy(
+                            firstAddedState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to update firstAdded"
+                            )
+                        )
+                    }
                 }
                 .collect { result ->
-                    _firstAddedState.value = when {
-                        result.isSuccess -> {
-                            result.getOrNull()?.let { firstAdded ->
-                                _firstAdded.value = firstAdded
-                                UiState.Success(firstAdded)
-                            } ?: UiState.Error("Failed to update cash")
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val firstAdded = result.getOrNull()
+                                currentState.copy(
+                                    isFirstAdded = firstAdded ?: currentState.isFirstAdded,
+                                    firstAddedState = UiState.Success(
+                                        firstAdded ?: currentState.isFirstAdded
+                                    )
+                                )
+                            }
+                            result.isFailure -> currentState.copy(
+                                firstAddedState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to update firstAdded"
+                                )
+                            )
+                            else -> currentState.copy(firstAddedState = UiState.Idle)
                         }
-                        result.isFailure -> UiState.Error(
-                            result.exceptionOrNull()?.localizedMessage ?: "Failed to update cash"
-                        )
-                        else -> UiState.Idle
                     }
                 }
         }
     }
-
 }

@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.dialog
+package com.unimib.ignitionfinance.presentation.ui.components.dialog.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
