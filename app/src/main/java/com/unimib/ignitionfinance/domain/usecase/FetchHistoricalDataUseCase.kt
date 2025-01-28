@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.model.StockData
-import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import kotlinx.coroutines.flow.Flow
