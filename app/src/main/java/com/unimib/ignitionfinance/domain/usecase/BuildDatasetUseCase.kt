@@ -3,7 +3,10 @@ package com.unimib.ignitionfinance.domain.usecase
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.data.calculator.DailyReturnCalculator
+import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
+import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.domain.validation.DatasetValidationResult
 import com.unimib.ignitionfinance.domain.validation.DatasetValidator
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +19,8 @@ import kotlin.coroutines.cancellation.CancellationException
 class BuildDatasetUseCase @Inject constructor(
     private val fetchHistoricalDataUseCase: FetchHistoricalDataUseCase,
     private val getProductListUseCase: GetProductListUseCase,
-    private val dailyReturnCalculator: DailyReturnCalculator
+    private val dailyReturnCalculator: DailyReturnCalculator,
+    private val stockRepository: StockRepository
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
@@ -37,29 +41,32 @@ class BuildDatasetUseCase @Inject constructor(
 
             // Step 3: Validate dataset
             when (val validationResult = DatasetValidator.validate(historicalDataList)) {
-                is DatasetValidationResult.Failure -> {
-                    emit(Result.failure(Exception(validationResult.message)))
-                    return@flow
-                }
                 is DatasetValidationResult.Success -> {
-                    // Only execute remaining steps if validation succeeds
-                    // Step 4: Extract tickers
-                    val productTickers = products.map { it.ticker }
+                    // Path originale per dati validi
+                    processData(products, historicalDataList, emit)
+                }
 
-                    // Step 5: Prepare capital map
-                    val productCapitals = products.associate { product ->
-                        product.ticker to try {
-                            BigDecimal(product.amount)
-                        } catch (e: NumberFormatException) {
-                            BigDecimal.ZERO
-                        }
+                is DatasetValidationResult.Failure -> {
+                    // Fallback su S&P 500
+                    val sp500Result = stockRepository.fetchStockData("^GSPC", apiKey).first()
+                    val sp500Data = sp500Result.getOrElse { error ->
+                        emit(Result.failure(error))
+                        return@flow
                     }
 
-                    // Step 6: Calculate returns
+                    // Calcola il capitale totale
+                    val totalCapital = calculateTotalCapital(products)
+
+                    // Crea il dataset fallback
+                    val fallbackData = listOf(sp500Data)
+                    val fallbackTickers = listOf("^GSPC")
+                    val fallbackCapitals = mapOf("^GSPC" to totalCapital)
+
+                    // Calcola i rendimenti
                     val dailyReturns = dailyReturnCalculator.calculateDailyReturns(
-                        historicalDataList = historicalDataList,
-                        products = productTickers,
-                        productCapitals = productCapitals
+                        historicalDataList = fallbackData,
+                        products = fallbackTickers,
+                        productCapitals = fallbackCapitals
                     )
 
                     emit(Result.success(dailyReturns))
@@ -71,5 +78,38 @@ class BuildDatasetUseCase @Inject constructor(
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
+    }
+
+    private fun calculateTotalCapital(products: List<Product>): BigDecimal {
+        return products.fold(BigDecimal.ZERO) { acc, product ->
+            acc + try {
+                BigDecimal(product.amount)
+            } catch (e: NumberFormatException) {
+                BigDecimal.ZERO
+            }
+        }
+    }
+
+    private suspend fun processData(
+        products: List<Product>,
+        historicalData: List<Map<String, StockData>>,
+        emit: (Result<List<DailyReturn>>) -> Unit
+    ) {
+        val productTickers = products.map { it.ticker }
+        val productCapitals = products.associate { product ->
+            product.ticker to try {
+                BigDecimal(product.amount)
+            } catch (e: NumberFormatException) {
+                BigDecimal.ZERO
+            }
+        }
+
+        val dailyReturns = dailyReturnCalculator.calculateDailyReturns(
+            historicalDataList = historicalData,
+            products = productTickers,
+            productCapitals = productCapitals
+        )
+
+        emit(Result.success(dailyReturns))
     }
 }
