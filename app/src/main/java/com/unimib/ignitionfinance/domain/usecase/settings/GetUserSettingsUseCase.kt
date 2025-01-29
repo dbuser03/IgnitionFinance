@@ -1,8 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase.settings
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.Settings
@@ -10,6 +7,7 @@ import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
+import com.unimib.ignitionfinance.domain.utils.NetworkUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -19,18 +17,11 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 class GetUserSettingsUseCase @Inject constructor(
-    private val context: Context,
+    private val networkUtils: NetworkUtils,
     private val authRepository: AuthRepository,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val firestoreRepository: FirestoreRepository
 ) {
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
-
     fun execute(forceRefresh: Boolean = false): Flow<Result<Settings>> = flow {
         Log.d(TAG, "Starting execution of GetUserSettingsUseCase")
 
@@ -56,7 +47,7 @@ class GetUserSettingsUseCase @Inject constructor(
 
         Log.d(TAG, "Local user retrieved: $localUser")
 
-        val isOnline = isNetworkAvailable()
+        val isOnline = networkUtils.isNetworkAvailable()
 
         val remoteUser = if (isOnline || forceRefresh) {
             try {
@@ -81,8 +72,8 @@ class GetUserSettingsUseCase @Inject constructor(
 
         val settingsToEmit = when {
             remoteUser != null &&
-                    (remoteUser.updatedAt.toLong() >= (localUser.lastSyncTimestamp?.toLong() ?: 0)) &&
-                    (remoteUser.updatedAt.toLong() >= localUser.updatedAt.toLong()) -> {
+                    (remoteUser.updatedAt >= (localUser.lastSyncTimestamp ?: 0)) &&
+                    (remoteUser.updatedAt >= localUser.updatedAt) -> {
                 Log.d(TAG, "Remote user is newer, updating local database")
                 val updatedLocalUser = localUser.copy(
                     settings = remoteUser.settings,
