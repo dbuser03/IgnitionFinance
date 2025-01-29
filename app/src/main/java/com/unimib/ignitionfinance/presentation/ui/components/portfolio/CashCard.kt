@@ -88,7 +88,7 @@ fun CashCard(
                         newAmount?.let { viewModel.updateCash(it) }
                     },
                     currencySymbol = "€",
-                    modifier = modifier.padding(bottom = 48.dp)
+                    modifier = modifier.padding(bottom = 36.dp)
                 )
 
                 when {
