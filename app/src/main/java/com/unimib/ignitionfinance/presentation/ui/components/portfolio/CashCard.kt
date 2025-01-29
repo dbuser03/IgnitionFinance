@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
+import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
 fun CashCard(
@@ -84,15 +87,37 @@ fun CashCard(
                     onAmountChanged = { newAmount ->
                         newAmount?.let { viewModel.updateCash(it) }
                     },
-                    currencySymbol = "€"
+                    currencySymbol = "€",
+                    modifier = modifier.padding(bottom = 48.dp)
                 )
-                CashPerformance(
-                    usdAmount = TODO(),
-                    chfAmount = TODO(),
-                    onUsdChanged = TODO(),
-                    onChfChanged = TODO(),
-                    modifier = TODO()
-                )
+
+                when {
+                    state.value.usdExchangeState is UiState.Loading ||
+                            state.value.chfExchangeState is UiState.Loading -> {
+                        CashPerformance(
+                            usdAmount = "----",
+                            chfAmount = "----",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    state.value.usdExchangeState is UiState.Error ||
+                            state.value.chfExchangeState is UiState.Error -> {
+                        CashPerformance(
+                            usdAmount = "----",
+                            chfAmount = "----",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    else -> {
+                        CashPerformance(
+                            usdAmount = viewModel.calculateUsdAmount(state.value.cash),
+                            chfAmount = viewModel.calculateChfAmount(state.value.cash),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
             }
         }
     }

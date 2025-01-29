@@ -21,15 +21,29 @@ class GetUserSettingsUseCase @Inject constructor(
     private val firestoreRepository: FirestoreRepository
 ) {
     fun execute(): Flow<Result<Settings>> = flow {
+        Log.d("GetUserSettingsUseCase", "Starting execution of GetUserSettingsUseCase")
+
         val currentUserResult = authRepository.getCurrentUser().first()
+        Log.d("GetUserSettingsUseCase", "AuthRepository currentUserResult: $currentUserResult")
+
         val authData = currentUserResult.getOrNull()
-            ?: throw IllegalStateException("Failed to get current user")
+            ?: throw IllegalStateException("Failed to get current user").also {
+                Log.e("GetUserSettingsUseCase", "Failed to get current user")
+            }
 
         val userId = authData.id.takeIf { it.isNotEmpty() }
-            ?: throw IllegalStateException("User ID is missing")
+            ?: throw IllegalStateException("User ID is missing").also {
+                Log.e("GetUserSettingsUseCase", "User ID is missing")
+            }
+
+        Log.d("GetUserSettingsUseCase", "Retrieved User ID: $userId")
 
         val localUser = localDatabaseRepository.getById(userId).first().getOrNull()
-            ?: throw IllegalStateException("User not found in local database")
+            ?: throw IllegalStateException("User not found in local database").also {
+                Log.e("GetUserSettingsUseCase", "User not found in local database for ID: $userId")
+            }
+
+        Log.d("GetUserSettingsUseCase", "Local user retrieved: $localUser")
 
         val remoteUser = try {
             firestoreRepository.getDocumentById("users", userId)
@@ -37,26 +51,40 @@ class GetUserSettingsUseCase @Inject constructor(
                 ?.getOrNull()
                 ?.let { UserDataMapper.mapDocumentToUserData(it) }
         } catch (e: Exception) {
-            Log.e("GetUserSettingsUseCase", "Error fetching remote user: ${e.message}", e)
+            Log.e("GetUserSettingsUseCase", "Error fetching remote user (possibly offline): ${e.message}", e)
             null
+        }
+
+        if (remoteUser == null) {
+            Log.d("GetUserSettingsUseCase", "No remote user data found, proceeding with local settings")
+        } else {
+            Log.d("GetUserSettingsUseCase", "Remote user retrieved: $remoteUser")
         }
 
         val settingsToEmit = when {
             remoteUser != null && remoteUser.updatedAt > localUser.updatedAt -> {
+                Log.d("GetUserSettingsUseCase", "Remote user is newer, updating local database")
                 val updatedLocalUser = localUser.copy(
                     settings = remoteUser.settings,
                     updatedAt = remoteUser.updatedAt,
                 )
                 localDatabaseRepository.update(updatedLocalUser).first()
+                Log.d("GetUserSettingsUseCase", "Local database updated with remote user data: $updatedLocalUser")
                 remoteUser.settings
             }
-            else -> localUser.settings
+            else -> {
+                Log.d("GetUserSettingsUseCase", "Using local user settings")
+                localUser.settings
+            }
         }
 
+        Log.d("GetUserSettingsUseCase", "Emitting settings: $settingsToEmit")
         emit(Result.success(settingsToEmit))
     }.catch { e ->
         when (e) {
-            is CancellationException -> throw e
+            is CancellationException -> throw e.also {
+                Log.e("GetUserSettingsUseCase", "Flow cancelled: ${e.message}")
+            }
             else -> {
                 Log.e("GetUserSettingsUseCase", "Error in execute: ${e.message}", e)
                 emit(Result.failure(e))

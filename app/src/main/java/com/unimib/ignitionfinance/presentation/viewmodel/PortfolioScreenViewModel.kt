@@ -4,21 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.model.user.Product
-import com.unimib.ignitionfinance.domain.usecase.AddProductToDatabaseUseCase
-import com.unimib.ignitionfinance.domain.usecase.GetProductListUseCase
-import com.unimib.ignitionfinance.domain.usecase.UpdateProductListUseCase
-import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
-import com.unimib.ignitionfinance.domain.usecase.networth.UpdateUserCashUseCase
-import com.unimib.ignitionfinance.domain.usecase.flag.GetFirstAddedUseCase
-import com.unimib.ignitionfinance.domain.usecase.flag.UpdateFirstAddedUseCase
+import com.unimib.ignitionfinance.domain.usecase.*
+import com.unimib.ignitionfinance.domain.usecase.networth.*
+import com.unimib.ignitionfinance.domain.usecase.flag.*
 import com.unimib.ignitionfinance.presentation.viewmodel.state.PortfolioScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,11 +23,86 @@ class PortfolioScreenViewModel @Inject constructor(
     private val updateProductListUseCase: UpdateProductListUseCase,
     private val addProductToDatabaseUseCase: AddProductToDatabaseUseCase,
     private val getFirstAddedUseCase: GetFirstAddedUseCase,
-    private val updateFirstAddedUseCase: UpdateFirstAddedUseCase
+    private val updateFirstAddedUseCase: UpdateFirstAddedUseCase,
+    private val fetchExchangeUseCase: FetchExchangeUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PortfolioScreenState())
     val state: StateFlow<PortfolioScreenState> = _state
+
+    init {
+        getCash()
+        getProducts()
+        getFirstAdded()
+        fetchExchangeRates()
+    }
+
+    private fun fetchExchangeRates() {
+        viewModelScope.launch {
+            _state.update { it.copy(
+                usdExchangeState = UiState.Loading,
+                chfExchangeState = UiState.Loading
+            )}
+
+            fetchExchangeUseCase.execute("D.USD.EUR.SP00.A")
+                .catch { exception ->
+                    _state.update { it.copy(
+                        usdExchangeState = UiState.Error(
+                            exception.localizedMessage ?: "Failed to fetch USD exchange rate"
+                        )
+                    )}
+                }
+                .collect { result ->
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val exchange = result.getOrNull()
+                                currentState.copy(
+                                    usdExchange = exchange,
+                                    usdExchangeState = UiState.Success(exchange)
+                                )
+                            }
+                            result.isFailure -> currentState.copy(
+                                usdExchangeState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to fetch USD exchange rate"
+                                )
+                            )
+                            else -> currentState.copy(usdExchangeState = UiState.Idle)
+                        }
+                    }
+                }
+
+            fetchExchangeUseCase.execute("D.CHF.EUR.SP00.A")
+                .catch { exception ->
+                    _state.update { it.copy(
+                        chfExchangeState = UiState.Error(
+                            exception.localizedMessage ?: "Failed to fetch CHF exchange rate"
+                        )
+                    )}
+                }
+                .collect { result ->
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val exchange = result.getOrNull()
+                                currentState.copy(
+                                    chfExchange = exchange,
+                                    chfExchangeState = UiState.Success(exchange)
+                                )
+                            }
+                            result.isFailure -> currentState.copy(
+                                chfExchangeState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to fetch CHF exchange rate"
+                                )
+                            )
+                            else -> currentState.copy(chfExchangeState = UiState.Idle)
+                        }
+                    }
+                }
+        }
+    }
 
     fun getCash() {
         viewModelScope.launch {
@@ -284,5 +353,29 @@ class PortfolioScreenViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun calculateUsdAmount(euroAmount: String): String {
+        return try {
+            val amount = euroAmount.toDoubleOrNull() ?: 0.0
+            val exchangeRate = _state.value.usdExchange?.exchangeRate ?: 1.0
+            String.format(Locale.US, "%.2f", amount * exchangeRate)
+        } catch (_: Exception) {
+            "0.00"
+        }
+    }
+
+    fun calculateChfAmount(euroAmount: String): String {
+        return try {
+            val amount = euroAmount.toDoubleOrNull() ?: 0.0
+            val exchangeRate = _state.value.chfExchange?.exchangeRate ?: 1.0
+            String.format(Locale.US, "%.2f", amount * exchangeRate)
+        } catch (_: Exception) {
+            "0.00"
+        }
+    }
+
+    fun refreshExchangeRates() {
+        fetchExchangeRates()
     }
 }

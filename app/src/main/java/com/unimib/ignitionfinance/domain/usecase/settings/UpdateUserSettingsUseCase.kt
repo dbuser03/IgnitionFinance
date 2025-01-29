@@ -56,6 +56,8 @@ class UpdateUserSettingsUseCase @Inject constructor(
 
             localDatabaseRepository.update(updatedUser).first()
             Log.d("UpdateUserSettingsUseCase", "Local database updated")
+            val currentUserNew = localDatabaseRepository.getById(userId).first().getOrNull()
+            Log.d("UpdateUserSettingsUseCase", "NewUpdatedUser: $currentUserNew")
 
             val syncQueueItem = createSyncQueueItem(updatedUser)
             syncQueueItemRepository.insert(syncQueueItem)

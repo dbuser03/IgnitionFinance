@@ -1,4 +1,3 @@
-// ricordarsi di modificare il productid al posto del TICKER con il simbolo
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.local.entity.User

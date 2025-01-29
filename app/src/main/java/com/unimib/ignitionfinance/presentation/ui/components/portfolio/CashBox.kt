@@ -22,24 +22,27 @@ import com.unimib.ignitionfinance.R
 @Composable
 fun CashBox(
     amount: String,
-    onAmountChanged: (String?) -> Unit,
+    onAmountChanged: ((String?) -> Unit)? = null,
     currencySymbol: String,
     modifier: Modifier = Modifier,
     alignRight: Boolean = false,
-    bottomLabel: String? = null
+    bottomLabel: String? = null,
+    isReadOnly: Boolean = false
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    DialogManager(
-        showDialog = showDialog,
-        onDismissRequest = { showDialog = false },
-        onConfirmation = { newValue ->
-            showDialog = false
-            onAmountChanged(newValue)
-        },
-        dialogTitle = "Update cash amount",
-        prefix = currencySymbol
-    )
+    if (!isReadOnly && onAmountChanged != null) {
+        DialogManager(
+            showDialog = showDialog,
+            onDismissRequest = { showDialog = false },
+            onConfirmation = { newValue ->
+                showDialog = false
+                onAmountChanged(newValue)
+            },
+            dialogTitle = "Update cash amount",
+            prefix = currencySymbol
+        )
+    }
 
     val formattedAmount = remember(amount) {
         formatNumberAmerican(amount)
@@ -54,7 +57,8 @@ fun CashBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(
-                    onClick = { showDialog = true },
+                    enabled = !isReadOnly,
+                    onClick = { if (!isReadOnly) showDialog = true },
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 )
@@ -76,27 +80,28 @@ fun CashBox(
                     ) {
                         Text(
                             text = currencySymbol,
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.headlineMedium
+                            color = if (isReadOnly) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.secondary,
+                            style = if (isReadOnly) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineMedium
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(if (isReadOnly) 4.dp else 8.dp))
                         Text(
                             text = formattedAmount,
                             color = MaterialTheme.colorScheme.onBackground,
-                            style = MaterialTheme.typography.headlineMedium
+                            style = if (isReadOnly) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineMedium
                         )
                     }
                 }
 
-                CustomIcon(
-                    icon = painterResource(id = R.drawable.outline_monetization_on_24),
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+                if (!isReadOnly) {
+                    CustomIcon(
+                        icon = painterResource(id = R.drawable.outline_monetization_on_24),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
         }
 
         bottomLabel?.let { label ->
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = label,
                 color = MaterialTheme.colorScheme.secondary,

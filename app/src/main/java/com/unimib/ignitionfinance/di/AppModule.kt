@@ -9,17 +9,21 @@ import com.unimib.ignitionfinance.data.local.database.UserDao
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
+import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
+import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.implementation.AuthRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.ExchangeRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.implementation.FirestoreRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.implementation.LocalDatabaseRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.UserPreferencesRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.interfaces.ExchangeRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
@@ -34,6 +38,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,6 +49,24 @@ object AppModule {
 
     @Provides
     fun provideGson(): Gson = Gson()
+
+    @Provides
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://data-api.ecb.europa.eu/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+    }
 
     @Provides
     fun provideContext(@ApplicationContext context: Context): Context = context
@@ -52,6 +78,11 @@ object AppModule {
     fun provideFirestoreService(): FirestoreService = FirestoreService()
 
     @Provides
+    fun provideExchangeService(retrofit: Retrofit): ExchangeService {
+        return retrofit.create(ExchangeService::class.java)
+    }
+
+    @Provides
     fun provideAuthMapper(): AuthMapper = AuthMapper
 
     @Provides
@@ -61,10 +92,19 @@ object AppModule {
     fun provideUserDataMapper(): UserDataMapper = UserDataMapper
 
     @Provides
+    fun provideExchangeMapper(): ExchangeMapper = ExchangeMapper
+
+    @Provides
     fun provideAuthRepository(
         authService: AuthService,
         authMapper: AuthMapper
     ): AuthRepository = AuthRepositoryImpl(authService, authMapper)
+
+    @Provides
+    fun provideExchangeRepository(
+        exchangeService: ExchangeService,
+        exchangeMapper: ExchangeMapper
+    ): ExchangeRepository = ExchangeRepositoryImpl(exchangeService, exchangeMapper)
 
     @Provides
     fun provideFirestoreRepository(

@@ -13,7 +13,7 @@ object ExchangeMapper {
                     val date = observation.key
                     val values = observation.value
                     values.firstOrNull()?.toString()?.toDoubleOrNull()?.let { inflationRate ->
-                        ExchangeData(date = date, inflationRate = inflationRate)
+                        ExchangeData(date = date, exchangeRate = inflationRate)
                     }
                 }
             }

@@ -56,6 +56,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.okhttp.v493)
+    implementation(libs.logging.interceptor)
     implementation (libs.androidx.datastore.preferences)
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)
