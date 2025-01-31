@@ -33,7 +33,7 @@ class InflationMapperTest {
         val result = InflationMapper.mapToDomain(inflationResponse)
 
         val expected = listOf(
-            InflationData(date = "2024-01-01", inflationRate = 3.0)
+            InflationData(year = "2024-01-01", inflationRate = 3.0)
         )
         assertEquals(expected, result)
     }

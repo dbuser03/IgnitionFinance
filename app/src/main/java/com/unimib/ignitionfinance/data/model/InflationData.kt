@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.model
 
 data class InflationData(
-    val date: String,
+    val year: String,
     val inflationRate: Double
 )
