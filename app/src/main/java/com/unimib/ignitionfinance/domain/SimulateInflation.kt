@@ -15,54 +15,54 @@ fun nextGaussian(): Double {
 }
 
 class InflationCalculator(
-    private val num_simulazioni: Int,
-    private val inflazione_media: Double
+    private val numSimulazioni: Int,
+    private val inflazioneMedia: Double
 ) {
-    private val inflazione_reale = arrayOf(
+    private val inflazioneReale = arrayOf(
         2.3, 3.4, 1.3, 2.8, -0.4, 2.3, 2.1, 4.7, 7.5, 5.9, 4.6, 2.3, 3.7, 1.4, 2.6, 5.0, 4.8, 5.7, 10.8, 19.1, 17.0,
         16.8, 17.0, 12.1, 14.8, 21.2, 17.8, 16.5, 14.7, 10.8, 9.2, 5.8, 4.8, 5.0, 6.3, 6.5, 6.2, 5.3, 4.7, 4.1, 5.3,
         4.0, 2.0, 2.0, 1.7, 2.5, 2.7, 2.5, 2.7, 2.2, 1.9, 2.1, 1.8, 3.3, 0.8, 1.5, 2.7, 3.0, 1.2, 0.2, 0.1, -0.1,
         1.2, 1.2, 0.6, -0.2, 1.9, 8.1, 8.7
     ).map { it / 100.0 }.toDoubleArray()
 
-    fun setInflazione(scenario_inflazione: String): Array<DoubleArray> {
-        val inflazione = Array(100) { DoubleArray(num_simulazioni) }
+    fun setInflazione(scenarioInflazione: String): Array<DoubleArray> {
+        val inflazione = Array(100) { DoubleArray(numSimulazioni) }
 
-        when (scenario_inflazione.lowercase()) {
+        when (scenarioInflazione.lowercase()) {
             "reale" -> {
                 for (i in 0 until 100) {
-                    for (j in 0 until num_simulazioni) {
-                        inflazione[i][j] = inflazione_reale[Random.nextInt(inflazione_reale.size)]
+                    for (j in 0 until numSimulazioni) {
+                        inflazione[i][j] = inflazioneReale[Random.nextInt(inflazioneReale.size)]
                     }
                 }
             }
 
             "reale riscalata" -> {
-                val meanReale = inflazione_reale.average()
-                val scaleFactor = inflazione_media / meanReale
-                val inflazione_riscalata = inflazione_reale.map { it * scaleFactor }.toDoubleArray()
+                val meanReale = inflazioneReale.average()
+                val scaleFactor = inflazioneMedia / meanReale
+                val inflazioneRiscalata = inflazioneReale.map { it * scaleFactor }.toDoubleArray()
 
                 for (i in 0 until 100) {
-                    for (j in 0 until num_simulazioni) {
-                        inflazione[i][j] = inflazione_riscalata[Random.nextInt(inflazione_riscalata.size)]
+                    for (j in 0 until numSimulazioni) {
+                        inflazione[i][j] = inflazioneRiscalata[Random.nextInt(inflazioneRiscalata.size)]
                     }
                 }
             }
 
             "lognormale" -> {
                 // Calculate variance of real inflation
-                val variance = inflazione_reale.map { it * it }.average() - inflazione_reale.average().pow(2)
+                val variance = inflazioneReale.map { it * it }.average() - inflazioneReale.average().pow(2)
 
                 // Calculate mu and sigma for lognormal distribution
-                var mu = ln(inflazione_media)
+                var mu = ln(inflazioneMedia)
                 var sigma = ln((1 + sqrt(1 + 4 * variance / exp(2 * mu))) / 2)
-                mu = ln(inflazione_media) - sigma.pow(2) / 2
+                mu = ln(inflazioneMedia) - sigma.pow(2) / 2
                 sigma = ln((1 + sqrt(1 + 4 * variance / exp(2 * mu))) / 2)
-                mu = ln(inflazione_media) - sigma.pow(2) / 2
+                mu = ln(inflazioneMedia) - sigma.pow(2) / 2
 
                 // Generate lognormal random values
                 for (i in 0 until 100) {
-                    for (j in 0 until num_simulazioni) {
+                    for (j in 0 until numSimulazioni) {
                         val z = nextGaussian()
                         inflazione[i][j] = exp(mu + sigma * z)
                     }
@@ -72,8 +72,8 @@ class InflationCalculator(
             else -> {
                 println("Ciccio, guarda che non so come gestire l'inflazione!")
                 for (i in 0 until 100) {
-                    for (j in 0 until num_simulazioni) {
-                        inflazione[i][j] = inflazione_media
+                    for (j in 0 until numSimulazioni) {
+                        inflazione[i][j] = inflazioneMedia
                     }
                 }
             }
@@ -83,7 +83,7 @@ class InflationCalculator(
         //val flatInflazione = inflazione.flatten()
         val flatInflazione = mutableListOf<Double>()
         for (i in 0 until 100) {
-            for (j in 0 until num_simulazioni) {
+            for (j in 0 until numSimulazioni) {
                 flatInflazione.add(inflazione[i][j])
             }
         }
@@ -94,59 +94,59 @@ class InflationCalculator(
         return inflazione
     }
 
-    fun calcolaErosioneLiquidita(liquidita_iniziale: Double, scenario_inflazione: String): Array<DoubleArray> {
+    fun calcolaErosioneLiquidita(liquiditaIniziale: Double, scenarioInflazione: String): Array<DoubleArray> {
         // Ottiene la matrice di inflazione dal modello scelto
-        val inflazione = setInflazione(scenario_inflazione)
+        val inflazione = setInflazione(scenarioInflazione)
 
         // Crea una matrice per memorizzare i valori della liquidità erosa
-        val liquidita_erosa = Array(100) { DoubleArray(num_simulazioni) }
+        val liquiditaErosa = Array(100) { DoubleArray(numSimulazioni) }
 
         // Per ogni simulazione e anno, calcola l'erosione della liquidità
-        for (j in 0 until num_simulazioni) {
-            var liquidita_corrente = liquidita_iniziale
+        for (j in 0 until numSimulazioni) {
+            var liquiditaCorrente = liquiditaIniziale
             for (i in 0 until 100) {
                 // La liquidità viene erosa dall'inflazione
-                liquidita_corrente /= (1 + inflazione[i][j])
-                liquidita_erosa[i][j] = liquidita_corrente
+                liquiditaCorrente /= (1 + inflazione[i][j])
+                liquiditaErosa[i][j] = liquiditaCorrente
             }
         }
 
         // Calcola e stampa alcune statistiche
         val liquiditaFinale = mutableListOf<Double>()
-        for (j in 0 until num_simulazioni) {
-            liquiditaFinale.add(liquidita_erosa[99][j])
+        for (j in 0 until numSimulazioni) {
+            liquiditaFinale.add(liquiditaErosa[99][j])
         }
 
         val mediaFinale = liquiditaFinale.average()
         val devStFinale = sqrt(liquiditaFinale.map { (it - mediaFinale).pow(2) }.average())
 
         println("Statistiche finale dopo 100 anni:")
-        println("Liquidita' iniziale: $liquidita_iniziale")
+        println("Liquidita' iniziale: $liquiditaIniziale")
         println("Media liquidita' finale: $mediaFinale")
         println("Deviazione standard finale: $devStFinale")
-        println("Perdita media: ${(1 - mediaFinale/liquidita_iniziale) * 100}%")
+        println("Perdita media: ${(1 - mediaFinale/liquiditaIniziale) * 100}%")
 
-        return liquidita_erosa
+        return liquiditaErosa
     }
 }
 
 fun main() {
     val calculator = InflationCalculator(
-        num_simulazioni = 1000,
-        inflazione_media = 0.03  // 3%
+        numSimulazioni = 1000,
+        inflazioneMedia = 0.03  // 3%
     )
 
-    val liquidita_iniziale = 100000.0 // 100,000 €
+    val liquiditaIniziale = 100000.0 // 100,000 €
 
     // Testa tutti gli scenari
     println("\nScenario: Inflazione Reale")
-    val erosioneReale = calculator.calcolaErosioneLiquidita(liquidita_iniziale, "reale")
+    val erosioneReale = calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale")
 
     println("\nScenario: Inflazione Reale Riscalata")
-    val erosioneRiscalata = calculator.calcolaErosioneLiquidita(liquidita_iniziale, "reale riscalata")
+    val erosioneRiscalata = calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale riscalata")
 
     println("\nScenario: Inflazione Lognormale")
-    val erosioneLognormale = calculator.calcolaErosioneLiquidita(liquidita_iniziale, "lognormale")
+    val erosioneLognormale = calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
 }
 
 //prende liquidità, per testare se funzionano i modelli --> restituisce un array con i valori della liquidità eroso
