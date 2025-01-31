@@ -101,13 +101,66 @@ class InflationCalculator(
 
         return inflazione
     }
+
+    fun calcolaErosioneLiquidita(liquidita_iniziale: Double, scenario_inflazione: String): Array<DoubleArray> {
+        // Ottiene la matrice di inflazione dal modello scelto
+        val inflazione = setInflazione(scenario_inflazione)
+
+        // Crea una matrice per memorizzare i valori della liquidità erosa
+        val liquidita_erosa = Array(100) { DoubleArray(num_simulazioni) }
+
+        // Per ogni simulazione e anno, calcola l'erosione della liquidità
+        for (j in 0 until num_simulazioni) {
+            var liquidita_corrente = liquidita_iniziale
+            for (i in 0 until 100) {
+                // La liquidità viene erosa dall'inflazione
+                liquidita_corrente /= (1 + inflazione[i][j])
+                liquidita_erosa[i][j] = liquidita_corrente
+            }
+        }
+
+        // Calcola e stampa alcune statistiche
+        val liquiditaFinale = mutableListOf<Double>()
+        for (j in 0 until num_simulazioni) {
+            liquiditaFinale.add(liquidita_erosa[99][j])
+        }
+
+        val mediaFinale = liquiditaFinale.average()
+        val devStFinale = sqrt(liquiditaFinale.map { (it - mediaFinale).pow(2) }.average())
+
+        println("Statistiche finale dopo 100 anni:")
+        println("Liquidita' iniziale: $liquidita_iniziale")
+        println("Media liquidita' finale: $mediaFinale")
+        println("Deviazione standard finale: $devStFinale")
+        println("Perdita media: ${(1 - mediaFinale/liquidita_iniziale) * 100}%")
+
+        return liquidita_erosa
+    }
+}
+
+fun main() {
+    val calculator = InflationCalculator(
+        num_simulazioni = 1000,
+        inflazione_media = 0.03  // 3%
+    )
+
+    val liquidita_iniziale = 100000.0 // 100,000 €
+
+    // Testa tutti gli scenari
+    println("\nScenario: Inflazione Reale")
+    val erosioneReale = calculator.calcolaErosioneLiquidita(liquidita_iniziale, "reale")
+
+    println("\nScenario: Inflazione Reale Riscalata")
+    val erosioneRiscalata = calculator.calcolaErosioneLiquidita(liquidita_iniziale, "reale riscalata")
+
+    println("\nScenario: Inflazione Lognormale")
+    val erosioneLognormale = calculator.calcolaErosioneLiquidita(liquidita_iniziale, "lognormale")
 }
 
 //prende liquidità, per testare se funzionano i modelli --> restituisce un array con i valori della liquidità eroso
 //dal % di inflazione
-
 // Example usage:
-fun main() {
+/*fun main() {
     val calculator = InflationCalculator(
         num_simulazioni = 1000,
         inflazione_media = 0.03  // 3%
@@ -118,4 +171,4 @@ fun main() {
     val inflazioneReale = calculator.setInflazione("reale")
     val inflazioneRiscalata = calculator.setInflazione("reale riscalata")
     val inflazioneLognormale = calculator.setInflazione("lognormale")
-}
+}*/
