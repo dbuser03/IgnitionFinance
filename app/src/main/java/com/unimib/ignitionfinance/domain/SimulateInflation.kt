@@ -25,7 +25,7 @@ class InflationCalculator(
         1.2, 1.2, 0.6, -0.2, 1.9, 8.1, 8.7
     ).map { it / 100.0 }.toDoubleArray()
 
-    fun setInflazione(scenarioInflazione: String): Array<DoubleArray> {
+    private fun setInflazione(scenarioInflazione: String): Array<DoubleArray> {
         val inflazione = Array(100) { DoubleArray(numSimulazioni) }
 
         when (scenarioInflazione.lowercase()) {
@@ -140,13 +140,13 @@ fun main() {
 
     // Testa tutti gli scenari
     println("\nScenario: Inflazione Reale")
-    val erosioneReale = calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale")
 
     println("\nScenario: Inflazione Reale Riscalata")
-    val erosioneRiscalata = calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale riscalata")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale riscalata")
 
     println("\nScenario: Inflazione Lognormale")
-    val erosioneLognormale = calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
 }
 
 //prende liquidità, per testare se funzionano i modelli --> restituisce un array con i valori della liquidità eroso
