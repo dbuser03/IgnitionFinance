@@ -13,5 +13,6 @@ data class PortfolioScreenState(
     val productsState: UiState<List<Product>> = UiState.Idle,
     val firstAddedState: UiState<Boolean> = UiState.Idle,
     val usdExchangeState: UiState<ExchangeData?> = UiState.Idle,
-    val chfExchangeState: UiState<ExchangeData?> = UiState.Idle
+    val chfExchangeState: UiState<ExchangeData?> = UiState.Idle,
+    val expandedCardIndex: Int = -1
 )
