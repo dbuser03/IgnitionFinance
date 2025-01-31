@@ -72,9 +72,9 @@ object AppModule {
     }
 
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://data-api.ecb.europa.eu/")
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -90,9 +90,41 @@ object AppModule {
     fun provideFirestoreService(): FirestoreService = FirestoreService()
 
     @Provides
-    fun provideExchangeService(retrofit: Retrofit): ExchangeService {
-        return retrofit.create(ExchangeService::class.java)
+    fun provideExchangeService(okHttpClient: OkHttpClient, gson: Gson): ExchangeService {
+        return provideRetrofit(okHttpClient, gson, "https://data-api.ecb.europa.eu/").create(
+            ExchangeService::class.java
+        )
     }
+
+    @Provides
+    fun provideInflationService(okHttpClient: OkHttpClient, gson: Gson): InflationService {
+        return provideRetrofit(okHttpClient, gson, "https://data-api.ecb.europa.eu/").create(
+            InflationService::class.java
+        )
+    }
+
+    @Provides
+    fun provideStockService(okHttpClient: OkHttpClient, gson: Gson): StockService {
+        return provideRetrofit(okHttpClient, gson, "https://www.alphavantage.co/").create(
+            StockService::class.java
+        )
+    }
+
+    @Provides
+    fun provideSearchStockService(okHttpClient: OkHttpClient, gson: Gson): SearchStockService {
+        return provideRetrofit(okHttpClient, gson, "https://www.alphavantage.co/").create(
+            SearchStockService::class.java
+        )
+    }
+
+    @Provides
+    fun provideSearchStockMapper(): SearchStockMapper = SearchStockMapper
+
+    @Provides
+    fun provideStockMapper(): StockMapper = StockMapper
+
+    @Provides
+    fun provideInflationMapper(): InflationMapper = InflationMapper
 
     @Provides
     fun provideAuthMapper(): AuthMapper = AuthMapper
@@ -117,6 +149,24 @@ object AppModule {
         exchangeService: ExchangeService,
         exchangeMapper: ExchangeMapper
     ): ExchangeRepository = ExchangeRepositoryImpl(exchangeService, exchangeMapper)
+
+    @Provides
+    fun provideInflationRepository(
+        inflationService: InflationService,
+        inflationMapper: InflationMapper
+    ): InflationRepository = InflationRepositoryImpl(inflationService, inflationMapper)
+
+    @Provides
+    fun provideSearchStockRepository(
+        searchStockService: SearchStockService,
+        searchStockMapper: SearchStockMapper
+    ): SearchStockRepository = SearchStockRepositoryImpl(searchStockService, searchStockMapper)
+
+    @Provides
+    fun provideStockRepository(
+        stockService: StockService,
+        stockMapper: StockMapper
+    ): StockRepository = StockRepositoryImpl(stockService, stockMapper)
 
     @Provides
     fun provideFirestoreRepository(
@@ -227,49 +277,4 @@ object AppModule {
         firestoreRepository = firestoreRepository,
         localDatabaseRepository = localDatabaseRepository
     )
-    //AGGIUNTE PER I REPOSITORY NON INIETTATI
-
-    @Provides
-    fun provideInflationService(retrofit: Retrofit): InflationService {
-        return retrofit.create(InflationService::class.java)
-    }
-
-    @Provides
-    fun provideInflationMapper(): InflationMapper = InflationMapper
-
-    @Provides
-    fun provideInflationRepository(
-        inflationService: InflationService,
-        inflationMapper: InflationMapper
-    ): InflationRepository = InflationRepositoryImpl(inflationService, inflationMapper)
-
-
-    @Provides
-    fun provideSearchStockService(retrofit: Retrofit): SearchStockService {
-        return retrofit.create(SearchStockService::class.java)
-    }
-
-    @Provides
-    fun provideSearchStockMapper(): SearchStockMapper = SearchStockMapper
-
-    @Provides
-    fun provideSearchStockRepository(
-        searchStockService: SearchStockService,
-        searchStockMapper: SearchStockMapper
-    ): SearchStockRepository = SearchStockRepositoryImpl(searchStockService, searchStockMapper)
-
-    @Provides
-    fun provideStockService(retrofit: Retrofit): StockService {
-        return retrofit.create(StockService::class.java)
-    }
-
-    @Provides
-    fun provideStockMapper(): StockMapper = StockMapper
-
-    @Provides
-    fun provideStockRepository(
-        stockService: StockService,
-        stockMapper: StockMapper
-    ): StockRepository = StockRepositoryImpl(stockService, stockMapper)
-
 }
