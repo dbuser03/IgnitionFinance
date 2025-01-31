@@ -9,13 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -28,10 +22,8 @@ import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.ProductCard
-import com.unimib.ignitionfinance.presentation.ui.components.settings.CardItem
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
-import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
 fun PortfolioScreen(
@@ -39,11 +31,18 @@ fun PortfolioScreen(
     viewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val dialogTitle = "Add your cash"
+    val dialogTitle = "Add your cash or product"
     var showDialog by remember { mutableStateOf(false) }
     val state by viewModel.state.collectAsState()
-
     val listState = rememberLazyListState()
+
+    var selectedCardIndex by remember { mutableIntStateOf(-1) }
+
+    LaunchedEffect(selectedCardIndex) {
+        if (selectedCardIndex != -1) {
+            listState.animateScrollToItem(selectedCardIndex)
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getFirstAdded()
@@ -93,8 +92,7 @@ fun PortfolioScreen(
         floatingActionButton = {
             CustomFAB(
                 onClick = { showDialog = true },
-                modifier = Modifier
-                    .padding(bottom = 12.dp),
+                modifier = Modifier.padding(bottom = 12.dp),
                 icon = painterResource(id = R.drawable.outline_add_24),
                 contentDescription = stringResource(id = R.string.add_FAB_description)
             )
@@ -107,47 +105,32 @@ fun PortfolioScreen(
                     .padding(innerPadding),
                 state = listState
             ) {
-                when (state.productsState) {
-                    is UiState.Success -> {
-                        itemsIndexed(
-                            items = buildList {
-                                if (state.cash.toDouble() > 0) {
-                                    add(Product(
-                                        isin = "BANK ACCOUNT",
-                                        ticker = "CASH",
-                                        purchaseDate = null,
-                                        amount = state.cash
-                                    ))
-                                }
-                                addAll(state.products.reversed())
-                            }
-                        ) { index, product ->
-                            CardItem(
-                                cardIndex = index,
-                                expandedCardIndex = state.expandedCardIndex,
-                                listState = listState
-                            ) {
-                                ProductCard(
-                                    modifier = Modifier,
-                                    isExpanded = state.expandedCardIndex == index,
-                                    onCardClicked = {
-                                        viewModel.toggleCardExpansion(index)
-                                    },
-                                    viewModel = viewModel,
-                                    isin = product.isin,
-                                    ticker = product.ticker,
-                                    isCash = product.ticker == "CASH"
-                                )
-                            }
-                        }
-                    }
-                    is UiState.Error -> {
-                        // Handle error state if needed
-                    }
-                    is UiState.Loading -> {
-                        // Show loading indicator if needed
-                    }
-                    else -> { /* Handle other states */ }
+                item {
+                    ProductCard(
+                        modifier = Modifier,
+                        isExpanded = state.expandedCardIndex == 0,
+                        onCardClicked = {
+                            viewModel.toggleCardExpansion(0)
+                            selectedCardIndex = 0
+                        },
+                        isin = "BANK ACCOUNT",
+                        ticker = "CASH",
+                        isCash = true
+                    )
+                }
+
+                itemsIndexed(state.products) { index, product ->
+                    ProductCard(
+                        modifier = Modifier,
+                        isExpanded = state.expandedCardIndex == index + 1,
+                        onCardClicked = {
+                            viewModel.toggleCardExpansion(index + 1)
+                            selectedCardIndex = index
+                        },
+                        isin = product.isin,
+                        ticker = product.ticker,
+                        isCash = false
+                    )
                 }
             }
         }

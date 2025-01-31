@@ -10,20 +10,32 @@ import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
+import com.unimib.ignitionfinance.data.remote.mapper.InflationMapper
+import com.unimib.ignitionfinance.data.remote.mapper.SearchStockMapper
+import com.unimib.ignitionfinance.data.remote.mapper.StockMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
 import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
+import com.unimib.ignitionfinance.data.remote.service.InflationService
+import com.unimib.ignitionfinance.data.remote.service.SearchStockService
+import com.unimib.ignitionfinance.data.remote.service.StockService
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.implementation.AuthRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.ExchangeRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.implementation.FirestoreRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.InflationRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.implementation.LocalDatabaseRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.SearchStockRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.StockRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.UserPreferencesRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.ExchangeRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
@@ -60,9 +72,9 @@ object AppModule {
     }
 
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://data-api.ecb.europa.eu/")
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -78,9 +90,41 @@ object AppModule {
     fun provideFirestoreService(): FirestoreService = FirestoreService()
 
     @Provides
-    fun provideExchangeService(retrofit: Retrofit): ExchangeService {
-        return retrofit.create(ExchangeService::class.java)
+    fun provideExchangeService(okHttpClient: OkHttpClient, gson: Gson): ExchangeService {
+        return provideRetrofit(okHttpClient, gson, "https://data-api.ecb.europa.eu/").create(
+            ExchangeService::class.java
+        )
     }
+
+    @Provides
+    fun provideInflationService(okHttpClient: OkHttpClient, gson: Gson): InflationService {
+        return provideRetrofit(okHttpClient, gson, "https://data-api.ecb.europa.eu/").create(
+            InflationService::class.java
+        )
+    }
+
+    @Provides
+    fun provideStockService(okHttpClient: OkHttpClient, gson: Gson): StockService {
+        return provideRetrofit(okHttpClient, gson, "https://www.alphavantage.co/").create(
+            StockService::class.java
+        )
+    }
+
+    @Provides
+    fun provideSearchStockService(okHttpClient: OkHttpClient, gson: Gson): SearchStockService {
+        return provideRetrofit(okHttpClient, gson, "https://www.alphavantage.co/").create(
+            SearchStockService::class.java
+        )
+    }
+
+    @Provides
+    fun provideSearchStockMapper(): SearchStockMapper = SearchStockMapper
+
+    @Provides
+    fun provideStockMapper(): StockMapper = StockMapper
+
+    @Provides
+    fun provideInflationMapper(): InflationMapper = InflationMapper
 
     @Provides
     fun provideAuthMapper(): AuthMapper = AuthMapper
@@ -105,6 +149,24 @@ object AppModule {
         exchangeService: ExchangeService,
         exchangeMapper: ExchangeMapper
     ): ExchangeRepository = ExchangeRepositoryImpl(exchangeService, exchangeMapper)
+
+    @Provides
+    fun provideInflationRepository(
+        inflationService: InflationService,
+        inflationMapper: InflationMapper
+    ): InflationRepository = InflationRepositoryImpl(inflationService, inflationMapper)
+
+    @Provides
+    fun provideSearchStockRepository(
+        searchStockService: SearchStockService,
+        searchStockMapper: SearchStockMapper
+    ): SearchStockRepository = SearchStockRepositoryImpl(searchStockService, searchStockMapper)
+
+    @Provides
+    fun provideStockRepository(
+        stockService: StockService,
+        stockMapper: StockMapper
+    ): StockRepository = StockRepositoryImpl(stockService, stockMapper)
 
     @Provides
     fun provideFirestoreRepository(

@@ -4,7 +4,7 @@ import com.unimib.ignitionfinance.data.remote.response.StockResponse
 import com.unimib.ignitionfinance.data.model.StockData
 import java.math.BigDecimal
 
-class StockMapper {
+object StockMapper {
     fun mapToDomain(response: StockResponse): Map<String, StockData> {
 
         return response.timeSeries.mapValues { (dateString, timeSeriesData) ->
