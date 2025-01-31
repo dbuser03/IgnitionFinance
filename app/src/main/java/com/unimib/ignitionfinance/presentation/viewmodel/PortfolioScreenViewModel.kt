@@ -375,10 +375,6 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    fun refreshExchangeRates() {
-        fetchExchangeRates()
-    }
-
     fun toggleCardExpansion(index: Int) {
         _state.update {
             it.copy(
