@@ -259,7 +259,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateProduct(updatedProduct: Product) {
+  /*  fun updateProduct(updatedProduct: Product) {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
             updateProductListUseCase.updateProduct(updatedProduct)
@@ -285,6 +285,34 @@ class PortfolioScreenViewModel @Inject constructor(
                                 )
                             )
                         }
+                    }
+                }
+        }
+    }*/
+// PortfolioScreenViewModel.kt
+
+    fun updateProduct(updatedProduct: Product) {
+        viewModelScope.launch {
+            // Ottieni la lista corrente
+            val currentProducts = _state.value.products.toMutableList()
+            // Trova l'indice del prodotto da aggiornare
+            val index = currentProducts.indexOfFirst { it.ticker == updatedProduct.ticker }
+            if (index != -1) {
+                // Sostituisci il prodotto nella lista
+                currentProducts[index] = updatedProduct
+                // Aggiorna lo stato IMMEDIATAMENTE
+                _state.update { it.copy(products = currentProducts) }
+            }
+
+            // Esegui l'aggiornamento sul database
+            updateProductListUseCase.updateProduct(updatedProduct)
+                .catch { exception ->
+                    // Gestione errori
+                }
+                .collect { result ->
+                    if (result.isFailure) {
+                        // Ripristina lo stato precedente in caso di errore
+                        getProducts()
                     }
                 }
         }
