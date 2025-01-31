@@ -170,7 +170,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getProducts() {
+    fun getProducts() {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
             getProductListUseCase.execute()
@@ -377,5 +377,13 @@ class PortfolioScreenViewModel @Inject constructor(
 
     fun refreshExchangeRates() {
         fetchExchangeRates()
+    }
+
+    fun toggleCardExpansion(index: Int) {
+        _state.update {
+            it.copy(
+                expandedCardIndex = if (it.expandedCardIndex == index) -1 else index
+            )
+        }
     }
 }
