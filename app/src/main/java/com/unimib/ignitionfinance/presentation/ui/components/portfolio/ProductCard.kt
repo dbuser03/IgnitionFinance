@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
@@ -34,10 +35,9 @@ fun ProductCard(
     viewModel: PortfolioScreenViewModel = viewModel(),
     isin: String,
     ticker: String,
-    isCash: Boolean = false
+    isCash: Boolean = false,
+    product: Product? = null
 ) {
-    val label = isin
-    val title = ticker
     val state = viewModel.state.collectAsState()
 
     val cardHeight = animateDpAsState(
@@ -47,7 +47,6 @@ fun ProductCard(
             160.dp
         }
     )
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -75,49 +74,71 @@ fun ProductCard(
             horizontalAlignment = Alignment.Start
         ) {
             InputCardHeader(
-                label = label,
-                title = title,
+                label = isin,
+                title = ticker,
                 isExpanded = isExpanded,
                 onCardClicked = onCardClicked,
                 titleFontSize = MaterialTheme.typography.displayLarge.fontSize
             )
 
-            if (isExpanded && isCash) {
-                CashBox(
-                    amount = state.value.cash,
-                    onAmountChanged = { newAmount ->
-                        newAmount?.let { viewModel.updateCash(it) }
-                    },
-                    currencySymbol = "€",
-                    modifier = modifier.padding(bottom = 36.dp)
-                )
+            if (isExpanded) {
+                if (isCash) {
+                    CashBox(
+                        amount = state.value.cash,
+                        onAmountChanged = { newAmount ->
+                            newAmount?.let { viewModel.updateCash(it) }
+                        },
+                        currencySymbol = "€",
+                        modifier = modifier.padding(bottom = 36.dp)
+                    )
 
-                when {
-                    state.value.usdExchangeState is UiState.Loading ||
-                            state.value.chfExchangeState is UiState.Loading -> {
-                        CashPerformance(
-                            usdAmount = "----",
-                            chfAmount = "----",
-                            modifier = Modifier.fillMaxWidth()
+                    when {
+                        state.value.usdExchangeState is UiState.Loading ||
+                                state.value.chfExchangeState is UiState.Loading -> {
+                            CashPerformance(
+                                usdAmount = "----",
+                                chfAmount = "----",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        state.value.usdExchangeState is UiState.Error ||
+                                state.value.chfExchangeState is UiState.Error -> {
+                            CashPerformance(
+                                usdAmount = "----",
+                                chfAmount = "----",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        else -> {
+                            CashPerformance(
+                                usdAmount = viewModel.calculateUsdAmount(state.value.cash),
+                                chfAmount = viewModel.calculateChfAmount(state.value.cash),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                } else {
+                    if (product != null) {
+                        ProductBox(
+                            amount = product.amount,
+                            onAmountChanged = { newAmount ->
+                                newAmount?.let {
+                                    val updatedProduct = product.copy(amount = it)
+                                    viewModel.updateProduct(updatedProduct)
+                                }
+                            },
+                            currencySymbol = "€",
+                            modifier = modifier.padding(bottom = 36.dp)
                         )
                     }
 
-                    state.value.usdExchangeState is UiState.Error ||
-                            state.value.chfExchangeState is UiState.Error -> {
-                        CashPerformance(
-                            usdAmount = "----",
-                            chfAmount = "----",
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    else -> {
-                        CashPerformance(
-                            usdAmount = viewModel.calculateUsdAmount(state.value.cash),
-                            chfAmount = viewModel.calculateChfAmount(state.value.cash),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    ProductPerformance(
+                        todayAmount = "100",
+                        purchasedAmount = "500",
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

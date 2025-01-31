@@ -128,6 +128,7 @@ fun PortfolioScreen(
                             selectedCardIndex = index
                         },
                         isin = product.isin,
+                        product = product,
                         ticker = product.ticker,
                         isCash = false
                     )
