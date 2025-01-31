@@ -10,20 +10,32 @@ import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
+import com.unimib.ignitionfinance.data.remote.mapper.InflationMapper
+import com.unimib.ignitionfinance.data.remote.mapper.SearchStockMapper
+import com.unimib.ignitionfinance.data.remote.mapper.StockMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
 import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.service.FirestoreService
+import com.unimib.ignitionfinance.data.remote.service.InflationService
+import com.unimib.ignitionfinance.data.remote.service.SearchStockService
+import com.unimib.ignitionfinance.data.remote.service.StockService
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.implementation.AuthRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.ExchangeRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
 import com.unimib.ignitionfinance.data.repository.implementation.FirestoreRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.InflationRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.implementation.LocalDatabaseRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.SearchStockRepositoryImpl
+import com.unimib.ignitionfinance.data.repository.implementation.StockRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.SyncQueueItemRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.implementation.UserPreferencesRepositoryImpl
 import com.unimib.ignitionfinance.data.repository.interfaces.ExchangeRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
@@ -215,4 +227,49 @@ object AppModule {
         firestoreRepository = firestoreRepository,
         localDatabaseRepository = localDatabaseRepository
     )
+    //AGGIUNTE PER I REPOSITORY NON INIETTATI
+
+    @Provides
+    fun provideInflationService(retrofit: Retrofit): InflationService {
+        return retrofit.create(InflationService::class.java)
+    }
+
+    @Provides
+    fun provideInflationMapper(): InflationMapper = InflationMapper
+
+    @Provides
+    fun provideInflationRepository(
+        inflationService: InflationService,
+        inflationMapper: InflationMapper
+    ): InflationRepository = InflationRepositoryImpl(inflationService, inflationMapper)
+
+
+    @Provides
+    fun provideSearchStockService(retrofit: Retrofit): SearchStockService {
+        return retrofit.create(SearchStockService::class.java)
+    }
+
+    @Provides
+    fun provideSearchStockMapper(): SearchStockMapper = SearchStockMapper
+
+    @Provides
+    fun provideSearchStockRepository(
+        searchStockService: SearchStockService,
+        searchStockMapper: SearchStockMapper
+    ): SearchStockRepository = SearchStockRepositoryImpl(searchStockService, searchStockMapper)
+
+    @Provides
+    fun provideStockService(retrofit: Retrofit): StockService {
+        return retrofit.create(StockService::class.java)
+    }
+
+    @Provides
+    fun provideStockMapper(): StockMapper = StockMapper
+
+    @Provides
+    fun provideStockRepository(
+        stockService: StockService,
+        stockMapper: StockMapper
+    ): StockRepository = StockRepositoryImpl(stockService, stockMapper)
+
 }
