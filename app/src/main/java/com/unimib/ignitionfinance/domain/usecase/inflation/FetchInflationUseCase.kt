@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase.inflation
 
-class GetInflationUseCase {
+class FetchInflationUseCase {
     //prendi dati storici
-    //settings ce li ho già
 }

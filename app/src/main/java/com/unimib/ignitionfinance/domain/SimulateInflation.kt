@@ -29,14 +29,6 @@ class InflationCalculator(
         val inflazione = Array(100) { DoubleArray(num_simulazioni) }
 
         when (scenario_inflazione.lowercase()) {
-            "fissa" -> {
-                for (i in 0 until 100) {
-                    for (j in 0 until num_simulazioni) {
-                        inflazione[i][j] = inflazione_media
-                    }
-                }
-            }
-
             "reale" -> {
                 for (i in 0 until 100) {
                     for (j in 0 until num_simulazioni) {
