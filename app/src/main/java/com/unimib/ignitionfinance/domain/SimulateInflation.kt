@@ -151,16 +151,3 @@ fun main() {
 
 //prende liquidità, per testare se funzionano i modelli --> restituisce un array con i valori della liquidità eroso
 //dal % di inflazione
-// Example usage:
-/*fun main() {
-    val calculator = InflationCalculator(
-        num_simulazioni = 1000,
-        inflazione_media = 0.03  // 3%
-    )
-
-    // Try different scenarios
-    //val inflazioneFissa = calculator.setInflazione("fissa")
-    val inflazioneReale = calculator.setInflazione("reale")
-    val inflazioneRiscalata = calculator.setInflazione("reale riscalata")
-    val inflazioneLognormale = calculator.setInflazione("lognormale")
-}*/
