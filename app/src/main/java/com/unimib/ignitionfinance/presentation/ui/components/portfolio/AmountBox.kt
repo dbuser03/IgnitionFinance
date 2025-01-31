@@ -20,14 +20,16 @@ import java.util.Locale
 import com.unimib.ignitionfinance.R
 
 @Composable
-fun CashBox(
+fun AmountBox(
     amount: String,
-    onAmountChanged: ((String?) -> Unit)? = null,
     currencySymbol: String,
     modifier: Modifier = Modifier,
+    onAmountChanged: ((String?) -> Unit)? = null,
     alignRight: Boolean = false,
     bottomLabel: String? = null,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    dialogTitle: String = "Update amount",
+    isProduct: Boolean = false
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -39,7 +41,7 @@ fun CashBox(
                 showDialog = false
                 onAmountChanged(newValue)
             },
-            dialogTitle = "Update cash amount",
+            dialogTitle = dialogTitle,
             prefix = currencySymbol
         )
     }
@@ -57,8 +59,8 @@ fun CashBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(
-                    enabled = !isReadOnly,
-                    onClick = { if (!isReadOnly) showDialog = true },
+                    enabled = !isReadOnly && onAmountChanged != null,
+                    onClick = { if (!isReadOnly && onAmountChanged != null) showDialog = true },
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 )
@@ -92,10 +94,14 @@ fun CashBox(
                     }
                 }
 
-                if (!isReadOnly) {
+                if (!isReadOnly && onAmountChanged != null) {
                     CustomIcon(
-                        icon = painterResource(id = R.drawable.outline_monetization_on_24),
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        icon = painterResource(
+                            id = if (isProduct) R.drawable.outline_candlestick_chart_24 else R.drawable.outline_monetization_on_24
+                        ),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        backgroundColor = if (isProduct) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondary,
+                        iconColor = if (isProduct) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -112,6 +118,7 @@ fun CashBox(
         }
     }
 }
+
 
 private fun formatNumberAmerican(input: String): String {
     return try {

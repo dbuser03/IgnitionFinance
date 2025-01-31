@@ -28,7 +28,7 @@ import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewMode
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 
 @Composable
-fun ProductCard(
+fun DashboardCard(
     modifier: Modifier,
     isExpanded: Boolean,
     onCardClicked: () -> Unit,
@@ -83,7 +83,7 @@ fun ProductCard(
 
             if (isExpanded) {
                 if (isCash) {
-                    CashBox(
+                    AmountBox(
                         amount = state.value.cash,
                         onAmountChanged = { newAmount ->
                             newAmount?.let { viewModel.updateCash(it) }
@@ -95,33 +95,45 @@ fun ProductCard(
                     when {
                         state.value.usdExchangeState is UiState.Loading ||
                                 state.value.chfExchangeState is UiState.Loading -> {
-                            CashPerformance(
-                                usdAmount = "----",
-                                chfAmount = "----",
+                            PerformanceBox(
+                                leftAmount = "----",
+                                rightAmount = "----",
+                                leftCurrencySymbol = "$",
+                                rightCurrencySymbol = "₣",
+                                leftLabel = "USD",
+                                rightLabel = "CHF",
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
 
                         state.value.usdExchangeState is UiState.Error ||
                                 state.value.chfExchangeState is UiState.Error -> {
-                            CashPerformance(
-                                usdAmount = "----",
-                                chfAmount = "----",
+                            PerformanceBox(
+                                leftAmount = "----",
+                                rightAmount = "----",
+                                leftCurrencySymbol = "$",
+                                rightCurrencySymbol = "₣",
+                                leftLabel = "USD",
+                                rightLabel = "CHF",
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
 
                         else -> {
-                            CashPerformance(
-                                usdAmount = viewModel.calculateUsdAmount(state.value.cash),
-                                chfAmount = viewModel.calculateChfAmount(state.value.cash),
+                            PerformanceBox(
+                                leftAmount = viewModel.calculateUsdAmount(state.value.cash),
+                                rightAmount = viewModel.calculateChfAmount(state.value.cash),
+                                leftCurrencySymbol = "$",
+                                rightCurrencySymbol = "₣",
+                                leftLabel = "USD",
+                                rightLabel = "CHF",
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
                 } else {
                     if (product != null) {
-                        ProductBox(
+                        AmountBox(
                             amount = product.amount,
                             onAmountChanged = { newAmount ->
                                 newAmount?.let {
@@ -130,13 +142,16 @@ fun ProductCard(
                                 }
                             },
                             currencySymbol = "€",
-                            modifier = modifier.padding(bottom = 36.dp)
+                            modifier = modifier.padding(bottom = 36.dp),
+                            isProduct = true
                         )
                     }
 
-                    ProductPerformance(
-                        todayAmount = "100",
-                        purchasedAmount = "500",
+                    PerformanceBox(
+                        leftAmount = "500",
+                        rightAmount = "100",
+                        leftLabel = "purchasedDate",
+                        rightLabel = "TODAY",
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

@@ -21,7 +21,7 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
-import com.unimib.ignitionfinance.presentation.ui.components.portfolio.ProductCard
+import com.unimib.ignitionfinance.presentation.ui.components.portfolio.DashboardCard
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 
@@ -106,7 +106,7 @@ fun PortfolioScreen(
                 state = listState
             ) {
                 item {
-                    ProductCard(
+                    DashboardCard(
                         modifier = Modifier,
                         isExpanded = state.expandedCardIndex == 0,
                         onCardClicked = {
@@ -120,7 +120,7 @@ fun PortfolioScreen(
                 }
 
                 itemsIndexed(state.products) { index, product ->
-                    ProductCard(
+                    DashboardCard(
                         modifier = Modifier,
                         isExpanded = state.expandedCardIndex == index + 1,
                         onCardClicked = {

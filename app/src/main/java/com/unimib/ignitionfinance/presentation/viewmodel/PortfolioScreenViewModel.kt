@@ -259,9 +259,15 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-  /*  fun updateProduct(updatedProduct: Product) {
+    fun updateProduct(updatedProduct: Product) {
         viewModelScope.launch {
-            _state.update { it.copy(productsState = UiState.Loading) }
+            val currentProducts = _state.value.products.toMutableList()
+            val index = currentProducts.indexOfFirst { it.ticker == updatedProduct.ticker }
+            if (index != -1) {
+                currentProducts[index] = updatedProduct
+                _state.update { it.copy(products = currentProducts) }
+            }
+
             updateProductListUseCase.updateProduct(updatedProduct)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error updating product: ${exception.localizedMessage}")
@@ -274,7 +280,7 @@ class PortfolioScreenViewModel @Inject constructor(
                     }
                 }
                 .collect { result ->
-                    if (result.isSuccess) {
+                    if (result.isFailure) {
                         getProducts()
                     } else {
                         _state.update {
@@ -285,34 +291,6 @@ class PortfolioScreenViewModel @Inject constructor(
                                 )
                             )
                         }
-                    }
-                }
-        }
-    }*/
-// PortfolioScreenViewModel.kt
-
-    fun updateProduct(updatedProduct: Product) {
-        viewModelScope.launch {
-            // Ottieni la lista corrente
-            val currentProducts = _state.value.products.toMutableList()
-            // Trova l'indice del prodotto da aggiornare
-            val index = currentProducts.indexOfFirst { it.ticker == updatedProduct.ticker }
-            if (index != -1) {
-                // Sostituisci il prodotto nella lista
-                currentProducts[index] = updatedProduct
-                // Aggiorna lo stato IMMEDIATAMENTE
-                _state.update { it.copy(products = currentProducts) }
-            }
-
-            // Esegui l'aggiornamento sul database
-            updateProductListUseCase.updateProduct(updatedProduct)
-                .catch { exception ->
-                    // Gestione errori
-                }
-                .collect { result ->
-                    if (result.isFailure) {
-                        // Ripristina lo stato precedente in caso di errore
-                        getProducts()
                     }
                 }
         }
