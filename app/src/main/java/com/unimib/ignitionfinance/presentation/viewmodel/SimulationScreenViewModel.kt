@@ -137,27 +137,34 @@ class SimulationScreenViewModel @Inject constructor(
     private fun getUserSettings() {
         viewModelScope.launch {
             _state.update { it.copy(parametersState = UiState.Loading) }
+
             getUserSettingsUseCase.execute()
+                .catch { exception ->
+                    _state.update {
+                        it.copy(
+                            parametersState = UiState.Error(exception.localizedMessage ?: "Failed to load user settings")
+                        )
+                    }
+                }
                 .collect { result ->
-                    _state.update { currentState ->
-                        when {
-                            result.isSuccess -> {
-                                val settings = result.getOrNull()
-                                currentState.copy(
-                                    initialInvestment = settings?.withdrawals?.initialAmount?.toDoubleOrNull() ?: 0.0,
-                                    simulationDuration = settings?.intervals?.value ?: 1,  // Assuming Intervals has a value property
+                    result.fold(
+                        onSuccess = { settings ->
+                            _state.update {
+                                it.copy(
+                                    initialInvestment = settings.withdrawals.withPension.toDoubleOrNull() ?: 0.0,
+                                    simulationDuration = settings.intervals.yearsInFIRE.toIntOrNull() ?: 1,
                                     parametersState = UiState.Success(settings)
                                 )
                             }
-                            result.isFailure -> currentState.copy(
-                                parametersState = UiState.Error(
-                                    result.exceptionOrNull()?.localizedMessage
-                                        ?: "Failed to load user settings"
+                        },
+                        onFailure = { exception ->
+                            _state.update {
+                                it.copy(
+                                    parametersState = UiState.Error(exception.localizedMessage ?: "Failed to load user settings")
                                 )
-                            )
-                            else -> currentState.copy(parametersState = UiState.Idle)
+                            }
                         }
-                    }
+                    )
                 }
         }
     }
