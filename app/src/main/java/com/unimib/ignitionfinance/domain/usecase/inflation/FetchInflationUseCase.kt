@@ -9,10 +9,6 @@ import kotlin.coroutines.cancellation.CancellationException
 class FetchInflationUseCase @Inject constructor(
     private val inflationRepository: InflationRepository
 ){
-    //prendi dati storici
-    //branch cash-card --> exchangeRepository -> inflationRepository, no input in execute, cambi mess di errore
-    //ritorna una coppia chiave-valore
-    //prima di 5.0 accoda al risultato con il formato coppia chiave-valore
     private val historicalData = mapOf(
         1955 to 2.3, 1956 to 3.4, 1957 to 1.3, 1958 to 2.8, 1959 to -0.4,
         1960 to 2.3, 1961 to 2.1, 1962 to 4.7, 1963 to 7.5, 1964 to 5.9,
