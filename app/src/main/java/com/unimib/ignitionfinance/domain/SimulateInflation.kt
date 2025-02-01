@@ -1,7 +1,11 @@
 package com.unimib.ignitionfinance.domain
 
+import com.unimib.ignitionfinance.data.model.InflationData
+import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
 import com.unimib.ignitionfinance.domain.usecase.inflation.FetchInflationUseCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.sqrt
@@ -137,6 +141,43 @@ class InflationCalculator @Inject constructor(
 
         return liquiditaErosa
     }
+}
+
+suspend fun main() {
+    // Crea un'implementazione del repository
+    val inflationRepository = object : InflationRepository {
+        override suspend fun fetchInflationData(): Flow<Result<List<InflationData>>> = flow {
+            // Simula i dati dell'API
+            val data = listOf(
+                InflationData("1988", 5.0),
+                InflationData("1989", 6.3),
+                InflationData("1990", 6.5),
+                // ... altri dati
+            )
+            emit(Result.success(data))
+        }
+    }
+
+    // Crea il use case
+    val fetchInflationUseCase = FetchInflationUseCase(inflationRepository)
+
+    // Crea il calculator con il use case
+    val calculator = InflationCalculator(
+        fetchInflationUseCase = fetchInflationUseCase,
+        numSimulazioni = 1000,
+        inflazioneMedia = 0.03  // 3%
+    )
+
+    val liquiditaIniziale = 100000.0 // 100,000 €
+
+    println("\nScenario: Inflazione Reale")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale")
+
+    println("\nScenario: Inflazione Reale Riscalata")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale riscalata")
+
+    println("\nScenario: Inflazione Lognormale")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
 }
 
 /*suspend fun main() {
