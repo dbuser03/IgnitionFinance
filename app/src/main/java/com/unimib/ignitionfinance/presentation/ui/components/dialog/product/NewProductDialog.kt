@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.dialog
+package com.unimib.ignitionfinance.presentation.ui.components.dialog.product
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
