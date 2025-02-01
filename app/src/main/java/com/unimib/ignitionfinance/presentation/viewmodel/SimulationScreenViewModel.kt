@@ -1,8 +1,9 @@
 package com.unimib.ignitionfinance.presentation.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.domain.usecase.BuildDatasetUseCase
 import com.unimib.ignitionfinance.domain.usecase.StartSimulationUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
@@ -19,8 +20,7 @@ class SimulationScreenViewModel @Inject constructor(
     private val startSimulationUseCase: StartSimulationUseCase,
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val getUserCashUseCase: GetUserCashUseCase,
-    private val getUserInvestedUseCase: GetUserInvestedUseCase,
-    private val buildDatasetUseCase: BuildDatasetUseCase
+    private val getUserInvestedUseCase: GetUserInvestedUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SimulationScreenState())
@@ -38,113 +38,41 @@ class SimulationScreenViewModel @Inject constructor(
     private fun getPortfolioValue() {
         viewModelScope.launch {
             _state.update { it.copy(portfolioValueState = UiState.Loading) }
-
             try {
-                // Get cash amount
-                val cashResult = getUserCashUseCase.execute().first()
-                val cash = cashResult.getOrNull()?.toDoubleOrNull() ?: 0.0
-
-                // Get invested amount
-                val investedResult = getUserInvestedUseCase.execute().first()
-                val invested = investedResult.getOrNull() ?: 0.0
-
-                // Calculate total portfolio value
-                val totalValue = cash + invested
-
-                _state.update { currentState ->
-                    currentState.copy(
-                        currentPortfolioValue = totalValue,
-                        portfolioValueState = UiState.Success(totalValue)
-                    )
-                }
+                val cash = getUserCashUseCase.execute().first().getOrNull()?.toDoubleOrNull() ?: 0.0
+                val invested = getUserInvestedUseCase.execute().first().getOrNull() ?: 0.0
+                _state.update { it.copy(currentPortfolioValue = cash + invested, portfolioValueState = UiState.Success(cash + invested)) }
             } catch (e: Exception) {
-                _state.update { currentState ->
-                    currentState.copy(
-                        portfolioValueState = UiState.Error(
-                            e.localizedMessage ?: "Failed to load portfolio value"
-                        )
-                    )
-                }
+                _state.update { it.copy(portfolioValueState = UiState.Error(e.localizedMessage ?: "Failed to load portfolio value")) }
             }
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun startSimulation(apiKey: String) {
         viewModelScope.launch {
             _state.update { it.copy(simulationState = UiState.Loading) }
-
-            buildDatasetUseCase.execute(apiKey)
+            startSimulationUseCase.execute(apiKey)
                 .catch { exception ->
-                    _state.update {
-                        it.copy(
-                            simulationState = UiState.Error(
-                                exception.localizedMessage ?: "Dataset building failed"
-                            )
-                        )
-                    }
+                    _state.update { it.copy(simulationState = UiState.Error(exception.localizedMessage ?: "Simulation failed")) }
                 }
-                .collect { datasetResult ->
-                    if (datasetResult.isSuccess) {
-                        runSimulation()
-                    } else {
-                        _state.update {
-                            it.copy(
-                                simulationState = UiState.Error(
-                                    datasetResult.exceptionOrNull()?.localizedMessage ?: "Dataset error"
-                                )
-                            )
+                .collect { result ->
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> currentState.copy(simulationState = UiState.Success(Unit))
+                            else -> currentState.copy(simulationState = UiState.Error(result.exceptionOrNull()?.localizedMessage ?: "Simulation error"))
                         }
                     }
                 }
-        }
-    }
-
-    private fun runSimulation() {
-        viewModelScope.launch {
-            startSimulationUseCase.execute(
-                initialInvestment = _state.value.initialInvestment,
-                duration = _state.value.simulationDuration
-            ).catch { exception ->
-                _state.update {
-                    it.copy(
-                        simulationState = UiState.Error(
-                            exception.localizedMessage ?: "Simulation failed"
-                        )
-                    )
-                }
-            }.collect { result ->
-                _state.update { currentState ->
-                    when {
-                        result.isSuccess -> {
-                            val simulationResult = result.getOrNull()
-                            currentState.copy(
-                                simulationResult = simulationResult,
-                                simulationState = UiState.Success(simulationResult)
-                            )
-                        }
-                        result.isFailure -> currentState.copy(
-                            simulationState = UiState.Error(
-                                result.exceptionOrNull()?.localizedMessage ?: "Simulation error"
-                            )
-                        )
-                        else -> currentState.copy(simulationState = UiState.Idle)
-                    }
-                }
-            }
         }
     }
 
     private fun getUserSettings() {
         viewModelScope.launch {
             _state.update { it.copy(parametersState = UiState.Loading) }
-
             getUserSettingsUseCase.execute()
                 .catch { exception ->
-                    _state.update {
-                        it.copy(
-                            parametersState = UiState.Error(exception.localizedMessage ?: "Failed to load user settings")
-                        )
-                    }
+                    _state.update { it.copy(parametersState = UiState.Error(exception.localizedMessage ?: "Failed to load user settings")) }
                 }
                 .collect { result ->
                     result.fold(
@@ -158,11 +86,7 @@ class SimulationScreenViewModel @Inject constructor(
                             }
                         },
                         onFailure = { exception ->
-                            _state.update {
-                                it.copy(
-                                    parametersState = UiState.Error(exception.localizedMessage ?: "Failed to load user settings")
-                                )
-                            }
+                            _state.update { it.copy(parametersState = UiState.Error(exception.localizedMessage ?: "Failed to load user settings")) }
                         }
                     )
                 }
@@ -171,14 +95,10 @@ class SimulationScreenViewModel @Inject constructor(
 
     fun updateInitialInvestment(newValue: String) {
         val cleanValue = newValue.filter { it.isDigit() || it == '.' }
-        _state.update {
-            it.copy(initialInvestment = cleanValue.toDoubleOrNull() ?: 0.0)
-        }
+        _state.update { it.copy(initialInvestment = cleanValue.toDoubleOrNull() ?: 0.0) }
     }
 
     fun updateSimulationDuration(newDuration: Int) {
-        _state.update {
-            it.copy(simulationDuration = newDuration.coerceAtLeast(1))
-        }
+        _state.update { it.copy(simulationDuration = newDuration.coerceAtLeast(1)) }
     }
 }

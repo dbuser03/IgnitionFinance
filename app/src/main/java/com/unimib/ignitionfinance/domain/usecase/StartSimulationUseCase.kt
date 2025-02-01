@@ -27,4 +27,9 @@ class StartSimulationUseCase @Inject constructor(
             emit(Result.failure(e))
         }
     }
+
+    private fun runSimulation() {
+        // Simulation logic implementation (to be added)
+    }
 }
+
