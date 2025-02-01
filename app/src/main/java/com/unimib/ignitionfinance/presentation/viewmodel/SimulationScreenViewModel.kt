@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unimib.ignitionfinance.data.model.user.SimulationResult
 import com.unimib.ignitionfinance.domain.usecase.StartSimulationUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
@@ -59,8 +60,19 @@ class SimulationScreenViewModel @Inject constructor(
                 .collect { result ->
                     _state.update { currentState ->
                         when {
-                            result.isSuccess -> currentState.copy(simulationState = UiState.Success(Unit))
-                            else -> currentState.copy(simulationState = UiState.Error(result.exceptionOrNull()?.localizedMessage ?: "Simulation error"))
+                            result.isSuccess -> currentState.copy(
+                                simulationState = UiState.Success(
+                                    SimulationResult(
+                                        finalBalance = 0.0, // Use default values as needed
+                                        investmentGrowth = 0.0, // Use default values as needed
+                                    )
+                                )
+                            )
+                            else -> currentState.copy(
+                                simulationState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage ?: "Simulation error"
+                                )
+                            )
                         }
                     }
                 }
