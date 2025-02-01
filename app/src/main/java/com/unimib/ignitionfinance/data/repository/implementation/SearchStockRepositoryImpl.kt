@@ -15,9 +15,9 @@ class SearchStockRepositoryImpl @Inject constructor(
     private val searchStockMapper: SearchStockMapper
 ) : SearchStockRepository {
 
-    override suspend fun fetchSearchStockData(symbol: String, apiKey: String): Flow<Result<List<SearchStockData>>> = flow {
+    override suspend fun fetchSearchStockData(ticker: String, apiKey: String): Flow<Result<List<SearchStockData>>> = flow {
         try {
-            val response = searchStockService.getSearchStockData(symbol = symbol, apiKey = apiKey)
+            val response = searchStockService.getSearchStockData(ticker = ticker, apiKey = apiKey)
 
             if (response.isSuccessful) {
                 val searchStockData = response.body()

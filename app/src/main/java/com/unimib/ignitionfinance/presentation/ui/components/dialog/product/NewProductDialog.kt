@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.presentation.ui.components.dialog.product
+package com.unimib.ignitionfinance.presentation.ui.components.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,9 +27,11 @@ import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 @Composable
 fun NewProductDialog(
     onDismissRequest: () -> Unit,
-    onProductConfirmation: (String?, String?, String?, String?) -> Unit,
+    onProductConfirmation: ((String?, String?, String?, String?, String?) -> Unit)?,
     dialogTitle: String,
 ) {
+    val defaultSymbol = "SYMBOL"
+
     var isinInput by remember { mutableStateOf<String?>(null) }
     var tickerInput by remember { mutableStateOf<String?>(null) }
     var purchaseDateInput by remember { mutableStateOf<String?>(null) }
@@ -63,7 +65,7 @@ fun NewProductDialog(
             TextButton(
                 onClick = {
                     if (isFormValid) {
-                        onProductConfirmation(isinInput, tickerInput, purchaseDateInput, amountInput)
+                        onProductConfirmation?.invoke(isinInput, tickerInput, purchaseDateInput, amountInput, defaultSymbol)
                     }
                 },
                 enabled = isFormValid,
@@ -180,12 +182,7 @@ fun NewProductDialog(
                     isLastField = true,
                     onDone = {
                         if (isFormValid) {
-                            onProductConfirmation(
-                                isinInput,
-                                tickerInput,
-                                purchaseDateInput,
-                                amountInput
-                            )
+                            onProductConfirmation?.invoke(isinInput, tickerInput, purchaseDateInput, amountInput, defaultSymbol)
                         }
                     }
                 )

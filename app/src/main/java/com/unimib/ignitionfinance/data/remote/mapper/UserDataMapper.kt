@@ -7,8 +7,10 @@ import com.unimib.ignitionfinance.data.model.user.settings.Expenses
 import com.unimib.ignitionfinance.data.model.user.settings.Intervals
 import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.UserData
+import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
+import java.math.BigDecimal
 
 object UserDataMapper {
 
@@ -23,9 +25,18 @@ object UserDataMapper {
                 updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis(),
                 cash = (this["cash"] as? String) ?: "0",
                 productList = mapProductList(this["productList"] as? List<Map<String, Any>>),
-                firstAdded = (this["firstAdded"] as? Boolean) ?: false
+                firstAdded = (this["firstAdded"] as? Boolean) ?: false,
+                dataset = mapDataset(this["dataset"] as? List<Map<DailyReturn, Any>>),
             )
         }
+    }
+    private fun mapDataset(dataset: List<Any>?): List<DailyReturn> {
+        return dataset?.map { pair ->
+            val map = pair as? Map<String, Any>
+            val date = (map?.get("first") as? String).orEmpty()
+            val value = (map?.get("second") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            DailyReturn(date, value)
+        } ?: emptyList()
     }
 
     private fun mapProductList(products: List<Map<String, Any>>?): List<Product> {
@@ -35,6 +46,7 @@ object UserDataMapper {
                 ticker = (productMap["ticker"] as? String).orEmpty(),
                 purchaseDate = (productMap["purchaseDate"] as? String).orEmpty(),
                 amount = (productMap["amount"] as? String).orEmpty(),
+                symbol = (productMap["symbol"] as? String).orEmpty(),
             )
         } ?: emptyList()
     }
@@ -89,7 +101,13 @@ object UserDataMapper {
                     "purchaseDate" to product.purchaseDate,
                 )
             },
-            "firstAdded" to userData.firstAdded
+            "firstAdded" to userData.firstAdded,
+            "dataset" to userData.dataset.map { dailyReturn ->
+                mapOf(
+                    "dates" to dailyReturn.dates,
+                    "weightedReturns" to dailyReturn.weightedReturns.toPlainString()
+                )
+            }
         )
     }
 

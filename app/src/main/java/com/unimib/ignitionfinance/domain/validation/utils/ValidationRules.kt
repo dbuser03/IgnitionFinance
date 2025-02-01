@@ -1,8 +1,12 @@
 package com.unimib.ignitionfinance.domain.validation.utils
 
+import android.os.Build
 import android.util.Patterns
+import androidx.annotation.RequiresApi
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object ValidationRules {
@@ -165,4 +169,17 @@ object ValidationRules {
     fun validateResetForm(email: String?): Boolean {
         return !email.isNullOrBlank() && validateEmail(email)
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun isDateOlderThan(dateStr: String, yearsThreshold: Long): Boolean {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return try {
+            val date = LocalDate.parse(dateStr, formatter)
+            val currentDate = LocalDate.now()
+            date.isBefore(currentDate.minusYears(yearsThreshold))
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 }

@@ -9,7 +9,4 @@ data class StockData(
     val close: BigDecimal,
     val volume: Long,
     val percentageChange: BigDecimal
-) {
-    val changePercentage: BigDecimal
-        get() = ((close - open) / open) * BigDecimal(100)
-}
+)

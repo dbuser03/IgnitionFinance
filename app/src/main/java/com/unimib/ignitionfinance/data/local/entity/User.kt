@@ -4,8 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.Settings
+import java.math.BigDecimal
 
 @Entity(tableName = "users")
 data class User(
@@ -19,5 +21,6 @@ data class User(
     @ColumnInfo(name = "last_sync_timestamp") val lastSyncTimestamp: Long? = null,
     @ColumnInfo(name = "cash") val cash: String = "0",
     @ColumnInfo(name = "product_list") val productList: List<Product> = emptyList(),
-    @ColumnInfo(name = "first_added") val firstAdded: Boolean = false
+    @ColumnInfo(name = "first_added") val firstAdded: Boolean = false,
+    @ColumnInfo(name = "dataset") val dataset: List<DailyReturn> = emptyList()
 )

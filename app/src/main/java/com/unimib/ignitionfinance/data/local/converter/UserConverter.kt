@@ -4,8 +4,10 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.model.user.Settings
+import java.math.BigDecimal
 
 class UserConverter {
     private val gson = Gson()
@@ -28,4 +30,12 @@ class UserConverter {
     @TypeConverter
     fun toProductList(productListString: String): List<Product>? =
         gson.fromJson(productListString, object : TypeToken<List<Product>>() {}.type)
+
+    @TypeConverter
+    fun fromDataset(dataset: List<DailyReturn>): String = gson.toJson(dataset)
+
+    @TypeConverter
+    fun toDataset (datasetString : String ): List<DailyReturn>? =
+        gson.fromJson(datasetString, object : com.google.common.reflect.TypeToken<List<String>>() {}.type)
+
 }
