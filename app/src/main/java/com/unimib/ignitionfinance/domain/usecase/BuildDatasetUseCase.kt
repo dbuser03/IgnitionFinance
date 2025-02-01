@@ -21,7 +21,7 @@ class BuildDatasetUseCase @Inject constructor(
     private val getProductListUseCase: GetProductListUseCase,
     private val dailyReturnCalculator: DailyReturnCalculator,
     private val stockRepository: StockRepository,
-    private val saveDatasetUseCase: SaveDatasetUseCase  // New injection
+    private val saveDatasetUseCase: SaveDatasetUseCase
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
