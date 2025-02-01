@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase.inflation
 
-import com.unimib.ignitionfinance.data.model.ExchangeData
 import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,7 +30,7 @@ class FetchInflationUseCase @Inject constructor(
                     result.fold(
                         onSuccess = { inflationList ->
                             val apiData: Map<Int, Double> = inflationList.associate { inflationData ->
-                                inflationData.year.toInt() to inflationData.inflationRate.toDouble()
+                                inflationData.year.toInt() to inflationData.inflationRate
                             }
                             val combinedData: Map<Int, Double> = historicalData + apiData
                             emit(Result.success(combinedData))
