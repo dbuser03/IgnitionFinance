@@ -3,6 +3,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.domain.usecase.BuildDatasetUseCase
+import com.unimib.ignitionfinance.domain.usecase.StartSimulationUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.GetUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.GetUserInvestedUseCase
@@ -17,7 +18,6 @@ import javax.inject.Inject
 class SimulationScreenViewModel @Inject constructor(
     private val startSimulationUseCase: StartSimulationUseCase,
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
-    private val saveSimulationResultUseCase: SaveSimulationResultUseCase,
     private val getUserCashUseCase: GetUserCashUseCase,
     private val getUserInvestedUseCase: GetUserInvestedUseCase,
     private val buildDatasetUseCase: BuildDatasetUseCase
@@ -144,8 +144,8 @@ class SimulationScreenViewModel @Inject constructor(
                             result.isSuccess -> {
                                 val settings = result.getOrNull()
                                 currentState.copy(
-                                    initialInvestment = settings?.initialInvestment ?: 0.0,
-                                    simulationDuration = settings?.duration ?: 1,
+                                    initialInvestment = settings?.withdrawals?.initialAmount?.toDoubleOrNull() ?: 0.0,
+                                    simulationDuration = settings?.intervals?.value ?: 1,  // Assuming Intervals has a value property
                                     parametersState = UiState.Success(settings)
                                 )
                             }
@@ -172,37 +172,6 @@ class SimulationScreenViewModel @Inject constructor(
     fun updateSimulationDuration(newDuration: Int) {
         _state.update {
             it.copy(simulationDuration = newDuration.coerceAtLeast(1))
-        }
-    }
-
-    fun saveSimulationResult() {
-        viewModelScope.launch {
-            _state.value.simulationResult?.let { result ->
-                saveSimulationResultUseCase.execute(result)
-                    .catch { exception ->
-                        _state.update {
-                            it.copy(
-                                saveState = UiState.Error(
-                                    exception.localizedMessage ?: "Save failed"
-                                )
-                            )
-                        }
-                    }
-                    .collect { saveResult ->
-                        _state.update {
-                            it.copy(
-                                saveState = if (saveResult.isSuccess) {
-                                    UiState.Success(Unit)
-                                } else {
-                                    UiState.Error(
-                                        saveResult.exceptionOrNull()?.localizedMessage
-                                            ?: "Save failed"
-                                    )
-                                }
-                            )
-                        }
-                    }
-            }
         }
     }
 }

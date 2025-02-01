@@ -7,6 +7,5 @@ data class SimulationScreenState(
     val simulationDuration: Int = 1,
     val parametersState: UiState<Any> = UiState.Idle,
     val simulationResult: SimulationResult? = null,
-    val simulationState: UiState<SimulationResult> = UiState.Idle,
-    val saveState: UiState<Unit> = UiState.Idle
+    val simulationState: UiState<SimulationResult> = UiState.Idle
 )
