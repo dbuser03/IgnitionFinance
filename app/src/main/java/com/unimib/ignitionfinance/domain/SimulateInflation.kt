@@ -199,22 +199,3 @@ suspend fun main() {
     println("\nScenario: Inflazione Lognormale")
     calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
 }
-
-/*suspend fun main() {
-    val calculator = InflationCalculator(
-        fetchInflationUseCase = // inject your FetchInflationUseCase here
-        numSimulazioni = 1000,
-        inflazioneMedia = 0.03  // 3%
-    )
-
-    val liquiditaIniziale = 100000.0 // 100,000 €
-
-    println("\nScenario: Inflazione Reale")
-    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale")
-
-    println("\nScenario: Inflazione Reale Riscalata")
-    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale riscalata")
-
-    println("\nScenario: Inflazione Lognormale")
-    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
-}*/
