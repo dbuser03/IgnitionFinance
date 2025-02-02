@@ -3,8 +3,7 @@ package com.unimib.ignitionfinance.data.remote.response
 import com.google.gson.annotations.SerializedName
 
 data class SearchStockResponse(
-    @SerializedName("bestMatches")
-    val bestMatches: List<SymbolMatch>
+    @SerializedName("bestMatches") val bestMatches: List<SymbolMatch>
 )
 
 data class SymbolMatch(
@@ -18,4 +17,3 @@ data class SymbolMatch(
     @SerializedName("8. currency") val currency: String,
     @SerializedName("9. matchScore") val matchScore: String
 )
-

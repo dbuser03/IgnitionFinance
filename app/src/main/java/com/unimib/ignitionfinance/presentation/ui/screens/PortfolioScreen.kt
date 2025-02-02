@@ -24,6 +24,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManage
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.DashboardCard
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
+import com.unimib.ignitionfinance.BuildConfig
 
 @Composable
 fun PortfolioScreen(
@@ -48,6 +49,7 @@ fun PortfolioScreen(
         viewModel.getFirstAdded()
         viewModel.getCash()
         viewModel.getProducts()
+        viewModel.fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
     }
 
     BackHandler(enabled = true) {

@@ -26,6 +26,8 @@ import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun DashboardCard(
@@ -47,6 +49,7 @@ fun DashboardCard(
             160.dp
         }
     )
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -145,15 +148,49 @@ fun DashboardCard(
                             modifier = modifier.padding(bottom = 36.dp),
                             isProduct = true
                         )
-                    }
 
-                    PerformanceBox(
-                        leftAmount = "500",
-                        rightAmount = "100",
-                        leftLabel = "purchasedDate",
-                        rightLabel = "TODAY",
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        val performance = viewModel.getPerformanceForProduct(product.ticker)
+                        when {
+                            state.value.productPerformancesState is UiState.Loading -> {
+                                PerformanceBox(
+                                    leftAmount = "----",
+                                    rightAmount = "----",
+                                    leftLabel = "Loading...",
+                                    rightLabel = "Loading...",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            state.value.productPerformancesState is UiState.Error -> {
+                                PerformanceBox(
+                                    leftAmount = "----",
+                                    rightAmount = "----",
+                                    leftLabel = "Error",
+                                    rightLabel = "Error",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            performance != null -> {
+                                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                PerformanceBox(
+                                    leftAmount = performance.purchasePrice.toString(),
+                                    rightAmount = performance.currentPrice.toString(),
+                                    leftLabel = dateFormat.format(performance.purchaseDate),
+                                    rightLabel = dateFormat.format(performance.currentDate),
+                                    //percentage = performance.percentageChange.toFloat(),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            else -> {
+                                PerformanceBox(
+                                    leftAmount = "----",
+                                    rightAmount = "----",
+                                    leftLabel = "No data",
+                                    rightLabel = "No data",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.data.remote
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.remote.service.StockService
 import com.unimib.ignitionfinance.data.remote.service.SearchStockService
 import com.unimib.ignitionfinance.data.remote.service.InflationService
@@ -8,20 +7,11 @@ import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
-
     private fun createRetrofit(baseUrl: String): Retrofit {
-        Log.d("RetrofitClient", "Creating Retrofit instance for baseUrl: $baseUrl")
-
-        val logging = HttpLoggingInterceptor { message ->
-            Log.d("RetrofitRequest", message)
-        }
-        logging.level = HttpLoggingInterceptor.Level.BODY
 
         val client = OkHttpClient.Builder()
-            .addInterceptor(logging)
             .build()
 
         return Retrofit.Builder()
