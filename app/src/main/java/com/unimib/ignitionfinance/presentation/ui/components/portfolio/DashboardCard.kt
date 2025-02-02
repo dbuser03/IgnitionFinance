@@ -134,72 +134,77 @@ fun DashboardCard(
                                 )
                             }
 
-                        else -> {
-                            PerformanceBox(
-                                leftAmount = viewModel.calculateUsdAmount(state.value.cash),
-                                rightAmount = viewModel.calculateChfAmount(state.value.cash),
-                                leftCurrencySymbol = "$",
-                                rightCurrencySymbol = "₣",
-                                leftLabel = "USD",
-                                rightLabel = "CHF",
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                } else {
-                    if (product != null) {
-                        AmountBox(
-                            amount = product.amount,
-                            onAmountChanged = { newAmount ->
-                                newAmount?.let {
-                                    val updatedProduct = product.copy(amount = it)
-                                    viewModel.updateProduct(updatedProduct)
-                                }
-                            },
-                            currencySymbol = "€",
-                            modifier = modifier.padding(bottom = 36.dp),
-                            isProduct = true
-                        )
-
-                        val performance = viewModel.getPerformanceForProduct(product.ticker)
-                        when {
-                            state.value.productPerformancesState is UiState.Loading -> {
-                                PerformanceBox(
-                                    leftAmount = "----",
-                                    rightAmount = "----",
-                                    leftLabel = "Loading...",
-                                    rightLabel = "Loading...",
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            state.value.productPerformancesState is UiState.Error -> {
-                                PerformanceBox(
-                                    leftAmount = "----",
-                                    rightAmount = "----",
-                                    leftLabel = "Error",
-                                    rightLabel = "Error",
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            performance != null -> {
-                                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                PerformanceBox(
-                                    leftAmount = performance.purchasePrice.toString(),
-                                    rightAmount = performance.currentPrice.toString(),
-                                    leftLabel = dateFormat.format(performance.purchaseDate),
-                                    rightLabel = dateFormat.format(performance.currentDate),
-                                    //percentage = performance.percentageChange.toFloat(),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
                             else -> {
                                 PerformanceBox(
-                                    leftAmount = "----",
-                                    rightAmount = "----",
-                                    leftLabel = "No data",
-                                    rightLabel = "No data",
+                                    leftAmount = viewModel.calculateUsdAmount(state.value.cash),
+                                    rightAmount = viewModel.calculateChfAmount(state.value.cash),
+                                    leftCurrencySymbol = "$",
+                                    rightCurrencySymbol = "₣",
+                                    leftLabel = "USD",
+                                    rightLabel = "CHF",
                                     modifier = Modifier.fillMaxWidth()
                                 )
+                            }
+                        }
+                    } else {
+                        if (product != null) {
+                            AmountBox(
+                                amount = product.amount,
+                                onAmountChanged = { newAmount ->
+                                    newAmount?.let {
+                                        val updatedProduct = product.copy(amount = it)
+                                        viewModel.updateProduct(updatedProduct)
+                                    }
+                                },
+                                currencySymbol = "€",
+                                modifier = modifier.padding(bottom = 36.dp),
+                                isProduct = true
+                            )
+
+                            val performance = viewModel.getPerformanceForProduct(product.ticker)
+                            when {
+                                state.value.productPerformancesState is UiState.Loading -> {
+                                    PerformanceBox(
+                                        leftAmount = "----",
+                                        rightAmount = "----",
+                                        leftLabel = "Loading...",
+                                        rightLabel = "Loading...",
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+
+                                state.value.productPerformancesState is UiState.Error -> {
+                                    PerformanceBox(
+                                        leftAmount = "----",
+                                        rightAmount = "----",
+                                        leftLabel = "Error",
+                                        rightLabel = "Error",
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+
+                                performance != null -> {
+                                    val dateFormat =
+                                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                    PerformanceBox(
+                                        leftAmount = performance.purchasePrice.toString(),
+                                        rightAmount = performance.currentPrice.toString(),
+                                        leftLabel = dateFormat.format(performance.purchaseDate),
+                                        rightLabel = dateFormat.format(performance.currentDate),
+                                        //percentage = performance.percentageChange.toFloat(),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+
+                                else -> {
+                                    PerformanceBox(
+                                        leftAmount = "----",
+                                        rightAmount = "----",
+                                        leftLabel = "No data",
+                                        rightLabel = "No data",
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
                             }
                         }
                     }

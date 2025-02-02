@@ -31,7 +31,6 @@ class PortfolioScreenViewModel @Inject constructor(
     private val fetchHistoricalDataUseCase: FetchHistoricalDataUseCase
 ) : ViewModel() {
 
-    private val TAG = "PortfolioViewModel"
     private val _state = MutableStateFlow(PortfolioScreenState())
     val state: StateFlow<PortfolioScreenState> = _state
 
@@ -44,59 +43,39 @@ class PortfolioScreenViewModel @Inject constructor(
     }
 
     private fun processHistoricalData(): List<ProductPerformance> {
-        Log.d(TAG, "Starting processHistoricalData")
         val historicalData = state.value.historicalData
         val products = state.value.products
 
-        Log.d(TAG, "Historical data size: ${historicalData.size}")
-        Log.d(TAG, "Products size: ${products.size}")
-
         return products.mapNotNull { product ->
-            Log.d(TAG, "Processing product: ${product.ticker}")
-
             val productHistory = historicalData.firstOrNull()
             if (productHistory == null) {
-                Log.e(TAG, "No historical data found for processing")
                 return@mapNotNull null
             }
 
             val dates = productHistory.keys.sorted()
-            Log.d(TAG, "Available dates: ${dates.size}")
-
             if (dates.isEmpty()) {
-                Log.e(TAG, "No dates available in historical data")
                 return@mapNotNull null
             }
 
             val productPurchaseDate = product.purchaseDate
-            Log.d(TAG, "Product purchase date: $productPurchaseDate")
-
             val purchaseDate = dates.minByOrNull { date ->
                 abs(date.compareTo(productPurchaseDate))
             }
             if (purchaseDate == null) {
-                Log.e(TAG, "Could not find nearest purchase date")
                 return@mapNotNull null
             }
-            Log.d(TAG, "Nearest purchase date found: $purchaseDate")
 
             val currentDate = dates.last()
-            Log.d(TAG, "Current date: $currentDate")
-
             val purchaseData = productHistory[purchaseDate]
+
             if (purchaseData == null) {
-                Log.e(TAG, "No data found for purchase date: $purchaseDate")
                 return@mapNotNull null
             }
 
             val currentData = productHistory[currentDate]
             if (currentData == null) {
-                Log.e(TAG, "No data found for current date: $currentDate")
                 return@mapNotNull null
             }
-
-            Log.d(TAG, "Successfully created performance data for ${product.ticker}")
-            Log.d(TAG, "Purchase price: ${purchaseData.close}, Current price: ${currentData.close}")
 
             ProductPerformance(
                 ticker = product.ticker,
@@ -110,17 +89,9 @@ class PortfolioScreenViewModel @Inject constructor(
     }
 
     private fun updateProductPerformances() {
-        Log.d(TAG, "Starting updateProductPerformances")
         viewModelScope.launch {
             try {
                 val performances = processHistoricalData()
-                Log.d(TAG, "Processed performances size: ${performances.size}")
-                performances.forEach { performance ->
-                    Log.d(TAG, "Performance for ${performance.ticker}: " +
-                            "Purchase: ${performance.purchasePrice} on ${performance.purchaseDate}, " +
-                            "Current: ${performance.currentPrice} on ${performance.currentDate}, " +
-                            "Change: ${performance.percentageChange}%")
-                }
 
                 _state.update { currentState ->
                     currentState.copy(
@@ -129,7 +100,6 @@ class PortfolioScreenViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error in updateProductPerformances", e)
                 _state.update { currentState ->
                     currentState.copy(
                         productPerformancesState = UiState.Error(
@@ -318,7 +288,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
-                        BuildConfig.ALPHAVANTAGE_API_KEY
+                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
                             it.copy(
@@ -350,7 +320,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
-                        BuildConfig.ALPHAVANTAGE_API_KEY
+                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
                             it.copy(
@@ -388,6 +358,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isFailure) {
                         getProducts()
+                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
                             it.copy(
@@ -488,13 +459,11 @@ class PortfolioScreenViewModel @Inject constructor(
     }
 
     fun fetchHistoricalData(apiKey: String) {
-        Log.d(TAG, "Starting fetchHistoricalData")
         viewModelScope.launch {
             _state.update { it.copy(historicalDataState = UiState.Loading) }
 
             fetchHistoricalDataUseCase.execute(apiKey)
                 .catch { exception ->
-                    Log.e(TAG, "Error fetching historical data", exception)
                     _state.update {
                         it.copy(
                             historicalDataState = UiState.Error(
@@ -504,15 +473,10 @@ class PortfolioScreenViewModel @Inject constructor(
                     }
                 }
                 .collect { result ->
-                    Log.d(TAG, "Historical data fetch result received")
                     _state.update { currentState ->
                         when {
                             result.isSuccess -> {
                                 val historicalData = result.getOrNull()
-                                Log.d(TAG, "Historical data fetch success. Data size: ${historicalData?.size}")
-                                historicalData?.forEach { data ->
-                                    Log.d(TAG, "Historical data entries: ${data.keys.size}")
-                                }
 
                                 currentState.copy(
                                     historicalData = historicalData ?: emptyList(),
@@ -522,7 +486,6 @@ class PortfolioScreenViewModel @Inject constructor(
                                 }
                             }
                             result.isFailure -> {
-                                Log.e(TAG, "Historical data fetch failed", result.exceptionOrNull())
                                 currentState.copy(
                                     historicalDataState = UiState.Error(
                                         result.exceptionOrNull()?.localizedMessage
@@ -531,7 +494,6 @@ class PortfolioScreenViewModel @Inject constructor(
                                 )
                             }
                             else -> {
-                                Log.d(TAG, "Historical data fetch idle")
                                 currentState.copy(historicalDataState = UiState.Idle)
                             }
                         }

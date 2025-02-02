@@ -7,11 +7,16 @@ import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
     private fun createRetrofit(baseUrl: String): Retrofit {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
 
         val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
             .build()
 
         return Retrofit.Builder()
@@ -20,7 +25,6 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
 
     private const val STOCK_API_BASE_URL = "https://www.alphavantage.co/"
     private const val SEARCH_STOCK_API_BASE_URL = "https://www.alphavantage.co/"
