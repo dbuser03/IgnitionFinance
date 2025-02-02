@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.networth
 
 import android.util.Log
-import com.unimib.ignitionfinance.domain.usecase.GetProductListUseCase
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

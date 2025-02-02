@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.networth
 
 import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
@@ -16,15 +16,15 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-class GetProductListUseCase @Inject constructor(
+class GetProductUseCase @Inject constructor(
     private val networkUtils: NetworkUtils,
     private val authRepository: AuthRepository,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val firestoreRepository: FirestoreRepository,
     private val userDataMapper: UserDataMapper
 ) {
-    fun execute(forceRefresh: Boolean = false): Flow<Result<List<Product>>> = flow {
-        Log.d(TAG, "Starting execution of GetProductListUseCase")
+    fun execute(productId: String, forceRefresh: Boolean = false): Flow<Result<Product?>> = flow {
+        Log.d(TAG, "Starting execution of GetProductUseCase for product: $productId")
 
         val currentUserResult = authRepository.getCurrentUser().first()
         Log.d(TAG, "AuthRepository currentUserResult: $currentUserResult")
@@ -66,12 +66,12 @@ class GetProductListUseCase @Inject constructor(
         }
 
         if (remoteUser == null) {
-            Log.d(TAG, "No remote user data found, proceeding with local product list")
+            Log.d(TAG, "No remote user data found, proceeding with local product")
         } else {
             Log.d(TAG, "Remote user retrieved: $remoteUser")
         }
 
-        val productList = when {
+        val product = when {
             remoteUser != null &&
                     (remoteUser.updatedAt.toLong() >= (localUser.lastSyncTimestamp?.toLong() ?: 0)) &&
                     (remoteUser.updatedAt.toLong() >= localUser.updatedAt.toLong()) -> {
@@ -83,16 +83,16 @@ class GetProductListUseCase @Inject constructor(
                 )
                 localDatabaseRepository.update(updatedLocalUser).first()
                 Log.d(TAG, "Local database updated with remote user data")
-                remoteUser.productList
+                remoteUser.productList.find { it.ticker == productId }
             }
             else -> {
-                Log.d(TAG, "Using local user product list")
-                localUser.productList
+                Log.d(TAG, "Using local user product")
+                localUser.productList.find { it.ticker == productId }
             }
         }
 
-        Log.d(TAG, "Emitting product list of size: ${productList.size}")
-        emit(Result.success(productList))
+        Log.d(TAG, "Emitting product: $product")
+        emit(Result.success(product))
     }.catch { e ->
         when (e) {
             is CancellationException -> throw e.also {
@@ -106,6 +106,6 @@ class GetProductListUseCase @Inject constructor(
     }
 
     companion object {
-        private const val TAG = "GetProductListUseCase"
+        private const val TAG = "GetProductUseCase"
     }
 }

@@ -7,6 +7,7 @@ import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
+import com.unimib.ignitionfinance.domain.usecase.networth.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.validation.DatasetValidationResult
 import com.unimib.ignitionfinance.domain.validation.DatasetValidator
 import kotlinx.coroutines.flow.Flow
