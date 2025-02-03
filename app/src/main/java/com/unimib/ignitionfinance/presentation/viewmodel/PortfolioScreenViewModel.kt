@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.BuildConfig
+import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.*
 import com.unimib.ignitionfinance.domain.usecase.networth.*
@@ -52,8 +53,8 @@ class PortfolioScreenViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun processHistoricalData(): List<ProductPerformance> {
-        val historicalDataList = state.value.historicalData
-        val products = state.value.products
+        val historicalDataList: List<Pair<String, Map<String, StockData>>> = state.value.historicalData
+        val products: List<Product> = state.value.products
 
         val performances = mutableListOf<ProductPerformance>()
 
@@ -75,33 +76,35 @@ class PortfolioScreenViewModel @Inject constructor(
 
         products.forEachIndexed { index, product ->
             val originalPurchaseDateStr = product.purchaseDate
-            val purchaseDate = parsePurchaseDate(originalPurchaseDateStr)
-            if (purchaseDate == null) {
-                return@forEachIndexed
-            }
+            val purchaseDate = parsePurchaseDate(originalPurchaseDateStr) ?: return@forEachIndexed
 
-            val historicalData = historicalDataList.getOrNull(index) ?: return@forEachIndexed
+            val historicalDataPair: Pair<String, Map<String, StockData>> =
+                historicalDataList.getOrNull(index) ?: return@forEachIndexed
+            val currency: String = historicalDataPair.first
+            val historicalDataMap: Map<String, StockData> = historicalDataPair.second
 
-            val dateStockList = historicalData.mapNotNull { entry ->
+            val dateStockList: List<Pair<LocalDate, StockData>> = historicalDataMap.mapNotNull { (dateStr, stockData) ->
                 try {
-                    val date = LocalDate.parse(entry.key, isoFormatter)
-                    Pair(date, entry.value)
+                    val date = LocalDate.parse(dateStr, isoFormatter)
+                    Pair(date, stockData)
                 } catch (_: Exception) {
                     null
                 }
             }
             if (dateStockList.isEmpty()) return@forEachIndexed
 
-            val closestEntry = dateStockList.minByOrNull { (date, _) ->
+            val closestEntry: Pair<LocalDate, StockData> = dateStockList.minByOrNull { (date, _) ->
                 abs(ChronoUnit.DAYS.between(date, purchaseDate))
             } ?: return@forEachIndexed
 
-            val lastEntry = dateStockList.maxByOrNull { (date, _) -> date } ?: return@forEachIndexed
+            val lastEntry: Pair<LocalDate, StockData> = dateStockList.maxByOrNull { (date, _) ->
+                date
+            } ?: return@forEachIndexed
 
             val purchasePrice: BigDecimal = closestEntry.second.close
             val currentPrice: BigDecimal = lastEntry.second.close
 
-            val percentageChange = if (purchasePrice.compareTo(BigDecimal.ZERO) != 0) {
+            val percentageChange: BigDecimal = if (purchasePrice.compareTo(BigDecimal.ZERO) != 0) {
                 (currentPrice.subtract(purchasePrice))
                     .divide(purchasePrice, 4, RoundingMode.HALF_UP)
                     .multiply(BigDecimal(100))
@@ -115,7 +118,8 @@ class PortfolioScreenViewModel @Inject constructor(
                 purchasePrice = purchasePrice,
                 currentDate = lastEntry.first.format(isoFormatter),
                 currentPrice = currentPrice,
-                percentageChange = percentageChange
+                percentageChange = percentageChange,
+                currency = currency
             )
             performances.add(performance)
         }
@@ -382,6 +386,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateProduct(updatedProduct: Product) {
         viewModelScope.launch {
@@ -525,7 +530,6 @@ class PortfolioScreenViewModel @Inject constructor(
                         when {
                             result.isSuccess -> {
                                 val historicalData = result.getOrNull()
-
                                 currentState.copy(
                                     historicalData = historicalData ?: emptyList(),
                                     historicalDataState = UiState.Success(historicalData ?: emptyList())
@@ -533,17 +537,13 @@ class PortfolioScreenViewModel @Inject constructor(
                                     updateProductPerformances()
                                 }
                             }
-                            result.isFailure -> {
-                                currentState.copy(
-                                    historicalDataState = UiState.Error(
-                                        result.exceptionOrNull()?.localizedMessage
-                                            ?: "Failed to fetch historical data"
-                                    )
+                            result.isFailure -> currentState.copy(
+                                historicalDataState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to fetch historical data"
                                 )
-                            }
-                            else -> {
-                                currentState.copy(historicalDataState = UiState.Idle)
-                            }
+                            )
+                            else -> currentState.copy(historicalDataState = UiState.Idle)
                         }
                     }
                 }

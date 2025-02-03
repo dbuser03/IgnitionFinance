@@ -42,12 +42,13 @@ class BuildDatasetUseCase @Inject constructor(
             }
 
             // Step 3: Validate dataset and process
-            val dailyReturns = when (val validationResult = DatasetValidator.validate(historicalDataList)) {
+            val dailyReturns = when (DatasetValidator.validate(historicalDataList)) {
                 is DatasetValidationResult.Success -> {
-                    // Process data for valid dataset
+                    // Process data for valid dataset:
+                    // Qui aggiorniamo processData in modo da accettare il nuovo tipo,
+                    // e passiamo al calculator solo le mappe (estratte dalla coppia)
                     processData(products, historicalDataList)
                 }
-
                 is DatasetValidationResult.Failure -> {
                     // Fallback to S&P 500
                     val sp500Result = stockRepository.fetchStockData("^GSPC", apiKey).first()
@@ -59,7 +60,6 @@ class BuildDatasetUseCase @Inject constructor(
                     // Calculate total capital
                     val totalCapital = calculateTotalCapital(products)
 
-                    // Create fallback dataset
                     val fallbackData = listOf(sp500Data)
                     val fallbackTickers = listOf("^GSPC")
                     val fallbackCapitals = mapOf("^GSPC" to totalCapital)
@@ -73,7 +73,6 @@ class BuildDatasetUseCase @Inject constructor(
                 }
             }
 
-            // Step 4: Save the dataset (whether it's the full dataset or S&P 500 fallback)
             val saveResult = saveDatasetUseCase.execute(dailyReturns).first()
             saveResult.getOrElse { error ->
                 emit(Result.failure(error))
@@ -94,27 +93,33 @@ class BuildDatasetUseCase @Inject constructor(
         return products.fold(BigDecimal.ZERO) { acc, product ->
             acc + try {
                 BigDecimal(product.amount)
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 BigDecimal.ZERO
             }
         }
     }
 
+    /**
+     * Aggiornato per ricevere una lista di Pair(String, Map<String, StockData>).
+     * Viene estratta la mappa (cioè il secondo elemento di ogni coppia) da passare al dailyReturnCalculator.
+     */
     private fun processData(
         products: List<Product>,
-        historicalData: List<Map<String, StockData>>
+        historicalData: List<Pair<String, Map<String, StockData>>>
     ): List<DailyReturn> {
         val productTickers = products.map { it.ticker }
         val productCapitals = products.associate { product ->
             product.ticker to try {
                 BigDecimal(product.amount)
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 BigDecimal.ZERO
             }
         }
 
+        val historicalDataMaps: List<Map<String, StockData>> = historicalData.map { it.second }
+
         return dailyReturnCalculator.calculateDailyReturns(
-            historicalDataList = historicalData,
+            historicalDataList = historicalDataMaps,
             products = productTickers,
             productCapitals = productCapitals
         )

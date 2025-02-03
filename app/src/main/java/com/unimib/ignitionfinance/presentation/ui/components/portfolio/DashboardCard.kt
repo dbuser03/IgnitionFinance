@@ -20,6 +20,8 @@ import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -39,10 +41,8 @@ fun DashboardCard(
 
     val cardHeight = animateDpAsState(
         targetValue = when {
-            // Card del Cash
             isCash && isExpanded -> 336.dp
             isCash && !isExpanded -> 160.dp
-            // Product card
             !isCash && isExpanded -> 360.dp
             else -> 160.dp
         }
@@ -93,7 +93,7 @@ fun DashboardCard(
                             onAmountChanged = { newAmount ->
                                 newAmount?.let { viewModel.updateCash(it) }
                             },
-                            currencySymbol = "€",
+                            currencyCode = "EUR",
                             modifier = modifier.padding(bottom = 36.dp)
                         )
 
@@ -146,7 +146,7 @@ fun DashboardCard(
                                         viewModel.updateProduct(updatedProduct)
                                     }
                                 },
-                                currencySymbol = "€",
+                                currencyCode = "EUR",
                                 modifier = modifier.padding(bottom = 36.dp),
                                 isProduct = true
                             )
@@ -171,11 +171,18 @@ fun DashboardCard(
                                     "Invalid Date"
                                 }
 
+                                val percentageValue = performance.percentageChange.setScale(2, RoundingMode.HALF_UP)
+                                val sign = if (percentageValue >= BigDecimal.ZERO) "+" else ""
+                                val formattedPercentage = "$sign${percentageValue.toPlainString()}"
+
                                 PerformanceBox(
                                     leftAmount = performance.purchasePrice.toString(),
                                     rightAmount = performance.currentPrice.toString(),
+                                    leftCurrencySymbol = performance.currency,
+                                    rightCurrencySymbol = performance.currency,
                                     leftLabel = formattedPurchaseDate,
                                     rightLabel = formattedCurrentDate,
+                                    percentageChange = formattedPercentage,
                                     modifier = Modifier.fillMaxWidth(),
                                     onDeleteClicked = { viewModel.removeProduct(product.ticker) }
                                 )
@@ -186,7 +193,8 @@ fun DashboardCard(
                                     leftLabel = "No data",
                                     rightLabel = "No data",
                                     modifier = Modifier.fillMaxWidth(),
-                                    onDeleteClicked = { viewModel.removeProduct(product.ticker) }
+                                    onDeleteClicked = { viewModel.removeProduct(product.ticker) },
+                                    percentageChange = null
                                 )
                             }
                         }

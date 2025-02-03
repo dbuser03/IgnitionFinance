@@ -18,11 +18,12 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.presentation.utils.CurrencyMapper
 
 @Composable
 fun AmountBox(
     amount: String,
-    currencySymbol: String,
+    currencyCode: String,
     modifier: Modifier = Modifier,
     onAmountChanged: ((String?) -> Unit)? = null,
     alignRight: Boolean = false,
@@ -32,6 +33,7 @@ fun AmountBox(
     isProduct: Boolean = false
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val currencySymbol = CurrencyMapper.mapCurrencyToSymbol(currencyCode)
 
     if (!isReadOnly && onAmountChanged != null) {
         DialogManager(
@@ -118,7 +120,6 @@ fun AmountBox(
         }
     }
 }
-
 
 private fun formatNumberAmerican(input: String): String {
     return try {

@@ -8,5 +8,6 @@ data class ProductPerformance(
     val purchasePrice: BigDecimal,
     val currentDate: String,
     val currentPrice: BigDecimal,
-    val percentageChange: BigDecimal
+    val percentageChange: BigDecimal,
+    val currency: String
 )

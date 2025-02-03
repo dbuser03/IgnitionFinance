@@ -9,30 +9,30 @@ import com.unimib.ignitionfinance.data.model.StockData
 object DatasetValidator {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun validate(stockDataList: List<Map<String, StockData>>): DatasetValidationResult {
-        // Iterate over all the product data
-        for (productData in stockDataList) {
-            // Check if there are any entries in this product's data
+    fun validate(stockDataList: List<Pair<String, Map<String, StockData>>>): DatasetValidationResult {
+        // Itera su ciascuna coppia (currency, dati storici) della lista
+        for ((_, productData) in stockDataList) {
+            // Controlla se per questo prodotto ci sono dati
             if (productData.isNotEmpty()) {
                 var hasValidDate = false
 
-                // Iterate over each data entry (key is the date)
+                // Itera su ciascuna chiave della mappa, dove la chiave è la data
                 for (dateStr in productData.keys) {
-                    // Validate the date string
-                    if (!dateStr.isNullOrBlank() && ValidationRules.isDateOlderThan(dateStr, 10)) {
+                    // Valida la stringa della data (es. se non è vuota e se rispetta il limite di anni)
+                    if (dateStr.isNotBlank() && ValidationRules.isDateOlderThan(dateStr, 10)) {
                         hasValidDate = true
                         break
                     }
                 }
 
-                // If we found at least one valid date, return success
+                // Se per almeno un prodotto abbiamo trovato una data valida, la validazione ha successo
                 if (hasValidDate) {
                     return DatasetValidationResult.Success
                 }
             }
         }
 
-        // If no valid date found, return failure
+        // Se nessun prodotto ha una data valida, ritorna il fallimento con il messaggio d'errore
         return DatasetValidationResult.Failure(ValidationErrors.Input.YEARS_LIMIT)
     }
 }

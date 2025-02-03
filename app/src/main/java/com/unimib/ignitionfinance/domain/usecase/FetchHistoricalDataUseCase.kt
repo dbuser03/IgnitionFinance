@@ -15,7 +15,7 @@ class FetchHistoricalDataUseCase @Inject constructor(
     private val searchStockRepository: SearchStockRepository,
     private val stockRepository: StockRepository
 ) {
-    fun execute(apiKey: String): Flow<Result<List<Map<String, StockData>>>> = flow {
+    fun execute(apiKey: String): Flow<Result<List<Pair<String, Map<String, StockData>>>>> = flow {
         try {
             if (apiKey.isEmpty()) {
                 throw IllegalArgumentException("API key cannot be empty")
@@ -33,29 +33,27 @@ class FetchHistoricalDataUseCase @Inject constructor(
                 return@flow
             }
 
-            val historicalDataList = mutableListOf<Map<String, StockData>>()
+            val historicalDataList = mutableListOf<Pair<String, Map<String, StockData>>>()
 
             for (product in products) {
                 try {
-                    // Step 1: Search for the symbol of the product
                     val searchResult = searchStockRepository.fetchSearchStockData(product.ticker, apiKey).first()
-                    val symbol = searchResult.getOrNull()?.firstOrNull()?.symbol ?: run {
+                    val searchData = searchResult.getOrNull()?.firstOrNull() ?: run {
                         emit(Result.failure(NoSuchElementException("Symbol not found for product: ${product.ticker}")))
                         return@flow
                     }
 
-                    // Step 2: Fetch historical data using the found symbol
-                    val stockDataResult = stockRepository.fetchStockData(symbol, apiKey).first()
+                    val stockDataResult = stockRepository.fetchStockData(searchData.symbol, apiKey).first()
                     stockDataResult.fold(
                         onSuccess = { stockData ->
-                            historicalDataList.add(stockData)
+                            historicalDataList.add(Pair(searchData.currency, stockData))
                         },
                         onFailure = { exception ->
                             emit(Result.failure(exception))
                             return@flow
                         }
                     )
-                } catch (e: Exception) {
+                }catch (e: Exception) {
                     emit(Result.failure(Exception("Error processing product ${product.ticker}: ${e.message}")))
                     return@flow
                 }

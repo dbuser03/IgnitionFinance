@@ -16,8 +16,8 @@ data class PortfolioScreenState(
     val chfExchange: ExchangeData? = null,
     val chfExchangeState: UiState<ExchangeData?> = UiState.Idle,
     val expandedCardIndex: Int = -1,
-    val historicalData: List<Map<String, StockData>> = emptyList(),
-    val historicalDataState: UiState<List<Map<String, StockData>>> = UiState.Idle,
+    val historicalData: List<Pair<String, Map<String, StockData>>> = emptyList(),
+    val historicalDataState: UiState<List<Pair<String, Map<String, StockData>>>> = UiState.Idle,
     val productPerformances: List<ProductPerformance> = emptyList(),
     val productPerformancesState: UiState<List<ProductPerformance>> = UiState.Idle
 )
