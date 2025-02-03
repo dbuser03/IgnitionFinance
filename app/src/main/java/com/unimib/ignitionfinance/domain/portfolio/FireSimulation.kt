@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.domain.portfolio
 
 import com.unimib.ignitionfinance.domain.inflation.InflationScenarioGenerator
 import com.unimib.ignitionfinance.domain.models.FireSimulationConfig
+import com.unimib.ignitionfinance.domain.models.PerformanceResult
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.sqrt
