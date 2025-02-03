@@ -143,6 +143,63 @@ class InflationCalculator @Inject constructor(
     }
 }
 
+/*suspend fun main() {
+    // Crea un'implementazione del repository
+    val inflationRepository = object : InflationRepository {
+        override suspend fun fetchInflationData(): Flow<Result<List<InflationData>>> = flow {
+            // Dati storici dal 1955 al 1987
+            val historicalData = mapOf(
+                1955 to 2.3, 1956 to 3.4, 1957 to 1.3, 1958 to 2.8, 1959 to -0.4,
+                1960 to 2.3, 1961 to 2.1, 1962 to 4.7, 1963 to 7.5, 1964 to 5.9,
+                1965 to 4.6, 1966 to 2.3, 1967 to 3.7, 1968 to 1.4, 1969 to 2.6,
+                1970 to 5.0, 1971 to 4.8, 1972 to 5.7, 1973 to 10.8, 1974 to 19.1,
+                1975 to 17.0, 1976 to 16.8, 1977 to 17.0, 1978 to 12.1, 1979 to 14.8,
+                1980 to 21.2, 1981 to 17.8, 1982 to 16.5, 1983 to 14.7, 1984 to 10.8,
+                1985 to 9.2, 1986 to 5.8, 1987 to 4.8
+            )
+
+            // Dati dal 1988 in poi
+            val recentRates = arrayOf(
+                5.0, 6.3, 6.5, 6.2, 5.3, 4.7, 4.1, 5.3, 4.0, 2.0,
+                2.0, 1.7, 2.5, 2.7, 2.5, 2.7, 2.2, 1.9, 2.1, 1.8,
+                3.3, 0.8, 1.5, 2.7, 3.0, 1.2, 0.2, 0.1, -0.1, 1.2,
+                1.2, 0.6, -0.2, 1.9, 8.1, 8.7, 3.0
+            )
+
+            val historicalInflationData = historicalData.map { (year, rate) ->
+                InflationData(year.toString(), rate)
+            }
+
+            val recentInflationData = recentRates.mapIndexed { index, rate ->
+                InflationData((1988 + index).toString(), rate)
+            }
+
+            emit(Result.success(historicalInflationData + recentInflationData))
+        }
+    }
+
+    // Crea il use case
+    val fetchInflationUseCase = FetchInflationUseCase(inflationRepository)
+
+    // Crea il calculator con il use case
+    val calculator = InflationCalculator(
+        fetchInflationUseCase = fetchInflationUseCase,
+        numSimulazioni = 1000,
+        inflazioneMedia = 0.03  // 3%
+    )
+
+    val liquiditaIniziale = 100000.0 // 100,000 €
+
+    println("\nScenario: Inflazione Reale")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale")
+
+    println("\nScenario: Inflazione Reale Riscalata")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "reale riscalata")
+
+    println("\nScenario: Inflazione Lognormale")
+    calculator.calcolaErosioneLiquidita(liquiditaIniziale, "lognormale")
+}*/
+
 suspend fun main() {
     // Crea un'implementazione del repository
     val inflationRepository = object : InflationRepository {
@@ -180,6 +237,61 @@ suspend fun main() {
 
     // Crea il use case
     val fetchInflationUseCase = FetchInflationUseCase(inflationRepository)
+
+    // Recupera i dati dell'inflazione
+    val inflationData = fetchInflationUseCase.execute().first()
+
+    // Crea il JSON con i dati dell'inflazione
+    inflationData.onSuccess { dataList ->
+        val jsonString = buildString {
+            append("{\n")
+            append("  \"inflation_rates\": [\n")
+            // Stampiamo direttamente i dati che abbiamo nel codice
+            val historicalData = mapOf(
+                1955 to 2.3, 1956 to 3.4, 1957 to 1.3, 1958 to 2.8, 1959 to -0.4,
+                1960 to 2.3, 1961 to 2.1, 1962 to 4.7, 1963 to 7.5, 1964 to 5.9,
+                1965 to 4.6, 1966 to 2.3, 1967 to 3.7, 1968 to 1.4, 1969 to 2.6,
+                1970 to 5.0, 1971 to 4.8, 1972 to 5.7, 1973 to 10.8, 1974 to 19.1,
+                1975 to 17.0, 1976 to 16.8, 1977 to 17.0, 1978 to 12.1, 1979 to 14.8,
+                1980 to 21.2, 1981 to 17.8, 1982 to 16.5, 1983 to 14.7, 1984 to 10.8,
+                1985 to 9.2, 1986 to 5.8, 1987 to 4.8
+            ).toList()
+
+            val recentYears = (1988..2024).toList()
+            val recentRates = listOf(
+                5.0, 6.3, 6.5, 6.2, 5.3, 4.7, 4.1, 5.3, 4.0, 2.0,
+                2.0, 1.7, 2.5, 2.7, 2.5, 2.7, 2.2, 1.9, 2.1, 1.8,
+                3.3, 0.8, 1.5, 2.7, 3.0, 1.2, 0.2, 0.1, -0.1, 1.2,
+                1.2, 0.6, -0.2, 1.9, 8.1, 8.7, 3.0
+            )
+
+            // Combiniamo i dati storici
+            historicalData.forEachIndexed { index, (year, rate) ->
+                append("    {\n")
+                append("      \"year\": \"$year\",\n")
+                append("      \"rate\": $rate\n")
+                append("    }")
+                if (index < historicalData.size - 1 || recentRates.isNotEmpty()) append(",")
+                append("\n")
+            }
+
+            // Aggiungiamo i dati recenti
+            recentRates.forEachIndexed { index, rate ->
+                append("    {\n")
+                append("      \"year\": \"${recentYears[index]}\",\n")
+                append("      \"rate\": $rate\n")
+                append("    }")
+                if (index < recentRates.size - 1) append(",")
+                append("\n")
+            }
+
+            append("  ]\n")
+            append("}")
+        }
+        println(jsonString)
+    }.onFailure { exception ->
+        println("Errore nel recupero dei dati: ${exception.message}")
+    }
 
     // Crea il calculator con il use case
     val calculator = InflationCalculator(
