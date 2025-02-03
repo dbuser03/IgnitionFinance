@@ -1,11 +1,7 @@
 package com.unimib.ignitionfinance.domain
 
-import com.unimib.ignitionfinance.data.model.InflationData
-import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
 import com.unimib.ignitionfinance.domain.usecase.inflation.FetchInflationUseCase
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.sqrt
