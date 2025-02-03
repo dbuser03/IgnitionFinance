@@ -1,6 +1,8 @@
 package com.unimib.ignitionfinance.presentation.viewmodel
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.BuildConfig
@@ -16,8 +18,14 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import kotlin.math.abs
+import java.math.RoundingMode
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class PortfolioScreenViewModel @Inject constructor(
     private val getUserCashUseCase: GetUserCashUseCase,
@@ -42,52 +50,80 @@ class PortfolioScreenViewModel @Inject constructor(
         fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun processHistoricalData(): List<ProductPerformance> {
-        val historicalData = state.value.historicalData
+        val historicalDataList = state.value.historicalData
         val products = state.value.products
 
-        return products.mapNotNull { product ->
-            val productHistory = historicalData.firstOrNull()
-            if (productHistory == null) {
-                return@mapNotNull null
-            }
+        val performances = mutableListOf<ProductPerformance>()
 
-            val dates = productHistory.keys.sorted()
-            if (dates.isEmpty()) {
-                return@mapNotNull null
-            }
+        val isoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val purchaseFormatter1 = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val purchaseFormatter2 = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
-            val productPurchaseDate = product.purchaseDate
-            val purchaseDate = dates.minByOrNull { date ->
-                abs(date.compareTo(productPurchaseDate))
+        fun parsePurchaseDate(dateStr: String): LocalDate? {
+            return try {
+                LocalDate.parse(dateStr, purchaseFormatter1)
+            } catch (_: Exception) {
+                try {
+                    LocalDate.parse(dateStr, purchaseFormatter2)
+                } catch (_: Exception) {
+                    null
+                }
             }
-            if (purchaseDate == null) {
-                return@mapNotNull null
-            }
-
-            val currentDate = dates.last()
-            val purchaseData = productHistory[purchaseDate]
-
-            if (purchaseData == null) {
-                return@mapNotNull null
-            }
-
-            val currentData = productHistory[currentDate]
-            if (currentData == null) {
-                return@mapNotNull null
-            }
-
-            ProductPerformance(
-                ticker = product.ticker,
-                purchaseDate = purchaseDate,
-                purchasePrice = purchaseData.close,
-                currentDate = currentDate,
-                currentPrice = currentData.close,
-                percentageChange = currentData.percentageChange
-            )
         }
+
+        products.forEachIndexed { index, product ->
+            val originalPurchaseDateStr = product.purchaseDate
+            val purchaseDate = parsePurchaseDate(originalPurchaseDateStr)
+            if (purchaseDate == null) {
+                return@forEachIndexed
+            }
+
+            val historicalData = historicalDataList.getOrNull(index) ?: return@forEachIndexed
+
+            val dateStockList = historicalData.mapNotNull { entry ->
+                try {
+                    val date = LocalDate.parse(entry.key, isoFormatter)
+                    Pair(date, entry.value)
+                } catch (_: Exception) {
+                    null
+                }
+            }
+            if (dateStockList.isEmpty()) return@forEachIndexed
+
+            val closestEntry = dateStockList.minByOrNull { (date, _) ->
+                abs(ChronoUnit.DAYS.between(date, purchaseDate))
+            } ?: return@forEachIndexed
+
+            val lastEntry = dateStockList.maxByOrNull { (date, _) -> date } ?: return@forEachIndexed
+
+            val purchasePrice: BigDecimal = closestEntry.second.close
+            val currentPrice: BigDecimal = lastEntry.second.close
+
+            val percentageChange = if (purchasePrice.compareTo(BigDecimal.ZERO) != 0) {
+                (currentPrice.subtract(purchasePrice))
+                    .divide(purchasePrice, 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal(100))
+            } else {
+                BigDecimal.ZERO
+            }
+
+            val performance = ProductPerformance(
+                ticker = product.ticker,
+                purchaseDate = closestEntry.first.format(isoFormatter),
+                purchasePrice = purchasePrice,
+                currentDate = lastEntry.first.format(isoFormatter),
+                currentPrice = currentPrice,
+                percentageChange = percentageChange
+            )
+            performances.add(performance)
+        }
+
+        return performances
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateProductPerformances() {
         viewModelScope.launch {
             try {
@@ -271,6 +307,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addNewProduct(product: Product) {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
@@ -303,6 +340,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun removeProduct(productId: String) {
         viewModelScope.launch {
             val currentProducts = _state.value.products.toMutableList()
@@ -344,7 +382,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     fun updateProduct(updatedProduct: Product) {
         viewModelScope.launch {
             val currentProducts = _state.value.products.toMutableList()

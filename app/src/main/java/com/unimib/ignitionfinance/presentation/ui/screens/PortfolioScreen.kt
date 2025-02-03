@@ -2,7 +2,9 @@ package com.unimib.ignitionfinance.presentation.ui.screens
 
 import BottomNavigationBarInstance
 import android.app.Activity
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -26,6 +28,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.BuildConfig
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PortfolioScreen(
     navController: NavController,

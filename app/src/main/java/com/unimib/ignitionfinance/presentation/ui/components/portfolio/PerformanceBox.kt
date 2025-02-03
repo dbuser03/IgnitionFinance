@@ -60,7 +60,6 @@ fun PerformanceBox(
         horizontalArrangement = Arrangement.Center
     ) {
         if (onDeleteClicked != null) {
-            // Box per il valore di sinistra
             Box(
                 modifier = Modifier.weight(1f)
             ) {
@@ -72,7 +71,6 @@ fun PerformanceBox(
                     isReadOnly = true
                 )
             }
-            // Icona delete al centro
             IconButton(
                 onClick = onDeleteClicked,
                 modifier = Modifier.size(24.dp)

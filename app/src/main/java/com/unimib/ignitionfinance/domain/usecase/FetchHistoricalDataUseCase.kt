@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository

@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.presentation.ui.components.portfolio
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +23,7 @@ import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardCard(
     modifier: Modifier,
@@ -58,7 +61,6 @@ fun DashboardCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,53 +152,42 @@ fun DashboardCard(
                             )
 
                             val performance = viewModel.getPerformanceForProduct(product.ticker)
-                            when {
-                                state.value.productPerformancesState is UiState.Loading -> {
-                                    PerformanceBox(
-                                        leftAmount = "----",
-                                        rightAmount = "----",
-                                        leftLabel = "Loading...",
-                                        rightLabel = "Loading...",
-                                        modifier = Modifier.fillMaxWidth(),
-                                        // Passa la lambda per eliminare il prodotto
-                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
-                                    )
+
+                            if (performance != null) {
+                                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                                val formattedPurchaseDate = try {
+                                    val date = inputFormat.parse(performance.purchaseDate)
+                                    date?.let { outputFormat.format(it) } ?: "Invalid Date"
+                                } catch (_: Exception) {
+                                    "Invalid Date"
                                 }
 
-                                state.value.productPerformancesState is UiState.Error -> {
-                                    PerformanceBox(
-                                        leftAmount = "----",
-                                        rightAmount = "----",
-                                        leftLabel = "Error",
-                                        rightLabel = "Error",
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
-                                    )
+                                val formattedCurrentDate = try {
+                                    val date = inputFormat.parse(performance.currentDate)
+                                    date?.let { outputFormat.format(it) } ?: "Invalid Date"
+                                } catch (_: Exception) {
+                                    "Invalid Date"
                                 }
 
-                                performance != null -> {
-                                    val dateFormat =
-                                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                    PerformanceBox(
-                                        leftAmount = performance.purchasePrice.toString(),
-                                        rightAmount = performance.currentPrice.toString(),
-                                        leftLabel = dateFormat.format(performance.purchaseDate),
-                                        rightLabel = dateFormat.format(performance.currentDate),
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
-                                    )
-                                }
-
-                                else -> {
-                                    PerformanceBox(
-                                        leftAmount = "----",
-                                        rightAmount = "----",
-                                        leftLabel = "No data",
-                                        rightLabel = "No data",
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
-                                    )
-                                }
+                                PerformanceBox(
+                                    leftAmount = performance.purchasePrice.toString(),
+                                    rightAmount = performance.currentPrice.toString(),
+                                    leftLabel = formattedPurchaseDate,
+                                    rightLabel = formattedCurrentDate,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onDeleteClicked = { viewModel.removeProduct(product.ticker) }
+                                )
+                            } else {
+                                PerformanceBox(
+                                    leftAmount = "----",
+                                    rightAmount = "----",
+                                    leftLabel = "No data",
+                                    rightLabel = "No data",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onDeleteClicked = { viewModel.removeProduct(product.ticker) }
+                                )
                             }
                         }
                     }
