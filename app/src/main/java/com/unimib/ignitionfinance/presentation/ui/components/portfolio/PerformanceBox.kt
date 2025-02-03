@@ -84,7 +84,6 @@ fun PerformanceBox(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-            // Box per il valore di destra
             Box(
                 modifier = Modifier.weight(1f)
             ) {
@@ -97,7 +96,6 @@ fun PerformanceBox(
                 )
             }
         } else {
-            // Se non viene passato onDeleteClicked, mostra solo i due AmountBox
             Box(
                 modifier = Modifier.weight(1f)
             ) {

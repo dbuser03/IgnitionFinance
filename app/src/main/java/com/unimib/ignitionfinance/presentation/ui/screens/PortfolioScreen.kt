@@ -109,6 +109,7 @@ fun PortfolioScreen(
                 state = listState
             ) {
                 item {
+                    // Questa è la card del Cash (isCash = true)
                     DashboardCard(
                         modifier = Modifier,
                         isExpanded = state.expandedCardIndex == 0,
@@ -123,6 +124,7 @@ fun PortfolioScreen(
                 }
 
                 itemsIndexed(state.products) { index, product ->
+                    // Le product card (isCash = false)
                     DashboardCard(
                         modifier = Modifier,
                         isExpanded = state.expandedCardIndex == index + 1,
@@ -136,7 +138,7 @@ fun PortfolioScreen(
                         isCash = false
                     )
                 }
-                item{
+                item {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -144,6 +146,7 @@ fun PortfolioScreen(
                     )
                 }
             }
+
         }
     )
 }
