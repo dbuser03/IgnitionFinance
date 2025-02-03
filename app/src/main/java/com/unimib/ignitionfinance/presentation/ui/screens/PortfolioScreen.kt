@@ -136,6 +136,13 @@ fun PortfolioScreen(
                         isCash = false
                     )
                 }
+                item{
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(88.dp)
+                    )
+                }
             }
         }
     )

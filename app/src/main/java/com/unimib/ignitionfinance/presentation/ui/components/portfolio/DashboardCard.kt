@@ -12,10 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
@@ -37,7 +35,7 @@ fun DashboardCard(
     val state = viewModel.state.collectAsState()
 
     val cardHeight = animateDpAsState(
-        targetValue = if (isExpanded) 336.dp else 160.dp
+        targetValue = if (isExpanded) 360.dp else 160.dp
     )
 
     Card(
@@ -66,23 +64,6 @@ fun DashboardCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-
-            if (!isCash) {
-                IconButton(
-                    onClick = { product?.let { viewModel.removeProduct(it.ticker) } },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .size(24.dp)
-                        .offset(x = (-12).dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_delete_24),
-                        contentDescription = "Delete product",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Top,
@@ -169,7 +150,9 @@ fun DashboardCard(
                                         rightAmount = "----",
                                         leftLabel = "Loading...",
                                         rightLabel = "Loading...",
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
+                                        // Passa la lambda per eliminare il prodotto
+                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
                                     )
                                 }
 
@@ -179,7 +162,8 @@ fun DashboardCard(
                                         rightAmount = "----",
                                         leftLabel = "Error",
                                         rightLabel = "Error",
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
                                     )
                                 }
 
@@ -191,8 +175,8 @@ fun DashboardCard(
                                         rightAmount = performance.currentPrice.toString(),
                                         leftLabel = dateFormat.format(performance.purchaseDate),
                                         rightLabel = dateFormat.format(performance.currentDate),
-                                        //percentage = performance.percentageChange.toFloat(),
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
                                     )
                                 }
 
@@ -202,7 +186,8 @@ fun DashboardCard(
                                         rightAmount = "----",
                                         leftLabel = "No data",
                                         rightLabel = "No data",
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onDeleteClicked = { viewModel.removeProduct(product.ticker) }
                                     )
                                 }
                             }

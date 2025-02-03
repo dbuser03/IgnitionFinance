@@ -1,17 +1,16 @@
 package com.unimib.ignitionfinance.presentation.ui.components.portfolio
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.R
 
 @Composable
 fun PerformanceBox(
@@ -22,7 +21,8 @@ fun PerformanceBox(
     rightCurrencySymbol: String? = null,
     leftLabel: String? = null,
     rightLabel: String? = null,
-    showDivider: Boolean = true
+    showDivider: Boolean = true,
+    onDeleteClicked: (() -> Unit)? = null
 ) {
     if (showDivider) {
         Row(
@@ -55,30 +55,71 @@ fun PerformanceBox(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = if (showDivider) 8.dp else 0.dp)
+            .padding(top = if (showDivider) 8.dp else 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier.weight(1f)
-        ) {
-            AmountBox(
-                amount = leftAmount,
-                currencySymbol = leftCurrencySymbol,
-                alignRight = false,
-                bottomLabel = leftLabel,
-                isReadOnly = true
-            )
-        }
-
-        Box(
-            modifier = Modifier.weight(1f)
-        ) {
-            AmountBox(
-                amount = rightAmount,
-                currencySymbol = rightCurrencySymbol ?: leftCurrencySymbol,
-                alignRight = true,
-                bottomLabel = rightLabel,
-                isReadOnly = true
-            )
+        if (onDeleteClicked != null) {
+            // Box per il valore di sinistra
+            Box(
+                modifier = Modifier.weight(1f)
+            ) {
+                AmountBox(
+                    amount = leftAmount,
+                    currencySymbol = leftCurrencySymbol,
+                    alignRight = false,
+                    bottomLabel = leftLabel,
+                    isReadOnly = true
+                )
+            }
+            // Icona delete al centro
+            IconButton(
+                onClick = onDeleteClicked,
+                modifier = Modifier.size(24.dp)
+                .offset(y = 48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_delete_24),
+                    contentDescription = "Delete product",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            // Box per il valore di destra
+            Box(
+                modifier = Modifier.weight(1f)
+            ) {
+                AmountBox(
+                    amount = rightAmount,
+                    currencySymbol = rightCurrencySymbol ?: leftCurrencySymbol,
+                    alignRight = true,
+                    bottomLabel = rightLabel,
+                    isReadOnly = true
+                )
+            }
+        } else {
+            // Se non viene passato onDeleteClicked, mostra solo i due AmountBox
+            Box(
+                modifier = Modifier.weight(1f)
+            ) {
+                AmountBox(
+                    amount = leftAmount,
+                    currencySymbol = leftCurrencySymbol,
+                    alignRight = false,
+                    bottomLabel = leftLabel,
+                    isReadOnly = true
+                )
+            }
+            Box(
+                modifier = Modifier.weight(1f)
+            ) {
+                AmountBox(
+                    amount = rightAmount,
+                    currencySymbol = rightCurrencySymbol ?: leftCurrencySymbol,
+                    alignRight = true,
+                    bottomLabel = rightLabel,
+                    isReadOnly = true
+                )
+            }
         }
     }
 }
