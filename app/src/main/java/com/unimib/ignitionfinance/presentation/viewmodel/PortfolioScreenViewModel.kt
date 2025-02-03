@@ -343,7 +343,15 @@ class PortfolioScreenViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun removeProduct(productId: String) {
         viewModelScope.launch {
-            _state.update { it.copy(productsState = UiState.Loading) }
+            val currentProducts = _state.value.products.toMutableList()
+            val newProducts = currentProducts.filter { it.ticker != productId }
+            _state.update {
+                it.copy(
+                    products = newProducts,
+                    productsState = UiState.Loading
+                )
+            }
+
             updateProductListUseCase.removeProduct(productId)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error removing product: ${exception.localizedMessage}")
@@ -354,10 +362,10 @@ class PortfolioScreenViewModel @Inject constructor(
                             )
                         )
                     }
+                    getProducts()
                 }
                 .collect { result ->
                     if (result.isSuccess) {
-                        getProducts()
                         fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
@@ -368,6 +376,7 @@ class PortfolioScreenViewModel @Inject constructor(
                                 )
                             )
                         }
+                        getProducts()
                     }
                 }
         }
@@ -497,7 +506,6 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun fetchHistoricalData(apiKey: String) {
         viewModelScope.launch {
             _state.update { it.copy(historicalDataState = UiState.Loading) }

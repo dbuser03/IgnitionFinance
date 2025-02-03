@@ -3,8 +3,10 @@ package com.unimib.ignitionfinance.data.calculator
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import java.math.BigDecimal
+import javax.inject.Inject
 
-class DailyReturnCalculator {
+
+class DailyReturnCalculator @Inject constructor() {
     // Main function that processes the list of historical data for all products
     fun calculateDailyReturns(
         historicalDataList: List<Map<String, StockData>>,

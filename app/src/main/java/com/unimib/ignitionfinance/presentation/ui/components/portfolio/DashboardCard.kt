@@ -38,7 +38,14 @@ fun DashboardCard(
     val state = viewModel.state.collectAsState()
 
     val cardHeight = animateDpAsState(
-        targetValue = if (isExpanded) 360.dp else 160.dp
+        targetValue = when {
+            // Card del Cash
+            isCash && isExpanded -> 336.dp
+            isCash && !isExpanded -> 160.dp
+            // Product card
+            !isCash && isExpanded -> 360.dp
+            else -> 160.dp
+        }
     )
 
     Card(
