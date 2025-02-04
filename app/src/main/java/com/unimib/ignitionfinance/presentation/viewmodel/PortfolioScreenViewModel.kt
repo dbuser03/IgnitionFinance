@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.*
 import com.unimib.ignitionfinance.domain.usecase.networth.*
@@ -208,7 +209,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 productsState = UiState.Loading,
                 expandedCardIndex = -1
             ) }
-            addProductToDatabaseUseCase.handleProductStorage(product)
+            addProductToDatabaseUseCase.handleProductStorage(product, BuildConfig.ALPHAVANTAGE_API_KEY)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error handling product storage: ${exception.localizedMessage}")
                     _state.update {

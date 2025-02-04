@@ -11,10 +11,10 @@ import kotlin.coroutines.cancellation.CancellationException
 class GetUserInvestedUseCase @Inject constructor(
     private val getProductListUseCase: GetProductListUseCase
 ) {
-    fun execute(forceRefresh: Boolean = false): Flow<Result<Double>> = flow {
+    fun execute(): Flow<Result<Double>> = flow {
         Log.d(TAG, "Starting execution of GetUserInvestedUseCase")
 
-        val productListResult = getProductListUseCase.execute(forceRefresh).first()
+        val productListResult = getProductListUseCase.execute().first()
         Log.d(TAG, "Product list result received")
 
         val productList = productListResult.getOrNull()
