@@ -3,6 +3,7 @@ package com.unimib.ignitionfinance.presentation.ui.screens
 import BottomNavigationBarInstance
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManage
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.DashboardCard
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
+import com.unimib.ignitionfinance.BuildConfig
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -47,10 +49,19 @@ fun PortfolioScreen(
         }
     }
 
+    // Effettua le chiamate iniziali
     LaunchedEffect(Unit) {
         viewModel.getFirstAdded()
         viewModel.getCash()
         viewModel.getProducts()
+        viewModel.fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
+    }
+
+    // Effetto per aggiornare le performance quando historicalData cambia.
+    // Utilizziamo la dimensione della lista come chiave stabile.
+    LaunchedEffect(key1 = state.historicalData.size) {
+        Log.d("PortfolioScreen", "historicalData aggiornato, size: ${state.historicalData.size}")
+        viewModel.updateProductPerformances()
     }
 
     BackHandler(enabled = true) {
@@ -68,16 +79,16 @@ fun PortfolioScreen(
         },
         onProductConfirmation = { isin: String?, ticker: String?, purchaseDate: String?, amount: String?, symbol: String? ->
             showDialog = false
-            if (isin != null && ticker != null && purchaseDate != null && amount != null) {
+            if (isin != null && ticker != null && purchaseDate != null && amount != null && symbol != null) {
                 val newProduct = Product(
                     isin = isin,
                     ticker = ticker,
                     purchaseDate = purchaseDate,
                     amount = amount,
                     symbol = "",
-                    averagePerformance = "0",
-                    shares = 0.0,
-                    currency = ""
+                    currency = "",
+                    averagePerformance = "",
+                    shares = 0.0
                 )
                 viewModel.addNewProduct(newProduct)
             }
@@ -112,37 +123,35 @@ fun PortfolioScreen(
                     .padding(innerPadding),
                 state = listState
             ) {
-                if (state.isFirstAdded) {
-                    item {
-                        DashboardCard(
-                            modifier = Modifier,
-                            isExpanded = state.expandedCardIndex == 0,
-                            onCardClicked = {
-                                viewModel.toggleCardExpansion(0)
-                                selectedCardIndex = 0
-                            },
-                            isin = "BANK ACCOUNT",
-                            ticker = "CASH",
-                            isCash = true
-                        )
-                    }
+                item {
+                    DashboardCard(
+                        modifier = Modifier,
+                        isExpanded = state.expandedCardIndex == 0,
+                        onCardClicked = {
+                            viewModel.toggleCardExpansion(0)
+                            selectedCardIndex = 0
+                        },
+                        isin = "BANK ACCOUNT",
+                        ticker = "CASH",
+                        isCash = true
+                    )
                 }
 
                 itemsIndexed(state.products) { index, product ->
                     DashboardCard(
                         modifier = Modifier,
-                        isExpanded = state.expandedCardIndex == index + if (state.isFirstAdded) 1 else 0,
+                        isExpanded = state.expandedCardIndex == index + 1,
                         onCardClicked = {
-                            viewModel.toggleCardExpansion(index + if (state.isFirstAdded) 1 else 0)
+                            viewModel.toggleCardExpansion(index + 1)
                             selectedCardIndex = index
                         },
                         isin = product.isin,
                         product = product,
                         ticker = product.ticker,
-                        isCash = false
+                        isCash = false,
+                        performance = state.productPerformances.find { it.ticker == product.ticker }
                     )
                 }
-
                 item {
                     Box(
                         modifier = Modifier

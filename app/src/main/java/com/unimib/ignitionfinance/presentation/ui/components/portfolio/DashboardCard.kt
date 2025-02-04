@@ -24,6 +24,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.unimib.ignitionfinance.presentation.viewmodel.state.ProductPerformance
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -35,7 +36,8 @@ fun DashboardCard(
     isin: String,
     ticker: String,
     isCash: Boolean = false,
-    product: Product? = null
+    product: Product? = null,
+    performance: ProductPerformance? = null
 ) {
     val state = viewModel.state.collectAsState()
 
@@ -110,7 +112,6 @@ fun DashboardCard(
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
-
                             state.value.usdExchangeState is UiState.Error ||
                                     state.value.chfExchangeState is UiState.Error -> {
                                 PerformanceBox(
@@ -123,7 +124,6 @@ fun DashboardCard(
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
-
                             else -> {
                                 PerformanceBox(
                                     leftAmount = viewModel.calculateUsdAmount(state.value.cash),
@@ -151,35 +151,35 @@ fun DashboardCard(
                                 isProduct = true
                             )
 
-                            val performance = viewModel.getPerformanceForProduct(product.ticker)
+                            val perf = performance ?: state.value.productPerformances.find { it.ticker == product.ticker }
 
-                            if (performance != null) {
+                            if (perf != null) {
                                 val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                                 val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
                                 val formattedPurchaseDate = try {
-                                    val date = inputFormat.parse(performance.purchaseDate)
+                                    val date = inputFormat.parse(perf.purchaseDate)
                                     date?.let { outputFormat.format(it) } ?: "Invalid Date"
                                 } catch (_: Exception) {
                                     "Invalid Date"
                                 }
 
                                 val formattedCurrentDate = try {
-                                    val date = inputFormat.parse(performance.currentDate)
+                                    val date = inputFormat.parse(perf.currentDate)
                                     date?.let { outputFormat.format(it) } ?: "Invalid Date"
                                 } catch (_: Exception) {
                                     "Invalid Date"
                                 }
 
-                                val percentageValue = performance.percentageChange.setScale(2, RoundingMode.HALF_UP)
+                                val percentageValue = perf.percentageChange.setScale(2, RoundingMode.HALF_UP)
                                 val sign = if (percentageValue >= BigDecimal.ZERO) "+" else ""
                                 val formattedPercentage = "$sign${percentageValue.toPlainString()}"
 
                                 PerformanceBox(
-                                    leftAmount = performance.purchasePrice.toString(),
-                                    rightAmount = performance.currentPrice.toString(),
-                                    leftCurrencySymbol = performance.currency,
-                                    rightCurrencySymbol = performance.currency,
+                                    leftAmount = perf.purchasePrice.toString(),
+                                    rightAmount = perf.currentPrice.toString(),
+                                    leftCurrencySymbol = perf.currency,
+                                    rightCurrencySymbol = perf.currency,
                                     leftLabel = formattedPurchaseDate,
                                     rightLabel = formattedCurrentDate,
                                     percentageChange = formattedPercentage,
