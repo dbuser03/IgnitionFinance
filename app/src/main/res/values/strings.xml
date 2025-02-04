@@ -27,4 +27,7 @@
     <string name="simulate_FAB_description">Start Simulation</string>
     <string name="login_FAB_description">Login</string>
     <string name="registration_FAB_description">Register</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_dismiss">Dismiss</string>
+
 </resources>
