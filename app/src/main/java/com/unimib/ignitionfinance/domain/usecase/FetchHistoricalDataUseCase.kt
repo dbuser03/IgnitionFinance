@@ -15,7 +15,7 @@ class FetchHistoricalDataUseCase @Inject constructor(
     private val stockRepository: StockRepository,
     private val fetchSearchStockDataUseCase: FetchSearchStockDataUseCase
 ) {
-    fun execute(apiKey: String): Flow<Result<List<Pair<String, Map<String, StockData>>>>> = flow {
+    fun execute(apiKey: String): Flow<Result<List<Map<String, StockData>>>> = flow {
         try {
             if (apiKey.isEmpty()) {
                 throw IllegalArgumentException("API key cannot be empty")
@@ -33,7 +33,7 @@ class FetchHistoricalDataUseCase @Inject constructor(
                 return@flow
             }
 
-            val historicalDataList = mutableListOf<Pair<String, Map<String, StockData>>>()
+            val historicalDataList = mutableListOf<Map<String, StockData>>()
 
             for (product in products) {
                 try {
@@ -45,18 +45,10 @@ class FetchHistoricalDataUseCase @Inject constructor(
                             ?: throw NoSuchElementException("Symbol not found for product: ${product.ticker}")
                     }
 
-                    val currency = if (product.currency.isNotEmpty()) {
-                        product.currency
-                    } else {
-                        val searchResult = fetchSearchStockDataUseCase.execute(product.ticker, apiKey).first()
-                        searchResult.getOrNull()?.currency
-                            ?: throw NoSuchElementException("Currency not found for product: ${product.ticker}")
-                    }
-
                     val stockDataResult = stockRepository.fetchStockData(symbol, apiKey).first()
                     stockDataResult.fold(
                         onSuccess = { stockData ->
-                            historicalDataList.add(Pair(currency, stockData))
+                            historicalDataList.add(stockData)
                         },
                         onFailure = { exception ->
                             emit(Result.failure(exception))

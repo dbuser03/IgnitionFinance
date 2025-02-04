@@ -4,12 +4,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.data.model.user.SimulationResult
-import com.unimib.ignitionfinance.domain.usecase.StartSimulationUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.SimulationScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
-import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.domain.usecase.BuildDatasetOnlyUseCase
+import com.unimib.ignitionfinance.domain.usecase.simulation.BuildDatasetOnlyUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
