@@ -2,13 +2,13 @@
 
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.model.user.settings.Expenses
-import com.unimib.ignitionfinance.data.model.user.settings.Intervals
-import com.unimib.ignitionfinance.data.model.user.Settings
 import com.unimib.ignitionfinance.data.model.UserData
+import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.data.model.user.Settings
+import com.unimib.ignitionfinance.data.model.user.settings.Expenses
+import com.unimib.ignitionfinance.data.model.user.settings.Intervals
 import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
 import java.math.BigDecimal
 
@@ -25,7 +25,7 @@ object UserDataMapper {
                 updatedAt = (this["updatedAt"] as? Long) ?: System.currentTimeMillis(),
                 cash = (this["cash"] as? String) ?: "0",
                 productList = mapProductList(this["productList"] as? List<Map<String, Any>>),
-                firstAdded = (this["firstAdded"] as? Boolean) ?: false,
+                firstAdded = (this["firstAdded"] as? Boolean) == true,
                 dataset = mapDataset(this["dataset"] as? List<Map<DailyReturn, Any>>),
             )
         }
@@ -47,6 +47,9 @@ object UserDataMapper {
                 purchaseDate = (productMap["purchaseDate"] as? String).orEmpty(),
                 amount = (productMap["amount"] as? String).orEmpty(),
                 symbol = (productMap["symbol"] as? String).orEmpty(),
+                averagePerformance = (productMap["averagePerformance"] as? String).orEmpty(),
+                shares = (productMap["shares"] as Double),
+                currency = (productMap["currency"] as? String).orEmpty()
             )
         } ?: emptyList()
     }
@@ -99,6 +102,10 @@ object UserDataMapper {
                     "ticker" to product.ticker,
                     "amount" to product.amount,
                     "purchaseDate" to product.purchaseDate,
+                    "averagePerformance" to product.averagePerformance,
+                    "shares" to product.shares,
+                    "currency" to product.currency,
+                    "symbol" to product.symbol
                 )
             },
             "firstAdded" to userData.firstAdded,

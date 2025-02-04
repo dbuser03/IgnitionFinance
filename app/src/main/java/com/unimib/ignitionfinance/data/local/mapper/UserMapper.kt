@@ -37,7 +37,7 @@ object UserMapper {
             ),
             cash = userData?.cash ?: "0",
             productList = userData?.productList ?: emptyList(),
-            firstAdded = userData?.firstAdded ?: false,
+            firstAdded = userData?.firstAdded == true,
             dataset = userData?.dataset ?: emptyList()
         )
     }

@@ -1,13 +1,15 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.calculator.DailyReturnCalculator
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
-import com.unimib.ignitionfinance.domain.usecase.networth.GetProductListUseCase
+import com.unimib.ignitionfinance.domain.usecase.FetchHistoricalDataUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.validation.DatasetValidationResult
 import com.unimib.ignitionfinance.domain.validation.DatasetValidator
 import kotlinx.coroutines.flow.Flow
@@ -27,44 +29,35 @@ class BuildDatasetUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
         try {
-            // Step 1: Get product list
-            val productsResult = getProductListUseCase.execute().first()
+            val productsResult = getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             val products = productsResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
 
-            // Step 2: Fetch historical data
             val historicalDataResult = fetchHistoricalDataUseCase.execute(apiKey).first()
             val historicalDataList = historicalDataResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
 
-            // Step 3: Validate dataset and process
-            val dailyReturns = when (DatasetValidator.validate(historicalDataList)) {
+            val dailyReturns: List<DailyReturn> = when (DatasetValidator.validate(historicalDataList)) {
                 is DatasetValidationResult.Success -> {
-                    // Process data for valid dataset:
-                    // Qui aggiorniamo processData in modo da accettare il nuovo tipo,
-                    // e passiamo al calculator solo le mappe (estratte dalla coppia)
                     processData(products, historicalDataList)
                 }
                 is DatasetValidationResult.Failure -> {
-                    // Fallback to S&P 500
                     val sp500Result = stockRepository.fetchStockData("^GSPC", apiKey).first()
                     val sp500Data = sp500Result.getOrElse { error ->
                         emit(Result.failure(error))
                         return@flow
                     }
 
-                    // Calculate total capital
                     val totalCapital = calculateTotalCapital(products)
 
                     val fallbackData = listOf(sp500Data)
                     val fallbackTickers = listOf("^GSPC")
                     val fallbackCapitals = mapOf("^GSPC" to totalCapital)
 
-                    // Calculate returns for fallback
                     dailyReturnCalculator.calculateDailyReturns(
                         historicalDataList = fallbackData,
                         products = fallbackTickers,
@@ -79,7 +72,6 @@ class BuildDatasetUseCase @Inject constructor(
                 return@flow
             }
 
-            // Step 5: Emit the final result
             emit(Result.success(dailyReturns))
 
         } catch (e: CancellationException) {
@@ -99,13 +91,9 @@ class BuildDatasetUseCase @Inject constructor(
         }
     }
 
-    /**
-     * Aggiornato per ricevere una lista di Pair(String, Map<String, StockData>).
-     * Viene estratta la mappa (cioè il secondo elemento di ogni coppia) da passare al dailyReturnCalculator.
-     */
     private fun processData(
         products: List<Product>,
-        historicalData: List<Pair<String, Map<String, StockData>>>
+        historicalData: List<Map<String, StockData>>
     ): List<DailyReturn> {
         val productTickers = products.map { it.ticker }
         val productCapitals = products.associate { product ->
@@ -116,10 +104,8 @@ class BuildDatasetUseCase @Inject constructor(
             }
         }
 
-        val historicalDataMaps: List<Map<String, StockData>> = historicalData.map { it.second }
-
         return dailyReturnCalculator.calculateDailyReturns(
-            historicalDataList = historicalDataMaps,
+            historicalDataList = historicalData,
             products = productTickers,
             productCapitals = productCapitals
         )

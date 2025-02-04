@@ -6,5 +6,7 @@ data class Product(
     val purchaseDate: String,
     val amount: String,
     val symbol: String,
-    // val averagePerformance: String
+    val averagePerformance: String,
+    val shares: Double,
+    val currency: String
 )

@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
 import androidx.annotation.RequiresApi

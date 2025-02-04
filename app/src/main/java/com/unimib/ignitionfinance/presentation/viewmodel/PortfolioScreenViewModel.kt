@@ -9,22 +9,26 @@ import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.*
-import com.unimib.ignitionfinance.domain.usecase.networth.*
 import com.unimib.ignitionfinance.domain.usecase.flag.*
+import com.unimib.ignitionfinance.domain.usecase.networth.cash.GetUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.cash.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.AddProductToDatabaseUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.UpdateProductListUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.PortfolioScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.ProductPerformance
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.Locale
-import javax.inject.Inject
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Locale
+import javax.inject.Inject
 import kotlin.math.abs
-import java.math.RoundingMode
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
@@ -53,7 +57,7 @@ class PortfolioScreenViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun processHistoricalData(): List<ProductPerformance> {
-        val historicalDataList: List<Pair<String, Map<String, StockData>>> = state.value.historicalData
+        val historicalDataList: List<Map<String, StockData>> = state.value.historicalData
         val products: List<Product> = state.value.products
 
         val performances = mutableListOf<ProductPerformance>()
@@ -78,10 +82,7 @@ class PortfolioScreenViewModel @Inject constructor(
             val originalPurchaseDateStr = product.purchaseDate
             val purchaseDate = parsePurchaseDate(originalPurchaseDateStr) ?: return@forEachIndexed
 
-            val historicalDataPair: Pair<String, Map<String, StockData>> =
-                historicalDataList.getOrNull(index) ?: return@forEachIndexed
-            val currency: String = historicalDataPair.first
-            val historicalDataMap: Map<String, StockData> = historicalDataPair.second
+            val historicalDataMap: Map<String, StockData> = historicalDataList.getOrNull(index) ?: return@forEachIndexed
 
             val dateStockList: List<Pair<LocalDate, StockData>> = historicalDataMap.mapNotNull { (dateStr, stockData) ->
                 try {
@@ -119,7 +120,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 currentDate = lastEntry.first.format(isoFormatter),
                 currentPrice = currentPrice,
                 percentageChange = percentageChange,
-                currency = currency
+                currency = product.currency
             )
             performances.add(performance)
         }
@@ -128,7 +129,7 @@ class PortfolioScreenViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateProductPerformances() {
+    fun updateProductPerformances() {
         viewModelScope.launch {
             try {
                 val performances = processHistoricalData()
@@ -287,7 +288,7 @@ class PortfolioScreenViewModel @Inject constructor(
     fun getProducts() {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
-            getProductListUseCase.execute()
+            getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY)
                 .collect { result ->
                     _state.update { currentState ->
                         when {
@@ -315,7 +316,7 @@ class PortfolioScreenViewModel @Inject constructor(
     fun addNewProduct(product: Product) {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
-            addProductToDatabaseUseCase.handleProductStorage(product)
+            addProductToDatabaseUseCase.handleProductStorage(product, BuildConfig.ALPHAVANTAGE_API_KEY)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error handling product storage: ${exception.localizedMessage}")
                     _state.update {
@@ -329,7 +330,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
+                        updateProductPerformances()
                     } else {
                         _state.update {
                             it.copy(
@@ -366,7 +367,6 @@ class PortfolioScreenViewModel @Inject constructor(
                             )
                         )
                     }
-                    getProducts()
                 }
                 .collect { result ->
                     if (result.isSuccess) {
@@ -380,12 +380,10 @@ class PortfolioScreenViewModel @Inject constructor(
                                 )
                             )
                         }
-                        getProducts()
                     }
                 }
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateProduct(updatedProduct: Product) {
@@ -411,7 +409,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isFailure) {
                         getProducts()
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
+                        updateProductPerformances()
                     } else {
                         _state.update {
                             it.copy(
@@ -514,7 +512,6 @@ class PortfolioScreenViewModel @Inject constructor(
     fun fetchHistoricalData(apiKey: String) {
         viewModelScope.launch {
             _state.update { it.copy(historicalDataState = UiState.Loading) }
-
             fetchHistoricalDataUseCase.execute(apiKey)
                 .catch { exception ->
                     _state.update {
@@ -550,15 +547,12 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
+
     fun toggleCardExpansion(index: Int) {
         _state.update {
             it.copy(
                 expandedCardIndex = if (it.expandedCardIndex == index) -1 else index
             )
         }
-    }
-
-    fun getPerformanceForProduct(ticker: String): ProductPerformance? {
-        return state.value.productPerformances.find { it.ticker == ticker }
     }
 }

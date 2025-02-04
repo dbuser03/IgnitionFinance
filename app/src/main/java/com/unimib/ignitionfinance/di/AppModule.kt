@@ -39,12 +39,16 @@ import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
 import com.unimib.ignitionfinance.data.worker.SyncWorkerFactory
+import com.unimib.ignitionfinance.domain.usecase.FetchHistoricalDataUseCase
+import com.unimib.ignitionfinance.domain.usecase.FetchSearchStockDataUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.AddUserToDatabaseUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.LoginUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.RegisterNewUserUseCase
 import com.unimib.ignitionfinance.domain.usecase.auth.ResetPasswordUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.UpdateUserSettingsUseCase
+import com.unimib.ignitionfinance.domain.utils.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -273,6 +277,43 @@ object AppModule {
         getUserSettingsUseCase,
         context
     )
+
+    @Provides
+    fun provideFetchSearchStockDataUseCase(
+        searchStockRepository: SearchStockRepository
+    ): FetchSearchStockDataUseCase {
+        return FetchSearchStockDataUseCase(searchStockRepository)
+    }
+
+    @Provides
+    fun provideNetworkUtils(@ApplicationContext context: Context): NetworkUtils {
+        return NetworkUtils(context)
+    }
+
+    @Provides
+    fun provideGetProductListUseCase(
+        networkUtils: NetworkUtils,
+        authRepository: AuthRepository,
+        localDatabaseRepository: LocalDatabaseRepository<User>,
+        firestoreRepository: FirestoreRepository,
+        userMapper: UserMapper,
+        userDataMapper: UserDataMapper,
+        fetchSearchStockDataUseCase: FetchSearchStockDataUseCase,
+        syncQueueItemRepository: SyncQueueItemRepository,
+        @ApplicationContext context: Context
+    ): GetProductListUseCase {
+        return GetProductListUseCase(
+            networkUtils,
+            authRepository,
+            localDatabaseRepository,
+            firestoreRepository,
+            userMapper,
+            userDataMapper,
+            fetchSearchStockDataUseCase,
+            syncQueueItemRepository,
+            context
+        )
+    }
 
     @Provides
     fun provideSyncWorkerFactory(

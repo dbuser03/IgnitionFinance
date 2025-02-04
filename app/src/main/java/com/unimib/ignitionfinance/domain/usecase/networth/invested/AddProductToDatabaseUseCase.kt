@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.networth
+package com.unimib.ignitionfinance.domain.usecase.networth.invested
 
 import android.content.Context
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
@@ -11,6 +11,8 @@ import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
+import com.unimib.ignitionfinance.domain.usecase.FetchSearchStockDataUseCase
+import com.unimib.ignitionfinance.domain.utils.NetworkUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -23,16 +25,17 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-
 class AddProductToDatabaseUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val syncQueueItemRepository: SyncQueueItemRepository,
+    private val fetchSearchStockDataUseCase: FetchSearchStockDataUseCase,
+    private val networkUtils: NetworkUtils,
     @ApplicationContext private val context: Context
 ) {
-    fun handleProductStorage(product: Product): Flow<Result<Unit?>> = flow {
+    fun handleProductStorage(product: Product, apiKey: String): Flow<Result<Unit?>> = flow {
         try {
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
@@ -44,14 +47,27 @@ class AddProductToDatabaseUseCase @Inject constructor(
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
                 ?: throw IllegalStateException("User not found in local database")
 
-            val existingProductIndex = currentUser.productList.indexOfFirst { it.ticker == product.ticker }
+            val updatedProduct = if (networkUtils.isNetworkAvailable()) {
+                val searchStockResult = fetchSearchStockDataUseCase.execute(product.ticker, apiKey).first()
+                val searchStock = searchStockResult.getOrNull()
+                    ?: throw IllegalStateException("Failed to fetch stock data for ${product.ticker}")
+
+                product.copy(
+                    currency = searchStock.currency,
+                    symbol = searchStock.symbol
+                )
+            } else {
+                product
+            }
+
+            val existingProductIndex = currentUser.productList.indexOfFirst { it.ticker == updatedProduct.ticker }
 
             if (existingProductIndex != -1) {
-                executeExistingProduct(currentUser, product, existingProductIndex).collect {
+                executeExistingProduct(currentUser, updatedProduct, existingProductIndex).collect {
                     emit(it)
                 }
             } else {
-                executeNewProduct(currentUser, product).collect {
+                executeNewProduct(currentUser, updatedProduct).collect {
                     emit(it)
                 }
             }

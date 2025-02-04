@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase
+package com.unimib.ignitionfinance.domain.usecase.networth.cash
 
 import android.content.Context
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
@@ -10,7 +10,6 @@ import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
-import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -19,18 +18,19 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.delay
 
-class SaveDatasetUseCase @Inject constructor(
+class UpdateUserCashUseCase @Inject constructor(
     private val authRepository: AuthRepository,
-    private val localDatabaseRepository: LocalDatabaseRepository<User>,
-    private val syncQueueItemRepository: SyncQueueItemRepository,
     private val userMapper: UserMapper,
     private val userDataMapper: UserDataMapper,
+    private val localDatabaseRepository: LocalDatabaseRepository<User>,
+    private val syncQueueItemRepository: SyncQueueItemRepository,
+    private val getUserCashUseCase: GetUserCashUseCase,
     @ApplicationContext private val context: Context
 ) {
-    fun execute(dataset: List<DailyReturn>): Flow<Result<Unit?>> = flow {
+    fun execute(updatedCash: String): Flow<Result<String?>> = flow {
         try {
-            // Get current user
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
                 ?: throw IllegalStateException("Failed to get current user")
@@ -41,25 +41,25 @@ class SaveDatasetUseCase @Inject constructor(
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
                 ?: throw IllegalStateException("User not found in local database")
 
-            // Update user's dataset and timestamp
             val updatedUser = currentUser.copy(
-                dataset = dataset,
+                cash = updatedCash,
                 updatedAt = System.currentTimeMillis()
             )
 
-            // Update local database
             localDatabaseRepository.update(updatedUser).first()
 
-            // Create sync queue item
             val syncQueueItem = createSyncQueueItem(updatedUser)
             syncQueueItemRepository.insert(syncQueueItem)
 
-            // Schedule sync operation
             withContext(Dispatchers.IO) {
                 SyncOperationScheduler.scheduleOneTime<User>(context)
             }
 
-            emit(Result.success(Unit))
+            delay(500)
+
+            val cash = getUserCashUseCase.execute().first().getOrNull()
+            emit(Result.success(cash))
+
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
