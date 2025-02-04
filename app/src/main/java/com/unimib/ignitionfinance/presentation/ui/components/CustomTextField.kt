@@ -13,6 +13,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -71,7 +72,10 @@ fun CustomTextField(
             trailingIcon = if (isPasswordField) {
                 {
                     val iconRes = if (passwordVisible) R.drawable.outline_visibility_24 else R.drawable.outline_visibility_off_24
-                    val contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    val contentDescription = if (passwordVisible)
+                        stringResource(id = R.string.password_hide)
+                    else
+                        stringResource(id = R.string.password_show)
                     IconButton(
                         onClick = { passwordVisible = !passwordVisible }
                     ) {
