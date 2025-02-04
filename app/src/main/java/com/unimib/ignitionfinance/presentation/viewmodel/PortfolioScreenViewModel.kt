@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.BuildConfig
-import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.*
 import com.unimib.ignitionfinance.domain.usecase.networth.*
@@ -19,12 +17,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import kotlin.math.abs
-import java.math.RoundingMode
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
@@ -37,7 +29,6 @@ class PortfolioScreenViewModel @Inject constructor(
     private val getFirstAddedUseCase: GetFirstAddedUseCase,
     private val updateFirstAddedUseCase: UpdateFirstAddedUseCase,
     private val fetchExchangeUseCase: FetchExchangeUseCase,
-    private val fetchHistoricalDataUseCase: FetchHistoricalDataUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PortfolioScreenState())
@@ -48,107 +39,6 @@ class PortfolioScreenViewModel @Inject constructor(
         getProducts()
         getFirstAdded()
         fetchExchangeRates()
-        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun processHistoricalData(): List<ProductPerformance> {
-        val historicalDataList: List<Pair<String, Map<String, StockData>>> = state.value.historicalData
-        val products: List<Product> = state.value.products
-
-        val performances = mutableListOf<ProductPerformance>()
-
-        val isoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val purchaseFormatter1 = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val purchaseFormatter2 = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-
-        fun parsePurchaseDate(dateStr: String): LocalDate? {
-            return try {
-                LocalDate.parse(dateStr, purchaseFormatter1)
-            } catch (_: Exception) {
-                try {
-                    LocalDate.parse(dateStr, purchaseFormatter2)
-                } catch (_: Exception) {
-                    null
-                }
-            }
-        }
-
-        products.forEachIndexed { index, product ->
-            val originalPurchaseDateStr = product.purchaseDate
-            val purchaseDate = parsePurchaseDate(originalPurchaseDateStr) ?: return@forEachIndexed
-
-            val historicalDataPair: Pair<String, Map<String, StockData>> =
-                historicalDataList.getOrNull(index) ?: return@forEachIndexed
-            val currency: String = historicalDataPair.first
-            val historicalDataMap: Map<String, StockData> = historicalDataPair.second
-
-            val dateStockList: List<Pair<LocalDate, StockData>> = historicalDataMap.mapNotNull { (dateStr, stockData) ->
-                try {
-                    val date = LocalDate.parse(dateStr, isoFormatter)
-                    Pair(date, stockData)
-                } catch (_: Exception) {
-                    null
-                }
-            }
-            if (dateStockList.isEmpty()) return@forEachIndexed
-
-            val closestEntry: Pair<LocalDate, StockData> = dateStockList.minByOrNull { (date, _) ->
-                abs(ChronoUnit.DAYS.between(date, purchaseDate))
-            } ?: return@forEachIndexed
-
-            val lastEntry: Pair<LocalDate, StockData> = dateStockList.maxByOrNull { (date, _) ->
-                date
-            } ?: return@forEachIndexed
-
-            val purchasePrice: BigDecimal = closestEntry.second.close
-            val currentPrice: BigDecimal = lastEntry.second.close
-
-            val percentageChange: BigDecimal = if (purchasePrice.compareTo(BigDecimal.ZERO) != 0) {
-                (currentPrice.subtract(purchasePrice))
-                    .divide(purchasePrice, 4, RoundingMode.HALF_UP)
-                    .multiply(BigDecimal(100))
-            } else {
-                BigDecimal.ZERO
-            }
-
-            val performance = ProductPerformance(
-                ticker = product.ticker,
-                purchaseDate = closestEntry.first.format(isoFormatter),
-                purchasePrice = purchasePrice,
-                currentDate = lastEntry.first.format(isoFormatter),
-                currentPrice = currentPrice,
-                percentageChange = percentageChange,
-                currency = currency
-            )
-            performances.add(performance)
-        }
-
-        return performances
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateProductPerformances() {
-        viewModelScope.launch {
-            try {
-                val performances = processHistoricalData()
-
-                _state.update { currentState ->
-                    currentState.copy(
-                        productPerformances = performances,
-                        productPerformancesState = UiState.Success(performances)
-                    )
-                }
-            } catch (e: Exception) {
-                _state.update { currentState ->
-                    currentState.copy(
-                        productPerformancesState = UiState.Error(
-                            e.localizedMessage ?: "Failed to process historical data"
-                        )
-                    )
-                }
-            }
-        }
     }
 
     private fun fetchExchangeRates() {
@@ -314,7 +204,10 @@ class PortfolioScreenViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun addNewProduct(product: Product) {
         viewModelScope.launch {
-            _state.update { it.copy(productsState = UiState.Loading) }
+            _state.update { it.copy(
+                productsState = UiState.Loading,
+                expandedCardIndex = -1
+            ) }
             addProductToDatabaseUseCase.handleProductStorage(product)
                 .catch { exception ->
                     Log.e("PortfolioViewModel", "Error handling product storage: ${exception.localizedMessage}")
@@ -329,7 +222,6 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
                             it.copy(
@@ -344,7 +236,6 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun removeProduct(productId: String) {
         viewModelScope.launch {
             val currentProducts = _state.value.products.toMutableList()
@@ -369,9 +260,7 @@ class PortfolioScreenViewModel @Inject constructor(
                     getProducts()
                 }
                 .collect { result ->
-                    if (result.isSuccess) {
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
-                    } else {
+                    if (result.isFailure) {
                         _state.update {
                             it.copy(
                                 productsState = UiState.Error(
@@ -411,7 +300,6 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isFailure) {
                         getProducts()
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
                             it.copy(
@@ -508,45 +396,6 @@ class PortfolioScreenViewModel @Inject constructor(
             String.format(Locale.US, "%.2f", amount * exchangeRate)
         } catch (_: Exception) {
             "0.00"
-        }
-    }
-
-    fun fetchHistoricalData(apiKey: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(historicalDataState = UiState.Loading) }
-
-            fetchHistoricalDataUseCase.execute(apiKey)
-                .catch { exception ->
-                    _state.update {
-                        it.copy(
-                            historicalDataState = UiState.Error(
-                                exception.localizedMessage ?: "Failed to fetch historical data"
-                            )
-                        )
-                    }
-                }
-                .collect { result ->
-                    _state.update { currentState ->
-                        when {
-                            result.isSuccess -> {
-                                val historicalData = result.getOrNull()
-                                currentState.copy(
-                                    historicalData = historicalData ?: emptyList(),
-                                    historicalDataState = UiState.Success(historicalData ?: emptyList())
-                                ).also {
-                                    updateProductPerformances()
-                                }
-                            }
-                            result.isFailure -> currentState.copy(
-                                historicalDataState = UiState.Error(
-                                    result.exceptionOrNull()?.localizedMessage
-                                        ?: "Failed to fetch historical data"
-                                )
-                            )
-                            else -> currentState.copy(historicalDataState = UiState.Idle)
-                        }
-                    }
-                }
         }
     }
 
