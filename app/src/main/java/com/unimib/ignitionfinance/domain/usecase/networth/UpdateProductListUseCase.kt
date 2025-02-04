@@ -30,37 +30,6 @@ class UpdateProductListUseCase @Inject constructor(
     private val syncQueueItemRepository: SyncQueueItemRepository,
     @ApplicationContext private val context: Context
 ) {
-/*    fun addProduct(product: Product): Flow<Result<Unit>> = flow {
-        try {
-            val currentUserResult = authRepository.getCurrentUser().first()
-            val authData = currentUserResult.getOrNull()
-                ?: throw IllegalStateException("Failed to get current user")
-
-            val userId = authData.id.takeIf { it.isNotEmpty() }
-                ?: throw IllegalStateException("User ID is missing")
-
-            val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
-                ?: throw IllegalStateException("User not found in local database")
-
-            if (currentUser.productList.any { it.ticker == product.ticker }) {
-                throw IllegalStateException("Product with ticker ${product.ticker} already exists")
-            }
-
-            executeUpdate(currentUser) { user ->
-                user.copy(
-                    productList = user.productList + product,
-                    updatedAt = System.currentTimeMillis(),
-                    firstAdded = user.productList.isEmpty()
-                )
-            }.collect { emit(it) }
-
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }*/
-
     fun removeProduct(productId: String): Flow<Result<Unit>> = flow {
         try {
             val currentUserResult = authRepository.getCurrentUser().first()

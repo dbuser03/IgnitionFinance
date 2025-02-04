@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase.networth
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
@@ -24,29 +23,16 @@ class GetProductListUseCase @Inject constructor(
     private val userDataMapper: UserDataMapper
 ) {
     fun execute(forceRefresh: Boolean = false): Flow<Result<List<Product>>> = flow {
-        Log.d(TAG, "Starting execution of GetProductListUseCase")
 
         val currentUserResult = authRepository.getCurrentUser().first()
-        Log.d(TAG, "AuthRepository currentUserResult: $currentUserResult")
 
         val authData = currentUserResult.getOrNull()
-            ?: throw IllegalStateException("Failed to get current user").also {
-                Log.e(TAG, "Failed to get current user")
-            }
-
+            ?: throw IllegalStateException("Failed to get current user")
         val userId = authData.id.takeIf { it.isNotEmpty() }
-            ?: throw IllegalStateException("User ID is missing").also {
-                Log.e(TAG, "User ID is missing")
-            }
-
-        Log.d(TAG, "Retrieved User ID: $userId")
+            ?: throw IllegalStateException("User ID is missing")
 
         val localUser = localDatabaseRepository.getById(userId).first().getOrNull()
-            ?: throw IllegalStateException("User not found in local database").also {
-                Log.e(TAG, "User not found in local database for ID: $userId")
-            }
-
-        Log.d(TAG, "Local user retrieved: $localUser")
+            ?: throw IllegalStateException("User not found in local database")
 
         val isOnline = networkUtils.isNetworkAvailable()
 
@@ -57,55 +43,36 @@ class GetProductListUseCase @Inject constructor(
                     ?.getOrNull()
                     ?.let { userDataMapper.mapDocumentToUserData(it) }
             } catch (e: Exception) {
-                Log.e(TAG, "Error fetching remote user: ${e.message}", e)
                 null
             }
         } else {
-            Log.d(TAG, "Device is offline, skipping remote fetch")
             null
-        }
-
-        if (remoteUser == null) {
-            Log.d(TAG, "No remote user data found, proceeding with local product list")
-        } else {
-            Log.d(TAG, "Remote user retrieved: $remoteUser")
         }
 
         val productList = when {
             remoteUser != null &&
                     (remoteUser.updatedAt.toLong() >= (localUser.lastSyncTimestamp?.toLong() ?: 0)) &&
                     (remoteUser.updatedAt.toLong() >= localUser.updatedAt.toLong()) -> {
-                Log.d(TAG, "Remote user is newer, updating local database")
                 val updatedLocalUser = localUser.copy(
                     productList = remoteUser.productList,
                     updatedAt = remoteUser.updatedAt,
                     lastSyncTimestamp = System.currentTimeMillis()
                 )
                 localDatabaseRepository.update(updatedLocalUser).first()
-                Log.d(TAG, "Local database updated with remote user data")
                 remoteUser.productList
             }
             else -> {
-                Log.d(TAG, "Using local user product list")
                 localUser.productList
             }
         }
 
-        Log.d(TAG, "Emitting product list of size: ${productList.size}")
         emit(Result.success(productList))
     }.catch { e ->
         when (e) {
-            is CancellationException -> throw e.also {
-                Log.e(TAG, "Flow cancelled: ${e.message}")
-            }
+            is CancellationException -> throw e
             else -> {
-                Log.e(TAG, "Error in execute: ${e.message}", e)
                 emit(Result.failure(e))
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "GetProductListUseCase"
     }
 }

@@ -30,6 +30,7 @@ object UserDataMapper {
             )
         }
     }
+
     private fun mapDataset(dataset: List<Any>?): List<DailyReturn> {
         return dataset?.map { pair ->
             val map = pair as? Map<String, Any>
@@ -47,8 +48,9 @@ object UserDataMapper {
                 purchaseDate = (productMap["purchaseDate"] as? String).orEmpty(),
                 amount = (productMap["amount"] as? String).orEmpty(),
                 symbol = (productMap["symbol"] as? String).orEmpty(),
+                currency = (productMap["currency"] as? String).orEmpty(),
                 averagePerformance = (productMap["averagePerformance"] as? String).orEmpty(),
-                shares = (productMap["shares"] as Double)
+                shares = (productMap["shares"] as? Double) ?: 0.0
             )
         } ?: emptyList()
     }
@@ -101,6 +103,8 @@ object UserDataMapper {
                     "ticker" to product.ticker,
                     "amount" to product.amount,
                     "purchaseDate" to product.purchaseDate,
+                    "symbol" to product.symbol,
+                    "currency" to product.currency,
                     "averagePerformance" to product.averagePerformance,
                     "shares" to product.shares
                 )
