@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.networth
+package com.unimib.ignitionfinance.domain.usecase.networth.invested
 
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.model.user.Product
@@ -15,14 +15,14 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-class GetProductListUseCase @Inject constructor(
+class GetProductUseCase @Inject constructor(
     private val networkUtils: NetworkUtils,
     private val authRepository: AuthRepository,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
     private val firestoreRepository: FirestoreRepository,
     private val userDataMapper: UserDataMapper
 ) {
-    fun execute(): Flow<Result<List<Product>>> = flow {
+    fun execute(productId: String): Flow<Result<Product?>> = flow {
         val currentUserResult = authRepository.getCurrentUser().first()
         val authData = currentUserResult.getOrNull()
             ?: throw IllegalStateException("Failed to get current user")
@@ -48,7 +48,7 @@ class GetProductListUseCase @Inject constructor(
             null
         }
 
-        val productList = when {
+        val product = when {
             remoteUser != null &&
                     (remoteUser.updatedAt.toLong() >= (localUser.lastSyncTimestamp?.toLong() ?: 0)) &&
                     (remoteUser.updatedAt.toLong() >= localUser.updatedAt.toLong()) -> {
@@ -58,12 +58,12 @@ class GetProductListUseCase @Inject constructor(
                     lastSyncTimestamp = System.currentTimeMillis()
                 )
                 localDatabaseRepository.update(updatedLocalUser).first()
-                remoteUser.productList
+                remoteUser.productList.find { it.ticker == productId }
             }
-            else -> localUser.productList
+            else -> localUser.productList.find { it.ticker == productId }
         }
 
-        emit(Result.success(productList))
+        emit(Result.success(product))
     }.catch { e ->
         when (e) {
             is CancellationException -> throw e

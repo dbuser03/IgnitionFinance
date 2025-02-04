@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.networth
+package com.unimib.ignitionfinance.domain.usecase.networth.cash
 
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository

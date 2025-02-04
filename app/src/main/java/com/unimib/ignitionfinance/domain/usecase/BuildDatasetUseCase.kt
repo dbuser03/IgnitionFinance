@@ -3,12 +3,13 @@ package com.unimib.ignitionfinance.domain.usecase
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.calculator.DailyReturnCalculator
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
-import com.unimib.ignitionfinance.domain.usecase.networth.GetProductListUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
 import com.unimib.ignitionfinance.domain.validation.DatasetValidationResult
 import com.unimib.ignitionfinance.domain.validation.DatasetValidator
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class BuildDatasetUseCase @Inject constructor(
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
         try {
             Log.d("BuildDatasetUseCase", "Step 1: Get product list")
-            val productsResult = getProductListUseCase.execute().first()
+            val productsResult = getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             val products = productsResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow

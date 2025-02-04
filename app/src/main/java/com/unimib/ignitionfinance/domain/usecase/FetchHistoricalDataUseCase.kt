@@ -1,8 +1,9 @@
 package com.unimib.ignitionfinance.domain.usecase
 
+import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
-import com.unimib.ignitionfinance.domain.usecase.networth.GetProductListUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -20,7 +21,7 @@ class FetchHistoricalDataUseCase @Inject constructor(
                 throw IllegalArgumentException("API key cannot be empty")
             }
 
-            val productsResult = getProductListUseCase.execute().first()
+            val productsResult = getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             val products = productsResult.getOrNull() ?: run {
                 val error = productsResult.exceptionOrNull() ?: Exception("Failed to get products")
                 emit(Result.failure(error))

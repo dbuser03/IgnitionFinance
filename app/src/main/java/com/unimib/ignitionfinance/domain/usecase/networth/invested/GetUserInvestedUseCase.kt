@@ -1,6 +1,7 @@
-package com.unimib.ignitionfinance.domain.usecase.networth
+package com.unimib.ignitionfinance.domain.usecase.networth.invested
 
 import android.util.Log
+import com.unimib.ignitionfinance.BuildConfig
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -14,7 +15,7 @@ class GetUserInvestedUseCase @Inject constructor(
     fun execute(): Flow<Result<Double>> = flow {
         Log.d(TAG, "Starting execution of GetUserInvestedUseCase")
 
-        val productListResult = getProductListUseCase.execute().first()
+        val productListResult = getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
         Log.d(TAG, "Product list result received")
 
         val productList = productListResult.getOrNull()
@@ -26,7 +27,7 @@ class GetUserInvestedUseCase @Inject constructor(
         productList.forEach { product ->
             val amount = product.amount.toDoubleOrNull() ?: 0.0
             totalAmount += amount
-            Log.d(TAG, "Added amount ${amount} from product ${product.ticker}, running total: $totalAmount")
+            Log.d(TAG, "Added amount $amount from product ${product.ticker}, running total: $totalAmount")
         }
 
         Log.d(TAG, "Emitting total invested amount: $totalAmount")

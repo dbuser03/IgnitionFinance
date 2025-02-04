@@ -8,8 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.*
-import com.unimib.ignitionfinance.domain.usecase.networth.*
 import com.unimib.ignitionfinance.domain.usecase.flag.*
+import com.unimib.ignitionfinance.domain.usecase.networth.cash.GetUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.cash.UpdateUserCashUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.AddProductToDatabaseUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.UpdateProductListUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.PortfolioScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.ProductPerformance
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
@@ -178,7 +182,7 @@ class PortfolioScreenViewModel @Inject constructor(
     fun getProducts() {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
-            getProductListUseCase.execute()
+            getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY)
                 .collect { result ->
                     _state.update { currentState ->
                         when {
