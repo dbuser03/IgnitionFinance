@@ -1,9 +1,10 @@
 package com.unimib.ignitionfinance.domain.portfolio
 
 import kotlin.math.log
+import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
-import kotlin.random.nextDouble
+//import kotlin.random.nextDouble
 
 class CashScenarioGenerator {
     companion object {
@@ -78,7 +79,10 @@ class CashScenarioGenerator {
     private fun calculateSigma(inflationMean: Double): Double {
         val variance = REAL_INFLATION.map { (it - REAL_INFLATION.average()).pow(2) }.average()
         val logMean = log(inflationMean)
-        return sqrt(log((1 + sqrt(1 + 4 * variance / exp(2 * logMean))) / 2))
+        return sqrt(log(
+            (1 + sqrt(1 + 4 * variance / exp(2 * logMean))) / 2,
+            base = TODO()
+        ))
     }
 
     private fun exp(x: Double): Double = kotlin.math.exp(x)
