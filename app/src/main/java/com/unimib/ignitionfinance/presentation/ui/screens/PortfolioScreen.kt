@@ -3,7 +3,6 @@ package com.unimib.ignitionfinance.presentation.ui.screens
 import BottomNavigationBarInstance
 import android.app.Activity
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
@@ -20,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
@@ -27,7 +27,6 @@ import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManage
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.DashboardCard
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
-import com.unimib.ignitionfinance.BuildConfig
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -49,18 +48,11 @@ fun PortfolioScreen(
         }
     }
 
-    // Effettua le chiamate iniziali
-    LaunchedEffect(Unit) {
-        viewModel.getFirstAdded()
-        viewModel.getCash()
-        viewModel.getProducts()
+    LaunchedEffect(key1 = Unit) {
         viewModel.fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
     }
 
-    // Effetto per aggiornare le performance quando historicalData cambia.
-    // Utilizziamo la dimensione della lista come chiave stabile.
-    LaunchedEffect(key1 = state.historicalData.size) {
-        Log.d("PortfolioScreen", "historicalData aggiornato, size: ${state.historicalData.size}")
+    LaunchedEffect(key1 = state.historicalData) {
         viewModel.updateProductPerformances()
     }
 

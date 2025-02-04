@@ -52,7 +52,6 @@ class PortfolioScreenViewModel @Inject constructor(
         getProducts()
         getFirstAdded()
         fetchExchangeRates()
-        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -330,7 +329,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
-                        updateProductPerformances()
+                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
                     } else {
                         _state.update {
                             it.copy(
@@ -369,14 +368,11 @@ class PortfolioScreenViewModel @Inject constructor(
                     }
                 }
                 .collect { result ->
-                    if (result.isSuccess) {
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
-                    } else {
-                        _state.update {
-                            it.copy(
+                    result.exceptionOrNull()?.let { error ->
+                        _state.update { currentState ->
+                            currentState.copy(
                                 productsState = UiState.Error(
-                                    result.exceptionOrNull()?.localizedMessage
-                                        ?: "Failed to remove product"
+                                    error.localizedMessage ?: "Failed to remove product"
                                 )
                             )
                         }
