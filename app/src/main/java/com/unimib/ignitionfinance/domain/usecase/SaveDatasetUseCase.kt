@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import android.content.Context
+import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
@@ -30,39 +31,49 @@ class SaveDatasetUseCase @Inject constructor(
 ) {
     fun execute(dataset: List<DailyReturn>): Flow<Result<Unit?>> = flow {
         try {
+            Log.d("SaveDatasetUseCase", "Starting dataset save...")
+
             // Get current user
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
                 ?: throw IllegalStateException("Failed to get current user")
+            Log.d("SaveDatasetUseCase", "Auth data received: ${authData.id}")
 
             val userId = authData.id.takeIf { it.isNotEmpty() }
                 ?: throw IllegalStateException("User ID is missing")
+            Log.d("SaveDatasetUseCase", "User ID: $userId")
 
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
-                ?: throw IllegalStateException("User not found in local database")
+                ?: throw IllegalStateException("User not found in local database for ID: $userId")
+            Log.d("SaveDatasetUseCase", "User found in local DB: ${currentUser.id}")
 
             // Update user's dataset and timestamp
             val updatedUser = currentUser.copy(
                 dataset = dataset,
                 updatedAt = System.currentTimeMillis()
             )
+            Log.d("SaveDatasetUseCase", "Updated user dataset size: ${updatedUser.dataset.size}")
 
             // Update local database
             localDatabaseRepository.update(updatedUser).first()
+            Log.d("SaveDatasetUseCase", "Local DB update completed for user: ${updatedUser.id}")
 
             // Create sync queue item
             val syncQueueItem = createSyncQueueItem(updatedUser)
             syncQueueItemRepository.insert(syncQueueItem)
+            Log.d("SaveDatasetUseCase", "SyncQueueItem inserted: ${syncQueueItem.id}, status: ${syncQueueItem.status}")
 
             // Schedule sync operation
             withContext(Dispatchers.IO) {
                 SyncOperationScheduler.scheduleOneTime<User>(context)
+                Log.d("SaveDatasetUseCase", "Sync operation scheduled for user: ${updatedUser.id}")
             }
 
             emit(Result.success(Unit))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Log.e("SaveDatasetUseCase", "Error saving dataset: ${e.message}")
             emit(Result.failure(e))
         }
     }
@@ -70,7 +81,7 @@ class SaveDatasetUseCase @Inject constructor(
     private fun createSyncQueueItem(user: User): SyncQueueItem {
         val userData = userMapper.mapUserToUserData(user)
         val document = userDataMapper.mapUserDataToDocument(userData)
-
+        Log.d("SaveDatasetUseCase", "Creating SyncQueueItem for user: ${user.id}")
         return SyncQueueItem(
             id = user.id,
             collection = "users",
