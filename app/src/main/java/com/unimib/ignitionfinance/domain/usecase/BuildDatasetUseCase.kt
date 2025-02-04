@@ -52,20 +52,19 @@ class BuildDatasetUseCase @Inject constructor(
                 }
                 is DatasetValidationResult.Failure -> {
                     Log.d("BuildDatasetUseCase", "Dataset validation FAILURE, using fallback S&P 500 data")
-                    val sp500Result = stockRepository.fetchStockData("^GSPC", apiKey).first()
+                    val sp500Result = stockRepository.fetchStockData("GSPC", apiKey).first()
                     val sp500Data = sp500Result.getOrElse { error ->
                         emit(Result.failure(error))
                         return@flow
                     }
                     Log.d("BuildDatasetUseCase", "S&P 500 data received: ${sp500Data.size} entries")
 
-                    // Calcola il capitale totale dai prodotti
                     val totalCapital = calculateTotalCapital(products)
                     Log.d("BuildDatasetUseCase", "Total capital calculated: $totalCapital")
 
                     val fallbackData = listOf(sp500Data)
-                    val fallbackTickers = listOf("^GSPC")
-                    val fallbackCapitals = mapOf("^GSPC" to totalCapital)
+                    val fallbackTickers = listOf("GSPC")
+                    val fallbackCapitals = mapOf("GSPC" to totalCapital)
 
                     val fallbackDailyReturns = dailyReturnCalculator.calculateDailyReturns(
                         historicalDataList = fallbackData,
@@ -106,13 +105,9 @@ class BuildDatasetUseCase @Inject constructor(
         }
     }
 
-    /**
-     * Processa i dati storici validi per ciascun prodotto.
-     * Estrae le mappe dai Pair e le passa al DailyReturnCalculator.
-     */
     private fun processData(
         products: List<Product>,
-        historicalData: List<Pair<String, Map<String, StockData>>>
+        historicalData: List<Map<String, StockData>>
     ): List<DailyReturn> {
         val productTickers = products.map { it.ticker }
         val productCapitals = products.associate { product ->
@@ -122,15 +117,13 @@ class BuildDatasetUseCase @Inject constructor(
                 BigDecimal.ZERO
             }
         }
-        Log.d("BuildDatasetUseCase", "Processing data for products: $productTickers")
 
-        val historicalDataMaps: List<Map<String, StockData>> = historicalData.map { it.second }
         val dailyReturns = dailyReturnCalculator.calculateDailyReturns(
-            historicalDataList = historicalDataMaps,
+            historicalDataList = historicalData,
             products = productTickers,
             productCapitals = productCapitals
         )
-        Log.d("BuildDatasetUseCase", "Daily returns calculated: ${dailyReturns.size}")
         return dailyReturns
     }
+
 }

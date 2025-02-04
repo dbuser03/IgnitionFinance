@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import com.unimib.ignitionfinance.data.model.StockData
-import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.domain.usecase.networth.GetProductListUseCase
@@ -18,7 +17,7 @@ class FetchHistoricalDataUseCase @Inject constructor(
     private val searchStockRepository: SearchStockRepository,
     private val stockRepository: StockRepository
 ) {
-    fun execute(apiKey: String): Flow<Result<List<Pair<String, Map<String, StockData>>>>> = flow {
+    fun execute(apiKey: String): Flow<Result<List<Map<String, StockData>>>> = flow {
         try {
             if (apiKey.isEmpty()) {
                 throw IllegalArgumentException("API key cannot be empty")
@@ -36,39 +35,54 @@ class FetchHistoricalDataUseCase @Inject constructor(
                 return@flow
             }
 
-            val historicalDataList = mutableListOf<Pair<String, Map<String, StockData>>>()
+            val historicalDataList = mutableListOf<Map<String, StockData>>()
 
             for (product in products) {
                 try {
-                    val (symbol, currency) = if (product.symbol.isEmpty()) {
+                    var symbol = product.symbol
+                    var currency = product.currency
+
+                    if (symbol.isEmpty() || currency.isEmpty()) {
                         val searchResult = searchStockRepository.fetchSearchStockData(product.ticker, apiKey).first()
                         val searchData = searchResult.getOrNull()?.firstOrNull() ?: run {
                             emit(Result.failure(NoSuchElementException("Symbol not found for product: ${product.ticker}")))
                             return@flow
                         }
 
-                        val updatedProduct: Product = product.copy(
-                            symbol = searchData.symbol,
-                            currency = searchData.currency
+                        symbol = searchData.symbol
+                        currency = searchData.currency
+
+                        val updatedProduct = product.copy(
+                            symbol = symbol,
+                            currency = currency
                         )
                         val updateResult = updateProductUseCase.execute(updatedProduct).first()
                         updateResult.getOrElse { throw it }
-
-                        Pair(searchData.symbol, searchData.currency)
-                    } else {
-                        Pair(product.symbol, product.currency)
                     }
 
-                    val stockDataResult = stockRepository.fetchStockData(symbol, apiKey).first()
-                    stockDataResult.fold(
-                        onSuccess = { stockData ->
-                            historicalDataList.add(Pair(currency, stockData))
-                        },
-                        onFailure = { exception ->
-                            emit(Result.failure(exception))
-                            return@flow
-                        }
-                    )
+                    var historicalData = product.historicalData
+
+                    if (historicalData.isEmpty()) {
+                        val stockDataResult = stockRepository.fetchStockData(symbol, apiKey).first()
+                        stockDataResult.fold(
+                            onSuccess = { stockData ->
+                                historicalData = stockData
+                            },
+                            onFailure = { exception ->
+                                emit(Result.failure(exception))
+                                return@flow
+                            }
+                        )
+                        val updatedProductWithHist = product.copy(
+                            symbol = symbol,
+                            currency = currency,
+                            historicalData = historicalData
+                        )
+                        val updateResult2 = updateProductUseCase.execute(updatedProductWithHist).first()
+                        updateResult2.getOrElse { throw it }
+                    }
+
+                    historicalDataList.add(historicalData)
                 } catch (e: Exception) {
                     emit(Result.failure(Exception("Error processing product ${product.ticker}: ${e.message}")))
                     return@flow
@@ -80,7 +94,6 @@ class FetchHistoricalDataUseCase @Inject constructor(
             } else {
                 emit(Result.success(historicalDataList))
             }
-
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
