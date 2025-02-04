@@ -82,7 +82,7 @@ fun PerformanceBox(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = percentageChange ?: "--",
+                        text = percentageChange ?: "----",
                         style = TypographyMedium.titleLarge,
                         color = if (percentageChange?.startsWith("-") == true) {
                             MaterialTheme.colorScheme.error
