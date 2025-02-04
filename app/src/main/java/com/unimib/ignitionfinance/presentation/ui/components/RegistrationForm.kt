@@ -66,7 +66,7 @@ fun RegistrationForm(
             CustomTextField(
                 value = formState.name,
                 onValueChange = { viewModel.updateName(it) },
-                label = "Name",
+                label = stringResource(id = R.string.label_name),
                 isError = formState.nameError != null,
                 nextFocusRequester = surnameFocusRequester,
                 imeAction = ImeAction.Next,
@@ -84,7 +84,7 @@ fun RegistrationForm(
             CustomTextField(
                 value = formState.surname,
                 onValueChange = { viewModel.updateSurname(it) },
-                label = "Surname",
+                label = stringResource(id = R.string.label_surname),
                 isError = formState.surnameError != null,
                 nextFocusRequester = emailFocusRequester,
                 imeAction = ImeAction.Next,
@@ -105,7 +105,7 @@ fun RegistrationForm(
         CustomTextField(
             value = formState.email,
             onValueChange = { viewModel.updateEmail(it) },
-            label = "Email",
+            label = stringResource(id = R.string.label_email),
             isError = formState.emailError != null,
             nextFocusRequester = passwordFocusRequester,
             imeAction = ImeAction.Next,
@@ -129,7 +129,7 @@ fun RegistrationForm(
             CustomTextField(
                 value = formState.password,
                 onValueChange = { viewModel.updatePassword(it) },
-                label = "Password",
+                label = stringResource(id = R.string.label_password),
                 isError = formState.passwordError != null,
                 imeAction = ImeAction.Done,
                 isPasswordField = true,
