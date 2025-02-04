@@ -29,5 +29,7 @@
     <string name="registration_FAB_description">Register</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_dismiss">Dismiss</string>
+    <string name="dialog_new_value_label">New value</string>
+
 
 </resources>
