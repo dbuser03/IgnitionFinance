@@ -36,5 +36,9 @@
     <string name="asset_allocation_title">Asset allocation:</string>
     <string name="asset_allocation_invested">Invested</string>
     <string name="asset_allocation_cash">Cash</string>
+    <string name="forgot_password_button">Forgot Password?</string>
+    <string name="create_account_button">Create Account</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
 
 </resources>

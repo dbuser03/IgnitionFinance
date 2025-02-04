@@ -65,7 +65,7 @@ fun LoginForm(
         CustomTextField(
             value = formState.email,
             onValueChange = { viewModel.updateEmail(it) },
-            label = "Email",
+            label = stringResource(id = R.string.label_email),
             isError = formState.emailError != null,
             nextFocusRequester = passwordFocusRequester,
             imeAction = ImeAction.Next,
@@ -86,7 +86,7 @@ fun LoginForm(
             CustomTextField(
                 value = formState.password,
                 onValueChange = { viewModel.updatePassword(it) },
-                label = "Password",
+                label = stringResource(id = R.string.label_password),
                 isError = formState.passwordError != null,
                 imeAction = ImeAction.Done,
                 isPasswordField = true,
@@ -153,7 +153,7 @@ fun LoginForm(
             modifier = Modifier.align(Alignment.Start)
         ) {
             Text(
-                "Forgot Password?",
+                stringResource(id = R.string.forgot_password_button),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -164,7 +164,7 @@ fun LoginForm(
             modifier = Modifier.align(Alignment.Start)
         ) {
             Text(
-                "Create Account",
+                stringResource(id = R.string.create_account_button),
                 style = TypographyMedium.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
