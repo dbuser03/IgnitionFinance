@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.data.calculator.DailyReturnCalculator
 import com.unimib.ignitionfinance.data.model.StockData
@@ -27,64 +28,70 @@ class BuildDatasetUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
         try {
-            // Step 1: Get product list
+            Log.d("BuildDatasetUseCase", "Step 1: Get product list")
             val productsResult = getProductListUseCase.execute().first()
             val products = productsResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
+            Log.d("BuildDatasetUseCase", "Products obtained: ${products.map { it.ticker }}")
 
-            // Step 2: Fetch historical data
+            Log.d("BuildDatasetUseCase", "Step 2: Fetch historical data")
             val historicalDataResult = fetchHistoricalDataUseCase.execute(apiKey).first()
             val historicalDataList = historicalDataResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
+            Log.d("BuildDatasetUseCase", "Historical data received: ${historicalDataList.size} items")
 
-            // Step 3: Validate dataset and process
-            val dailyReturns = when (DatasetValidator.validate(historicalDataList)) {
+            Log.d("BuildDatasetUseCase", "Step 3: Validate dataset")
+            val dailyReturns: List<DailyReturn> = when (DatasetValidator.validate(historicalDataList)) {
                 is DatasetValidationResult.Success -> {
-                    // Process data for valid dataset:
-                    // Qui aggiorniamo processData in modo da accettare il nuovo tipo,
-                    // e passiamo al calculator solo le mappe (estratte dalla coppia)
+                    Log.d("BuildDatasetUseCase", "Dataset validation SUCCESS, processing data for products")
                     processData(products, historicalDataList)
                 }
                 is DatasetValidationResult.Failure -> {
-                    // Fallback to S&P 500
+                    Log.d("BuildDatasetUseCase", "Dataset validation FAILURE, using fallback S&P 500 data")
                     val sp500Result = stockRepository.fetchStockData("^GSPC", apiKey).first()
                     val sp500Data = sp500Result.getOrElse { error ->
                         emit(Result.failure(error))
                         return@flow
                     }
+                    Log.d("BuildDatasetUseCase", "S&P 500 data received: ${sp500Data.size} entries")
 
-                    // Calculate total capital
+                    // Calcola il capitale totale dai prodotti
                     val totalCapital = calculateTotalCapital(products)
+                    Log.d("BuildDatasetUseCase", "Total capital calculated: $totalCapital")
 
                     val fallbackData = listOf(sp500Data)
                     val fallbackTickers = listOf("^GSPC")
                     val fallbackCapitals = mapOf("^GSPC" to totalCapital)
 
-                    // Calculate returns for fallback
-                    dailyReturnCalculator.calculateDailyReturns(
+                    val fallbackDailyReturns = dailyReturnCalculator.calculateDailyReturns(
                         historicalDataList = fallbackData,
                         products = fallbackTickers,
                         productCapitals = fallbackCapitals
                     )
+                    Log.d("BuildDatasetUseCase", "Fallback daily returns calculated: ${fallbackDailyReturns.size} items")
+                    fallbackDailyReturns
                 }
             }
 
+            Log.d("BuildDatasetUseCase", "Step 4: Save dataset, daily returns count: ${dailyReturns.size}")
             val saveResult = saveDatasetUseCase.execute(dailyReturns).first()
             saveResult.getOrElse { error ->
+                Log.e("BuildDatasetUseCase", "Error saving dataset: $error")
                 emit(Result.failure(error))
                 return@flow
             }
 
-            // Step 5: Emit the final result
+            Log.d("BuildDatasetUseCase", "Step 5: Emit final result with ${dailyReturns.size} daily returns")
             emit(Result.success(dailyReturns))
 
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Log.e("BuildDatasetUseCase", "Exception in execute: ${e.message}")
             emit(Result.failure(e))
         }
     }
@@ -100,8 +107,8 @@ class BuildDatasetUseCase @Inject constructor(
     }
 
     /**
-     * Aggiornato per ricevere una lista di Pair(String, Map<String, StockData>).
-     * Viene estratta la mappa (cioè il secondo elemento di ogni coppia) da passare al dailyReturnCalculator.
+     * Processa i dati storici validi per ciascun prodotto.
+     * Estrae le mappe dai Pair e le passa al DailyReturnCalculator.
      */
     private fun processData(
         products: List<Product>,
@@ -115,13 +122,15 @@ class BuildDatasetUseCase @Inject constructor(
                 BigDecimal.ZERO
             }
         }
+        Log.d("BuildDatasetUseCase", "Processing data for products: $productTickers")
 
         val historicalDataMaps: List<Map<String, StockData>> = historicalData.map { it.second }
-
-        return dailyReturnCalculator.calculateDailyReturns(
+        val dailyReturns = dailyReturnCalculator.calculateDailyReturns(
             historicalDataList = historicalDataMaps,
             products = productTickers,
             productCapitals = productCapitals
         )
+        Log.d("BuildDatasetUseCase", "Daily returns calculated: ${dailyReturns.size}")
+        return dailyReturns
     }
 }

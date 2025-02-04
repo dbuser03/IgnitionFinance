@@ -6,8 +6,10 @@ import java.math.BigDecimal
 
 object StockMapper {
     fun mapToDomain(response: StockResponse): Map<String, StockData> {
+        // Controlla che timeSeries non sia null; altrimenti restituisci una mappa vuota
+        val timeSeries = response.timeSeries ?: return emptyMap()
 
-        return response.timeSeries.mapValues { (dateString, timeSeriesData) ->
+        return timeSeries.mapValues { (dateString, timeSeriesData) ->
             StockData(
                 open = timeSeriesData.open,
                 high = timeSeriesData.high,
