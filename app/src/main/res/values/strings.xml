@@ -31,6 +31,7 @@
     <string name="dialog_dismiss">Dismiss</string>
     <string name="dialog_new_value_label">New value</string>
     <string name="dialog_update_amount">Update the amount</string>
-
+    <string name="content_description_collapse">Collapse</string>
+    <string name="content_description_expand">Expand</string>
 
 </resources>
