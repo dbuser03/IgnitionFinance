@@ -15,6 +15,34 @@ class FetchHistoricalDataUseCase @Inject constructor(
     private val stockRepository: StockRepository,
     private val fetchSearchStockDataUseCase: FetchSearchStockDataUseCase
 ) {
+    fun fetchSingleProductHistory(
+        ticker: String,
+        symbol: String,
+        apiKey: String
+    ): Flow<Result<Map<String, StockData>>> = flow {
+        try {
+            if (apiKey.isEmpty()) {
+                throw IllegalArgumentException("API key cannot be empty")
+            }
+
+            val actualSymbol = if (symbol.isNotEmpty()) {
+                symbol
+            } else {
+                val searchResult = fetchSearchStockDataUseCase.execute(ticker, apiKey).first()
+                searchResult.getOrNull()?.symbol
+                    ?: throw NoSuchElementException("Symbol not found for product: $ticker")
+            }
+
+            val stockDataResult = stockRepository.fetchStockData(actualSymbol, apiKey).first()
+            emit(stockDataResult)
+
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
     fun execute(apiKey: String): Flow<Result<List<Map<String, StockData>>>> = flow {
         try {
             if (apiKey.isEmpty()) {

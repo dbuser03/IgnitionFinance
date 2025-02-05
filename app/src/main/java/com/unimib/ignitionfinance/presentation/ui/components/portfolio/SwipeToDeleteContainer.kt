@@ -1,0 +1,92 @@
+package com.unimib.ignitionfinance.presentation.ui.components.portfolio
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.R
+import kotlin.math.abs
+import kotlin.math.roundToInt
+
+@Composable
+fun SwipeToDeleteContainer(
+    onDelete: () -> Unit,
+    swipeEnabled: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    val animatedOffset by animateFloatAsState(
+        targetValue = offsetX,
+        label = "swipeAnimation"
+    )
+    val deleteThreshold = with(LocalDensity.current) { 80.dp.toPx() }
+    val iconSize = 24.dp
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.error),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(with(LocalDensity.current) { deleteThreshold.toDp() })
+                    .padding(end = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_delete_24),
+                    contentDescription = "Delete Product",
+                    tint = MaterialTheme.colorScheme.background,
+                    modifier = Modifier
+                        .offset(x = (iconSize / 2))
+                        .clickable { onDelete() }
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(animatedOffset.roundToInt(), 0) }
+                .then(
+                    if (swipeEnabled) {
+                        Modifier.pointerInput(Unit) {
+                            detectHorizontalDragGestures(
+                                onHorizontalDrag = { _, dragAmount ->
+                                    offsetX = (offsetX + dragAmount).coerceIn(-deleteThreshold, 0f)
+                                },
+                                onDragEnd = {
+                                    offsetX = if (abs(offsetX) < deleteThreshold / 2) 0f else -deleteThreshold
+                                }
+                            )
+                        }
+                    } else Modifier
+                )
+                .clickable {
+                    if (offsetX != 0f) {
+                        offsetX = 0f
+                    }
+                }
+                .fillMaxWidth()
+        ) {
+            content()
+        }
+    }
+}
