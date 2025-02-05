@@ -190,11 +190,17 @@ fun DashboardCard(
                                 PerformanceBox(
                                     leftAmount = "----",
                                     rightAmount = "----",
-                                    leftLabel = "No data",
-                                    rightLabel = "No data",
+                                    leftLabel = "Historical",
+                                    rightLabel = "No current data",
                                     modifier = Modifier.fillMaxWidth(),
                                     onDeleteClicked = { viewModel.removeProduct(product.ticker) },
-                                    percentageChange = null
+                                    percentageChange = if (product.averagePerformance.isNotEmpty()) {
+                                        val perfValue = product.averagePerformance.toBigDecimalOrNull()
+                                        if (perfValue != null) {
+                                            val sign = if (perfValue >= BigDecimal.ZERO) "+" else ""
+                                            "$sign${perfValue.setScale(2, RoundingMode.HALF_UP)}"
+                                        } else null
+                                    } else null
                                 )
                             }
                         }

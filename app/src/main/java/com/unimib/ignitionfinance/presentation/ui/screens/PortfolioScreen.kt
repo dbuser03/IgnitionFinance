@@ -79,7 +79,7 @@ fun PortfolioScreen(
                     amount = amount,
                     symbol = "",
                     currency = "",
-                    averagePerformance = "",
+                    averagePerformance = "0",
                     shares = 0.0
                 )
                 viewModel.addNewProduct(newProduct)

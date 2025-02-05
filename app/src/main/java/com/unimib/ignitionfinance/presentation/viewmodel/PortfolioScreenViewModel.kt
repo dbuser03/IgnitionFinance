@@ -133,8 +133,19 @@ class PortfolioScreenViewModel @Inject constructor(
             try {
                 val performances = processHistoricalData()
 
+                val updatedProducts = state.value.products.map { product ->
+                    performances.find { it.ticker == product.ticker }?.let { performance ->
+                        product.copy(averagePerformance = performance.percentageChange.toString())
+                    } ?: product
+                }
+
+                updatedProducts.forEach { product ->
+                    updateProduct(product)
+                }
+
                 _state.update { currentState ->
                     currentState.copy(
+                        products = updatedProducts,
                         productPerformances = performances,
                         productPerformancesState = UiState.Success(performances)
                     )
