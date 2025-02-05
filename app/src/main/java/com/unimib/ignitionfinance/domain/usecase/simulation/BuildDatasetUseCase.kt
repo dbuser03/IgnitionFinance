@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
-import com.unimib.ignitionfinance.data.calculator.DailyReturnCalculator
+import com.unimib.ignitionfinance.domain.utils.DailyReturnCalculator
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product

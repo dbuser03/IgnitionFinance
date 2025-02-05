@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.calculator
+package com.unimib.ignitionfinance.domain.utils
 
 import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
