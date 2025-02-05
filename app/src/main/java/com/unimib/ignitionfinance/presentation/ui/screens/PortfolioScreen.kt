@@ -25,6 +25,7 @@ import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.DashboardCard
+import com.unimib.ignitionfinance.presentation.ui.components.portfolio.SwipeToDeleteContainer
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 
@@ -53,6 +54,10 @@ fun PortfolioScreen(
     }
 
     LaunchedEffect(key1 = state.historicalData) {
+        viewModel.updateProductPerformances()
+    }
+
+    LaunchedEffect(key1 = state.singleProductHistory) {
         viewModel.updateProductPerformances()
     }
 
@@ -130,20 +135,27 @@ fun PortfolioScreen(
                 }
 
                 itemsIndexed(state.products) { index, product ->
-                    DashboardCard(
-                        modifier = Modifier,
-                        isExpanded = state.expandedCardIndex == index + 1,
-                        onCardClicked = {
-                            viewModel.toggleCardExpansion(index + 1)
-                            selectedCardIndex = index
-                        },
-                        isin = product.isin,
-                        product = product,
-                        ticker = product.ticker,
-                        isCash = false,
-                        performance = state.productPerformances.find { it.ticker == product.ticker }
-                    )
+                    val isExpanded = state.expandedCardIndex == index + 1
+                    SwipeToDeleteContainer(
+                        onDelete = { viewModel.removeProduct(productId = product.ticker) },
+                        swipeEnabled = !isExpanded
+                    ) {
+                        DashboardCard(
+                            modifier = Modifier,
+                            isExpanded = isExpanded,
+                            onCardClicked = {
+                                viewModel.toggleCardExpansion(index + 1)
+                                selectedCardIndex = index
+                            },
+                            isin = product.isin,
+                            product = product,
+                            ticker = product.ticker,
+                            isCash = false,
+                            performance = state.productPerformances.find { it.ticker == product.ticker }
+                        )
+                    }
                 }
+
                 item {
                     Box(
                         modifier = Modifier

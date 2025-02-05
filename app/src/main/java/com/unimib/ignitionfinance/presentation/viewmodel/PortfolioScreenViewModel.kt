@@ -59,6 +59,9 @@ class PortfolioScreenViewModel @Inject constructor(
         val historicalDataList: List<Map<String, StockData>> = state.value.historicalData
         val products: List<Product> = state.value.products
 
+        val singleProductHistory = state.value.singleProductHistory
+        val singleProductHistoryTicker = state.value.singleProductHistoryTicker
+
         val performances = mutableListOf<ProductPerformance>()
 
         val isoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -81,7 +84,14 @@ class PortfolioScreenViewModel @Inject constructor(
             val originalPurchaseDateStr = product.purchaseDate
             val purchaseDate = parsePurchaseDate(originalPurchaseDateStr) ?: return@forEachIndexed
 
-            val historicalDataMap: Map<String, StockData> = historicalDataList.getOrNull(index) ?: return@forEachIndexed
+            val historicalDataMap: Map<String, StockData>? =
+                if (singleProductHistory != null && product.ticker == singleProductHistoryTicker) {
+                    singleProductHistory
+                } else {
+                    historicalDataList.getOrNull(index)
+                }
+
+            if (historicalDataMap == null) return@forEachIndexed
 
             val dateStockList: List<Pair<LocalDate, StockData>> = historicalDataMap.mapNotNull { (dateStr, stockData) ->
                 try {
@@ -126,6 +136,7 @@ class PortfolioScreenViewModel @Inject constructor(
 
         return performances
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateProductPerformances() {
@@ -340,7 +351,7 @@ class PortfolioScreenViewModel @Inject constructor(
                 .collect { result ->
                     if (result.isSuccess) {
                         getProducts()
-                        fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
+                        fetchSingleProductHistory(product.ticker)
                     } else {
                         _state.update {
                             it.copy(
@@ -554,6 +565,45 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
+    fun fetchSingleProductHistory(ticker: String, symbol: String = "", onSuccess: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            _state.update { it.copy(singleProductHistoryState = UiState.Loading) }
+
+            fetchHistoricalDataUseCase.fetchSingleProductHistory(ticker, symbol, BuildConfig.ALPHAVANTAGE_API_KEY)
+                .catch { exception ->
+                    _state.update {
+                        it.copy(
+                            singleProductHistoryState = UiState.Error(
+                                exception.localizedMessage ?: "Failed to fetch product history"
+                            )
+                        )
+                    }
+                }
+                .collect { result ->
+                    _state.update { currentState ->
+                        when {
+                            result.isSuccess -> {
+                                val historicalData = result.getOrNull()
+                                val newState = currentState.copy(
+                                    singleProductHistoryTicker = ticker,
+                                    singleProductHistory = historicalData,
+                                    singleProductHistoryState = UiState.Success(historicalData)
+                                )
+                                onSuccess?.invoke()
+                                newState
+                            }
+                            result.isFailure -> currentState.copy(
+                                singleProductHistoryState = UiState.Error(
+                                    result.exceptionOrNull()?.localizedMessage
+                                        ?: "Failed to fetch product history"
+                                )
+                            )
+                            else -> currentState.copy(singleProductHistoryState = UiState.Idle)
+                        }
+                    }
+                }
+        }
+    }
 
     fun toggleCardExpansion(index: Int) {
         _state.update {
