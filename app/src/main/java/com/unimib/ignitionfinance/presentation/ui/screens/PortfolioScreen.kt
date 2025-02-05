@@ -28,6 +28,8 @@ import com.unimib.ignitionfinance.presentation.ui.components.portfolio.Dashboard
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.SwipeToDeleteContainer
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -42,6 +44,8 @@ fun PortfolioScreen(
     val listState = rememberLazyListState()
 
     var selectedCardIndex by remember { mutableIntStateOf(-1) }
+    var swipedProductIndex by remember { mutableIntStateOf(-1) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(selectedCardIndex) {
         if (selectedCardIndex != -1) {
@@ -49,15 +53,15 @@ fun PortfolioScreen(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(Unit) {
         viewModel.fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
     }
 
-    LaunchedEffect(key1 = state.historicalData) {
+    LaunchedEffect(state.historicalData) {
         viewModel.updateProductPerformances()
     }
 
-    LaunchedEffect(key1 = state.singleProductHistory) {
+    LaunchedEffect(state.singleProductHistory) {
         viewModel.updateProductPerformances()
     }
 
@@ -125,8 +129,17 @@ fun PortfolioScreen(
                         modifier = Modifier,
                         isExpanded = state.expandedCardIndex == 0,
                         onCardClicked = {
-                            viewModel.toggleCardExpansion(0)
-                            selectedCardIndex = 0
+                            if (swipedProductIndex != -1) {
+                                swipedProductIndex = -1
+                                scope.launch {
+                                    delay(200)
+                                    viewModel.toggleCardExpansion(0)
+                                    selectedCardIndex = 0
+                                }
+                            } else {
+                                viewModel.toggleCardExpansion(0)
+                                selectedCardIndex = 0
+                            }
                         },
                         isin = "BANK ACCOUNT",
                         ticker = "CASH",
@@ -138,14 +151,26 @@ fun PortfolioScreen(
                     val isExpanded = state.expandedCardIndex == index + 1
                     SwipeToDeleteContainer(
                         onDelete = { viewModel.removeProduct(productId = product.ticker) },
-                        swipeEnabled = !isExpanded
+                        swipeEnabled = !isExpanded,
+                        isSwiped = (swipedProductIndex == index),
+                        onSwiped = { swipedProductIndex = index },
+                        onResetSwipe = { if (swipedProductIndex == index) swipedProductIndex = -1 }
                     ) {
                         DashboardCard(
                             modifier = Modifier,
                             isExpanded = isExpanded,
                             onCardClicked = {
-                                viewModel.toggleCardExpansion(index + 1)
-                                selectedCardIndex = index
+                                if (swipedProductIndex != -1) {
+                                    swipedProductIndex = -1
+                                    scope.launch {
+                                        delay(400)
+                                        viewModel.toggleCardExpansion(index + 1)
+                                        selectedCardIndex = index
+                                    }
+                                } else {
+                                    viewModel.toggleCardExpansion(index + 1)
+                                    selectedCardIndex = index
+                                }
                             },
                             isin = product.isin,
                             product = product,

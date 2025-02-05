@@ -23,6 +23,9 @@ import kotlin.math.roundToInt
 fun SwipeToDeleteContainer(
     onDelete: () -> Unit,
     swipeEnabled: Boolean = true,
+    isSwiped: Boolean,
+    onSwiped: () -> Unit,
+    onResetSwipe: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -32,6 +35,12 @@ fun SwipeToDeleteContainer(
     )
     val deleteThreshold = with(LocalDensity.current) { 80.dp.toPx() }
     val iconSize = 24.dp
+
+    LaunchedEffect(isSwiped) {
+        if (!isSwiped && offsetX != 0f) {
+            offsetX = 0f
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -71,9 +80,18 @@ fun SwipeToDeleteContainer(
                             detectHorizontalDragGestures(
                                 onHorizontalDrag = { _, dragAmount ->
                                     offsetX = (offsetX + dragAmount).coerceIn(-deleteThreshold, 0f)
+                                    if (offsetX != 0f) {
+                                        onSwiped()
+                                    }
                                 },
                                 onDragEnd = {
-                                    offsetX = if (abs(offsetX) < deleteThreshold / 2) 0f else -deleteThreshold
+                                    offsetX = if (abs(offsetX) < deleteThreshold / 2) {
+                                        onResetSwipe()
+                                        0f
+                                    } else {
+                                        onSwiped()
+                                        -deleteThreshold
+                                    }
                                 }
                             )
                         }
@@ -82,6 +100,7 @@ fun SwipeToDeleteContainer(
                 .clickable {
                     if (offsetX != 0f) {
                         offsetX = 0f
+                        onResetSwipe()
                     }
                 }
                 .fillMaxWidth()
