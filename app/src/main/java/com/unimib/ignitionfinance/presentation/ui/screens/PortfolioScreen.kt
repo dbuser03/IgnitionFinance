@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
@@ -47,10 +48,12 @@ fun PortfolioScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getFirstAdded()
-        viewModel.getCash()
-        viewModel.getProducts()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchHistoricalData(BuildConfig.ALPHAVANTAGE_API_KEY)
+    }
+
+    LaunchedEffect(key1 = state.historicalData) {
+        viewModel.updateProductPerformances()
     }
 
     BackHandler(enabled = true) {
@@ -75,10 +78,9 @@ fun PortfolioScreen(
                     purchaseDate = purchaseDate,
                     amount = amount,
                     symbol = "",
-                    averagePerformance = "",
-                    shares = 0.0,
                     currency = "",
-                    historicalData = emptyMap()
+                    averagePerformance = "",
+                    shares = 0.0
                 )
                 viewModel.addNewProduct(newProduct)
             }
@@ -113,37 +115,35 @@ fun PortfolioScreen(
                     .padding(innerPadding),
                 state = listState
             ) {
-                if (state.isFirstAdded) {
-                    item {
-                        DashboardCard(
-                            modifier = Modifier,
-                            isExpanded = state.expandedCardIndex == 0,
-                            onCardClicked = {
-                                viewModel.toggleCardExpansion(0)
-                                selectedCardIndex = 0
-                            },
-                            isin = "BANK ACCOUNT",
-                            ticker = "CASH",
-                            isCash = true
-                        )
-                    }
+                item {
+                    DashboardCard(
+                        modifier = Modifier,
+                        isExpanded = state.expandedCardIndex == 0,
+                        onCardClicked = {
+                            viewModel.toggleCardExpansion(0)
+                            selectedCardIndex = 0
+                        },
+                        isin = "BANK ACCOUNT",
+                        ticker = "CASH",
+                        isCash = true
+                    )
                 }
 
                 itemsIndexed(state.products) { index, product ->
                     DashboardCard(
                         modifier = Modifier,
-                        isExpanded = state.expandedCardIndex == index + if (state.isFirstAdded) 1 else 0,
+                        isExpanded = state.expandedCardIndex == index + 1,
                         onCardClicked = {
-                            viewModel.toggleCardExpansion(index + if (state.isFirstAdded) 1 else 0)
+                            viewModel.toggleCardExpansion(index + 1)
                             selectedCardIndex = index
                         },
                         isin = product.isin,
                         product = product,
                         ticker = product.ticker,
-                        isCash = false
+                        isCash = false,
+                        performance = state.productPerformances.find { it.ticker == product.ticker }
                     )
                 }
-
                 item {
                     Box(
                         modifier = Modifier

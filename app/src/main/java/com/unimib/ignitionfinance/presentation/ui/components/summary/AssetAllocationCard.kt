@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
@@ -47,7 +48,7 @@ fun AssetAllocationCard(
                 .padding(24.dp)
         ) {
             Text(
-                text = "Asset allocation:",
+                text = stringResource(id = R.string.asset_allocation_title),
                 style = TypographyMedium.bodyLarge
             )
 
@@ -85,7 +86,7 @@ fun AssetAllocationCard(
                     ) {
                         AssetAllocationLegend(
                             icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
-                            title = "Invested",
+                            title = stringResource(id = R.string.asset_allocation_invested),
                             percentage = roundedInvestedPercentage,
                             displayDashes = total == 0.0,
                             backgroundColor = MaterialTheme.colorScheme.primary,
@@ -93,7 +94,7 @@ fun AssetAllocationCard(
                         )
                         AssetAllocationLegend(
                             icon = painterResource(id = R.drawable.outline_monetization_on_24),
-                            title = "Cash",
+                            title = stringResource(id = R.string.asset_allocation_cash),
                             percentage = roundedCashPercentage,
                             displayDashes = total == 0.0,
                             backgroundColor = MaterialTheme.colorScheme.onSecondary,

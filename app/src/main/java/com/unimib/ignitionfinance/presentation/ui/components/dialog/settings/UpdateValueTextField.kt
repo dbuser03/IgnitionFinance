@@ -12,7 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.utils.getTextFieldColors
 
 @Composable
@@ -36,7 +38,7 @@ fun UpdateValueTextField(
             text = input
             onValueChange(input.ifBlank { null })
         },
-        label = { Text("New value") },
+        label = { Text(stringResource(id = R.string.dialog_new_value_label)) },
         shape = RoundedCornerShape(56.dp),
         colors = getTextFieldColors(isError = errorMessage != null),
         keyboardOptions = KeyboardOptions(

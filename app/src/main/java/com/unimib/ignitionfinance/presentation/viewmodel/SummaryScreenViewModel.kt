@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.data.repository.interfaces.UserPreferencesRepository
-import com.unimib.ignitionfinance.domain.usecase.networth.GetUserInvestedUseCase
+import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetUserInvestedUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.SummaryScreenState
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -2,7 +2,9 @@ package com.unimib.ignitionfinance.presentation.ui.screens
 
 import BottomNavigationBarInstance
 import android.app.Activity
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -26,6 +28,7 @@ import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SummaryScreen(
     navController: NavController,

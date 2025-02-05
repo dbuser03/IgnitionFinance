@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.theme.TypographyMedium
 import com.unimib.ignitionfinance.domain.validation.InputValidationResult
 import com.unimib.ignitionfinance.domain.validation.SettingsValidator
@@ -34,7 +36,7 @@ fun UpdateValueDialog(
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text(
-                    "Confirm",
+                    stringResource(id = R.string.dialog_confirm),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = TypographyMedium.bodyMedium.fontWeight,
                         color = if (isInputValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -48,7 +50,7 @@ fun UpdateValueDialog(
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text(
-                    "Dismiss",
+                    stringResource(id = R.string.dialog_dismiss),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = TypographyMedium.bodyMedium.fontWeight,
                         color = MaterialTheme.colorScheme.primary

@@ -3,7 +3,6 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
 import com.unimib.ignitionfinance.data.model.UserData
-import com.unimib.ignitionfinance.data.model.StockData
 import com.unimib.ignitionfinance.data.model.user.AuthData
 import com.unimib.ignitionfinance.data.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.model.user.Product
@@ -27,11 +26,10 @@ object UserDataMapper {
                 cash = (this["cash"] as? String) ?: "0",
                 productList = mapProductList(this["productList"] as? List<Map<String, Any>>),
                 firstAdded = (this["firstAdded"] as? Boolean) == true,
-                dataset = mapDataset(this["dataset"] as? List<Map<String, Any>>)
+                dataset = mapDataset(this["dataset"] as? List<Map<DailyReturn, Any>>),
             )
         }
     }
-
     private fun mapDataset(dataset: List<Any>?): List<DailyReturn> {
         return dataset?.map { pair ->
             val map = pair as? Map<String, Any>
@@ -49,31 +47,11 @@ object UserDataMapper {
                 purchaseDate = (productMap["purchaseDate"] as? String).orEmpty(),
                 amount = (productMap["amount"] as? String).orEmpty(),
                 symbol = (productMap["symbol"] as? String).orEmpty(),
-                currency = (productMap["currency"] as? String).orEmpty(),
                 averagePerformance = (productMap["averagePerformance"] as? String).orEmpty(),
-                shares = (productMap["shares"] as? Double) ?: 0.0,
-                historicalData = mapHistoricalData(productMap["historicalData"])
+                shares = (productMap["shares"] as Double),
+                currency = (productMap["currency"] as? String).orEmpty()
             )
         } ?: emptyList()
-    }
-
-    /**
-     * Mappa il campo historicalData che si aspetta un oggetto di tipo Map<String, Map<String, Any>>,
-     * dove la chiave è (ad es.) una data e il valore è una mappa contenente i campi di StockData.
-     */
-    private fun mapHistoricalData(data: Any?): Map<String, StockData> {
-        val dataMap = data as? Map<String, Any>
-        return dataMap?.mapValues { entry ->
-            val stockMap = entry.value as? Map<String, Any>
-            StockData(
-                open = (stockMap?.get("open") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                high = (stockMap?.get("high") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                low = (stockMap?.get("low") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                close = (stockMap?.get("close") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-                volume = (stockMap?.get("volume") as? Long) ?: 0L,
-                percentageChange = (stockMap?.get("percentageChange") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            )
-        } ?: emptyMap()
     }
 
     private fun mapAuthData(authData: Map<String, Any>?): AuthData {
@@ -87,19 +65,19 @@ object UserDataMapper {
     private fun mapSettings(settings: Map<String, Any>?): Settings {
         return Settings(
             withdrawals = Withdrawals(
-                withPension = ((settings?.get("withdrawals") as? Map<String, Any>)?.get("withPension") as? String) ?: "",
-                withoutPension = ((settings?.get("withdrawals") as? Map<String, Any>)?.get("withoutPension") as? String) ?: ""
+                withPension = (settings?.get("withdrawals") as? Map<String, Any>)?.get("withPension") as? String ?: "",
+                withoutPension = (settings?.get("withdrawals") as? Map<String, Any>)?.get("withoutPension") as? String ?: ""
             ),
             inflationModel = (settings?.get("inflationModel") as? String).orEmpty(),
             expenses = Expenses(
-                taxRatePercentage = ((settings?.get("expenses") as? Map<String, Any>)?.get("taxRatePercentage") as? String) ?: "",
-                stampDutyPercentage = ((settings?.get("expenses") as? Map<String, Any>)?.get("stampDutyPercentage") as? String) ?: "",
-                loadPercentage = ((settings?.get("expenses") as? Map<String, Any>)?.get("loadPercentage") as? String) ?: ""
+                taxRatePercentage = (settings?.get("expenses") as? Map<String, Any>)?.get("taxRatePercentage") as? String ?: "",
+                stampDutyPercentage = (settings?.get("expenses") as? Map<String, Any>)?.get("stampDutyPercentage") as? String ?: "",
+                loadPercentage = (settings?.get("expenses") as? Map<String, Any>)?.get("loadPercentage") as? String ?: ""
             ),
             intervals = Intervals(
-                yearsInFIRE = ((settings?.get("intervals") as? Map<String, Any>)?.get("yearsInFIRE") as? String) ?: "",
-                yearsInPaidRetirement = ((settings?.get("intervals") as? Map<String, Any>)?.get("yearsInPaidRetirement") as? String) ?: "",
-                yearsOfBuffer = ((settings?.get("intervals") as? Map<String, Any>)?.get("yearsOfBuffer") as? String) ?: ""
+                yearsInFIRE = (settings?.get("intervals") as? Map<String, Any>)?.get("yearsInFIRE") as? String ?: "",
+                yearsInPaidRetirement = (settings?.get("intervals") as? Map<String, Any>)?.get("yearsInPaidRetirement") as? String ?: "",
+                yearsOfBuffer = (settings?.get("intervals") as? Map<String, Any>)?.get("yearsOfBuffer") as? String ?: ""
             ),
             numberOfSimulations = (settings?.get("numberOfSimulations") as? String).orEmpty()
         )
@@ -124,20 +102,10 @@ object UserDataMapper {
                     "ticker" to product.ticker,
                     "amount" to product.amount,
                     "purchaseDate" to product.purchaseDate,
-                    "symbol" to product.symbol,
-                    "currency" to product.currency,
                     "averagePerformance" to product.averagePerformance,
                     "shares" to product.shares,
-                    "historicalData" to product.historicalData.mapValues { entry ->
-                        mapOf(
-                            "open" to entry.value.open.toPlainString(),
-                            "high" to entry.value.high.toPlainString(),
-                            "low" to entry.value.low.toPlainString(),
-                            "close" to entry.value.close.toPlainString(),
-                            "volume" to entry.value.volume,
-                            "percentageChange" to entry.value.percentageChange.toPlainString()
-                        )
-                    }
+                    "currency" to product.currency,
+                    "symbol" to product.symbol
                 )
             },
             "firstAdded" to userData.firstAdded,

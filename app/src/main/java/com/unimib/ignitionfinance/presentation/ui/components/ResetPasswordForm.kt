@@ -56,7 +56,7 @@ fun ResetPasswordForm(
             CustomTextField(
                 value = formState.email,
                 onValueChange = { viewModel.updateEmail(it) },
-                label = "Email",
+                label = stringResource(id = R.string.label_email),
                 isError = formState.emailError != null,
                 imeAction = ImeAction.Done,
                 onImeActionPerformed = {

@@ -10,7 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
@@ -89,7 +91,7 @@ fun InputBox(
                 viewModel.updateSettings(it)
             }
         },
-        dialogTitle = "Update the amount",
+        dialogTitle = stringResource(id = R.string.dialog_update_amount),
         prefix = inputBoxModel.prefix
     )
 
