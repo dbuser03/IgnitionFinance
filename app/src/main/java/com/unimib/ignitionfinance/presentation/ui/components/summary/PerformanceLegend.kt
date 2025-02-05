@@ -8,11 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 
-/*@Composable
+@Composable
 fun PerformanceLegend(
     icon: Painter,
     title: String,
@@ -30,48 +29,9 @@ fun PerformanceLegend(
             icon = icon,
             backgroundColor = backgroundColor,
             iconColor = iconColor,
-            modifier = Modifier.size(32.dp)
-        )
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = "$title:",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-
-            Text(
-                text = percentage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}*/
-
-@Composable
-fun PerformanceLegend(
-    icon: Painter,
-    title: String,
-    percentage: String,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.onSecondary,
-    iconColor: Color = MaterialTheme.colorScheme.primary
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)  // Slightly increased spacing
-    ) {
-        CustomIcon(
-            icon = icon,
-            backgroundColor = backgroundColor,
-            iconColor = iconColor,
             modifier = Modifier
                 .size(32.dp)
-                .offset(x = (-8).dp)  // Shift icon slightly to the left
+                .offset(x = (-8).dp)
         )
 
         Column(
