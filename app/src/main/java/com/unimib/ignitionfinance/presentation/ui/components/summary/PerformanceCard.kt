@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
@@ -37,7 +38,7 @@ fun PerformanceCard(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "Performance:",
+                    text = stringResource(id = R.string.performance_title),
                     style = TypographyMedium.bodyLarge
                 )
             }
@@ -49,7 +50,7 @@ fun PerformanceCard(
             ) {
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
-                    title = "Average performance:",
+                    title = stringResource(id = R.string.performance_average),
                     percentage = "+${averagePerformance.toInt()}%",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
@@ -57,7 +58,7 @@ fun PerformanceCard(
 
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
-                    title = "Best performer:",
+                    title = stringResource(id = R.string.performance_best),
                     percentage = "${bestPerformer.first} (+${bestPerformer.second.toInt()}%)",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
@@ -65,7 +66,7 @@ fun PerformanceCard(
 
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
-                    title = "Worst performer:",
+                    title = stringResource(id = R.string.performance_worst),
                     percentage = "${worstPerformer.first} (${worstPerformer.second.toInt()}%)",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
@@ -86,4 +87,3 @@ fun PerformanceCardPreview() {
         )
     }
 }
-

@@ -35,7 +35,8 @@ fun PerformanceLegend(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = title,
+                //text = title,
+                text = "$title:",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.secondary
             )
