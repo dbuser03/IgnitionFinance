@@ -46,7 +46,7 @@ class BuildDatasetUseCase @Inject constructor(
                     processData(products, historicalDataList)
                 }
                 is DatasetValidationResult.Failure -> {
-                    val sp500Result = stockRepository.fetchStockData("^GSPC", apiKey).first()
+                    val sp500Result = stockRepository.fetchStockData("GSPC", apiKey).first()
                     val sp500Data = sp500Result.getOrElse { error ->
                         emit(Result.failure(error))
                         return@flow
@@ -55,8 +55,8 @@ class BuildDatasetUseCase @Inject constructor(
                     val totalCapital = calculateTotalCapital(products)
 
                     val fallbackData = listOf(sp500Data)
-                    val fallbackTickers = listOf("^GSPC")
-                    val fallbackCapitals = mapOf("^GSPC" to totalCapital)
+                    val fallbackTickers = listOf("GSPC")
+                    val fallbackCapitals = mapOf("GSPC" to totalCapital)
 
                     dailyReturnCalculator.calculateDailyReturns(
                         historicalDataList = fallbackData,
