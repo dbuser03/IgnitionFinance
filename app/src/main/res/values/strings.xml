@@ -59,4 +59,10 @@
     <string name="asset_allocation_title">Asset allocation:</string>
     <string name="asset_allocation_invested">Invested</string>
     <string name="asset_allocation_cash">Cash</string>
+
+    <!-- Performance related strings -->
+    <string name="performance_title">Performance:</string>
+    <string name="performance_average_performance">Average performance:</string>
+    <string name="performance_best_performance">Best performance:</string>
+    <string name="performance_worst_performance">Worst performance:</string>
 </resources>
