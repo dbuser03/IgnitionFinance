@@ -283,18 +283,21 @@ fun SummaryScreen(
 private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double, Pair<String, Double>, Pair<String, Double>>? {
     if (products.isEmpty()) return null
 
-    // Convert performance strings to doubles and pair them with tickers
+    // Convert performance strings to doubles and pair them with tickers and amounts
     val performances = products.mapNotNull { product ->
         val performance = product.averagePerformance.toDoubleOrNull()
-        if (performance != null) {
-            product.ticker to performance
+        val amount = product.amount.replace("[^0-9.]".toRegex(), "").toDoubleOrNull()
+
+        if (performance != null && amount != null && amount > 0) {
+            Triple(product.ticker, performance, amount)
         } else null
     }
 
     if (performances.isEmpty()) return null
 
-    // Calculate weighted average (assuming equal weights for simplicity)
-    val averagePerformance = performances.map { it.second }.average()
+    // Calculate weighted average performance
+    val totalAmount = performances.sumOf { it.third }
+    val weightedAveragePerformance = performances.sumOf { it.second * it.third } / totalAmount
 
     // Find best and worst performers
     val bestPerformer = performances.maxByOrNull { it.second }
@@ -303,5 +306,5 @@ private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double,
     val worstPerformer = performances.minByOrNull { it.second }
         ?.let { it.first to it.second } ?: ("" to 0.0)
 
-    return Triple(averagePerformance, bestPerformer, worstPerformer)
+    return Triple(weightedAveragePerformance, bestPerformer, worstPerformer)
 }
