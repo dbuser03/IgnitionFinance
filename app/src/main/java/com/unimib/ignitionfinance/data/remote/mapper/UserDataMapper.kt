@@ -26,18 +26,10 @@ object UserDataMapper {
                 cash = (this["cash"] as? String) ?: "0",
                 productList = mapProductList(this["productList"] as? List<Map<String, Any>>),
                 firstAdded = (this["firstAdded"] as? Boolean) == true,
-                dataset = mapDataset(this["dataset"] as? List<Map<DailyReturn, Any>>),
             )
         }
     }
-    private fun mapDataset(dataset: List<Any>?): List<DailyReturn> {
-        return dataset?.map { pair ->
-            val map = pair as? Map<String, Any>
-            val date = (map?.get("first") as? String).orEmpty()
-            val value = (map?.get("second") as? String)?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-            DailyReturn(date, value)
-        } ?: emptyList()
-    }
+
 
     private fun mapProductList(products: List<Map<String, Any>>?): List<Product> {
         return products?.map { productMap ->
@@ -109,12 +101,6 @@ object UserDataMapper {
                 )
             },
             "firstAdded" to userData.firstAdded,
-            "dataset" to userData.dataset.map { dailyReturn ->
-                mapOf(
-                    "dates" to dailyReturn.dates,
-                    "weightedReturns" to dailyReturn.weightedReturns.toPlainString()
-                )
-            }
         )
     }
 

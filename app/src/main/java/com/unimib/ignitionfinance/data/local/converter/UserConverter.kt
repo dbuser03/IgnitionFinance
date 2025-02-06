@@ -35,7 +35,7 @@ class UserConverter {
     fun fromDataset(dataset: List<DailyReturn>): String = gson.toJson(dataset)
 
     @TypeConverter
-    fun toDataset (datasetString : String ): List<DailyReturn>? =
-        gson.fromJson(datasetString, object : com.google.common.reflect.TypeToken<List<String>>() {}.type)
+    fun toDataset(datasetString: String): List<DailyReturn>? =
+        gson.fromJson(datasetString, object : TypeToken<List<DailyReturn>>() {}.type)
 
 }
