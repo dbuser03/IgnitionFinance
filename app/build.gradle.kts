@@ -6,7 +6,6 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
-    //
 }
 
 android {
@@ -27,11 +26,6 @@ android {
             "ALPHAVANTAGE_API_KEY",
             "\"${project.findProperty("ALPHAVANTAGE_API_KEY")}\""
         )
-        externalNativeBuild {
-            cmake {
-                cppFlags += ""
-            }
-        }
     }
 
     ksp {
@@ -58,16 +52,9 @@ android {
         compose = true
         buildConfig = true
     }
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
 }
 
 dependencies {
-    implementation(libs.okhttp.v493)
     implementation(libs.logging.interceptor)
     implementation (libs.androidx.datastore.preferences)
     implementation(libs.androidx.room.runtime)

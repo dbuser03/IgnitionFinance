@@ -34,6 +34,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
+import kotlin.math.pow
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -87,7 +88,7 @@ fun SummaryScreen(
         if (valuesCalculated.value) {
             delay(300)
             showAssetCard = true
-            delay(200) // Additional delay for staggered animation
+            delay(200)
             showPerformanceCard = true
         }
     }
@@ -107,7 +108,7 @@ fun SummaryScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(innerPadding),
             ) {
                 item {
                     NetWorthDisplay(
@@ -123,8 +124,7 @@ fun SummaryScreen(
                         isNetWorthHidden = isNetWorthHidden,
                         onVisibilityToggle = { summaryViewModel.toggleNetWorthVisibility() }
                     )
-
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 item {
@@ -142,9 +142,7 @@ fun SummaryScreen(
                             invested = summaryState.invested
                         )
                     }
-                }
 
-                item {
                     AnimatedVisibility(
                         visible = showPerformanceCard,
                         enter = fadeIn(
@@ -172,21 +170,18 @@ fun SummaryScreen(
 private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double, Pair<String, Double>, Pair<String, Double>>? {
     if (products.isEmpty()) return null
 
-    // Convert performance strings to doubles and pair them with tickers, amounts, and holding periods
     val performances = products.mapNotNull { product ->
         val performance = product.averagePerformance.toDoubleOrNull()
         val amount = product.amount.replace("[^0-9.]".toRegex(), "").toDoubleOrNull()
         val holdingPeriodYears = calculateHoldingPeriodInYears(product.purchaseDate)
 
         if (performance != null && amount != null && amount > 0) {
-            // Calculate annualized return using the formula: (1 + totalReturn)^(1/years) - 1
             val annualizedReturn = if (holdingPeriodYears > 0) {
-                Math.pow(1 + (performance / 100), 1.0 / holdingPeriodYears) - 1
+                (1 + (performance / 100)).pow(1.0 / holdingPeriodYears) - 1
             } else {
-                performance / 100  // For very recent purchases (less than a year)
+                performance / 100
             }
 
-            // Convert back to percentage
             val annualizedReturnPercentage = annualizedReturn * 100
 
             Quadruple(
@@ -200,13 +195,11 @@ private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double,
 
     if (performances.isEmpty()) return null
 
-    // Calculate time-weighted average performance
-    val totalWeightedAmount = performances.sumOf { it.third * it.fourth }  // amount * years held
+    val totalWeightedAmount = performances.sumOf { it.third * it.fourth }
     val weightedAveragePerformance = performances.sumOf {
-        (it.second * it.third * it.fourth) / totalWeightedAmount  // (return * amount * years) / total weighted amount
+        (it.second * it.third * it.fourth) / totalWeightedAmount
     }
 
-    // Find best and worst performers based on annualized returns
     val bestPerformer = performances.maxByOrNull { it.second }
         ?.let { it.first to it.second } ?: ("" to 0.0)
 
@@ -216,7 +209,6 @@ private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double,
     return Triple(weightedAveragePerformance, bestPerformer, worstPerformer)
 }
 
-// Helper data class for holding the four values we need to track
 private data class Quadruple<A, B, C, D>(
     val first: A,
     val second: B,
@@ -233,7 +225,7 @@ private fun calculateHoldingPeriodInYears(purchaseDate: String): Double {
         val parsedDate = LocalDate.parse(purchaseDate, dateFormatter)
         val daysBetween = ChronoUnit.DAYS.between(parsedDate, now)
         return daysBetween / 365.0
-    } catch (e: DateTimeParseException) {
+    } catch (_: DateTimeParseException) {
         return 0.0
     }
 }
