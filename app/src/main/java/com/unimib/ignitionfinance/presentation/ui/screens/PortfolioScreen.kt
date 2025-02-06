@@ -30,6 +30,8 @@ import com.unimib.ignitionfinance.presentation.ui.components.title.Title
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -81,6 +83,9 @@ fun PortfolioScreen(
         onProductConfirmation = { isin: String?, ticker: String?, purchaseDate: String?, amount: String?, symbol: String? ->
             showDialog = false
             if (isin != null && ticker != null && purchaseDate != null && amount != null && symbol != null) {
+                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                val currentDateString = LocalDateTime.now().format(dateFormatter)
+
                 val newProduct = Product(
                     isin = isin,
                     ticker = ticker,
@@ -89,7 +94,7 @@ fun PortfolioScreen(
                     symbol = "",
                     currency = "",
                     averagePerformance = "0",
-                    isAmountUpdatedToday = true
+                    lastUpdated =  currentDateString
                 )
                 viewModel.addNewProduct(newProduct)
             }

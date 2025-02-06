@@ -30,7 +30,6 @@ object UserDataMapper {
         }
     }
 
-
     private fun mapProductList(products: List<Map<String, Any>>?): List<Product> {
         return products?.map { productMap ->
             Product(
@@ -41,7 +40,8 @@ object UserDataMapper {
                 symbol = (productMap["symbol"] as? String).orEmpty(),
                 averagePerformance = (productMap["averagePerformance"] as? String).orEmpty(),
                 currency = (productMap["currency"] as? String).orEmpty(),
-                isAmountUpdatedToday = (productMap["isAmountUpdatedToday"] as? Boolean) == true
+                // Ora utilizziamo il campo lastUpdated come String
+                lastUpdated = (productMap["lastUpdated"] as? String).orEmpty()
             )
         } ?: emptyList()
     }
@@ -97,7 +97,8 @@ object UserDataMapper {
                     "averagePerformance" to product.averagePerformance,
                     "currency" to product.currency,
                     "symbol" to product.symbol,
-                    "isAmountUpdatedToday" to product.isAmountUpdatedToday
+                    // Usiamo il campo lastUpdated in output
+                    "lastUpdated" to product.lastUpdated
                 )
             },
             "firstAdded" to userData.firstAdded,

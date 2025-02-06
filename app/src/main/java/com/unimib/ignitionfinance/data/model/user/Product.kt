@@ -8,5 +8,5 @@ data class Product(
     val symbol: String,
     val averagePerformance: String,
     val currency: String,
-    var isAmountUpdatedToday: Boolean = false
+    var lastUpdated: String? = null
 )

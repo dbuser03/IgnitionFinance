@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -67,6 +68,10 @@ class PortfolioScreenViewModel @Inject constructor(
         val isoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val purchaseFormatter1 = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         val purchaseFormatter2 = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val lastUpdateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+        // Get current time for comparison
+        val currentDateTime = LocalDateTime.now()
 
         fun parsePurchaseDate(dateStr: String): LocalDate? {
             return try {
@@ -83,6 +88,10 @@ class PortfolioScreenViewModel @Inject constructor(
         products.forEachIndexed { index, product ->
             val originalPurchaseDateStr = product.purchaseDate
             val purchaseDate = parsePurchaseDate(originalPurchaseDateStr) ?: return@forEachIndexed
+
+            // Check if product needs updating (more than 24 hours since last update)
+            val lastUpdated = LocalDateTime.parse(product.lastUpdated, lastUpdateFormatter)
+            val needsUpdate = ChronoUnit.HOURS.between(lastUpdated, currentDateTime) >= 24
 
             val historicalDataMap: Map<String, StockData>? =
                 if (singleProductHistory != null && product.ticker == singleProductHistoryTicker) {
@@ -120,6 +129,37 @@ class PortfolioScreenViewModel @Inject constructor(
                     .multiply(BigDecimal(100))
             } else {
                 BigDecimal.ZERO
+            }
+
+            // If product needs updating, calculate new amount based on performance
+            if (needsUpdate) {
+                try {
+                    val currentAmount = BigDecimal(product.amount)
+                    val dailyPercentageChange = percentageChange.divide(
+                        BigDecimal(ChronoUnit.DAYS.between(purchaseDate, lastEntry.first)),
+                        4,
+                        RoundingMode.HALF_UP
+                    )
+
+                    val newAmount = currentAmount.multiply(
+                        BigDecimal.ONE.add(
+                            dailyPercentageChange.divide(BigDecimal(100), 4, RoundingMode.HALF_UP)
+                        )
+                    )
+
+                    // Update the product with new amount and timestamp
+                    val updatedProduct = product.copy(
+                        amount = newAmount.setScale(2, RoundingMode.HALF_UP).toString(),
+                        lastUpdated = currentDateTime.format(lastUpdateFormatter)
+                    )
+
+                    // Launch a coroutine to update the product
+                    viewModelScope.launch {
+                        updateProduct(updatedProduct)
+                    }
+                } catch (e: Exception) {
+                    Log.e("PortfolioViewModel", "Error updating product amount: ${e.message}")
+                }
             }
 
             val performance = ProductPerformance(
