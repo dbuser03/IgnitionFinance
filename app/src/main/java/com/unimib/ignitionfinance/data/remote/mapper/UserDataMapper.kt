@@ -48,8 +48,8 @@ object UserDataMapper {
                 amount = (productMap["amount"] as? String).orEmpty(),
                 symbol = (productMap["symbol"] as? String).orEmpty(),
                 averagePerformance = (productMap["averagePerformance"] as? String).orEmpty(),
-                shares = (productMap["shares"] as Double),
-                currency = (productMap["currency"] as? String).orEmpty()
+                currency = (productMap["currency"] as? String).orEmpty(),
+                isAmountUpdatedToday = (productMap["isAmountUpdatedToday"] as? Boolean) == true
             )
         } ?: emptyList()
     }
@@ -103,9 +103,9 @@ object UserDataMapper {
                     "amount" to product.amount,
                     "purchaseDate" to product.purchaseDate,
                     "averagePerformance" to product.averagePerformance,
-                    "shares" to product.shares,
                     "currency" to product.currency,
-                    "symbol" to product.symbol
+                    "symbol" to product.symbol,
+                    "isAmountUpdatedToday" to product.isAmountUpdatedToday
                 )
             },
             "firstAdded" to userData.firstAdded,

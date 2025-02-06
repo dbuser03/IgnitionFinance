@@ -7,6 +7,6 @@ data class Product(
     val amount: String,
     val symbol: String,
     val averagePerformance: String,
-    val shares: Double,
-    val currency: String
+    val currency: String,
+    var isAmountUpdatedToday: Boolean = false
 )

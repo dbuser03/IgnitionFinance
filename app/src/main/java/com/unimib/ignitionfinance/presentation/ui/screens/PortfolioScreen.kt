@@ -89,7 +89,7 @@ fun PortfolioScreen(
                     symbol = "",
                     currency = "",
                     averagePerformance = "0",
-                    shares = 0.0
+                    isAmountUpdatedToday = true
                 )
                 viewModel.addNewProduct(newProduct)
             }
@@ -124,27 +124,29 @@ fun PortfolioScreen(
                     .padding(innerPadding),
                 state = listState
             ) {
-                item {
-                    DashboardCard(
-                        modifier = Modifier,
-                        isExpanded = state.expandedCardIndex == 0,
-                        onCardClicked = {
-                            if (swipedProductIndex != -1) {
-                                swipedProductIndex = -1
-                                scope.launch {
-                                    delay(200)
+                if (state.isFirstAdded) {
+                    item {
+                        DashboardCard(
+                            modifier = Modifier,
+                            isExpanded = state.expandedCardIndex == 0,
+                            onCardClicked = {
+                                if (swipedProductIndex != -1) {
+                                    swipedProductIndex = -1
+                                    scope.launch {
+                                        delay(200)
+                                        viewModel.toggleCardExpansion(0)
+                                        selectedCardIndex = 0
+                                    }
+                                } else {
                                     viewModel.toggleCardExpansion(0)
                                     selectedCardIndex = 0
                                 }
-                            } else {
-                                viewModel.toggleCardExpansion(0)
-                                selectedCardIndex = 0
-                            }
-                        },
-                        isin = "BANK ACCOUNT",
-                        ticker = "CASH",
-                        isCash = true
-                    )
+                            },
+                            isin = "BANK ACCOUNT",
+                            ticker = "CASH",
+                            isCash = true
+                        )
+                    }
                 }
 
                 itemsIndexed(state.products) { index, product ->
