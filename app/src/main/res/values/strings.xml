@@ -62,7 +62,7 @@
 
     <!-- Performance related strings -->
     <string name="performance_title">Performance:</string>
-    <string name="performance_average">Average performance</string>
+    <string name="performance_average">Average</string>
     <string name="performance_best">Best performer</string>
     <string name="performance_worst">Worst performer</string>
 </resources>

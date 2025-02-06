@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 
@@ -23,15 +24,13 @@ fun PerformanceLegend(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         CustomIcon(
             icon = icon,
             backgroundColor = backgroundColor,
             iconColor = iconColor,
-            modifier = Modifier
-                .size(32.dp)
-                .offset(x = (-8).dp)
+            modifier = Modifier.size(32.dp)
         )
 
         Column(
