@@ -46,19 +46,19 @@ class BuildDatasetUseCase @Inject constructor(
                     processData(products, historicalDataList)
                 }
                 is DatasetValidationResult.Failure -> {
-                    // Ignora completamente il portafoglio e scarica esclusivamente lo storico dello S&P500.
-                    val sp500Result = stockRepository.fetchStockData("^GSPC", BuildConfig.ALPHAVANTAGE_API_KEY).first()
+                    android.util.Log.w("BuildDatasetUseCase", "Validazione fallita: il dataset non contiene dati validi. Procedo con i dati dello S&P500.")
+
+                    val sp500Result = stockRepository.fetchStockData("GSPC", BuildConfig.ALPHAVANTAGE_API_KEY).first()
                     val sp500Data = sp500Result.getOrElse { error ->
                         emit(Result.failure(error))
                         return@flow
                     }
 
-                    // Calcola il capitale totale sommando il capitale di tutti i prodotti
                     val totalCapital = calculateTotalCapital(products)
 
                     val fallbackData = listOf(sp500Data)
-                    val fallbackTickers = listOf("^GSPC")
-                    val fallbackCapitals = mapOf("^GSPC" to totalCapital)
+                    val fallbackTickers = listOf("GSPC")
+                    val fallbackCapitals = mapOf("GSPC" to totalCapital)
 
                     dailyReturnCalculator.calculateDailyReturns(
                         historicalDataList = fallbackData,
@@ -66,6 +66,7 @@ class BuildDatasetUseCase @Inject constructor(
                         productCapitals = fallbackCapitals
                     )
                 }
+
             }
 
             val saveResult = saveDatasetUseCase.execute(dailyReturns).first()
