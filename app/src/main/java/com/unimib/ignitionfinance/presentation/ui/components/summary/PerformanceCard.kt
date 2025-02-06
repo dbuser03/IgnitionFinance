@@ -75,15 +75,3 @@ fun PerformanceCard(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PerformanceCardPreview() {
-    IgnitionFinanceTheme {
-        PerformanceCard(
-            averagePerformance = 15.0,
-            bestPerformer = "VWCE" to 25.0,
-            worstPerformer = "EIMI" to -9.0
-        )
-    }
-}
