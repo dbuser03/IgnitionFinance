@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -101,58 +102,63 @@ fun SummaryScreen(
             BottomNavigationBarInstance(navController = navController)
         },
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
             ) {
-                NetWorthDisplay(
-                    inputBoxModel = InputBoxModel(
-                        label = "Your net worth is:",
-                        prefix = "€",
-                        inputValue = remember { mutableStateOf(TextFieldValue("")) },
-                        key = "NetWorth",
-                        iconResId = R.drawable.outline_person_apron_24
-                    ),
-                    netWorth = summaryState.netWorth,
-                    isLoading = isLoading.value || summaryState.netWorthState is UiState.Loading,
-                    isNetWorthHidden = isNetWorthHidden,
-                    onVisibilityToggle = { summaryViewModel.toggleNetWorthVisibility() }
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                AnimatedVisibility(
-                    visible = showAssetCard,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            delayMillis = 0
-                        )
+                item {
+                    NetWorthDisplay(
+                        inputBoxModel = InputBoxModel(
+                            label = "Your net worth is:",
+                            prefix = "€",
+                            inputValue = remember { mutableStateOf(TextFieldValue("")) },
+                            key = "NetWorth",
+                            iconResId = R.drawable.outline_person_apron_24
+                        ),
+                        netWorth = summaryState.netWorth,
+                        isLoading = isLoading.value || summaryState.netWorthState is UiState.Loading,
+                        isNetWorthHidden = isNetWorthHidden,
+                        onVisibilityToggle = { summaryViewModel.toggleNetWorthVisibility() }
                     )
-                ) {
-                    AssetAllocationCard(
-                        cash = cash.doubleValue,
-                        invested = summaryState.invested
-                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
 
-                AnimatedVisibility(
-                    visible = showPerformanceCard,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            delayMillis = 200
+                item {
+                    AnimatedVisibility(
+                        visible = showAssetCard,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                delayMillis = 0
+                            )
                         )
-                    )
-                ) {
-                    performanceMetrics?.let { (avgPerformance, bestPerformer, worstPerformer) ->
-                        PerformanceCard(
-                            averagePerformance = avgPerformance,
-                            bestPerformer = bestPerformer,
-                            worstPerformer = worstPerformer
+                    ) {
+                        AssetAllocationCard(
+                            cash = cash.doubleValue,
+                            invested = summaryState.invested
                         )
+                    }
+                }
+
+                item {
+                    AnimatedVisibility(
+                        visible = showPerformanceCard,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                delayMillis = 200
+                            )
+                        )
+                    ) {
+                        performanceMetrics?.let { (avgPerformance, bestPerformer, worstPerformer) ->
+                            PerformanceCard(
+                                averagePerformance = avgPerformance,
+                                bestPerformer = bestPerformer,
+                                worstPerformer = worstPerformer
+                            )
+                        }
                     }
                 }
             }
