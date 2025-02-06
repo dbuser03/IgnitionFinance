@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.unimib.ignitionfinance.data.model.InflationData
+import com.unimib.ignitionfinance.data.remote.model.InflationData
 import com.unimib.ignitionfinance.data.remote.response.InflationResponse
 import com.unimib.ignitionfinance.data.remote.response.InflationDataSet
 import com.unimib.ignitionfinance.data.remote.response.InflationSeries

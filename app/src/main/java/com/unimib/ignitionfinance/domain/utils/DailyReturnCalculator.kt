@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.domain.utils
 
-import com.unimib.ignitionfinance.data.model.StockData
-import com.unimib.ignitionfinance.data.model.user.DailyReturn
+import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import java.math.BigDecimal
 import javax.inject.Inject
 

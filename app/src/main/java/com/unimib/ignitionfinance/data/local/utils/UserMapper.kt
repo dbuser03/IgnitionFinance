@@ -1,12 +1,12 @@
 package com.unimib.ignitionfinance.data.local.mapper
 
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.model.UserData
-import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.data.model.user.settings.Expenses
-import com.unimib.ignitionfinance.data.model.user.settings.Intervals
-import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
+import com.unimib.ignitionfinance.data.remote.model.UserData
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Expenses
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Intervals
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Withdrawals
 
 object UserMapper {
     fun mapUserToUserData(user: User): UserData {

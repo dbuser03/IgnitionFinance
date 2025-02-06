@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.model.user.settings
+package com.unimib.ignitionfinance.data.remote.model.user.settings
 
 data class Expenses (
     val taxRatePercentage: String,

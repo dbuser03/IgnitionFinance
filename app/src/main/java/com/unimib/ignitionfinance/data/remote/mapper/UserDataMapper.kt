@@ -2,15 +2,13 @@
 
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.unimib.ignitionfinance.data.model.UserData
-import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.model.user.DailyReturn
-import com.unimib.ignitionfinance.data.model.user.Product
-import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.data.model.user.settings.Expenses
-import com.unimib.ignitionfinance.data.model.user.settings.Intervals
-import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
-import java.math.BigDecimal
+import com.unimib.ignitionfinance.data.remote.model.UserData
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.Product
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Expenses
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Intervals
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Withdrawals
 
 object UserDataMapper {
 

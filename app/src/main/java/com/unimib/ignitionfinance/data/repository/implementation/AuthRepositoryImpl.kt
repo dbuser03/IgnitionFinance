@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.repository.implementation
 
-import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.service.AuthService
 import com.unimib.ignitionfinance.data.remote.service.utils.AuthServiceException

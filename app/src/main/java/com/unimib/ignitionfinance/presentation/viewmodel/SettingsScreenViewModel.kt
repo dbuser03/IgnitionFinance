@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.data.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.SetDefaultSettingsUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.UpdateUserSettingsUseCase

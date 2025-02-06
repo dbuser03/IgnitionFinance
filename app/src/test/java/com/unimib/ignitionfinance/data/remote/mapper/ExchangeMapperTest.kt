@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.unimib.ignitionfinance.data.model.ExchangeData
+import com.unimib.ignitionfinance.data.remote.model.ExchangeData
 import com.unimib.ignitionfinance.data.remote.response.ExchangeResponse
 import com.unimib.ignitionfinance.data.remote.response.ExchangeDataSet
 import com.unimib.ignitionfinance.data.remote.response.ExchangeSeries

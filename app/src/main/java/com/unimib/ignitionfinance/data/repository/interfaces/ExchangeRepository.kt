@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.repository.interfaces
 
-import com.unimib.ignitionfinance.data.model.ExchangeData
+import com.unimib.ignitionfinance.data.remote.model.ExchangeData
 import kotlinx.coroutines.flow.Flow
 
 interface ExchangeRepository {

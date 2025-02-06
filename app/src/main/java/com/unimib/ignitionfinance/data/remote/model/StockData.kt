@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.model
+package com.unimib.ignitionfinance.data.remote.model
 
 import java.math.BigDecimal
 

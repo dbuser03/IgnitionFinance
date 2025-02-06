@@ -1,9 +1,8 @@
 package com.unimib.ignitionfinance.data.repository.implementation
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.remote.service.ExchangeService
 import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
-import com.unimib.ignitionfinance.data.model.ExchangeData
+import com.unimib.ignitionfinance.data.remote.model.ExchangeData
 import com.unimib.ignitionfinance.data.repository.interfaces.ExchangeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

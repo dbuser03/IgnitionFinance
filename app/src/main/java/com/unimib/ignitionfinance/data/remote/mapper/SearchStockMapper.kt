@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
 import com.unimib.ignitionfinance.data.remote.response.SearchStockResponse
-import com.unimib.ignitionfinance.data.model.SearchStockData
+import com.unimib.ignitionfinance.data.remote.model.SearchStockData
 
 object SearchStockMapper {
     fun mapToDomain(response: SearchStockResponse): List<SearchStockData> {

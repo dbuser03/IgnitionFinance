@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.worker
+package com.unimib.ignitionfinance.data.remote.worker
 
 import android.content.Context
 import androidx.work.ListenableWorker

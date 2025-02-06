@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationErrors
 import com.unimib.ignitionfinance.domain.validation.utils.ValidationRules
-import com.unimib.ignitionfinance.data.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.StockData
 
 object DatasetValidator {
 

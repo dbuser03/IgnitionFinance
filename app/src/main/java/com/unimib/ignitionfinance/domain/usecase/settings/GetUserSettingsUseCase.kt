@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.domain.usecase.settings
 
 import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository

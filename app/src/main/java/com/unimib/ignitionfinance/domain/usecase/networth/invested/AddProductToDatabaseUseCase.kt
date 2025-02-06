@@ -5,13 +5,13 @@ import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.mapper.UserMapper
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
-import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
-import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
-import com.unimib.ignitionfinance.domain.usecase.FetchSearchStockDataUseCase
+import com.unimib.ignitionfinance.data.remote.worker.SyncOperationScheduler
+import com.unimib.ignitionfinance.domain.usecase.fetch.FetchSearchStockDataUseCase
 import com.unimib.ignitionfinance.domain.utils.NetworkUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers

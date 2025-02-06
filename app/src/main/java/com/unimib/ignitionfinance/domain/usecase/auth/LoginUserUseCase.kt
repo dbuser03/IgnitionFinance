@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.auth
 
-import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.domain.validation.LoginValidationResult
 import com.unimib.ignitionfinance.domain.validation.LoginValidator

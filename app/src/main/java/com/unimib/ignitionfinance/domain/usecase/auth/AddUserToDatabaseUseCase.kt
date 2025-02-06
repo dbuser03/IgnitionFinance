@@ -8,9 +8,9 @@ import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseReposi
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.utils.SyncStatus
-import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.repository.interfaces.FirestoreRepository
-import com.unimib.ignitionfinance.data.worker.SyncOperationScheduler
+import com.unimib.ignitionfinance.data.remote.worker.SyncOperationScheduler
 import com.unimib.ignitionfinance.domain.usecase.settings.SetDefaultSettingsUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException

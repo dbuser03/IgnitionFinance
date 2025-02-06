@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.model.user
+package com.unimib.ignitionfinance.data.remote.model.user
 
 data class AuthData (
     val id: String,

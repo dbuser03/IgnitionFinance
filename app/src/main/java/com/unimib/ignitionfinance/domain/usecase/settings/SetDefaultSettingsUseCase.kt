@@ -1,9 +1,9 @@
 package com.unimib.ignitionfinance.domain.usecase.settings
 
-import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.data.model.user.settings.Withdrawals
-import com.unimib.ignitionfinance.data.model.user.settings.Expenses
-import com.unimib.ignitionfinance.data.model.user.settings.Intervals
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Withdrawals
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Expenses
+import com.unimib.ignitionfinance.data.remote.model.user.settings.Intervals
 import javax.inject.Inject
 
 class SetDefaultSettingsUseCase @Inject constructor(){

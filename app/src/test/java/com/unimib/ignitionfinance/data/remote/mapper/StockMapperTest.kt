@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.mapper
 
-import com.unimib.ignitionfinance.data.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.StockData
 import com.unimib.ignitionfinance.data.remote.response.StockResponse
 import com.unimib.ignitionfinance.data.remote.response.TimeSeriesData
 import org.junit.Assert.assertEquals

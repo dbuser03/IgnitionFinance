@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.data.repository.interfaces
 
-import com.unimib.ignitionfinance.data.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {

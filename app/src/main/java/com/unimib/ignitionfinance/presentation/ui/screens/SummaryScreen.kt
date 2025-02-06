@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.summary.AssetAllocationCard
 import com.unimib.ignitionfinance.presentation.ui.components.summary.NetWorthDisplay

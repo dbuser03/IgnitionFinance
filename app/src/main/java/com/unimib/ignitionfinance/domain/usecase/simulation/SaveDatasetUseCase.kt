@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
-import com.unimib.ignitionfinance.data.model.user.DailyReturn
+import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow

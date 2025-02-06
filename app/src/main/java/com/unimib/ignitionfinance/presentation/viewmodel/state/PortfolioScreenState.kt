@@ -1,8 +1,8 @@
 package com.unimib.ignitionfinance.presentation.viewmodel.state
 
-import com.unimib.ignitionfinance.data.model.ExchangeData
-import com.unimib.ignitionfinance.data.model.StockData
-import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.data.remote.model.ExchangeData
+import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.user.Product
 
 data class PortfolioScreenState(
     val cash: String = "0",

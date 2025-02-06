@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.presentation.viewmodel.state
 
-import com.unimib.ignitionfinance.data.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
 
 data class SettingsScreenState(
     val settings: Settings? = null,

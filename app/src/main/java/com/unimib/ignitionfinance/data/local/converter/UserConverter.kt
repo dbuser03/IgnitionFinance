@@ -3,11 +3,10 @@ package com.unimib.ignitionfinance.data.local.converter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.unimib.ignitionfinance.data.model.user.AuthData
-import com.unimib.ignitionfinance.data.model.user.DailyReturn
-import com.unimib.ignitionfinance.data.model.user.Product
-import com.unimib.ignitionfinance.data.model.user.Settings
-import java.math.BigDecimal
+import com.unimib.ignitionfinance.data.remote.model.user.AuthData
+import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
+import com.unimib.ignitionfinance.data.remote.model.user.Product
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
 
 class UserConverter {
     private val gson = Gson()

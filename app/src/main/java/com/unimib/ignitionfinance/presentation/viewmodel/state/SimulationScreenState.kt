@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.presentation.viewmodel.state
 
-import com.unimib.ignitionfinance.data.model.user.SimulationResult
+import com.unimib.ignitionfinance.data.remote.model.user.SimulationResult
 
 data class SimulationScreenState(
     val currentPortfolioValue: Double = 0.0,

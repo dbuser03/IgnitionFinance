@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.inflation
+package com.unimib.ignitionfinance.domain.usecase.fetch
 
 class FetchInflationUseCase {
     //prendi dati storici

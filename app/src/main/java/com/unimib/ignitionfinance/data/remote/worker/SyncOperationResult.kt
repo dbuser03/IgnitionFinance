@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.data.worker
+package com.unimib.ignitionfinance.data.remote.worker
 
 sealed class SyncOperationResult {
     data class Success(val itemId: String) : SyncOperationResult()

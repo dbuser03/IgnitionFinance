@@ -21,7 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.data.model.user.Product
+import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.ui.components.portfolio.DashboardCard

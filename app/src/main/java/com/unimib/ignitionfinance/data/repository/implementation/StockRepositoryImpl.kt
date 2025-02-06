@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.data.repository.implementation
 
 import com.unimib.ignitionfinance.data.remote.mapper.StockMapper
 import com.unimib.ignitionfinance.data.remote.service.StockService
-import com.unimib.ignitionfinance.data.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.StockData
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

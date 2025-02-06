@@ -2,8 +2,8 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.unimib.ignitionfinance.data.model.user.Settings
-import com.unimib.ignitionfinance.data.model.user.SimulationResult
+import com.unimib.ignitionfinance.data.remote.model.user.Settings
+import com.unimib.ignitionfinance.data.remote.model.user.SimulationResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
