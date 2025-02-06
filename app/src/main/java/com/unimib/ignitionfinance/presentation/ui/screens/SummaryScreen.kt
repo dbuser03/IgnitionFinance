@@ -30,6 +30,10 @@ import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewMode
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -164,26 +168,45 @@ fun SummaryScreen(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double, Pair<String, Double>, Pair<String, Double>>? {
     if (products.isEmpty()) return null
 
-    // Convert performance strings to doubles and pair them with tickers and amounts
+    // Convert performance strings to doubles and pair them with tickers, amounts, and holding periods
     val performances = products.mapNotNull { product ->
         val performance = product.averagePerformance.toDoubleOrNull()
         val amount = product.amount.replace("[^0-9.]".toRegex(), "").toDoubleOrNull()
+        val holdingPeriodYears = calculateHoldingPeriodInYears(product.purchaseDate)
 
         if (performance != null && amount != null && amount > 0) {
-            Triple(product.ticker, performance, amount)
+            // Calculate annualized return using the formula: (1 + totalReturn)^(1/years) - 1
+            val annualizedReturn = if (holdingPeriodYears > 0) {
+                Math.pow(1 + (performance / 100), 1.0 / holdingPeriodYears) - 1
+            } else {
+                performance / 100  // For very recent purchases (less than a year)
+            }
+
+            // Convert back to percentage
+            val annualizedReturnPercentage = annualizedReturn * 100
+
+            Quadruple(
+                product.ticker,
+                annualizedReturnPercentage,
+                amount,
+                holdingPeriodYears
+            )
         } else null
     }
 
     if (performances.isEmpty()) return null
 
-    // Calculate weighted average performance
-    val totalAmount = performances.sumOf { it.third }
-    val weightedAveragePerformance = performances.sumOf { it.second * it.third } / totalAmount
+    // Calculate time-weighted average performance
+    val totalWeightedAmount = performances.sumOf { it.third * it.fourth }  // amount * years held
+    val weightedAveragePerformance = performances.sumOf {
+        (it.second * it.third * it.fourth) / totalWeightedAmount  // (return * amount * years) / total weighted amount
+    }
 
-    // Find best and worst performers
+    // Find best and worst performers based on annualized returns
     val bestPerformer = performances.maxByOrNull { it.second }
         ?.let { it.first to it.second } ?: ("" to 0.0)
 
@@ -191,4 +214,26 @@ private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double,
         ?.let { it.first to it.second } ?: ("" to 0.0)
 
     return Triple(weightedAveragePerformance, bestPerformer, worstPerformer)
+}
+
+// Helper data class for holding the four values we need to track
+private data class Quadruple<A, B, C, D>(
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
+private fun calculateHoldingPeriodInYears(purchaseDate: String): Double {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val now = LocalDate.now()
+
+    try {
+        val parsedDate = LocalDate.parse(purchaseDate, dateFormatter)
+        val daysBetween = ChronoUnit.DAYS.between(parsedDate, now)
+        return daysBetween / 365.0
+    } catch (e: DateTimeParseException) {
+        return 0.0
+    }
 }

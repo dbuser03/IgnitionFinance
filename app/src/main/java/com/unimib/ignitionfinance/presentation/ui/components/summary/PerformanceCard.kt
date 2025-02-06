@@ -44,7 +44,7 @@ fun PerformanceCard(
             // Right column with legend
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),

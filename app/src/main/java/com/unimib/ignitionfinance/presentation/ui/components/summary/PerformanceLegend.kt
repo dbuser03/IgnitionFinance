@@ -29,7 +29,7 @@ fun PerformanceLegend(
             icon = icon,
             backgroundColor = backgroundColor,
             iconColor = iconColor,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(40.dp)
         )
 
         Column(
@@ -37,13 +37,13 @@ fun PerformanceLegend(
         ) {
             Text(
                 text = "$title:",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary
             )
 
             Text(
                 text = percentage,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary
             )
         }
