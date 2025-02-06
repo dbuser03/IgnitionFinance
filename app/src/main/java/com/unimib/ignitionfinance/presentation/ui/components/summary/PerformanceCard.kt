@@ -48,7 +48,7 @@ fun PerformanceCard(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                PerformanceLegend(
+                /*PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
                     title = stringResource(id = R.string.performance_average),
                     percentage = "+${averagePerformance.toInt()}%",
@@ -62,12 +62,36 @@ fun PerformanceCard(
                     percentage = "${bestPerformer.first} (+${bestPerformer.second.toInt()}%)",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
+                )*/
+
+                PerformanceLegend(
+                    icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
+                    title = stringResource(id = R.string.performance_average),
+                    percentage = "${if (averagePerformance >= 0) "+" else ""}${averagePerformance.toInt()}%",
+                    backgroundColor = MaterialTheme.colorScheme.onSecondary,
+                    iconColor = MaterialTheme.colorScheme.primary
                 )
 
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
+                    title = stringResource(id = R.string.performance_best),
+                    percentage = "${bestPerformer.first} ${if (bestPerformer.second >= 0) "+" else ""}${bestPerformer.second.toInt()}%",
+                    backgroundColor = MaterialTheme.colorScheme.onSecondary,
+                    iconColor = MaterialTheme.colorScheme.primary
+                )
+
+                /*PerformanceLegend(
+                    icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
                     title = stringResource(id = R.string.performance_worst),
                     percentage = "${worstPerformer.first} (${worstPerformer.second.toInt()}%)",
+                    backgroundColor = MaterialTheme.colorScheme.onSecondary,
+                    iconColor = MaterialTheme.colorScheme.primary
+                )*/
+
+                PerformanceLegend(
+                    icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
+                    title = stringResource(id = R.string.performance_worst),
+                    percentage = "${worstPerformer.first} ${if (worstPerformer.second >= 0) "+" else ""}${worstPerformer.second.toInt()}%",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
                 )
