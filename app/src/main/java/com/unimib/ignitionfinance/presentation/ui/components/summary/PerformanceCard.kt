@@ -59,7 +59,7 @@ fun PerformanceCard(
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
                     title = stringResource(id = R.string.performance_best),
-                    percentage = "${bestPerformer.first} ${if (bestPerformer.second >= 0) "+" else ""}${bestPerformer.second.toInt()}%",
+                    percentage = "${bestPerformer.first} (${if (bestPerformer.second >= 0) "+" else ""}${bestPerformer.second.toInt()}%)",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
                 )
@@ -67,7 +67,7 @@ fun PerformanceCard(
                 PerformanceLegend(
                     icon = painterResource(id = R.drawable.outline_candlestick_chart_24),
                     title = stringResource(id = R.string.performance_worst),
-                    percentage = "${worstPerformer.first} ${if (worstPerformer.second >= 0) "+" else ""}${worstPerformer.second.toInt()}%",
+                    percentage = "${worstPerformer.first} (${if (worstPerformer.second >= 0) "+" else ""}${worstPerformer.second.toInt()}%)",
                     backgroundColor = MaterialTheme.colorScheme.onSecondary,
                     iconColor = MaterialTheme.colorScheme.primary
                 )
