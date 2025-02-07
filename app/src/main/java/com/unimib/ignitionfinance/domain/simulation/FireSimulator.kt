@@ -80,6 +80,7 @@ object FireSimulator {
             )
         }
 
+
         return calculateSuccessRate(
             investedPortfolio = investedPortfolio,
             cashPortfolio = cashPortfolio,
@@ -105,33 +106,40 @@ object FireSimulator {
             val remainingWithdrawal = requiredWithdrawal - withdrawalFromCash
 
             if (remainingWithdrawal > 0 && investedPortfolio[year][sim] > 0) {
+
                 val taxableGain = remainingWithdrawal * (1 - investedCostBasis[sim] / investedPortfolio[year][sim])
                 val taxAmount = taxableGain * taxRate
 
                 val totalWithdrawal = remainingWithdrawal + taxAmount
+
                 val oldInvested = investedPortfolio[year][sim]
+
                 investedPortfolio[year][sim] -= totalWithdrawal
 
                 if (oldInvested > 0) {
                     investedCostBasis[sim] *= (investedPortfolio[year][sim] / oldInvested)
+                } else {
+                    investedCostBasis[sim] = 0.0
                 }
             }
 
             cashPortfolio[year][sim] -= withdrawalFromCash
 
             investedPortfolio[year + 1][sim] = investedPortfolio[year][sim] * marketReturns[sim]
+
             cashPortfolio[year + 1][sim] = cashPortfolio[year][sim] * (1 + cashInterestRate)
 
             val totalPortfolio = investedPortfolio[year + 1][sim] + cashPortfolio[year + 1][sim]
             if (totalPortfolio > 0) {
-                val stampDutyAmount = totalPortfolio * stampDuty
+                val fee = totalPortfolio * stampDuty
                 val investedProportion = investedPortfolio[year + 1][sim] / totalPortfolio
 
-                investedPortfolio[year + 1][sim] -= stampDutyAmount * investedProportion
-                cashPortfolio[year + 1][sim] -= stampDutyAmount * (1 - investedProportion)
+                investedPortfolio[year + 1][sim] -= fee * investedProportion
+                cashPortfolio[year + 1][sim] -= fee * (1 - investedProportion)
             }
         }
     }
+
 
     private fun calculateSuccessRate(
         investedPortfolio: Array<DoubleArray>,
