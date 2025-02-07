@@ -26,8 +26,8 @@ class DailyReturnCalculator @Inject constructor() {
                     val productIndex = productsWithDataForDate.first()
                     val stockData = historicalDataList[productIndex][date]!!
                     DailyReturn(
-                        dates = date,
-                        weightedReturns = calculatePercentageChange(stockData.open, stockData.close)
+                        date = date,
+                        weightedReturn = calculatePercentageChange(stockData.open, stockData.close)
                     )
                 }
                 else -> {
@@ -44,7 +44,7 @@ class DailyReturnCalculator @Inject constructor() {
             dailyReturns.add(dailyReturn)
         }
 
-        return dailyReturns.sortedBy { it.dates }
+        return dailyReturns.sortedBy { it.date }
     }
 
     private fun getAllUniqueDates(historicalDataList: List<Map<String, StockData>>): Set<String> {
@@ -86,7 +86,7 @@ class DailyReturnCalculator @Inject constructor() {
             BigDecimal.ZERO
         }
 
-        return DailyReturn(dates = date, weightedReturns = weightedReturn)
+        return DailyReturn(date = date, weightedReturn = weightedReturn)
     }
 
     private fun calculatePercentageChange(open: BigDecimal, close: BigDecimal): BigDecimal {

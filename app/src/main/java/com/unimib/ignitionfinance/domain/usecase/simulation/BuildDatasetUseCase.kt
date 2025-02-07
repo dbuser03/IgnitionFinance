@@ -24,7 +24,7 @@ class BuildDatasetUseCase @Inject constructor(
     private val getProductListUseCase: GetProductListUseCase,
     private val dailyReturnCalculator: DailyReturnCalculator,
     private val stockRepository: StockRepository,
-    private val saveDatasetUseCase: SaveDatasetUseCase
+    private val addDatasetToDatabaseUseCase: AddDatasetToDatabaseUseCase
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
@@ -46,7 +46,6 @@ class BuildDatasetUseCase @Inject constructor(
                     processData(products, historicalDataList)
                 }
                 is DatasetValidationResult.Failure -> {
-                    android.util.Log.w("BuildDatasetUseCase", "Validazione fallita: il dataset non contiene dati validi. Procedo con i dati dello S&P500.")
 
                     val sp500Result = stockRepository.fetchStockData("SPY", BuildConfig.ALPHAVANTAGE_API_KEY).first()
                     val sp500Data = sp500Result.getOrElse { error ->
@@ -69,7 +68,7 @@ class BuildDatasetUseCase @Inject constructor(
 
             }
 
-            val saveResult = saveDatasetUseCase.execute(dailyReturns).first()
+            val saveResult = addDatasetToDatabaseUseCase.execute(dailyReturns).first()
             saveResult.getOrElse { error ->
                 emit(Result.failure(error))
                 return@flow

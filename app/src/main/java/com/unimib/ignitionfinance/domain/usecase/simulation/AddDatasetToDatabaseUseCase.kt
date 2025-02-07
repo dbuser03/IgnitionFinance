@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-class SaveDatasetUseCase @Inject constructor(
+class AddDatasetToDatabaseUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     private val localDatabaseRepository: LocalDatabaseRepository<User>
 ) {
@@ -18,14 +18,14 @@ class SaveDatasetUseCase @Inject constructor(
         try {
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
-                ?: throw IllegalStateException("Impossibile ottenere l'utente autenticato")
+                ?: throw IllegalStateException("Unable to retrieve authenticated user")
 
             val userId = authData.id.takeIf { it.isNotEmpty() }
-                ?: throw IllegalStateException("L'ID dell'utente risulta vuoto")
+                ?: throw IllegalStateException("User ID is empty")
 
             val localUserResult = localDatabaseRepository.getById(userId).first()
             val user = localUserResult.getOrNull()
-                ?: throw IllegalStateException("Utente non trovato nel database locale per l'ID: $userId")
+                ?: throw IllegalStateException("User not found in local database for ID: $userId")
 
             val updatedUser = user.copy(
                 dataset = user.dataset.toMutableList().apply {

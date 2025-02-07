@@ -2,40 +2,69 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.unimib.ignitionfinance.data.remote.model.user.Settings
-import com.unimib.ignitionfinance.data.remote.model.user.SimulationResult
+import com.unimib.ignitionfinance.BuildConfig
+import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
+import com.unimib.ignitionfinance.domain.simulation.SimulationConfigFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
-    private val buildDatasetUseCase: BuildDatasetUseCase
+    private val buildDatasetUseCase: BuildDatasetUseCase,
+    private val configFactory: SimulationConfigFactory
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun execute(apiKey: String, netWorth: Double, settings: Settings): Flow<Result<SimulationResult>> = flow {
+    fun execute(): Flow<Result<SimulationResult>> = flow {
         try {
-            // Step 1: Build the dataset...
-            val datasetResult = buildDatasetUseCase.execute(apiKey).first()
+            val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
 
-            // Step 2: Run the simulation logic (to be implemented)
-            val simulationResult = runSimulation(netWorth, settings)
+            val configResult = configFactory.createConfig().first()
+            val config = configResult.getOrElse {
+                emit(Result.failure(it))
+                return@flow
+            }
 
-            emit(Result.success(simulationResult))
+/*            when (SimulationConfigValidator.validate(config)) {
+                else -> {
+                    val simulationResult = runSimulation(config)
+                    emit(Result.success(simulationResult))
+                }
+            }*/
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
     }
 
-    private fun runSimulation(netWorth: Double, settings: Settings): SimulationResult {
-        // Simulation logic implementation (to be added)
+/*    private fun runSimulation(config: SimulationConfig): SimulationResult {
+
+        val capital = config.capital.total
+        val settings = config.settings
+        val dataset = config.dataset
+        val inflationData = config.historicalInflation
+        val params = config.simulationParams
+
+        val numSimulations = settings.numberOfSimulations.toInt()
+        val withdrawalWithoutPension = settings.withdrawals.withoutPension.toDouble()
+        val withdrawalWithPension = settings.withdrawals.withPension.toDouble()
+        val taxRate = settings.expenses.taxRatePercentage.toDouble() / 100
+        val stampDuty = settings.expenses.stampDutyPercentage.toDouble() / 100
+        val loadPercentage = settings.expenses.loadPercentage.toDouble() / 100
+
+        val yearsInFire = settings.intervals.yearsInFIRE.toInt()
+        val yearsInPaidRetirement = settings.intervals.yearsInPaidRetirement.toInt()
+        val bufferYears = settings.intervals.yearsOfBuffer.toInt()
+
         return SimulationResult(
-            finalBalance = 0.0,
-            investmentGrowth = 0.0
+            successRate = 0.0,
+            fuckYouMoney = 0.0,
+            successRatePlus100k = 0.0,
+            successRatePlus200k = 0.0,
+            successRatePlus300k = 0.0
         )
-    }
+    }*/
 }

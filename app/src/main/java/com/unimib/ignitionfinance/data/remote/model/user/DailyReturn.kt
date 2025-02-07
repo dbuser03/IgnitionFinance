@@ -4,6 +4,6 @@ import java.math.BigDecimal
 
 
 data class DailyReturn(
-    val dates: String,
-    val weightedReturns: BigDecimal
+    val date: String,
+    val weightedReturn: BigDecimal
 )
