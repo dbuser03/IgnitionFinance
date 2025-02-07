@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.domain.simulation
 
+import android.util.Log
+// Nota: rimuovi l'import non necessario di PackageManagerCompat.LOG_TAG
 import com.unimib.ignitionfinance.domain.simulation.model.Capital
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationParams
@@ -10,7 +12,6 @@ import com.unimib.ignitionfinance.domain.usecase.settings.GetUserDatasetUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class SimulationConfigFactory @Inject constructor(
@@ -20,20 +21,33 @@ class SimulationConfigFactory @Inject constructor(
     private val getUserInvestedUseCase: GetUserInvestedUseCase,
     private val getUserCashUseCase: GetUserCashUseCase
 ) {
-    fun createConfig(): Flow<Result<SimulationConfig>> = flow {
-        try {
-            combine(
-                getUserDatasetUseCase.execute(),
-                getUserSettingsUseCase.execute(),
-                fetchInflationUseCase.execute(),
-                getUserInvestedUseCase.execute(),
-                getUserCashUseCase.execute()
-            ) { datasetResult, settingsResult, inflationResult, investedResult, cashResult ->
+    companion object {
+        private const val LOG_TAG = "SIM_CONFIG"
+    }
+
+    fun createConfig(): Flow<Result<SimulationConfig>> =
+        combine(
+            getUserDatasetUseCase.execute(),
+            getUserSettingsUseCase.execute(),
+            fetchInflationUseCase.execute(),
+            getUserInvestedUseCase.execute(),
+            getUserCashUseCase.execute()
+        ) { datasetResult, settingsResult, inflationResult, investedResult, cashResult ->
+            runCatching {
                 val dataset = datasetResult.getOrThrow()
                 val settings = settingsResult.getOrThrow()
+                Log.d(LOG_TAG, "settings = $settings")
+
                 val inflation = inflationResult.getOrThrow()
+                Log.d(LOG_TAG, "inflation = $inflation")
+
                 val invested = investedResult.getOrThrow()
+                Log.d(LOG_TAG, "invested = $invested")
+
                 val cash = cashResult.getOrThrow().toDoubleOrNull() ?: 0.0
+
+                val simulationParams = SimulationParams()
+                Log.d(LOG_TAG, "simulationParams = $simulationParams")
 
                 SimulationConfig(
                     dataset = dataset,
@@ -43,13 +57,12 @@ class SimulationConfigFactory @Inject constructor(
                         invested = invested,
                         cash = cash
                     ),
-                    simulationParams = SimulationParams()
+                    simulationParams = simulationParams
                 )
-            }.collect { config ->
-                emit(Result.success(config))
+            }.also { result ->
+                if (result.isFailure) {
+                    Log.e(LOG_TAG, "Errore nella creazione di SimulationConfig", result.exceptionOrNull())
+                }
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
         }
-    }
 }

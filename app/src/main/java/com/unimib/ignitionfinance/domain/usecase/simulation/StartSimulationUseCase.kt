@@ -21,7 +21,7 @@ class StartSimulationUseCase @Inject constructor(
     private val configFactory: SimulationConfigFactory
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun execute(): Flow<Result<SimulationResult>> = flow {
+    fun execute(apiKey: String): Flow<Result<SimulationResult>> = flow {
         try {
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
