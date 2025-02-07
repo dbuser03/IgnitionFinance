@@ -3,8 +3,14 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
+import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
+import com.unimib.ignitionfinance.domain.simulation.FireSimulator
+import com.unimib.ignitionfinance.domain.simulation.InflationModel
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 import com.unimib.ignitionfinance.domain.simulation.SimulationConfigFactory
+import com.unimib.ignitionfinance.domain.simulation.WithdrawalCalculator
+import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
+import com.unimib.ignitionfinance.domain.validation.SimulationConfigValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -29,42 +35,54 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-/*            when (SimulationConfigValidator.validate(config)) {
-                else -> {
-                    val simulationResult = runSimulation(config)
-                    emit(Result.success(simulationResult))
-                }
-            }*/
+            val validationErrors = SimulationConfigValidator.validate(config)
+            if (validationErrors.isNotEmpty()) {
+                emit(Result.failure(IllegalArgumentException(validationErrors.joinToString("\n"))))
+                return@flow
+            }
+
+            val simulationResult = runSimulation(config)
+            emit(Result.success(simulationResult))
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
     }
 
-/*    private fun runSimulation(config: SimulationConfig): SimulationResult {
-
-        val capital = config.capital.total
+    private fun runSimulation(config: SimulationConfig): SimulationResult {
         val settings = config.settings
         val dataset = config.dataset
-        val inflationData = config.historicalInflation
+        val inflationData = config.historicalInflation.values.toList()
         val params = config.simulationParams
 
         val numSimulations = settings.numberOfSimulations.toInt()
-        val withdrawalWithoutPension = settings.withdrawals.withoutPension.toDouble()
-        val withdrawalWithPension = settings.withdrawals.withPension.toDouble()
-        val taxRate = settings.expenses.taxRatePercentage.toDouble() / 100
-        val stampDuty = settings.expenses.stampDutyPercentage.toDouble() / 100
-        val loadPercentage = settings.expenses.loadPercentage.toDouble() / 100
+        val simulationLength = 100
 
-        val yearsInFire = settings.intervals.yearsInFIRE.toInt()
-        val yearsInPaidRetirement = settings.intervals.yearsInPaidRetirement.toInt()
-        val bufferYears = settings.intervals.yearsOfBuffer.toInt()
-
-        return SimulationResult(
-            successRate = 0.0,
-            fuckYouMoney = 0.0,
-            successRatePlus100k = 0.0,
-            successRatePlus200k = 0.0,
-            successRatePlus300k = 0.0
+        val (cumulativeReturnsMatrix, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices( // DUBBIO 1 parametro non usato
+            dataset = dataset,
+            numSimulations = numSimulations,
+            simulationLength = simulationLength,
+            daysPerYear = params.daysPerYear
         )
-    }*/
+
+        val inflationMatrix = InflationModel.generateInflationMatrix(
+            scenarioInflation = settings.inflationModel.lowercase(),
+            inflationMean = params.averageInflation,
+            historicalInflation = inflationData,
+            numSimulations = numSimulations,
+            simulationLength = simulationLength
+        )
+
+        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals( // Qui sicuramente è scorretto il calcolo dei withdrawal -> non viene settings.intervals.yearsInFIRE / distinzione tra anni con e senza pensione
+            initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
+            yearsWithoutPension = settings.intervals.yearsInPaidRetirement.toInt(),
+            pensionWithdrawal = settings.withdrawals.withPension.toDouble(),
+            inflationMatrix = inflationMatrix
+        )
+
+        return FireSimulator.simulatePortfolio(
+            config = config,
+            marketReturnsMatrix = annualReturnsMatrix,
+            withdrawalMatrix = withdrawalMatrix
+        )
+    }
 }
