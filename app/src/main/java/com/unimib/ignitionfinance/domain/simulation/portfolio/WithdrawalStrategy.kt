@@ -1,6 +1,6 @@
-package com.unimib.ignitionfinance.domain.portfolio
+package com.unimib.ignitionfinance.domain.simulation.portfolio
 
-import com.unimib.ignitionfinance.domain.models.FireSimulationConfig
+import com.unimib.ignitionfinance.domain.simulation.models.FireSimulationConfig
 
 class WithdrawalStrategy(private val config: FireSimulationConfig) {
     fun calculateWithdrawals(

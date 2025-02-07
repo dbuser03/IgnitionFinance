@@ -1,12 +1,12 @@
-package com.unimib.ignitionfinance.domain
+package com.unimib.ignitionfinance.domain.simulation
 
 import com.unimib.ignitionfinance.data.model.InflationData
 import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
-import com.unimib.ignitionfinance.domain.inflation.InflationDataProvider
-import com.unimib.ignitionfinance.domain.inflation.InflationScenarioGenerator
-import com.unimib.ignitionfinance.domain.models.FireSimulationConfig
-import com.unimib.ignitionfinance.domain.portfolio.FireSimulation
-import com.unimib.ignitionfinance.domain.portfolio.PortfolioReturnsStrategy
+import com.unimib.ignitionfinance.domain.simulation.inflation.InflationDataProvider
+import com.unimib.ignitionfinance.domain.simulation.inflation.InflationScenarioGenerator
+import com.unimib.ignitionfinance.domain.simulation.models.FireSimulationConfig
+import com.unimib.ignitionfinance.domain.simulation.portfolio.FireSimulation
+import com.unimib.ignitionfinance.domain.simulation.portfolio.PortfolioReturnsStrategy
 import com.unimib.ignitionfinance.domain.usecase.inflation.FetchInflationUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

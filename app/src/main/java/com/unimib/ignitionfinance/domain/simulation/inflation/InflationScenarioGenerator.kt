@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.inflation
+package com.unimib.ignitionfinance.domain.simulation.inflation
 
 import com.unimib.ignitionfinance.domain.utils.RandomUtils
 import kotlin.math.*

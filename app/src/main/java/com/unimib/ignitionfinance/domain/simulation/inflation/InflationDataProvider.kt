@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.inflation
+package com.unimib.ignitionfinance.domain.simulation.inflation
 
 import com.unimib.ignitionfinance.domain.usecase.inflation.FetchInflationUseCase
 import kotlinx.coroutines.flow.first

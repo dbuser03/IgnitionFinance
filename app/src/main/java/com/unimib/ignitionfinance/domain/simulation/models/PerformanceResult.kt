@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.models
+package com.unimib.ignitionfinance.domain.simulation.models
 
 data class PerformanceResult(
     val successRate: Double,

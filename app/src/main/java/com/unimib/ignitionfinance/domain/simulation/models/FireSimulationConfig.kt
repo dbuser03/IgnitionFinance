@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.models
+package com.unimib.ignitionfinance.domain.simulation.models
 
 data class FireSimulationConfig(
     val capitale: Double = 500000.0,

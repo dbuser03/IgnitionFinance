@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.portfolio
+package com.unimib.ignitionfinance.domain.simulation.portfolio
 
 class PortfolioReturnsStrategy {
     fun simulaRendimenti(
