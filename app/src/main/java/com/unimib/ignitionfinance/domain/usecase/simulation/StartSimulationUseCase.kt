@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -56,6 +57,8 @@ class StartSimulationUseCase @Inject constructor(
 
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
+        val TAG = "SIMULATION_LOG"
+
 
         val (_, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
             dataset = dataset,
@@ -63,6 +66,7 @@ class StartSimulationUseCase @Inject constructor(
             simulationLength = simulationLength,
             daysPerYear = params.daysPerYear
         )
+        Log.d(TAG, "Annual Returns Matrix: ${annualReturnsMatrix.contentDeepToString()}")
 
         val inflationMatrix = InflationModel.generateInflationMatrix(
             scenarioInflation = settings.inflationModel.lowercase(),
@@ -71,6 +75,7 @@ class StartSimulationUseCase @Inject constructor(
             numSimulations = numSimulations,
             simulationLength = simulationLength
         )
+        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
 
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
@@ -83,6 +88,7 @@ class StartSimulationUseCase @Inject constructor(
             config = config,
             marketReturnsMatrix = annualReturnsMatrix,
             withdrawalMatrix = withdrawalMatrix
+
         )
     }
 }

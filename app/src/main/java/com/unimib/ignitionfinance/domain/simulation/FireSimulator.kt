@@ -17,6 +17,10 @@ object FireSimulator {
         marketReturnsMatrix: Array<DoubleArray>,
         withdrawalMatrix: Array<DoubleArray>
     ): SimulationResult {
+        val reversedWithdrawalMatrix = withdrawalMatrix.reversedArray()
+
+        Log.d(TAG, "Withdrawal Matrix (reversed): ${reversedWithdrawalMatrix.contentDeepToString()}")
+
         Log.i(TAG, "Inizio simulazione del portafoglio con config: $config")
 
         val baseSuccessRate = simulateWithCapital(config, marketReturnsMatrix, withdrawalMatrix)
