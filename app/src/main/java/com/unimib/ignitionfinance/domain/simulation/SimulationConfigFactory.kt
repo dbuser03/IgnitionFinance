@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.simulation
 
 import android.util.Log
-// Nota: rimuovi l'import non necessario di PackageManagerCompat.LOG_TAG
 import com.unimib.ignitionfinance.domain.simulation.model.Capital
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationParams
@@ -23,6 +22,7 @@ class SimulationConfigFactory @Inject constructor(
 ) {
     companion object {
         private const val LOG_TAG = "SIM_CONFIG"
+        private const val PERCENTAGE_DIVISOR = 100.0
     }
 
     fun createConfig(): Flow<Result<SimulationConfig>> =
@@ -35,8 +35,21 @@ class SimulationConfigFactory @Inject constructor(
         ) { datasetResult, settingsResult, inflationResult, investedResult, cashResult ->
             runCatching {
                 val dataset = datasetResult.getOrThrow()
-                val settings = settingsResult.getOrThrow()
-                Log.d(LOG_TAG, "settings = $settings")
+                val originalSettings = settingsResult.getOrThrow()
+
+                val settings = originalSettings.copy(
+                    expenses = originalSettings.expenses.copy(
+                        taxRatePercentage = (originalSettings.expenses.taxRatePercentage.toDoubleOrNull()
+                            ?: 0.0).div(PERCENTAGE_DIVISOR).toString(),
+                        stampDutyPercentage = (originalSettings.expenses.stampDutyPercentage.toDoubleOrNull()
+                            ?: 0.0).div(PERCENTAGE_DIVISOR).toString(),
+                        loadPercentage = (originalSettings.expenses.loadPercentage.toDoubleOrNull()
+                            ?: 0.0).div(PERCENTAGE_DIVISOR).toString()
+                    )
+                )
+
+                Log.d(LOG_TAG, "Original settings = $originalSettings")
+                Log.d(LOG_TAG, "Converted settings = $settings")
 
                 val inflation = inflationResult.getOrThrow()
                 Log.d(LOG_TAG, "inflation = $inflation")

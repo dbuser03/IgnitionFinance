@@ -88,6 +88,10 @@ class StartSimulationUseCase @Inject constructor(
         val reversedWithdrawalsMatrix = withdrawalMatrix.reversedArray()
         Log.d(TAG, "Withdrawals Matrix: ${reversedWithdrawalsMatrix.contentDeepToString()}")
 
-
+        return FireSimulator.simulatePortfolio(
+            config = config,
+            marketReturnsMatrix = annualReturnsMatrix,
+            withdrawalMatrix = withdrawalMatrix
+        )
     }
 }

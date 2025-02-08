@@ -1,7 +1,10 @@
 package com.unimib.ignitionfinance.domain.simulation
 
+import android.util.Log
+
 object WithdrawalCalculator {
     private const val MONTHS_PER_YEAR = 13
+    private const val TAG = "WithdrawalCalculator"
 
     fun calculateWithdrawals(
         initialWithdrawal: Double,
@@ -23,13 +26,15 @@ object WithdrawalCalculator {
 
         val coef = DoubleArray(numSimulations) { 1.0 }
 
-        for (t in 1 .. yearsWithoutPension) {
+        // Calcolo dei prelievi per i primi anni senza pensione
+        for (t in 1..yearsWithoutPension) {
             for (sim in 0 until numSimulations) {
                 withdrawals[t][sim] = withdrawals[t - 1][sim] * (1 + inflationMatrix[t][sim])
                 coef[sim] *= (1 + inflationMatrix[t][sim])
             }
         }
 
+        // Al cambio dalla fase senza pensione alla fase con pensione
         if (yearsWithoutPension + 1 < simulationLength) {
             for (sim in 0 until numSimulations) {
                 withdrawals[yearsWithoutPension + 1][sim] =
@@ -37,10 +42,17 @@ object WithdrawalCalculator {
             }
         }
 
+        // Prelievi per gli anni successivi
         for (t in (yearsWithoutPension + 2) until simulationLength) {
             for (sim in 0 until numSimulations) {
                 withdrawals[t][sim] = withdrawals[t - 1][sim] * (1 + inflationMatrix[t][sim])
             }
+        }
+
+        // Stampa della matrice finale nel logcat
+        for (t in 0 until simulationLength) {
+            val rowString = withdrawals[t].joinToString(prefix = "[", postfix = "]", separator = ", ")
+            Log.d(TAG, "Year $t: $rowString")
         }
 
         return withdrawals

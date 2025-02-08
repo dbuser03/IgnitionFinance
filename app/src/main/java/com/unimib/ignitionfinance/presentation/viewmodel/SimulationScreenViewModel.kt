@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unimib.ignitionfinance.data.remote.model.user.Settings
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 import com.unimib.ignitionfinance.domain.usecase.simulation.StartSimulationUseCase
 import com.unimib.ignitionfinance.presentation.viewmodel.state.SimulationScreenState
@@ -36,10 +35,10 @@ class SimulationScreenViewModel @Inject constructor(
                                     simulationState = UiState.Success(
                                         result.getOrNull() ?: SimulationResult(
                                             successRate = 0.0,
-                                            fuckYouMoney = 0.0,
-                                            successRatePlus100k = 0.0,
-                                            successRatePlus200k = 0.0,
-                                            successRatePlus300k = 0.0
+                                            investedPortfolio = emptyArray(),
+                                            cashPortfolio = emptyArray(),
+                                            totalSimulations = 0,
+                                            simulationLength = 0
                                         )
                                     )
                                 )
