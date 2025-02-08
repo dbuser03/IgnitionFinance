@@ -66,7 +66,8 @@ class StartSimulationUseCase @Inject constructor(
             simulationLength = simulationLength,
             daysPerYear = params.daysPerYear
         )
-        Log.d(TAG, "Annual Returns Matrix: ${annualReturnsMatrix.contentDeepToString()}")
+        val reverseAnnualReturnMatrix = annualReturnsMatrix.reversedArray()
+        Log.d(TAG, "Annual Returns Matrix: ${reverseAnnualReturnMatrix.contentDeepToString()}")
 
         val inflationMatrix = InflationModel.generateInflationMatrix(
             scenarioInflation = settings.inflationModel.lowercase(),
@@ -84,11 +85,9 @@ class StartSimulationUseCase @Inject constructor(
             inflationMatrix = inflationMatrix
         )
 
-        return FireSimulator.simulatePortfolio(
-            config = config,
-            marketReturnsMatrix = annualReturnsMatrix,
-            withdrawalMatrix = withdrawalMatrix
+        val reversedWithdrawalsMatrix = withdrawalMatrix.reversedArray()
+        Log.d(TAG, "Withdrawals Matrix: ${reversedWithdrawalsMatrix.contentDeepToString()}")
 
-        )
+
     }
 }
