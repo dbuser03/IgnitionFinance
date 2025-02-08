@@ -13,7 +13,7 @@ object AnnualReturnsMatrixGenerator {
         daysPerYear: Int = 253
     ): Pair<Array<DoubleArray>, Array<DoubleArray>> {
         if (dataset.size < blockYears * daysPerYear + 1) {
-            throw IllegalArgumentException("Il dataset è troppo piccolo per blockYears=$blockYears e daysPerYear=$daysPerYear")
+            throw IllegalArgumentException("The dataset is too small for blockYears=$blockYears and daysPerYear=$daysPerYear")
         }
 
         val maxStartIndex = dataset.size - blockYears * daysPerYear - 1
@@ -35,7 +35,7 @@ object AnnualReturnsMatrixGenerator {
                 val annualReturnValue = dataset[currentIndex].weightedReturn.toDouble()
                 val multiplier = 1 + annualReturnValue
 
-                 annualReturnsMatrix[t][c] = multiplier
+                annualReturnsMatrix[t][c] = multiplier
                 cumulativeReturnsMatrix[t][c] = cumulativeReturnsMatrix[t - 1][c] * multiplier
 
                 currentIndex += daysPerYear
