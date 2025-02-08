@@ -57,7 +57,7 @@ class StartSimulationUseCase @Inject constructor(
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
 
-        val (cumulativeReturnsMatrix, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices( // DUBBIO 1 parametro non usato
+        val (_, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
             dataset = dataset,
             numSimulations = numSimulations,
             simulationLength = simulationLength,
@@ -72,9 +72,9 @@ class StartSimulationUseCase @Inject constructor(
             simulationLength = simulationLength
         )
 
-        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals( // Qui sicuramente è scorretto il calcolo dei withdrawal -> non viene settings.intervals.yearsInFIRE / distinzione tra anni con e senza pensionegi
+        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
-            yearsWithoutPension = settings.intervals.yearsInPaidRetirement.toInt(),
+            yearsWithoutPension = settings.intervals.yearsInFIRE.toInt(),
             pensionWithdrawal = settings.withdrawals.withPension.toDouble(),
             inflationMatrix = inflationMatrix
         )

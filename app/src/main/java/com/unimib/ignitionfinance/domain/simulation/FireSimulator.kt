@@ -84,7 +84,7 @@ object FireSimulator {
         val cashInterestRate = effectiveConfig.simulationParams.cashInterestRate
 
         for (year in 0 until SIMULATION_YEARS - 1) {
-            if (year % 10 == 0) { // Log ogni 10 anni per non appesantire troppo l'output
+            if (year % 10 == 0) {
                 Log.d(TAG, "Simulazione anno: $year")
             }
             simulateYearlyPortfolio(
