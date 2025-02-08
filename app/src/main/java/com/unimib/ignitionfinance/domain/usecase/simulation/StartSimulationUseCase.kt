@@ -72,7 +72,7 @@ class StartSimulationUseCase @Inject constructor(
             simulationLength = simulationLength
         )
 
-        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals( // Qui sicuramente è scorretto il calcolo dei withdrawal -> non viene settings.intervals.yearsInFIRE / distinzione tra anni con e senza pensione
+        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals( // Qui sicuramente è scorretto il calcolo dei withdrawal -> non viene settings.intervals.yearsInFIRE / distinzione tra anni con e senza pensionegi
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
             yearsWithoutPension = settings.intervals.yearsInPaidRetirement.toInt(),
             pensionWithdrawal = settings.withdrawals.withPension.toDouble(),
