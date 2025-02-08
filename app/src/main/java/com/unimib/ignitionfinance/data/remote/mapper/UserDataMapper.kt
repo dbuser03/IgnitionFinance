@@ -38,7 +38,6 @@ object UserDataMapper {
                 symbol = (productMap["symbol"] as? String).orEmpty(),
                 averagePerformance = (productMap["averagePerformance"] as? String).orEmpty(),
                 currency = (productMap["currency"] as? String).orEmpty(),
-                // Ora utilizziamo il campo lastUpdated come String
                 lastUpdated = (productMap["lastUpdated"] as? String).orEmpty()
             )
         } ?: emptyList()
@@ -95,7 +94,6 @@ object UserDataMapper {
                     "averagePerformance" to product.averagePerformance,
                     "currency" to product.currency,
                     "symbol" to product.symbol,
-                    // Usiamo il campo lastUpdated in output
                     "lastUpdated" to product.lastUpdated
                 )
             },

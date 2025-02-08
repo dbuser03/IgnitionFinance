@@ -7,7 +7,7 @@ import com.unimib.ignitionfinance.domain.simulation.model.SimulationParams
 import com.unimib.ignitionfinance.domain.usecase.fetch.FetchInflationUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.cash.GetUserCashUseCase
 import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetUserInvestedUseCase
-import com.unimib.ignitionfinance.domain.usecase.settings.GetUserDatasetUseCase
+import com.unimib.ignitionfinance.domain.usecase.simulation.GetUserDatasetUseCase
 import com.unimib.ignitionfinance.domain.usecase.settings.GetUserSettingsUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

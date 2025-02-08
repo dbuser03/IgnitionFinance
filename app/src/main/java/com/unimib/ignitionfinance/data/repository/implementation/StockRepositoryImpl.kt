@@ -22,7 +22,6 @@ class StockRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val stockData = response.body()
                 if (stockData != null) {
-                    // Il mapper ora garantisce una mappa non nulla, anche se vuota
                     val mappedData = stockApiMapper.mapToDomain(stockData)
                     emit(Result.success(mappedData))
                 } else {

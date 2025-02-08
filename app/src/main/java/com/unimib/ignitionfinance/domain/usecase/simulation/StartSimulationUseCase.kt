@@ -22,7 +22,7 @@ class StartSimulationUseCase @Inject constructor(
     private val configFactory: SimulationConfigFactory
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun execute(apiKey: String): Flow<Result<SimulationResult>> = flow {
+    fun execute(): Flow<Result<SimulationResult>> = flow {
         try {
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
@@ -57,17 +57,17 @@ class StartSimulationUseCase @Inject constructor(
 
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
-        val TAG = "SIMULATION_LOG"
+        val LOG_TAG = "SIMULATION_LOG"
 
 
-        val (_, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
+        val (cumulativeReturnMatrix, annualReturnMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
             dataset = dataset,
             numSimulations = numSimulations,
             simulationLength = simulationLength,
             daysPerYear = params.daysPerYear
         )
-        val reverseAnnualReturnMatrix = annualReturnsMatrix.reversedArray()
-        Log.d(TAG, "Annual Returns Matrix: ${reverseAnnualReturnMatrix.contentDeepToString()}")
+        val reverseAnnualReturnMatrix = annualReturnMatrix.reversedArray()
+        Log.d(LOG_TAG, "Annual Returns Matrix: ${reverseAnnualReturnMatrix.contentDeepToString()}")
 
         val inflationMatrix = InflationModel.generateInflationMatrix(
             scenarioInflation = settings.inflationModel.lowercase(),
@@ -76,7 +76,7 @@ class StartSimulationUseCase @Inject constructor(
             numSimulations = numSimulations,
             simulationLength = simulationLength
         )
-        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
+        Log.d(LOG_TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
 
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
@@ -86,11 +86,11 @@ class StartSimulationUseCase @Inject constructor(
         )
 
         val reversedWithdrawalsMatrix = withdrawalMatrix.reversedArray()
-        Log.d(TAG, "Withdrawals Matrix: ${reversedWithdrawalsMatrix.contentDeepToString()}")
+        Log.d(LOG_TAG, "Withdrawals Matrix: ${reversedWithdrawalsMatrix.contentDeepToString()}")
 
         return FireSimulator.simulatePortfolio(
             config = config,
-            marketReturnsMatrix = annualReturnsMatrix,
+            marketReturnsMatrix = annualReturnMatrix,
             withdrawalMatrix = withdrawalMatrix
         )
     }

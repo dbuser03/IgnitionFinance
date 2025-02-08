@@ -27,7 +27,7 @@ class SimulationScreenViewModel @Inject constructor(
             _state.update { it.copy(simulationState = UiState.Loading) }
 
             try {
-                startSimulationUseCase.execute(apiKey)
+                startSimulationUseCase.execute()
                     .collect { result ->
                         _state.update { currentState ->
                             when {

@@ -24,7 +24,6 @@ object AnnualReturnsMatrixGenerator {
         val annualReturnsMatrix = Array(simulationLength) { DoubleArray(numSimulations) { 0.0 } }
         val cumulativeReturnsMatrix = Array(simulationLength) { DoubleArray(numSimulations) { 0.0 } }
 
-        // Initialize first row to 1.0
         for (c in 0 until numSimulations) {
             annualReturnsMatrix[0][c] = 1.0
             cumulativeReturnsMatrix[0][c] = 1.0
@@ -46,15 +45,6 @@ object AnnualReturnsMatrixGenerator {
             }
         }
 
-        logMatrix(annualReturnsMatrix)
-
         return Pair(cumulativeReturnsMatrix, annualReturnsMatrix)
-    }
-
-    private fun logMatrix(matrix: Array<DoubleArray>) {
-        for (t in matrix.indices) {
-            val rowString = matrix[t].joinToString(prefix = "[", postfix = "]", separator = ", ") { "%.6f".format(it) }
-            Log.d(TAG, "Year $t: $rowString")
-        }
     }
 }

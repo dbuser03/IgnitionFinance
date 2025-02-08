@@ -1,4 +1,4 @@
-package com.unimib.ignitionfinance.domain.usecase.settings
+package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
