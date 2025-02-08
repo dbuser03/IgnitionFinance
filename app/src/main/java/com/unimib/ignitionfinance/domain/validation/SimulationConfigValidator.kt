@@ -98,7 +98,7 @@ object SimulationConfigValidator {
     }
 
     private fun validateInflationModel(inflationModel: String, errors: MutableList<String>) {
-        val validModels = setOf("fixed", "real", "scaled", "lognormal")
+        val validModels = setOf("fixed", "NORMAL", "SCALE", "LOGNORMAL")
         if (inflationModel !in validModels) {
             errors.add("Invalid inflation model. Must be one of: ${validModels.joinToString()}")
         }

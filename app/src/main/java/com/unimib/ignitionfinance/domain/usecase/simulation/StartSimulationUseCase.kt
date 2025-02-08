@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -21,7 +22,7 @@ class StartSimulationUseCase @Inject constructor(
     private val configFactory: SimulationConfigFactory
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun execute(): Flow<Result<SimulationResult>> = flow {
+    fun execute(apiKey: String): Flow<Result<SimulationResult>> = flow {
         try {
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
@@ -56,13 +57,16 @@ class StartSimulationUseCase @Inject constructor(
 
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
+        val TAG = "SIMULATION_LOG"
 
-        val (cumulativeReturnsMatrix, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices( // DUBBIO 1 parametro non usato
+
+        val (_, annualReturnsMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
             dataset = dataset,
             numSimulations = numSimulations,
             simulationLength = simulationLength,
             daysPerYear = params.daysPerYear
         )
+        Log.d(TAG, "Annual Returns Matrix: ${annualReturnsMatrix.contentDeepToString()}")
 
         val inflationMatrix = InflationModel.generateInflationMatrix(
             scenarioInflation = settings.inflationModel.lowercase(),
@@ -71,10 +75,11 @@ class StartSimulationUseCase @Inject constructor(
             numSimulations = numSimulations,
             simulationLength = simulationLength
         )
+        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
 
-        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals( // Qui sicuramente è scorretto il calcolo dei withdrawal -> non viene settings.intervals.yearsInFIRE / distinzione tra anni con e senza pensione
+        val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
-            yearsWithoutPension = settings.intervals.yearsInPaidRetirement.toInt(),
+            yearsWithoutPension = settings.intervals.yearsInFIRE.toInt(),
             pensionWithdrawal = settings.withdrawals.withPension.toDouble(),
             inflationMatrix = inflationMatrix
         )
@@ -83,6 +88,7 @@ class StartSimulationUseCase @Inject constructor(
             config = config,
             marketReturnsMatrix = annualReturnsMatrix,
             withdrawalMatrix = withdrawalMatrix
+
         )
     }
 }

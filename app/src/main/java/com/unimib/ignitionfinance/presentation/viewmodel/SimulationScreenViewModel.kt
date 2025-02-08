@@ -23,35 +23,39 @@ class SimulationScreenViewModel @Inject constructor(
     val state: StateFlow<SimulationScreenState> = _state
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun startSimulation(apiKey: String, netWorth: Double, settings: Settings) {
+    fun startSimulation(apiKey: String) {
         viewModelScope.launch {
             _state.update { it.copy(simulationState = UiState.Loading) }
-            startSimulationUseCase.execute(apiKey, netWorth, settings)
-                .catch { exception ->
-                    _state.update { it.copy(simulationState = UiState.Error(exception.localizedMessage ?: "Simulation failed")) }
-                }
-                .collect { result ->
-                    _state.update { currentState ->
-                        when {
-                            result.isSuccess -> currentState.copy(
-                                simulationState = UiState.Success(
-                                    SimulationResult(
-                                        successRate = 0.0,
-                                        fuckYouMoney = 0.0,
-                                        successRatePlus100k = 0.0,
-                                        successRatePlus200k = 0.0,
-                                        successRatePlus300k = 0.0
+
+            try {
+                startSimulationUseCase.execute(apiKey)
+                    .collect { result ->
+                        _state.update { currentState ->
+                            when {
+                                result.isSuccess -> currentState.copy(
+                                    simulationState = UiState.Success(
+                                        result.getOrNull() ?: SimulationResult(
+                                            successRate = 0.0,
+                                            fuckYouMoney = 0.0,
+                                            successRatePlus100k = 0.0,
+                                            successRatePlus200k = 0.0,
+                                            successRatePlus300k = 0.0
+                                        )
                                     )
                                 )
-                            )
-                            else -> currentState.copy(
-                                simulationState = UiState.Error(
-                                    result.exceptionOrNull()?.localizedMessage ?: "Simulation error"
+                                else -> currentState.copy(
+                                    simulationState = UiState.Error(
+                                        result.exceptionOrNull()?.localizedMessage ?: "Simulation error"
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(simulationState = UiState.Error(e.localizedMessage ?: "Simulation failed"))
                 }
+            }
         }
     }
 }

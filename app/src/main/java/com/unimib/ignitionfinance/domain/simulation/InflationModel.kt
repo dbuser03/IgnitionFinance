@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.domain.simulation
 
+import android.util.Log
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -17,8 +18,12 @@ object InflationModel {
         numSimulations: Int,
         simulationLength: Int = 100
     ): Array<DoubleArray> {
+        val TAG = "INFLATION_MODEL_LOG"
+        Log.d(TAG, "Historical inflation data: ${historicalInflation.joinToString(", ")}")
+
+
         val inflationMatrix: Array<DoubleArray> = when (scenarioInflation.lowercase()) {
-            "real" -> {
+            "normal" -> {
                 Array(simulationLength) { DoubleArray(numSimulations) {
                     historicalInflation[Random.nextInt(historicalInflation.size)]
                 } }
@@ -46,6 +51,7 @@ object InflationModel {
                 Array(simulationLength) { DoubleArray(numSimulations) { inflationMean } }
             }
         }
+        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
 
         return inflationMatrix
     }
