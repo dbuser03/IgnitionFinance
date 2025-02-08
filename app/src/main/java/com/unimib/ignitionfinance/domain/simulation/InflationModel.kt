@@ -18,7 +18,7 @@ object InflationModel {
         simulationLength: Int = 100
     ): Array<DoubleArray> {
         val inflationMatrix: Array<DoubleArray> = when (scenarioInflation.lowercase()) {
-            "real" -> {
+            "normal" -> {
                 Array(simulationLength) { DoubleArray(numSimulations) {
                     historicalInflation[Random.nextInt(historicalInflation.size)]
                 } }
