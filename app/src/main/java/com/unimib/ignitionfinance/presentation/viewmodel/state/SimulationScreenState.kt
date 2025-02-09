@@ -3,6 +3,7 @@ package com.unimib.ignitionfinance.presentation.viewmodel.state
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 
 data class SimulationScreenState(
+    val netWorth: Double? = null,
     val currentPortfolioValue: Double = 0.0,
     val portfolioValueState: UiState<Double> = UiState.Idle,
     val initialInvestment: Double = 0.0,
