@@ -28,6 +28,7 @@ class BuildDatasetUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
         try {
+            // Fetch product list
             val productsResult = getProductListUseCase.execute(apiKey).first()
             val products = productsResult.getOrElse {
                 emit(Result.failure<List<DailyReturn>>(it))
@@ -42,15 +43,13 @@ class BuildDatasetUseCase @Inject constructor(
 
             val dailyReturns = when (DatasetValidator.validate(historicalDataList)) {
                 is DatasetValidationResult.Success -> {
-                    Log.d("BuildDatasetUseCase", "Historical Data: $historicalDataList")
                     if (products.isEmpty()) {
-                        val brkaResult = stockRepository.fetchStockData("BRK.A", BuildConfig.ALPHAVANTAGE_API_KEY).first()
-                        val brkaData: Map<String, StockData> = brkaResult.getOrElse {
+                        val sp500Result = stockRepository.fetchStockData("SPY", BuildConfig.ALPHAVANTAGE_API_KEY).first()
+                        val sp500Data: Map<String, StockData> = sp500Result.getOrElse {
                             emit(Result.failure<List<DailyReturn>>(it))
                             return@flow
                         }
-                        Log.d("BuildDatasetUseCase", "No products found, using SPY Data: $brkaData")
-                        dailyReturnCalculator.calculateDailyReturns(listOf(brkaData))
+                        dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data))
                     } else {
                         dailyReturnCalculator.calculateDailyReturns(historicalDataList)
                     }
@@ -61,7 +60,6 @@ class BuildDatasetUseCase @Inject constructor(
                         emit(Result.failure<List<DailyReturn>>(it))
                         return@flow
                     }
-                    Log.d("BuildDatasetUseCase", "Dataset validation failed, using SPY Data: $sp500Data")
                     dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data))
                 }
             }
