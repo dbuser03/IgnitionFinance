@@ -77,16 +77,29 @@ fun SimulationScreen(
                     .padding(innerPadding)
             ) {
                 when (state.simulationState) {
-                    is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    is UiState.Success ->
+                    is UiState.Loading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
+                    }
+
+                    is UiState.Success -> {
                         SimulationBarsForFour(
                             capital1 = "350k", percentage1 = 21.0,
                             capital2 = "400k", percentage2 = 80.0,
                             capital3 = "450k", percentage3 = 90.0,
                             capital4 = "500k", percentage4 = 100.0
                         )
-                    is UiState.Error -> Text(text = "Error: ${(state.simulationState as UiState.Error).message}", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    else -> Text( text = "" )
+                    }
+
+                    is UiState.Error -> {
+                        Text(
+                            text = "Error: ${(state.simulationState as UiState.Error).message}",
+                            modifier = Modifier.align(androidx.compose.ui.Alignment.Center)
+                        )
+                    }
+
+                    else -> {
+                        Text(text = "")
+                    }
                 }
             }
         }

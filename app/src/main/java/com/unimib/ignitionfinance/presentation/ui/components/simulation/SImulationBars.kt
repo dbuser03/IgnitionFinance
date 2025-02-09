@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
+import kotlin.math.max
 
 data class SimulationBar(
     val percentage: Double,
@@ -31,19 +32,41 @@ fun SimulationBars(
         MaterialTheme.colorScheme.onSecondary,
         MaterialTheme.colorScheme.onTertiary
     )
+
+    val effectiveValues: List<Double> = if (results.isNotEmpty()) {
+        val n = results.size
+        val effective = MutableList(n) { 0.0 }
+        effective[n - 1] = results[n - 1].percentage
+
+        for (i in (n - 2) downTo 0) {
+            val actualGap = results[i + 1].percentage - results[i].percentage
+            val gap = when {
+                actualGap == 0.0 -> 0.0
+                actualGap < 10.0 -> 10.0
+                else -> actualGap
+            }
+            effective[i] = effective[i + 1] - gap
+        }
+        effective
+    } else {
+        listOf()
+    }
+
     Row(
         modifier = Modifier
-            .height(400.dp)
+            .padding(top = 36.dp)
+            .height(300.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
         results.forEachIndexed { index, result ->
+            val effectivePercentage = max(effectiveValues.getOrNull(index) ?: result.percentage, 0.0)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                if (result.percentage <= 20) {
+                if (result.percentage <= 30) {
                     Text(
                         text = "${result.percentage.toInt()}%",
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -54,13 +77,13 @@ fun SimulationBars(
                 Box(
                     modifier = Modifier
                         .width(80.dp)
-                        .fillMaxHeight((((result.percentage / 100f) * MAX_BAR_HEIGHT).toFloat()))
+                        .fillMaxHeight(((effectivePercentage / 100f) * MAX_BAR_HEIGHT).toFloat())
                         .background(
                             barColors.getOrElse(index) { MaterialTheme.colorScheme.primaryContainer },
                             shape = RoundedCornerShape(12.dp)
                         )
                 ) {
-                    if (result.percentage > 20) {
+                    if (result.percentage > 30) {
                         Text(
                             text = "${result.percentage.toInt()}%",
                             fontSize = if (index == 0) 16.sp else 14.sp,
@@ -104,10 +127,10 @@ fun SimulationBarsForFour(
 fun SimulationBarsPreview() {
     IgnitionFinanceTheme {
         SimulationBarsForFour(
-            capital1 = "350k", percentage1 = 21.0,
-            capital2 = "400k", percentage2 = 80.0,
-            capital3 = "450k", percentage3 = 90.0,
-            capital4 = "500k", percentage4 = 100.0
+            capital1 = "350k", percentage1 = 20.0,
+            capital2 = "400k", percentage2 = 30.0,
+            capital3 = "450k", percentage3 = 95.0,
+            capital4 = "500k", percentage4 = 96.0
         )
     }
 }
