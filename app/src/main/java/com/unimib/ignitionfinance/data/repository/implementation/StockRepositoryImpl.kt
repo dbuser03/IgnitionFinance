@@ -26,23 +26,30 @@ class StockRepositoryImpl @Inject constructor(
             val response = stockService.getStockData(symbol = symbol, apiKey = apiKey)
             if (response.isSuccessful) {
                 val stockData = response.body()
-                if (stockData != null && symbol == "SPY") {
-                    val extraJson = readAssetFile()
+                if (stockData != null) {
+                    // Se il simbolo è SPY, unisci i dati extra; altrimenti, usa i dati così come sono
+                    val finalStockData = if (symbol == "SPY") {
+                        val extraJson = readAssetFile()
+                        val type = object : TypeToken<Map<String, TimeSeriesData>>() {}.type
+                        val extraData: Map<String, TimeSeriesData> = Gson().fromJson(extraJson, type)
 
-                    val type = object : TypeToken<Map<String, TimeSeriesData>>() {}.type
-                    val extraData: Map<String, TimeSeriesData> = Gson().fromJson(extraJson, type)
+                        // Filtra i dati extra (assumendo che le date siano in formato ISO "yyyy-MM-dd")
+                        val filteredExtraData = extraData.filterKeys { date ->
+                            date < "1999-11-01"
+                        }
 
-                    val filteredExtraData = extraData.filterKeys { date ->
-                        date < "1999-11-01"
+                        // Unisci le serie temporali
+                        val mergedTimeSeries = stockData.timeSeries.toMutableMap().apply {
+                            putAll(filteredExtraData)
+                        }
+
+                        // Crea un nuovo oggetto stockData aggiornato
+                        stockData.copy(timeSeries = mergedTimeSeries)
+                    } else {
+                        stockData
                     }
 
-                    val mergedTimeSeries = stockData.timeSeries.toMutableMap().apply {
-                        putAll(filteredExtraData)
-                    }
-
-                    val updatedStockData = stockData.copy(timeSeries = mergedTimeSeries)
-
-                    val mappedData = stockApiMapper.mapToDomain(updatedStockData)
+                    val mappedData = stockApiMapper.mapToDomain(finalStockData)
                     emit(Result.success(mappedData))
                 } else {
                     emit(Result.failure(Throwable("Error: Empty response body")))
@@ -54,6 +61,7 @@ class StockRepositoryImpl @Inject constructor(
             emit(Result.failure(e))
         }
     }.flowOn(Dispatchers.IO)
+
 
     private fun readAssetFile(): String {
         return context.assets.open("extra_data.json").bufferedReader().use { it.readText() }
