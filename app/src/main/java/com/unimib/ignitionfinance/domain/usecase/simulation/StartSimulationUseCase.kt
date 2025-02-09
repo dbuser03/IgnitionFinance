@@ -22,7 +22,7 @@ class StartSimulationUseCase @Inject constructor(
     private val configFactory: SimulationConfigFactory
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun execute(): Flow<Result<SimulationResult>> = flow {
+    fun execute(): Flow<Result<List<SimulationResult>>> = flow {
         try {
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
@@ -31,19 +31,34 @@ class StartSimulationUseCase @Inject constructor(
             }
 
             val configResult = configFactory.createConfig().first()
-            val config = configResult.getOrElse {
+            val baseConfig = configResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
 
-            val validationErrors = SimulationConfigValidator.validate(config)
+            val capitalIncrements = listOf(0.0, 100_000.0, 200_000.0, 300_000.0)
+            val configs = capitalIncrements.map { increment ->
+                baseConfig.copy(
+                    capital = baseConfig.capital.copy(
+                        cash = baseConfig.capital.cash + increment
+                    )
+                )
+            }
+
+            val validationErrors = configs.flatMap { config ->
+                SimulationConfigValidator.validate(config).map {
+                    "Config with capital ${config.capital.total}: $it"
+                }
+            }
+
             if (validationErrors.isNotEmpty()) {
                 emit(Result.failure(IllegalArgumentException(validationErrors.joinToString("\n"))))
                 return@flow
             }
 
-            val simulationResult = runSimulation(config)
-            emit(Result.success(simulationResult))
+            val results = configs.map { runSimulation(it) }
+            emit(Result.success(results))
+
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
@@ -67,9 +82,8 @@ class StartSimulationUseCase @Inject constructor(
             daysPerYear = params.daysPerYear
         )
 
-        // **Calcolo e stampa dei rendimenti annui medi**
         for (t in 0 until simulationLength) {
-            val annualAverageReturn = annualReturnMatrix[t].average() // Calcola la media dell'anno t
+            val annualAverageReturn = annualReturnMatrix[t].average()
             Log.d(returnsTag, "Year $t - Avg Return: $annualAverageReturn")
         }
 
@@ -98,6 +112,4 @@ class StartSimulationUseCase @Inject constructor(
             withdrawalMatrix = withdrawalMatrix
         )
     }
-
-
 }
