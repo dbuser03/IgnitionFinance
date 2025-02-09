@@ -76,8 +76,9 @@ object RepositoryModule {
     @Singleton
     fun provideStockRepository(
         stockService: StockService,
-        stockMapper: StockMapper
-    ): StockRepository = StockRepositoryImpl(stockService, stockMapper)
+        stockMapper: StockMapper,
+        @ApplicationContext context: Context
+    ): StockRepository = StockRepositoryImpl(stockService, stockMapper, context)
 
     @Provides
     @Singleton
