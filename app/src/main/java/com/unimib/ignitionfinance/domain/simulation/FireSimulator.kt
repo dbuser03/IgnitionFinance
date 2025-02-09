@@ -64,7 +64,7 @@ object FireSimulator {
         }
         val successRate = (successCount.toDouble() / numSimulations)
 
-        Log.d(TAG, "Success rate: $successRate%")
+        Log.d(TAG, "Success rate: $successRate")
 
         return SimulationResult(
             successRate = successRate,

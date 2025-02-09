@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -22,8 +21,9 @@ class StartSimulationUseCase @Inject constructor(
     private val configFactory: SimulationConfigFactory
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun execute(): Flow<Result<List<SimulationResult>>> = flow {
+    fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
+
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
                 emit(Result.failure(it))
@@ -36,7 +36,7 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-            val capitalIncrements = listOf(0.0, 100_000.0, 200_000.0, 300_000.0)
+            val capitalIncrements = listOf(0.0, 50_000.0, 100_000.0, 150_000.0)
             val configs = capitalIncrements.map { increment ->
                 baseConfig.copy(
                     capital = baseConfig.capital.copy(
@@ -50,14 +50,21 @@ class StartSimulationUseCase @Inject constructor(
                     "Config with capital ${config.capital.total}: $it"
                 }
             }
-
             if (validationErrors.isNotEmpty()) {
-                emit(Result.failure(IllegalArgumentException(validationErrors.joinToString("\n"))))
+                val errorMessage = validationErrors.joinToString("\n")
+                emit(Result.failure(IllegalArgumentException(errorMessage)))
                 return@flow
             }
 
-            val results = configs.map { runSimulation(it) }
-            emit(Result.success(results))
+            val results = configs.map { config ->
+                val simulationResult = runSimulation(config)
+                simulationResult
+            }
+
+            val startingCapital = configs.last().capital.total
+            val fuckYouMoney = calculateFuckYouMoney(baseConfig, startingCapital)
+
+            emit(Result.success(results to fuckYouMoney))
 
         } catch (e: Exception) {
             emit(Result.failure(e))
@@ -72,8 +79,6 @@ class StartSimulationUseCase @Inject constructor(
 
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
-        val tag = "SIMULATION_LOG"
-        val returnsTag = "SIMULATION_LOG"
 
         val (_, annualReturnMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
             dataset = dataset,
@@ -82,11 +87,6 @@ class StartSimulationUseCase @Inject constructor(
             daysPerYear = params.daysPerYear
         )
 
-        for (t in 0 until simulationLength) {
-            val annualAverageReturn = annualReturnMatrix[t].average()
-            Log.d(returnsTag, "Year $t - Avg Return: $annualAverageReturn")
-        }
-
         val inflationMatrix = InflationModel.generateInflationMatrix(
             scenarioInflation = settings.inflationModel.lowercase(),
             inflationMean = params.averageInflation,
@@ -94,8 +94,6 @@ class StartSimulationUseCase @Inject constructor(
             numSimulations = numSimulations,
             simulationLength = simulationLength
         )
-        val inflationAverage = inflationMatrix.flatMap { it.asList() }.average()
-        Log.d(tag, "Inflation Matrix Average: $inflationAverage")
 
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
@@ -103,13 +101,46 @@ class StartSimulationUseCase @Inject constructor(
             pensionWithdrawal = settings.withdrawals.withPension.toDouble(),
             inflationMatrix = inflationMatrix
         )
-        val withdrawalAverage = withdrawalMatrix.flatMap { it.asList() }.average()
-        Log.d(tag, "Withdrawal Matrix Average: $withdrawalAverage")
 
         return FireSimulator.simulatePortfolio(
             config = config,
             marketReturnsMatrix = annualReturnMatrix,
             withdrawalMatrix = withdrawalMatrix
         )
+    }
+
+    private fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
+        val increment = 50_000.0
+        val successRateThreshold = 0.95
+
+        val baseTotal = baseConfig.capital.total
+        val investedRatio = if (baseTotal > 0) baseConfig.capital.invested / baseTotal else 0.0
+        val cashRatio = if (baseTotal > 0) baseConfig.capital.cash / baseTotal else 0.0
+
+        var totalCapital = startingCapital
+        var simulationResult: SimulationResult
+
+        for (attempt in 1..4) {
+            val config = baseConfig.copy(
+                capital = baseConfig.capital.copy(
+                    invested = totalCapital * investedRatio,
+                    cash = totalCapital * cashRatio
+                )
+            )
+
+            simulationResult = runSimulation(config)
+            val successRate = simulationResult.successRate
+
+
+            if (successRate >= successRateThreshold) {
+                return totalCapital
+            }
+
+            if (attempt < 4) {
+                totalCapital += increment
+            }
+        }
+
+        return totalCapital
     }
 }
