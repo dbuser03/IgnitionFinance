@@ -57,17 +57,16 @@ class StartSimulationUseCase @Inject constructor(
 
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
-        val LOG_TAG = "SIMULATION_LOG"
+        val tag = "SIMULATION_LOG"
 
-
-        val (cumulativeReturnMatrix, annualReturnMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
+        val (annualReturnMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
             dataset = dataset,
             numSimulations = numSimulations,
             simulationLength = simulationLength,
             daysPerYear = params.daysPerYear
         )
         val reverseAnnualReturnMatrix = annualReturnMatrix.reversedArray()
-        Log.d(LOG_TAG, "Annual Returns Matrix: ${reverseAnnualReturnMatrix.contentDeepToString()}")
+        Log.d(tag, "Annual Returns Matrix: ${reverseAnnualReturnMatrix.contentDeepToString()}")
 
         val inflationMatrix = InflationModel.generateInflationMatrix(
             scenarioInflation = settings.inflationModel.lowercase(),
@@ -76,7 +75,7 @@ class StartSimulationUseCase @Inject constructor(
             numSimulations = numSimulations,
             simulationLength = simulationLength
         )
-        Log.d(LOG_TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
+        Log.d(tag, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
 
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
@@ -86,7 +85,7 @@ class StartSimulationUseCase @Inject constructor(
         )
 
         val reversedWithdrawalsMatrix = withdrawalMatrix.reversedArray()
-        Log.d(LOG_TAG, "Withdrawals Matrix: ${reversedWithdrawalsMatrix.contentDeepToString()}")
+        Log.d(tag, "Withdrawals Matrix: ${reversedWithdrawalsMatrix.contentDeepToString()}")
 
         return FireSimulator.simulatePortfolio(
             config = config,

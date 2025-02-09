@@ -8,7 +8,9 @@ import javax.inject.Inject
 class DailyReturnCalculator @Inject constructor() {
     private val days = 253
 
-    fun calculateDailyReturns(historicalData: List<Map<String, StockData>>): List<DailyReturn> {
+    fun calculateDailyReturns(
+        historicalData: List<Map<String, StockData>>,
+    ): List<DailyReturn> {
         val dailyReturns = mutableListOf<DailyReturn>()
 
         for (data in historicalData) {
