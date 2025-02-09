@@ -21,49 +21,70 @@ class DailyReturnCalculator @Inject constructor() {
             return calculateSimpleReturns(historicalData.first())
         }
 
-        val totalAmount = products.sumOf {
-            BigDecimal(it.amount.ifEmpty { "0" })
-        }
-        if (totalAmount == BigDecimal.ZERO) return calculateSimpleReturns(historicalData.first())
-
-        val commonDates = historicalData.map { it.keys }
-            .reduce { acc, dates -> acc.intersect(dates) }
+        val allDates: List<String> = historicalData.flatMap { it.keys }
+            .distinct()
             .sorted()
 
-        val weightedPrices = commonDates.associateWith { date ->
-            var weightedPrice = BigDecimal.ZERO
-            products.forEachIndexed { index, product ->
-                val productData = historicalData.getOrNull(index) ?: return@forEachIndexed
-                val closePrice = BigDecimal(productData[date]?.close?.toString() ?: return@forEachIndexed)
-                val weight = BigDecimal(product.amount.ifEmpty { "0" }).divide(totalAmount, 10, RoundingMode.HALF_UP)
-                weightedPrice = weightedPrice.plus(closePrice.multiply(weight))
-            }
-            weightedPrice
-        }
+        for (i in days until allDates.size) {
+            val currentDate = allDates[i]
+            val pastDate = allDates[i - days]
 
-        for (i in days until commonDates.size) {
-            val pastDate = commonDates[i - days]
-            val currentDate = commonDates[i]
-
-            val pastWeightedPrice = weightedPrices[pastDate] ?: continue
-            val currentWeightedPrice = weightedPrices[currentDate] ?: continue
-
-            val return253Days = if (pastWeightedPrice != BigDecimal.ZERO) {
-                currentWeightedPrice.minus(pastWeightedPrice)
-                    .divide(pastWeightedPrice, 10, RoundingMode.HALF_UP)
-            } else {
-                BigDecimal.ZERO
+            val commonIndices = mutableListOf<Int>()
+            for (index in historicalData.indices) {
+                if (historicalData[index].containsKey(currentDate) && historicalData[index].containsKey(pastDate)) {
+                    commonIndices.add(index)
+                }
             }
 
-            dailyReturns.add(
-                DailyReturn(
-                    date = currentDate,
-                    weightedReturn = return253Days
-                )
-            )
+            if (commonIndices.isEmpty()) {
+                continue
+            }
+
+            var compositeCurrentSum = BigDecimal.ZERO
+            var compositePastSum = BigDecimal.ZERO
+            var totalWeightCurrent = BigDecimal.ZERO
+            var totalWeightPast = BigDecimal.ZERO
+
+            for (index in commonIndices) {
+                val productWeight = BigDecimal(products[index].amount.ifEmpty { "0" })
+                if (productWeight.compareTo(BigDecimal.ZERO) == 0) {
+                    continue
+                }
+
+                val currentCloseData = historicalData[index][currentDate]?.close
+                val pastCloseData = historicalData[index][pastDate]?.close
+                if (currentCloseData == null || pastCloseData == null) {
+                    continue
+                }
+                val currentClose = BigDecimal(currentCloseData.toString())
+                val pastClose = BigDecimal(pastCloseData.toString())
+
+                compositeCurrentSum = compositeCurrentSum.add(currentClose.multiply(productWeight))
+                totalWeightCurrent = totalWeightCurrent.add(productWeight)
+
+                compositePastSum = compositePastSum.add(pastClose.multiply(productWeight))
+                totalWeightPast = totalWeightPast.add(productWeight)
+            }
+
+            if (totalWeightCurrent.compareTo(BigDecimal.ZERO) == 0 ||
+                totalWeightPast.compareTo(BigDecimal.ZERO) == 0
+            ) {
+                continue
+            }
+
+            val compositeCurrent = compositeCurrentSum.divide(totalWeightCurrent, 10, RoundingMode.HALF_UP)
+            val compositePast = compositePastSum.divide(totalWeightPast, 10, RoundingMode.HALF_UP)
+
+            if (compositePast.compareTo(BigDecimal.ZERO) == 0) {
+                continue
+            }
+            val returnValue = compositeCurrent.subtract(compositePast)
+                .divide(compositePast, 10, RoundingMode.HALF_UP)
+
+            dailyReturns.add(DailyReturn(date = currentDate, weightedReturn = returnValue))
         }
 
-        Log.d("DailyReturnCalculator", "${dailyReturns.reversed()}")
+        dailyReturns.sortBy { it.date }
         return dailyReturns
     }
 
@@ -75,24 +96,17 @@ class DailyReturnCalculator @Inject constructor() {
             val pastDate = sortedDates[i - days]
             val currentDate = sortedDates[i]
 
-            val pastClose = BigDecimal(data[pastDate]?.close?.toString() ?: continue)
-            val currentClose = BigDecimal(data[currentDate]?.close?.toString() ?: continue)
+            val pastClose = data[pastDate]?.close?.toString()?.let { BigDecimal(it) } ?: continue
+            val currentClose = data[currentDate]?.close?.toString()?.let { BigDecimal(it) } ?: continue
 
-            val annualReturn = if (pastClose != BigDecimal.ZERO) {
-                currentClose.minus(pastClose)
-                    .divide(pastClose, 10, RoundingMode.HALF_UP)
-            } else {
-                BigDecimal.ZERO
+            if (pastClose.compareTo(BigDecimal.ZERO) == 0) {
+                continue
             }
 
-            dailyReturns.add(
-                DailyReturn(
-                    date = currentDate,
-                    weightedReturn = annualReturn
-                )
-            )
+            val ret = currentClose.subtract(pastClose)
+                .divide(pastClose, 10, RoundingMode.HALF_UP)
+            dailyReturns.add(DailyReturn(date = currentDate, weightedReturn = ret))
         }
-
         return dailyReturns
     }
 }

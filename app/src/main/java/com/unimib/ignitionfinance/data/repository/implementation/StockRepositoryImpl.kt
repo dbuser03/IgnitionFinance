@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.data.repository.implementation
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.unimib.ignitionfinance.data.remote.mapper.StockMapper
@@ -24,31 +25,27 @@ class StockRepositoryImpl @Inject constructor(
     override suspend fun fetchStockData(symbol: String, apiKey: String): Flow<Result<Map<String, StockData>>> = flow {
         try {
             val response = stockService.getStockData(symbol = symbol, apiKey = apiKey)
+            Log.d("StockRepositoryImpl", "Response code: ${response.code()}")
             if (response.isSuccessful) {
                 val stockData = response.body()
                 if (stockData != null) {
-                    // Se il simbolo è SPY, unisci i dati extra; altrimenti, usa i dati così come sono
-                    val finalStockData = if (symbol == "SPY") {
+                    var finalStockData = stockData
+                    if (symbol.uppercase() == "SPY") {
                         val extraJson = readAssetFile()
+                        Log.d("StockRepositoryImpl", "Extra JSON: $extraJson")
                         val type = object : TypeToken<Map<String, TimeSeriesData>>() {}.type
                         val extraData: Map<String, TimeSeriesData> = Gson().fromJson(extraJson, type)
+                        Log.d("StockRepositoryImpl", "Extra data parsed: ${extraData.size} entries")
 
-                        // Filtra i dati extra (assumendo che le date siano in formato ISO "yyyy-MM-dd")
-                        val filteredExtraData = extraData.filterKeys { date ->
-                            date < "1999-11-01"
-                        }
+                        val filteredExtraData = extraData.filterKeys { date -> date < "1999-11-01" }
+                        Log.d("StockRepositoryImpl", "Filtered extra data: ${filteredExtraData.size} entries")
 
-                        // Unisci le serie temporali
                         val mergedTimeSeries = stockData.timeSeries.toMutableMap().apply {
                             putAll(filteredExtraData)
                         }
 
-                        // Crea un nuovo oggetto stockData aggiornato
-                        stockData.copy(timeSeries = mergedTimeSeries)
-                    } else {
-                        stockData
+                        finalStockData = stockData.copy(timeSeries = mergedTimeSeries)
                     }
-
                     val mappedData = stockApiMapper.mapToDomain(finalStockData)
                     emit(Result.success(mappedData))
                 } else {
@@ -58,9 +55,11 @@ class StockRepositoryImpl @Inject constructor(
                 emit(Result.failure(Throwable("Failed to fetch stock data")))
             }
         } catch (e: Exception) {
+            Log.e("StockRepositoryImpl", "Error fetching stock data", e)
             emit(Result.failure(e))
         }
     }.flowOn(Dispatchers.IO)
+
 
 
     private fun readAssetFile(): String {

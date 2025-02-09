@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.remote.model.StockData
@@ -28,7 +27,6 @@ class BuildDatasetUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(apiKey: String): Flow<Result<List<DailyReturn>>> = flow {
         try {
-            // Fetch product list
             val productsResult = getProductListUseCase.execute(apiKey).first()
             val products = productsResult.getOrElse {
                 emit(Result.failure<List<DailyReturn>>(it))
@@ -49,9 +47,9 @@ class BuildDatasetUseCase @Inject constructor(
                             emit(Result.failure<List<DailyReturn>>(it))
                             return@flow
                         }
-                        dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data))
+                        dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data), products)
                     } else {
-                        dailyReturnCalculator.calculateDailyReturns(historicalDataList)
+                        dailyReturnCalculator.calculateDailyReturns(historicalDataList, products)
                     }
                 }
                 is DatasetValidationResult.Failure -> {
@@ -60,7 +58,7 @@ class BuildDatasetUseCase @Inject constructor(
                         emit(Result.failure<List<DailyReturn>>(it))
                         return@flow
                     }
-                    dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data))
+                    dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data), products)
                 }
             }
 
