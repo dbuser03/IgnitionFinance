@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -20,10 +21,14 @@ class StartSimulationUseCase @Inject constructor(
     private val buildDatasetUseCase: BuildDatasetUseCase,
     private val configFactory: SimulationConfigFactory
 ) {
+
+    companion object {
+        private const val TAG = "SIMULATION_USECASE"
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
-
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
                 emit(Result.failure(it))
@@ -56,22 +61,28 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-            val results = configs.map { config ->
-                val simulationResult = runSimulation(config)
-                simulationResult
+            // Eseguiamo le simulazioni per ogni configurazione.
+            // Poiché runSimulation è una funzione suspend, la invochiamo in modo sequenziale.
+            val results = mutableListOf<SimulationResult>()
+            for (config in configs) {
+                results.add(runSimulation(config))
             }
 
             val startingCapital = configs.last().capital.total
             val fuckYouMoney = calculateFuckYouMoney(baseConfig, startingCapital)
 
-            emit(Result.success(results to fuckYouMoney))
+            // Log per stampare il valore del Fuck You Money
+            Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
+            emit(Result.success(results to fuckYouMoney))
         } catch (e: Exception) {
+            Log.e(TAG, "Error during simulation execution", e)
             emit(Result.failure(e))
         }
     }
 
-    private fun runSimulation(config: SimulationConfig): SimulationResult {
+    // Funzione suspend per eseguire la simulazione per una configurazione data.
+    private suspend fun runSimulation(config: SimulationConfig): SimulationResult {
         val settings = config.settings
         val dataset = config.dataset
         val inflationData = config.historicalInflation.values.toList()
@@ -102,6 +113,7 @@ class StartSimulationUseCase @Inject constructor(
             inflationMatrix = inflationMatrix
         )
 
+        // Chiamata alla funzione suspend simulatePortfolio del FireSimulator.
         return FireSimulator.simulatePortfolio(
             config = config,
             marketReturnsMatrix = annualReturnMatrix,
@@ -109,7 +121,9 @@ class StartSimulationUseCase @Inject constructor(
         )
     }
 
-    private fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
+    // Funzione suspend per il calcolo del Fuck You Money.
+    // Viene effettuato un tentativo per ogni incremento di capitale, con log ad ogni iterazione.
+    private suspend fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
         val increment = 50_000.0
         val successRateThreshold = 0.95
 
@@ -131,6 +145,8 @@ class StartSimulationUseCase @Inject constructor(
             simulationResult = runSimulation(config)
             val successRate = simulationResult.successRate
 
+            // Log per ogni tentativo
+            Log.d(TAG, "Attempt $attempt: totalCapital = $totalCapital, successRate = $successRate")
 
             if (successRate >= successRateThreshold) {
                 return totalCapital
