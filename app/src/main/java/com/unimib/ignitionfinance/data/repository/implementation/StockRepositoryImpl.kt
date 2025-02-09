@@ -25,49 +25,44 @@ class StockRepositoryImpl @Inject constructor(
     override suspend fun fetchStockData(symbol: String, apiKey: String): Flow<Result<Map<String, StockData>>> = flow {
         try {
             val response = stockService.getStockData(symbol = symbol, apiKey = apiKey)
+            Log.d("StockRepositoryImpl", "Response code: ${response.code()}")
             if (response.isSuccessful) {
                 val stockData = response.body()
-                Log.d("StockRepository", "Response body: $stockData")
                 if (stockData != null) {
-                    // Legge il file JSON dagli assets
-                    val extraJson = readAssetFile("extra_data.json")
+                    var finalStockData = stockData
+                    if (symbol.uppercase() == "SPY") {
+                        val extraJson = readAssetFile()
+                        Log.d("StockRepositoryImpl", "Extra JSON: $extraJson")
+                        val type = object : TypeToken<Map<String, TimeSeriesData>>() {}.type
+                        val extraData: Map<String, TimeSeriesData> = Gson().fromJson(extraJson, type)
+                        Log.d("StockRepositoryImpl", "Extra data parsed: ${extraData.size} entries")
 
-                    // Parsing del JSON in una Map<String, TimeSeriesData>
-                    val type = object : TypeToken<Map<String, TimeSeriesData>>() {}.type
-                    val extraData: Map<String, TimeSeriesData> = Gson().fromJson(extraJson, type)
+                        val filteredExtraData = extraData.filterKeys { date -> date < "1999-11-01" }
+                        Log.d("StockRepositoryImpl", "Filtered extra data: ${filteredExtraData.size} entries")
 
-                    // Filtra i dati con data precedente al 1999-11-01
-                    val filteredExtraData = extraData.filterKeys { date ->
-                        date < "1999-11-01"
+                        val mergedTimeSeries = stockData.timeSeries.toMutableMap().apply {
+                            putAll(filteredExtraData)
+                        }
+
+                        finalStockData = stockData.copy(timeSeries = mergedTimeSeries)
                     }
-
-                    // Unisci i dati extra con quelli esistenti
-                    val mergedTimeSeries = stockData.timeSeries.toMutableMap().apply {
-                        putAll(filteredExtraData)
-                    }
-
-                    // Se il modello è immutabile, crea una nuova istanza
-                    val updatedStockData = stockData.copy(timeSeries = mergedTimeSeries)
-
-                    // Mappa i dati aggiornati al dominio
-                    val mappedData = stockApiMapper.mapToDomain(updatedStockData)
+                    val mappedData = stockApiMapper.mapToDomain(finalStockData)
                     emit(Result.success(mappedData))
                 } else {
-                    Log.e("StockRepository", "Error: Empty response body")
                     emit(Result.failure(Throwable("Error: Empty response body")))
                 }
             } else {
-                Log.e("StockRepository", "Failed to fetch stock data - HTTP ${response.code()}")
                 emit(Result.failure(Throwable("Failed to fetch stock data")))
             }
         } catch (e: Exception) {
-            Log.e("StockRepository", "Exception: ${e.message}", e)
+            Log.e("StockRepositoryImpl", "Error fetching stock data", e)
             emit(Result.failure(e))
         }
     }.flowOn(Dispatchers.IO)
 
-    // Funzione di utilità per leggere un file dagli assets
-    private fun readAssetFile(fileName: String): String {
-        return context.assets.open(fileName).bufferedReader().use { it.readText() }
+
+
+    private fun readAssetFile(): String {
+        return context.assets.open("extra_data.json").bufferedReader().use { it.readText() }
     }
 }

@@ -5,6 +5,7 @@ import android.util.Log
 object WithdrawalCalculator {
     private const val MONTHS_PER_YEAR = 13
     private const val TAG = "WithdrawalCalculator"
+    private const val AVERAGE_TAG = "WITHDRAWAL_AVERAGE"
 
     fun calculateWithdrawals(
         initialWithdrawal: Double,
@@ -49,7 +50,13 @@ object WithdrawalCalculator {
             }
         }
 
-        // Stampa della matrice finale nel logcat
+        // **Log dettagliati: prelievi annuali medi**
+        for (t in 0 until simulationLength) {
+            val averageWithdrawal = withdrawals[t].average()
+            Log.d(AVERAGE_TAG, "Year $t - Average Annual Withdrawal: $averageWithdrawal")
+        }
+
+        // **Stampa della matrice completa dei prelievi**
         for (t in 0 until simulationLength) {
             val rowString = withdrawals[t].joinToString(prefix = "[", postfix = "]", separator = ", ")
             Log.d(TAG, "Year $t: $rowString")
