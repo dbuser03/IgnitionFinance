@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.fetch
 
+import android.util.Log
 import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -8,7 +9,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class FetchInflationUseCase @Inject constructor(
     private val inflationRepository: InflationRepository
-){
+) {
     private val historicalData = mapOf(
         1955 to 0.023, 1956 to 0.034, 1957 to 0.013, 1958 to 0.028, 1959 to -0.004,
         1960 to 0.023, 1961 to 0.021, 1962 to 0.047, 1963 to 0.075, 1964 to 0.059,
@@ -25,13 +26,24 @@ class FetchInflationUseCase @Inject constructor(
                 .collect { result ->
                     result.fold(
                         onSuccess = { inflationList ->
-                            val apiData: Map<Int, Double> = inflationList.associate { inflationData ->
-                                inflationData.year.toInt() to (inflationData.inflationRate / 100.0)
-                            }
+                            val apiData: Map<Int, Double> =
+                                inflationList.associate { inflationData ->
+                                    inflationData.year.toInt() to (inflationData.inflationRate / 100.0)
+                                }
+
+                            // Log dei dati fetchati dall'API
+                            Log.d("INFLATION_FETCH", "Fetched Inflation Data: $apiData")
+
                             val combinedData: Map<Int, Double> = historicalData + apiData
+                            val reversedCombinedData = combinedData.toList().reversed().toMap()
+
+                            // Log dei dati combinati invertiti
+                            Log.d("INFLATION_FETCH", "Reversed Combined Data: $reversedCombinedData")
+
                             emit(Result.success(combinedData))
                         },
                         onFailure = { exception ->
+                            Log.e("INFLATION_FETCH", "Failed to fetch inflation data", exception)
                             emit(Result.failure(exception))
                         }
                     )
@@ -39,7 +51,9 @@ class FetchInflationUseCase @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            Log.e("INFLATION_FETCH", "Unexpected error", e)
             emit(Result.failure(e))
         }
     }
+
 }

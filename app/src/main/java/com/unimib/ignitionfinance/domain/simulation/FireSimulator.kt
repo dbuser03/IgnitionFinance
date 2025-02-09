@@ -34,14 +34,13 @@ object FireSimulator {
                 val reqWithdrawal = withdrawalMatrix[t][sim]
                 val withdrawCash = minOf(cash[t][sim], reqWithdrawal)
                 val remainingReq = reqWithdrawal - withdrawCash
-                val withdrawFire = remainingReq
 
                 val tax = if (invested[t][sim] > 0)
-                    withdrawFire * (1 - capitalLoad[sim] / invested[t][sim]) * config.settings.expenses.taxRatePercentage.toDouble()
+                    remainingReq * (1 - capitalLoad[sim] / invested[t][sim]) * config.settings.expenses.taxRatePercentage.toDouble()
                 else 0.0
 
-                val oldFire = invested[t][sim] + withdrawFire + tax
-                invested[t][sim] -= (withdrawFire + tax)
+                val oldFire = invested[t][sim] + remainingReq + tax
+                invested[t][sim] -= (remainingReq + tax)
 
                 capitalLoad[sim] = if (oldFire > 0) capitalLoad[sim] * (invested[t][sim] / oldFire) else 0.0
                 cash[t][sim] -= withdrawCash
@@ -63,7 +62,7 @@ object FireSimulator {
         val successCount = (0 until numSimulations).count { sim ->
             (invested[targetYear][sim] + cash[targetYear][sim]) > 0
         }
-        val successRate = (successCount.toDouble() / numSimulations) * 100
+        val successRate = (successCount.toDouble() / numSimulations)
 
         Log.d(TAG, "Success rate: $successRate%")
 

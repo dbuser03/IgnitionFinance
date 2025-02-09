@@ -29,13 +29,13 @@ class BuildDatasetUseCase @Inject constructor(
         try {
             val productsResult = getProductListUseCase.execute(apiKey).first()
             val products = productsResult.getOrElse {
-                emit(Result.failure<List<DailyReturn>>(it))
+                emit(Result.failure(it))
                 return@flow
             }
 
             val historicalDataResult = fetchHistoricalDataUseCase.execute(apiKey).first()
             val historicalDataList = historicalDataResult.getOrElse {
-                emit(Result.failure<List<DailyReturn>>(it))
+                emit(Result.failure(it))
                 return@flow
             }
 
@@ -44,7 +44,7 @@ class BuildDatasetUseCase @Inject constructor(
                     if (products.isEmpty()) {
                         val sp500Result = stockRepository.fetchStockData("SPY", BuildConfig.ALPHAVANTAGE_API_KEY).first()
                         val sp500Data: Map<String, StockData> = sp500Result.getOrElse {
-                            emit(Result.failure<List<DailyReturn>>(it))
+                            emit(Result.failure(it))
                             return@flow
                         }
                         dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data), products)
@@ -55,7 +55,7 @@ class BuildDatasetUseCase @Inject constructor(
                 is DatasetValidationResult.Failure -> {
                     val sp500Result = stockRepository.fetchStockData("SPY", BuildConfig.ALPHAVANTAGE_API_KEY).first()
                     val sp500Data: Map<String, StockData> = sp500Result.getOrElse {
-                        emit(Result.failure<List<DailyReturn>>(it))
+                        emit(Result.failure(it))
                         return@flow
                     }
                     dailyReturnCalculator.calculateDailyReturns(listOf(sp500Data), products)
@@ -64,7 +64,7 @@ class BuildDatasetUseCase @Inject constructor(
 
             val saveResult = addDatasetToDatabaseUseCase.execute(dailyReturns).first()
             if (saveResult.isFailure) {
-                emit(Result.failure<List<DailyReturn>>(saveResult.exceptionOrNull() ?: Exception("Unknown error")))
+                emit(Result.failure(saveResult.exceptionOrNull() ?: Exception("Unknown error")))
                 return@flow
             }
 
@@ -72,7 +72,7 @@ class BuildDatasetUseCase @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            emit(Result.failure<List<DailyReturn>>(e))
+            emit(Result.failure(e))
         }
     }
 }

@@ -5,11 +5,12 @@ import com.unimib.ignitionfinance.data.remote.model.StockData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.math.MathContext
 import javax.inject.Inject
 
 class DailyReturnCalculator @Inject constructor() {
     private val days = 253
+    private val mc = MathContext.DECIMAL128  // Usa la massima precisione disponibile
 
     fun calculateDailyReturns(
         historicalData: List<Map<String, StockData>>,
@@ -72,14 +73,14 @@ class DailyReturnCalculator @Inject constructor() {
                 continue
             }
 
-            val compositeCurrent = compositeCurrentSum.divide(totalWeightCurrent, 10, RoundingMode.HALF_UP)
-            val compositePast = compositePastSum.divide(totalWeightPast, 10, RoundingMode.HALF_UP)
+            val compositeCurrent = compositeCurrentSum.divide(totalWeightCurrent, mc)
+            val compositePast = compositePastSum.divide(totalWeightPast, mc)
 
             if (compositePast.compareTo(BigDecimal.ZERO) == 0) {
                 continue
             }
             val returnValue = compositeCurrent.subtract(compositePast)
-                .divide(compositePast, 10, RoundingMode.HALF_UP)
+                .divide(compositePast, mc)
 
             dailyReturns.add(DailyReturn(date = currentDate, weightedReturn = returnValue))
         }
@@ -104,7 +105,7 @@ class DailyReturnCalculator @Inject constructor() {
             }
 
             val ret = currentClose.subtract(pastClose)
-                .divide(pastClose, 10, RoundingMode.HALF_UP)
+                .divide(pastClose, mc)
             dailyReturns.add(DailyReturn(date = currentDate, weightedReturn = ret))
         }
         return dailyReturns

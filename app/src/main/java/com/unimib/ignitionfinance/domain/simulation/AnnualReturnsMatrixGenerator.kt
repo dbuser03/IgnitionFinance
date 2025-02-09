@@ -12,7 +12,7 @@ object AnnualReturnsMatrixGenerator {
         dataset: List<DailyReturn>,
         numSimulations: Int,
         simulationLength: Int = 100,
-        blockYears: Int = 1,
+        blockYears: Int = 3,
         daysPerYear: Int = 253
     ): Pair<Array<DoubleArray>, Array<DoubleArray>> {
         if (dataset.size < blockYears * daysPerYear + 1) {
@@ -35,11 +35,10 @@ object AnnualReturnsMatrixGenerator {
                 if ((t - 1) % blockYears == 0) {
                     currentIndex = Random.nextInt(0, maxStartIndex + 1)
                 }
-                val annualReturnValue = dataset[currentIndex].weightedReturn.toDouble()
-                val multiplier = 1 + annualReturnValue
-
-                annualReturnsMatrix[t][c] = multiplier
-                cumulativeReturnsMatrix[t][c] = cumulativeReturnsMatrix[t - 1][c] * multiplier
+                // Rimuovere la variabile multiplier intermedia e fare il calcolo direttamente
+                annualReturnsMatrix[t][c] = 1.0 + dataset[currentIndex].weightedReturn.toDouble()
+                cumulativeReturnsMatrix[t][c] = cumulativeReturnsMatrix[t - 1][c] *
+                        (1.0 + dataset[currentIndex].weightedReturn.toDouble())
 
                 currentIndex += daysPerYear
             }
