@@ -32,6 +32,7 @@ fun NetWorthDisplay(
     netWorth: Double = 0.0,
     isLoading: Boolean = false,
     isNetWorthHidden: Boolean = false,
+    showVisibilityIcon: Boolean = true,
     onVisibilityToggle: () -> Unit = { }
 ) {
     val formattedNetWorth = remember(netWorth) {
@@ -83,26 +84,28 @@ fun NetWorthDisplay(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clickable { onVisibilityToggle() }
-            ) {
-                IconButton(
-                    onClick = onVisibilityToggle
+            if (showVisibilityIcon) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .clickable { onVisibilityToggle() }
                 ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (isNetWorthHidden) {
-                                R.drawable.outline_visibility_24
-                            } else {
-                                R.drawable.outline_visibility_off_24
-                            }
-                        ),
-                        contentDescription = stringResource(id = R.string.go_back_FAB_description),
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    IconButton(
+                        onClick = onVisibilityToggle
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (isNetWorthHidden) {
+                                    R.drawable.outline_visibility_24
+                                } else {
+                                    R.drawable.outline_visibility_off_24
+                                }
+                            ),
+                            contentDescription = stringResource(id = R.string.go_back_FAB_description),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
             }
         }

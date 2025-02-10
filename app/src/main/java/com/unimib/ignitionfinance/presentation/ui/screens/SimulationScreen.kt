@@ -93,13 +93,13 @@ fun SimulationScreen(
                     is UiState.Success -> {
                         Column {
                             val (results, fuckYouMoney) = simulationState.data
-                            val networth = portfolioState.cash.toDouble() + summaryState.invested
+                            val netWorth = portfolioState.cash.toDouble() + summaryState.invested
 
                             SimulationBarsForFour(
-                                capital1 = formatCapital(networth),
-                                capital2 = formatCapital(networth + 50_000),
-                                capital3 = formatCapital(networth + 100_000),
-                                capital4 = formatCapital(networth + 150_000),
+                                capital1 = formatCapital(netWorth),
+                                capital2 = formatCapital(netWorth + 50_000),
+                                capital3 = formatCapital(netWorth + 100_000),
+                                capital4 = formatCapital(netWorth + 150_000),
                                 percentage1 = results[0].successRate,
                                 percentage2 = results[1].successRate,
                                 percentage3 = results[2].successRate,
@@ -113,8 +113,9 @@ fun SimulationScreen(
                                     label = "Fuck you money (>95%):",
                                     prefix = "€",
                                     key = "Fuck you money",
-                                    inputValue = remember { mutableStateOf(TextFieldValue(fuckYouMoney.toString())) }
+                                    inputValue = remember { mutableStateOf(TextFieldValue(fuckYouMoney.toString())) },
                                 ),
+                                showVisibilityIcon = false
                             )
                         }
                     }
