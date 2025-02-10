@@ -2,13 +2,13 @@ package com.unimib.ignitionfinance.domain.simulation
 
 import android.util.Log
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
+import kotlinx.coroutines.*
 import kotlin.random.Random
 
 object AnnualReturnsMatrixGenerator {
-
     private const val TAG = "AnnualReturnsMatrix"
 
-    fun generateMatrices(
+    suspend fun generateMatrices(
         dataset: List<DailyReturn>,
         numSimulations: Int,
         simulationLength: Int = 100,
@@ -20,7 +20,6 @@ object AnnualReturnsMatrixGenerator {
         }
 
         val maxStartIndex = dataset.size - blockYears * daysPerYear - 1
-
         val annualReturnsMatrix = Array(simulationLength) { DoubleArray(numSimulations) { 0.0 } }
         val cumulativeReturnsMatrix = Array(simulationLength) { DoubleArray(numSimulations) { 0.0 } }
 
@@ -29,19 +28,23 @@ object AnnualReturnsMatrixGenerator {
             cumulativeReturnsMatrix[0][c] = 1.0
         }
 
-        for (c in 0 until numSimulations) {
-            var currentIndex = 0
-            for (t in 1 until simulationLength) {
-                if ((t - 1) % blockYears == 0) {
-                    currentIndex = Random.nextInt(0, maxStartIndex + 1)
+        withContext(Dispatchers.Default) {
+            // Create a list of deferred computations for each simulation
+            val jobs = List(numSimulations) { c ->
+                async {
+                    var currentIndex = 0
+                    for (t in 1 until simulationLength) {
+                        if ((t - 1) % blockYears == 0) {
+                            currentIndex = Random.nextInt(0, maxStartIndex + 1)
+                        }
+                        annualReturnsMatrix[t][c] = 1.0 + dataset[currentIndex].weightedReturn.toDouble()
+                        cumulativeReturnsMatrix[t][c] = cumulativeReturnsMatrix[t - 1][c] * (1.0 + dataset[currentIndex].weightedReturn.toDouble())
+                        currentIndex += daysPerYear
+                    }
                 }
-                // Rimuovere la variabile multiplier intermedia e fare il calcolo direttamente
-                annualReturnsMatrix[t][c] = 1.0 + dataset[currentIndex].weightedReturn.toDouble()
-                cumulativeReturnsMatrix[t][c] = cumulativeReturnsMatrix[t - 1][c] *
-                        (1.0 + dataset[currentIndex].weightedReturn.toDouble())
-
-                currentIndex += daysPerYear
             }
+            // Wait for all computations to complete
+            jobs.awaitAll()
         }
 
         return Pair(cumulativeReturnsMatrix, annualReturnsMatrix)

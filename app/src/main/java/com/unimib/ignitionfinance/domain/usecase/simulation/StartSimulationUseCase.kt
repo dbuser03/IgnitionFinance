@@ -1,6 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -14,16 +15,22 @@ import com.unimib.ignitionfinance.domain.validation.SimulationConfigValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
     private val buildDatasetUseCase: BuildDatasetUseCase,
     private val configFactory: SimulationConfigFactory
 ) {
+
+    companion object {
+        private const val TAG = "SIMULATION_USECASE"
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
-
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
             datasetResult.getOrElse {
                 emit(Result.failure(it))
@@ -56,22 +63,26 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-            val results = configs.map { config ->
-                val simulationResult = runSimulation(config)
-                simulationResult
+            // Eseguiamo le simulazioni per ogni configurazione in parallelo
+            val results = coroutineScope {
+                configs.map { config ->
+                    async { runSimulation(config) }
+                }.map { it.await() }
             }
 
             val startingCapital = configs.last().capital.total
             val fuckYouMoney = calculateFuckYouMoney(baseConfig, startingCapital)
 
-            emit(Result.success(results to fuckYouMoney))
+            Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
+            emit(Result.success(results to fuckYouMoney))
         } catch (e: Exception) {
+            Log.e(TAG, "Error during simulation execution", e)
             emit(Result.failure(e))
         }
     }
 
-    private fun runSimulation(config: SimulationConfig): SimulationResult {
+    private suspend fun runSimulation(config: SimulationConfig): SimulationResult = coroutineScope {
         val settings = config.settings
         val dataset = config.dataset
         val inflationData = config.historicalInflation.values.toList()
@@ -80,21 +91,31 @@ class StartSimulationUseCase @Inject constructor(
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
 
-        val (_, annualReturnMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
-            dataset = dataset,
-            numSimulations = numSimulations,
-            simulationLength = simulationLength,
-            daysPerYear = params.daysPerYear
-        )
+        // Eseguiamo le generazioni delle matrici in parallelo
+        val returnsMatrixDeferred = async {
+            AnnualReturnsMatrixGenerator.generateMatrices(
+                dataset = dataset,
+                numSimulations = numSimulations,
+                simulationLength = simulationLength,
+                daysPerYear = params.daysPerYear
+            )
+        }
 
-        val inflationMatrix = InflationModel.generateInflationMatrix(
-            scenarioInflation = settings.inflationModel.lowercase(),
-            inflationMean = params.averageInflation,
-            historicalInflation = inflationData,
-            numSimulations = numSimulations,
-            simulationLength = simulationLength
-        )
+        val inflationMatrixDeferred = async {
+            InflationModel.generateInflationMatrix(
+                scenarioInflation = settings.inflationModel.lowercase(),
+                inflationMean = params.averageInflation,
+                historicalInflation = inflationData,
+                numSimulations = numSimulations,
+                simulationLength = simulationLength
+            )
+        }
 
+        // Attendiamo il completamento delle matrici
+        val (_, annualReturnMatrix) = returnsMatrixDeferred.await()
+        val inflationMatrix = inflationMatrixDeferred.await()
+
+        // Calcoliamo i prelievi
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
             yearsWithoutPension = settings.intervals.yearsInFIRE.toInt(),
@@ -102,14 +123,15 @@ class StartSimulationUseCase @Inject constructor(
             inflationMatrix = inflationMatrix
         )
 
-        return FireSimulator.simulatePortfolio(
+        // Simuliamo il portafoglio
+        FireSimulator.simulatePortfolio(
             config = config,
             marketReturnsMatrix = annualReturnMatrix,
             withdrawalMatrix = withdrawalMatrix
         )
     }
 
-    private fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
+    private suspend fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
         val increment = 50_000.0
         val successRateThreshold = 0.95
 
@@ -131,6 +153,7 @@ class StartSimulationUseCase @Inject constructor(
             simulationResult = runSimulation(config)
             val successRate = simulationResult.successRate
 
+            Log.d(TAG, "Attempt $attempt: totalCapital = $totalCapital, successRate = $successRate")
 
             if (successRate >= successRateThreshold) {
                 return totalCapital

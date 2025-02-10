@@ -30,24 +30,14 @@ class SimulationScreenViewModel @Inject constructor(
                 startSimulationUseCase.execute()
                     .collect { result ->
                         _state.update { currentState ->
-                            when {
-                                result.isSuccess -> currentState.copy(
-                                    simulationState = UiState.Success(
-                                        result.getOrNull() ?: SimulationResult(
-                                            successRate = 0.0,
-                                            investedPortfolio = emptyArray(),
-                                            cashPortfolio = emptyArray(),
-                                            totalSimulations = 0,
-                                            simulationLength = 0
-                                        )
-                                    )
-                                )
-                                else -> currentState.copy(
-                                    simulationState = UiState.Error(
+                            currentState.copy(
+                                simulationState = when {
+                                    result.isSuccess -> UiState.Success(result.getOrNull()!!)
+                                    else -> UiState.Error(
                                         result.exceptionOrNull()?.localizedMessage ?: "Simulation error"
                                     )
-                                )
-                            }
+                                }
+                            )
                         }
                     }
             } catch (e: Exception) {
