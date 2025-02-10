@@ -15,6 +15,8 @@ import com.unimib.ignitionfinance.domain.validation.SimulationConfigValidator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
@@ -61,17 +63,16 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-            // Eseguiamo le simulazioni per ogni configurazione.
-            // Poiché runSimulation è una funzione suspend, la invochiamo in modo sequenziale.
-            val results = mutableListOf<SimulationResult>()
-            for (config in configs) {
-                results.add(runSimulation(config))
+            // Eseguiamo le simulazioni per ogni configurazione in parallelo
+            val results = coroutineScope {
+                configs.map { config ->
+                    async { runSimulation(config) }
+                }.map { it.await() }
             }
 
             val startingCapital = configs.last().capital.total
             val fuckYouMoney = calculateFuckYouMoney(baseConfig, startingCapital)
 
-            // Log per stampare il valore del Fuck You Money
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
             emit(Result.success(results to fuckYouMoney))
@@ -81,8 +82,7 @@ class StartSimulationUseCase @Inject constructor(
         }
     }
 
-    // Funzione suspend per eseguire la simulazione per una configurazione data.
-    private suspend fun runSimulation(config: SimulationConfig): SimulationResult {
+    private suspend fun runSimulation(config: SimulationConfig): SimulationResult = coroutineScope {
         val settings = config.settings
         val dataset = config.dataset
         val inflationData = config.historicalInflation.values.toList()
@@ -91,21 +91,31 @@ class StartSimulationUseCase @Inject constructor(
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
 
-        val (_, annualReturnMatrix) = AnnualReturnsMatrixGenerator.generateMatrices(
-            dataset = dataset,
-            numSimulations = numSimulations,
-            simulationLength = simulationLength,
-            daysPerYear = params.daysPerYear
-        )
+        // Eseguiamo le generazioni delle matrici in parallelo
+        val returnsMatrixDeferred = async {
+            AnnualReturnsMatrixGenerator.generateMatrices(
+                dataset = dataset,
+                numSimulations = numSimulations,
+                simulationLength = simulationLength,
+                daysPerYear = params.daysPerYear
+            )
+        }
 
-        val inflationMatrix = InflationModel.generateInflationMatrix(
-            scenarioInflation = settings.inflationModel.lowercase(),
-            inflationMean = params.averageInflation,
-            historicalInflation = inflationData,
-            numSimulations = numSimulations,
-            simulationLength = simulationLength
-        )
+        val inflationMatrixDeferred = async {
+            InflationModel.generateInflationMatrix(
+                scenarioInflation = settings.inflationModel.lowercase(),
+                inflationMean = params.averageInflation,
+                historicalInflation = inflationData,
+                numSimulations = numSimulations,
+                simulationLength = simulationLength
+            )
+        }
 
+        // Attendiamo il completamento delle matrici
+        val (_, annualReturnMatrix) = returnsMatrixDeferred.await()
+        val inflationMatrix = inflationMatrixDeferred.await()
+
+        // Calcoliamo i prelievi
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
             yearsWithoutPension = settings.intervals.yearsInFIRE.toInt(),
@@ -113,16 +123,14 @@ class StartSimulationUseCase @Inject constructor(
             inflationMatrix = inflationMatrix
         )
 
-        // Chiamata alla funzione suspend simulatePortfolio del FireSimulator.
-        return FireSimulator.simulatePortfolio(
+        // Simuliamo il portafoglio
+        FireSimulator.simulatePortfolio(
             config = config,
             marketReturnsMatrix = annualReturnMatrix,
             withdrawalMatrix = withdrawalMatrix
         )
     }
 
-    // Funzione suspend per il calcolo del Fuck You Money.
-    // Viene effettuato un tentativo per ogni incremento di capitale, con log ad ogni iterazione.
     private suspend fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
         val increment = 50_000.0
         val successRateThreshold = 0.95
@@ -145,7 +153,6 @@ class StartSimulationUseCase @Inject constructor(
             simulationResult = runSimulation(config)
             val successRate = simulationResult.successRate
 
-            // Log per ogni tentativo
             Log.d(TAG, "Attempt $attempt: totalCapital = $totalCapital, successRate = $successRate")
 
             if (successRate >= successRateThreshold) {

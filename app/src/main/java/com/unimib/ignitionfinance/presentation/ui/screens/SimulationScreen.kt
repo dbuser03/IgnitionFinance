@@ -44,12 +44,14 @@ fun SimulationScreen(
     // Add state for net worth visibility
     var isNetWorthHidden by remember { mutableStateOf(false) }
 
+    val inputValueState = remember { mutableStateOf(TextFieldValue("")) }
+
     // Create InputBoxModel for simulation display
     val simulationInputBoxModel = remember {
         InputBoxModel(
             label = "Your net worth is:",
             prefix = "$",
-            inputValue = remember { mutableStateOf(TextFieldValue("")) },
+            inputValue = inputValueState,
             key = "NetWorth",
             iconResId = R.drawable.outline_person_apron_24
         )
@@ -117,135 +119,3 @@ fun SimulationScreen(
         }
     }
 }
-
-/*@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun SimulationScreen(
-    navController: NavController,
-    viewModel: SimulationScreenViewModel = hiltViewModel(),
-    settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
-    summaryViewModel: SummaryScreenViewModel = hiltViewModel()
-) {
-    val context = LocalContext.current
-    val state by viewModel.state.collectAsState()
-    val settingsState by settingsViewModel.state.collectAsState()
-    val summaryState by summaryViewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        settingsViewModel.getUserSettings()
-        summaryViewModel.getInvested()
-    }
-
-    BackHandler(enabled = true) {
-        (context as? Activity)?.moveTaskToBack(true)
-    }
-
-    Scaffold(
-        topBar = {
-            TitleWithButton(
-                title = stringResource(id = R.string.simulation_title),
-                description = stringResource(id = R.string.simulation_description),
-                navController = navController
-            )
-        },
-        bottomBar = {
-            BottomNavigationBarInstance(navController = navController)
-        },
-        floatingActionButton = {
-            CustomFAB(
-                onClick = {
-                    viewModel.startSimulation(apiKey = BuildConfig.ALPHAVANTAGE_API_KEY)
-                },
-                modifier = Modifier.padding(bottom = 12.dp),
-                icon = painterResource(id = R.drawable.outline_autoplay_24),
-                contentDescription = stringResource(id = R.string.simulate_FAB_description)
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-        content = { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                when (state.simulationState) {
-                    is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    is UiState.Success -> Text(text = "Dataset created successfully!", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    is UiState.Error -> Text(text = "Error: ${(state.simulationState as UiState.Error).message}", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    else -> Text(text = "Ready to create dataset", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                }
-            }
-        }
-    )
-}
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun SimulationScreen(
-    navController: NavController,
-    viewModel: SimulationScreenViewModel = hiltViewModel(),
-    settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
-    summaryViewModel: SummaryScreenViewModel = hiltViewModel()
-) {
-    val context = LocalContext.current
-    val state by viewModel.state.collectAsState()
-    val settingsState by settingsViewModel.state.collectAsState()
-    val summaryState by summaryViewModel.state.collectAsState()
-
-    LaunchedEffect(Unit) {
-        settingsViewModel.getUserSettings()
-        summaryViewModel.getInvested()
-    }
-
-    val settings = settingsState.settings
-    val netWorth = summaryState.netWorth
-
-    BackHandler(enabled = true) {
-        (context as? Activity)?.moveTaskToBack(true)
-    }
-
-    Scaffold(
-        topBar = {
-            TitleWithButton(
-                title = stringResource(id = R.string.simulation_title),
-                description = stringResource(id = R.string.simulation_description),
-                navController = navController
-            )
-        },
-        bottomBar = {
-            BottomNavigationBarInstance(navController = navController)
-        },
-        floatingActionButton = {
-            CustomFAB(
-                onClick = {
-                    if (settings != null) {
-                        viewModel.startSimulation(
-                            apiKey = BuildConfig.ALPHAVANTAGE_API_KEY,
-                            settings = settings,
-                            netWorth = netWorth
-                        )
-                    }
-                },
-                modifier = Modifier.padding(bottom = 12.dp),
-                icon = painterResource(id = R.drawable.outline_autoplay_24),
-                contentDescription = stringResource(id = R.string.simulate_FAB_description)
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-        content = { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                when (state.simulationState) {
-                    is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    is UiState.Success -> Text(text = "Simulation completed!", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    is UiState.Error -> Text(text = "Error: ${(state.simulationState as UiState.Error).message}", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                    else -> Text(text = "Ready to simulate", modifier = Modifier.align(androidx.compose.ui.Alignment.Center))
-                }
-            }
-        }
-    )
-}
-*/

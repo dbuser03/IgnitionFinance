@@ -24,7 +24,7 @@ object FireSimulator {
 
         val simulationResults = (0 until numSimulations).map { sim ->
             async {
-                Log.d(TAG, "Simulation $sim running on thread: ${Thread.currentThread().name}")
+                //Log.d(TAG, "Simulation $sim running on thread: ${Thread.currentThread().name}")
                 val investedSim = DoubleArray(simulationLength)
                 val cashSim = DoubleArray(simulationLength)
 
