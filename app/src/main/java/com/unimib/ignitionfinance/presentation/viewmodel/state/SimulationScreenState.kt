@@ -9,7 +9,8 @@ data class SimulationScreenState(
     val simulationDuration: Int = 1,
     val parametersState: UiState<Any> = UiState.Idle,
     val simulationResult: SimulationResult? = null,
-    val simulationState: UiState<Any> = UiState.Idle  // Cambiato da UiState<SimulationResult> a UiState<Any>
+    // Aggiornato per gestire la coppia di risultati e fuckYouMoney
+    val simulationState: UiState<Pair<List<SimulationResult>, Double>> = UiState.Idle
 )
 
 /*

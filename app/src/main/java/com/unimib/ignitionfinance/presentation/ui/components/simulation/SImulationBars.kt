@@ -36,10 +36,10 @@ fun SimulationBars(
     val effectiveValues: List<Double> = if (results.isNotEmpty()) {
         val n = results.size
         val effective = MutableList(n) { 0.0 }
-        effective[n - 1] = results[n - 1].percentage
+        effective[n - 1] = results[n - 1].percentage * 100 // Conversione da decimale a percentuale
 
         for (i in (n - 2) downTo 0) {
-            val actualGap = results[i + 1].percentage - results[i].percentage
+            val actualGap = (results[i + 1].percentage - results[i].percentage) * 100
             val gap = when {
                 actualGap == 0.0 -> 0.0
                 actualGap < 10.0 -> 10.0
@@ -61,14 +61,14 @@ fun SimulationBars(
         verticalAlignment = Alignment.Bottom
     ) {
         results.forEachIndexed { index, result ->
-            val effectivePercentage = max(effectiveValues.getOrNull(index) ?: result.percentage, 0.0)
+            val effectivePercentage = max(effectiveValues.getOrNull(index) ?: (result.percentage * 100), 0.0)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                if (result.percentage <= 30) {
+                if (result.percentage <= 0.3) { // Ora la soglia è in formato decimale (es. 0.3 = 30%)
                     Text(
-                        text = "${result.percentage.toInt()}%",
+                        text = "${(result.percentage * 100).toInt()}%",
                         modifier = Modifier.padding(bottom = 8.dp),
                         fontSize = if (index == 0) 16.sp else 14.sp,
                         fontWeight = if (index == 0) FontWeight.Bold else FontWeight.Normal
@@ -83,9 +83,9 @@ fun SimulationBars(
                             shape = RoundedCornerShape(12.dp)
                         )
                 ) {
-                    if (result.percentage > 30) {
+                    if (result.percentage > 0.3) {
                         Text(
-                            text = "${result.percentage.toInt()}%",
+                            text = "${(result.percentage * 100).toInt()}%",
                             fontSize = if (index == 0) 16.sp else 14.sp,
                             fontWeight = if (index == 0) FontWeight.Bold else FontWeight.Normal,
                             color = if (index == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
@@ -127,10 +127,10 @@ fun SimulationBarsForFour(
 fun SimulationBarsPreview() {
     IgnitionFinanceTheme {
         SimulationBarsForFour(
-            capital1 = "350k", percentage1 = 20.0,
-            capital2 = "400k", percentage2 = 30.0,
-            capital3 = "450k", percentage3 = 95.0,
-            capital4 = "500k", percentage4 = 96.0
+            capital1 = "350k", percentage1 = 0.2,
+            capital2 = "400k", percentage2 = 0.3,
+            capital3 = "450k", percentage3 = 0.95,
+            capital4 = "500k", percentage4 = 0.96
         )
     }
 }
