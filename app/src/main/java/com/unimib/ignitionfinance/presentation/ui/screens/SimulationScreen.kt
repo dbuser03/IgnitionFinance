@@ -93,28 +93,29 @@ fun SimulationScreen(
                     is UiState.Success -> {
                         Column {
                             val (results, fuckYouMoney) = simulationState.data
-                            val networth = portfolioState.cash.toDouble() + summaryState.invested
+                            val netWorth = portfolioState.cash.toDouble() + summaryState.invested
 
                             SimulationBarsForFour(
-                                capital1 = formatCapital(networth),
-                                capital2 = formatCapital(networth + 50_000),
-                                capital3 = formatCapital(networth + 100_000),
-                                capital4 = formatCapital(networth + 150_000),
+                                capital1 = formatCapital(netWorth),
+                                capital2 = formatCapital(netWorth + 50_000),
+                                capital3 = formatCapital(netWorth + 100_000),
+                                capital4 = formatCapital(netWorth + 150_000),
                                 percentage1 = results[0].successRate,
                                 percentage2 = results[1].successRate,
                                 percentage3 = results[2].successRate,
                                 percentage4 = results[3].successRate
                             )
                             
-                            Spacer(modifier = Modifier.height(36.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
 
                             NetWorthDisplay(
                                 inputBoxModel = InputBoxModel(
                                     label = "Fuck you money (>95%):",
                                     prefix = "€",
                                     key = "Fuck you money",
-                                    inputValue = remember { mutableStateOf(TextFieldValue(fuckYouMoney.toString())) }
+                                    inputValue = remember { mutableStateOf(TextFieldValue(fuckYouMoney.toString())) },
                                 ),
+                                showVisibilityIcon = false
                             )
                         }
                     }
@@ -143,20 +144,24 @@ fun formatCapital(value: Double): String {
         value < 1_000 -> "$value"
         value < 1_000_000 -> {
             val thousands = value / 1000.0
-            if (thousands % 1.0 == 0.0) "${thousands.toInt()}k"
-            else String.format(Locale.US, "%.1fk", thousands)
+            if (thousands >= 100) {
+                "${thousands.toInt()}k"
+            } else {
+                if (thousands % 1.0 == 0.0) {
+                    "${thousands.toInt()}k"
+                } else {
+                    String.format(Locale.US, "%.1fk", thousands)
+                }
+            }
         }
-
         value < 100_000_000 -> {
             val millions = value / 1_000_000.0
             String.format(Locale.US, "%.1fM", millions)
         }
-
         value < 1_000_000_000 -> {
             val millions = value / 1_000_000
             "${millions}M"
         }
-
         else -> {
             val billions = value / 1_000_000_000.0
             if (billions < 100) String.format(Locale.US, "%.1fMLD", billions)
