@@ -115,6 +115,7 @@ fun SimulationScreen(
                                     key = "Fuck you money",
                                     inputValue = remember { mutableStateOf(TextFieldValue(fuckYouMoney.toString())) },
                                 ),
+                                netWorth = fuckYouMoney,
                                 showVisibilityIcon = false
                             )
                         }
