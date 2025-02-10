@@ -81,10 +81,7 @@ object FireSimulator {
 
         SimulationResult(
             successRate = successRate,
-            investedPortfolio = invested,
-            cashPortfolio = cash,
-            totalSimulations = numSimulations,
-            simulationLength = simulationLength
+
         )
     }
 }

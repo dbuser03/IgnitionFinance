@@ -4,6 +4,11 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
+import com.unimib.ignitionfinance.data.local.entity.SimulationOutcome
+import com.unimib.ignitionfinance.data.local.entity.User
+import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
+import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
+import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
 import com.unimib.ignitionfinance.domain.simulation.FireSimulator
 import com.unimib.ignitionfinance.domain.simulation.InflationModel
@@ -18,12 +23,16 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
     private val buildDatasetUseCase: BuildDatasetUseCase,
-    private val configFactory: SimulationConfigFactory
+    private val configFactory: SimulationConfigFactory,
+    private val authRepository: AuthRepository,
+    private val localDatabaseRepository: LocalDatabaseRepository<User>,
+    private val userDataMapper: UserDataMapper
 ) {
     companion object {
         private const val TAG = "SIMULATION_USECASE"
@@ -33,21 +42,39 @@ class StartSimulationUseCase @Inject constructor(
         private const val GOLDEN_RATIO = 1.618033988749895
         private const val PARALLEL_POINTS = 3
     }
-
+    private suspend fun getCurrentUserId(): String? {
+        return authRepository.getCurrentUser()
+            .firstOrNull()
+            ?.getOrNull()
+            ?.id
+            ?.takeIf { it.isNotEmpty() }
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
+            val userId = getCurrentUserId()
+                ?: throw IllegalStateException("Failed to get current user ID")
+            val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
+                ?: throw IllegalStateException("User not found in local database")
+
+            // Store the current dataset before any operations
+            val existingDataset = currentUser.dataset
+
+            // Execute dataset building and capture the result
             val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
-            datasetResult.getOrElse {
+            val newDataset = datasetResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
 
+            // Use the new dataset for config creation if it's not empty, otherwise use existing
             val configResult = configFactory.createConfig().first()
             val baseConfig = configResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
-            }
+            }.copy(
+                dataset = if (newDataset.isNotEmpty()) newDataset else existingDataset
+            )
 
             val capitalIncrements = listOf(0.0, 50_000.0, 100_000.0, 150_000.0)
             val configs = capitalIncrements.map { increment ->
@@ -119,6 +146,25 @@ class StartSimulationUseCase @Inject constructor(
             val overallExecutionTime = (System.currentTimeMillis() - overallStartTime) / 1000.0
             Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
+
+            // Create SimulationOutcome object
+            val simulationOutcome = SimulationOutcome(
+                results = simulationResults,
+                fuckYouMoney = fuckYouMoney
+            )
+
+            // Update user with new simulation results
+            val updatedUser = currentUser.copy(
+                simulationOutcome = simulationOutcome,
+                // Use new dataset if available, otherwise keep existing
+                dataset = newDataset.ifEmpty { existingDataset },
+                updatedAt = System.currentTimeMillis()
+            )
+
+            // Save to local database
+            localDatabaseRepository.update(updatedUser).first()
+
+            // Emit the results
 
             emit(Result.success(simulationResults to fuckYouMoney))
         } catch (e: Exception) {

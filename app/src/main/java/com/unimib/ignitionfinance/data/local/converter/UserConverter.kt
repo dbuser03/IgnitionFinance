@@ -3,6 +3,7 @@ package com.unimib.ignitionfinance.data.local.converter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.unimib.ignitionfinance.data.local.entity.SimulationOutcome
 import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
@@ -36,5 +37,17 @@ class UserConverter {
     @TypeConverter
     fun toDataset(datasetString: String): List<DailyReturn>? =
         gson.fromJson(datasetString, object : TypeToken<List<DailyReturn>>() {}.type)
+
+    @TypeConverter
+    fun fromSimulationOutcome(outcome: SimulationOutcome?): String? {
+        return outcome?.let { gson.toJson(it) }
+    }
+
+    @TypeConverter
+    fun toSimulationOutcome(outcomeString: String?): SimulationOutcome? {
+        return outcomeString?.let {
+            gson.fromJson(it, object : TypeToken<SimulationOutcome>() {}.type)
+        }
+    }
 
 }
