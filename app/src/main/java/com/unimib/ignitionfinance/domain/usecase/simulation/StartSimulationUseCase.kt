@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
+
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -12,6 +13,7 @@ import com.unimib.ignitionfinance.domain.simulation.SimulationConfigFactory
 import com.unimib.ignitionfinance.domain.simulation.WithdrawalCalculator
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
 import com.unimib.ignitionfinance.domain.validation.SimulationConfigValidator
+import com.unimib.ignitionfinance.domain.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -23,6 +25,8 @@ import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
     private val buildDatasetUseCase: BuildDatasetUseCase,
+    private val getUserDatasetUseCase: GetUserDatasetUseCase,
+    private val networkUtils: NetworkUtils,
     private val configFactory: SimulationConfigFactory
 ) {
     companion object {
@@ -37,7 +41,16 @@ class StartSimulationUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
-            val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
+            val isNetworkAvailable = networkUtils.isNetworkAvailable()
+            Log.d(TAG, "Network available: $isNetworkAvailable")
+
+            val datasetResult = if (isNetworkAvailable) {
+                buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
+            } else {
+                getUserDatasetUseCase.execute().first()
+            }
+
+
             datasetResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
