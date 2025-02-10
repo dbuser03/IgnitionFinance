@@ -44,12 +44,14 @@ fun SimulationScreen(
     // Add state for net worth visibility
     var isNetWorthHidden by remember { mutableStateOf(false) }
 
+    val inputValueState = remember { mutableStateOf(TextFieldValue("")) }
+
     // Create InputBoxModel for simulation display
     val simulationInputBoxModel = remember {
         InputBoxModel(
             label = "Your net worth is:",
             prefix = "$",
-            inputValue = remember { mutableStateOf(TextFieldValue("")) },
+            inputValue = inputValueState,
             key = "NetWorth",
             iconResId = R.drawable.outline_person_apron_24
         )
