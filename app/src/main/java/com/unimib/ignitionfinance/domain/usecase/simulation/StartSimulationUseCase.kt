@@ -12,20 +12,26 @@ import com.unimib.ignitionfinance.domain.simulation.SimulationConfigFactory
 import com.unimib.ignitionfinance.domain.simulation.WithdrawalCalculator
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
 import com.unimib.ignitionfinance.domain.validation.SimulationConfigValidator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
     private val buildDatasetUseCase: BuildDatasetUseCase,
     private val configFactory: SimulationConfigFactory
 ) {
-
     companion object {
         private const val TAG = "SIMULATION_USECASE"
+        private const val SUCCESS_RATE_THRESHOLD = 0.95
+        private const val CAPITAL_TOLERANCE = 1000.0
+        private const val MAX_ITERATIONS = 15
+        private const val GOLDEN_RATIO = 1.618033988749895
+        private const val PARALLEL_POINTS = 3
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -63,19 +69,58 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-            // Eseguiamo le simulazioni per ogni configurazione in parallelo
-            val results = coroutineScope {
+            val overallStartTime = System.currentTimeMillis()
+
+            val simulationResults = coroutineScope {
                 configs.map { config ->
-                    async { runSimulation(config) }
-                }.map { it.await() }
+                    async(Dispatchers.Default) { runSimulation(config) }
+                }.awaitAll()
             }
 
-            val startingCapital = configs.last().capital.total
-            val fuckYouMoney = calculateFuckYouMoney(baseConfig, startingCapital)
+            val baseTotal = baseConfig.capital.total
+            val simulationPoints = simulationResults.zip(capitalIncrements).map { (result, increment) ->
+                (baseTotal + increment) to result.successRate
+            }
 
+            Log.d(TAG, "Simulation points (capital, successRate): $simulationPoints")
+
+            var lowerBound: Double? = null
+            var upperBound: Double? = null
+
+            if (simulationPoints.first().second >= SUCCESS_RATE_THRESHOLD) {
+                lowerBound = 0.0
+                upperBound = simulationPoints.first().first
+            } else {
+                for (i in 0 until simulationPoints.size - 1) {
+                    val (cap1, rate1) = simulationPoints[i]
+                    val (cap2, rate2) = simulationPoints[i + 1]
+                    if (rate1 < SUCCESS_RATE_THRESHOLD && rate2 >= SUCCESS_RATE_THRESHOLD) {
+                        lowerBound = cap1
+                        upperBound = cap2
+                        break
+                    }
+                }
+            }
+
+            if (lowerBound == null) {
+                val lastCapital = simulationPoints.last().first
+                lowerBound = lastCapital
+                upperBound = lastCapital * GOLDEN_RATIO
+            }
+
+            Log.d(TAG, "Initial FUM bracket: [$lowerBound, $upperBound]")
+
+            val fuckYouMoney = calculateOptimizedFuckYouMoneyWithBracket(
+                baseConfig,
+                lowerBound,
+                upperBound ?: Double.MAX_VALUE
+            )
+
+            val overallExecutionTime = (System.currentTimeMillis() - overallStartTime) / 1000.0
+            Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
-            emit(Result.success(results to fuckYouMoney))
+            emit(Result.success(simulationResults to fuckYouMoney))
         } catch (e: Exception) {
             Log.e(TAG, "Error during simulation execution", e)
             emit(Result.failure(e))
@@ -91,7 +136,6 @@ class StartSimulationUseCase @Inject constructor(
         val numSimulations = settings.numberOfSimulations.toInt()
         val simulationLength = 100
 
-        // Eseguiamo le generazioni delle matrici in parallelo
         val returnsMatrixDeferred = async {
             AnnualReturnsMatrixGenerator.generateMatrices(
                 dataset = dataset,
@@ -111,11 +155,9 @@ class StartSimulationUseCase @Inject constructor(
             )
         }
 
-        // Attendiamo il completamento delle matrici
         val (_, annualReturnMatrix) = returnsMatrixDeferred.await()
         val inflationMatrix = inflationMatrixDeferred.await()
 
-        // Calcoliamo i prelievi
         val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
             initialWithdrawal = settings.withdrawals.withoutPension.toDouble(),
             yearsWithoutPension = settings.intervals.yearsInFIRE.toInt(),
@@ -123,7 +165,6 @@ class StartSimulationUseCase @Inject constructor(
             inflationMatrix = inflationMatrix
         )
 
-        // Simuliamo il portafoglio
         FireSimulator.simulatePortfolio(
             config = config,
             marketReturnsMatrix = annualReturnMatrix,
@@ -131,39 +172,110 @@ class StartSimulationUseCase @Inject constructor(
         )
     }
 
-    private suspend fun calculateFuckYouMoney(baseConfig: SimulationConfig, startingCapital: Double): Double {
-        val increment = 50_000.0
-        val successRateThreshold = 0.95
+    private suspend fun calculateOptimizedFuckYouMoneyWithBracket(
+        baseConfig: SimulationConfig,
+        aInit: Double,
+        bInit: Double
+    ): Double {
+        val successRateCache = mutableMapOf<Double, Double>()
+        var a = aInit
+        var b = bInit
+        var points = generatePoints(a, b)
 
+        suspend fun evaluatePoints(capitals: List<Double>): List<Pair<Double, Double>> = coroutineScope {
+            capitals.map { capital ->
+                async(Dispatchers.Default) {
+                    val rate = successRateCache.getOrPut(capital) {
+                        val config = createConfigWithCapital(baseConfig, capital)
+                        runSimulation(config).successRate
+                    }
+                    capital to rate
+                }
+            }.awaitAll()
+        }
+
+        var iteration = 0
+        while ((b - a) > CAPITAL_TOLERANCE && iteration < MAX_ITERATIONS) {
+            val evaluatedPoints = evaluatePoints(points)
+            Log.d(TAG, "Iteration $iteration: Points evaluated: $evaluatedPoints")
+
+            val sortedPoints = evaluatedPoints.sortedBy { it.first }
+            val transitionPoint = sortedPoints.zipWithNext().firstOrNull { (p1, p2) ->
+                p1.second < SUCCESS_RATE_THRESHOLD && p2.second >= SUCCESS_RATE_THRESHOLD
+            }
+
+            if (transitionPoint != null) {
+                val (p1, p2) = transitionPoint
+                val estimatedCapital = linearInterpolate(
+                    p1.first, p1.second,
+                    p2.first, p2.second,
+                )
+
+                if (estimatedCapital in (a + CAPITAL_TOLERANCE)..(b - CAPITAL_TOLERANCE)) {
+                    val estimatedRate = evaluatePoint(baseConfig, estimatedCapital, successRateCache)
+                    if (estimatedRate >= SUCCESS_RATE_THRESHOLD) {
+                        b = estimatedCapital
+                    } else {
+                        a = estimatedCapital
+                    }
+                }
+            } else {
+                val successful = evaluatedPoints.filter { it.second >= SUCCESS_RATE_THRESHOLD }
+                if (successful.isEmpty()) {
+                    a = points.last()
+                    b = a * GOLDEN_RATIO
+                } else {
+                    b = successful.minOf { it.first }
+                    a = points[points.indexOfFirst { it >= b } - 1]
+                }
+            }
+
+            points = generatePoints(a, b)
+            iteration++
+        }
+
+        val finalCapital = successRateCache.entries
+            .filter { it.value >= SUCCESS_RATE_THRESHOLD }
+            .minByOrNull { it.key }?.key ?: b
+
+        Log.d(TAG, "Final result after $iteration iterations: capital=$finalCapital")
+        return finalCapital
+    }
+
+    private suspend fun evaluatePoint(
+        baseConfig: SimulationConfig,
+        capital: Double,
+        cache: MutableMap<Double, Double>
+    ): Double {
+        return cache.getOrPut(capital) {
+            val config = createConfigWithCapital(baseConfig, capital)
+            runSimulation(config).successRate
+        }
+    }
+
+    private fun generatePoints(a: Double, b: Double): List<Double> {
+        return List(PARALLEL_POINTS) { idx ->
+            a + (b - a) * idx / (PARALLEL_POINTS - 1)
+        }
+    }
+
+    private fun linearInterpolate(
+        x1: Double, y1: Double,
+        x2: Double, y2: Double
+    ): Double {
+        return x1 + (SUCCESS_RATE_THRESHOLD - y1) * (x2 - x1) / (y2 - y1)
+    }
+
+    private fun createConfigWithCapital(baseConfig: SimulationConfig, totalCapital: Double): SimulationConfig {
         val baseTotal = baseConfig.capital.total
         val investedRatio = if (baseTotal > 0) baseConfig.capital.invested / baseTotal else 0.0
         val cashRatio = if (baseTotal > 0) baseConfig.capital.cash / baseTotal else 0.0
 
-        var totalCapital = startingCapital
-        var simulationResult: SimulationResult
-
-        for (attempt in 1..4) {
-            val config = baseConfig.copy(
-                capital = baseConfig.capital.copy(
-                    invested = totalCapital * investedRatio,
-                    cash = totalCapital * cashRatio
-                )
+        return baseConfig.copy(
+            capital = baseConfig.capital.copy(
+                invested = totalCapital * investedRatio,
+                cash = totalCapital * cashRatio
             )
-
-            simulationResult = runSimulation(config)
-            val successRate = simulationResult.successRate
-
-            Log.d(TAG, "Attempt $attempt: totalCapital = $totalCapital, successRate = $successRate")
-
-            if (successRate >= successRateThreshold) {
-                return totalCapital
-            }
-
-            if (attempt < 4) {
-                totalCapital += increment
-            }
-        }
-
-        return totalCapital
+        )
     }
 }

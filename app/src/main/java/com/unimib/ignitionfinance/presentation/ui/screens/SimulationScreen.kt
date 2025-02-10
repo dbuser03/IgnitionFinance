@@ -105,6 +105,8 @@ fun SimulationScreen(
                                 percentage3 = results[2].successRate,
                                 percentage4 = results[3].successRate
                             )
+                            
+                            Spacer(modifier = Modifier.height(36.dp))
 
                             NetWorthDisplay(
                                 inputBoxModel = InputBoxModel(
