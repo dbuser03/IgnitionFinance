@@ -7,6 +7,6 @@ data class InputBoxModel (
     val key: String,
     val label: String,
     val prefix: String = "€",
-    val iconResId: Int,
+    val iconResId: Int = 0,
     val inputValue: MutableState<TextFieldValue>
 )

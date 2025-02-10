@@ -29,10 +29,10 @@ import java.util.Locale
 @Composable
 fun NetWorthDisplay(
     inputBoxModel: InputBoxModel,
-    netWorth: Double,
-    isLoading: Boolean,
-    isNetWorthHidden: Boolean,
-    onVisibilityToggle: () -> Unit
+    netWorth: Double = 0.0,
+    isLoading: Boolean = false,
+    isNetWorthHidden: Boolean = false,
+    onVisibilityToggle: () -> Unit = { }
 ) {
     val formattedNetWorth = remember(netWorth) {
         if (netWorth % 1 == 0.0) {
