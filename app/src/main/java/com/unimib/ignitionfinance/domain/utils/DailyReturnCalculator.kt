@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.utils
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.remote.model.StockData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
@@ -10,7 +9,7 @@ import javax.inject.Inject
 
 class DailyReturnCalculator @Inject constructor() {
     private val days = 253
-    private val mc = MathContext.DECIMAL128  // Usa la massima precisione disponibile
+    private val mc = MathContext.DECIMAL128
 
     fun calculateDailyReturns(
         historicalData: List<Map<String, StockData>>,
