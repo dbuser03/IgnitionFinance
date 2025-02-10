@@ -17,6 +17,7 @@ import com.unimib.ignitionfinance.domain.simulation.SimulationConfigFactory
 import com.unimib.ignitionfinance.domain.simulation.WithdrawalCalculator
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
 import com.unimib.ignitionfinance.domain.validation.SimulationConfigValidator
+import com.unimib.ignitionfinance.domain.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,6 +30,8 @@ import javax.inject.Inject
 
 class StartSimulationUseCase @Inject constructor(
     private val buildDatasetUseCase: BuildDatasetUseCase,
+    private val getUserDatasetUseCase: GetUserDatasetUseCase,
+    private val networkUtils: NetworkUtils,
     private val configFactory: SimulationConfigFactory,
     private val authRepository: AuthRepository,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
@@ -42,6 +45,7 @@ class StartSimulationUseCase @Inject constructor(
         private const val GOLDEN_RATIO = 1.618033988749895
         private const val PARALLEL_POINTS = 3
     }
+
     private suspend fun getCurrentUserId(): String? {
         return authRepository.getCurrentUser()
             .firstOrNull()
@@ -49,9 +53,11 @@ class StartSimulationUseCase @Inject constructor(
             ?.id
             ?.takeIf { it.isNotEmpty() }
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
+            // Get current user and their data
             val userId = getCurrentUserId()
                 ?: throw IllegalStateException("Failed to get current user ID")
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
@@ -60,14 +66,22 @@ class StartSimulationUseCase @Inject constructor(
             // Store the current dataset before any operations
             val existingDataset = currentUser.dataset
 
-            // Execute dataset building and capture the result
-            val datasetResult = buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
+            // Check network availability and get appropriate dataset
+            val isNetworkAvailable = networkUtils.isNetworkAvailable()
+            Log.d(TAG, "Network available: $isNetworkAvailable")
+
+            val datasetResult = if (isNetworkAvailable) {
+                buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
+            } else {
+                getUserDatasetUseCase.execute().first()
+            }
+
             val newDataset = datasetResult.getOrElse {
                 emit(Result.failure(it))
                 return@flow
             }
 
-            // Use the new dataset for config creation if it's not empty, otherwise use existing
+            // Create configuration using appropriate dataset
             val configResult = configFactory.createConfig().first()
             val baseConfig = configResult.getOrElse {
                 emit(Result.failure(it))
@@ -147,7 +161,7 @@ class StartSimulationUseCase @Inject constructor(
             Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
-            // Create SimulationOutcome object
+            // Create SimulationOutcome object and update user
             val simulationOutcome = SimulationOutcome(
                 results = simulationResults,
                 fuckYouMoney = fuckYouMoney
@@ -156,15 +170,12 @@ class StartSimulationUseCase @Inject constructor(
             // Update user with new simulation results
             val updatedUser = currentUser.copy(
                 simulationOutcome = simulationOutcome,
-                // Use new dataset if available, otherwise keep existing
                 dataset = newDataset.ifEmpty { existingDataset },
                 updatedAt = System.currentTimeMillis()
             )
 
             // Save to local database
             localDatabaseRepository.update(updatedUser).first()
-
-            // Emit the results
 
             emit(Result.success(simulationResults to fuckYouMoney))
         } catch (e: Exception) {
