@@ -1,38 +1,48 @@
 package com.unimib.ignitionfinance.domain.simulation
 
 import android.util.Log
+import kotlinx.coroutines.*
 import kotlin.math.*
-import kotlin.random.Random
 
 object InflationModel {
-
     private fun List<Double>.variance(): Double {
         val mean = this.average()
         return this.map { (it - mean).pow(2) }.average()
     }
 
-    fun generateInflationMatrix(
+    suspend fun generateInflationMatrix(
         scenarioInflation: String,
         inflationMean: Double,
         historicalInflation: List<Double>,
         numSimulations: Int,
         simulationLength: Int = 100
-    ): Array<DoubleArray> {
+    ): Array<DoubleArray> = withContext(Dispatchers.Default) {
         val TAG = "INFLATION_MODEL_LOG"
         Log.d(TAG, "Historical inflation data: ${historicalInflation.joinToString(", ")}")
 
+        val inflationMatrix = Array(simulationLength) { DoubleArray(numSimulations) }
 
-        val inflationMatrix: Array<DoubleArray> = when (scenarioInflation.lowercase()) {
+        when (scenarioInflation.lowercase()) {
             "normal" -> {
-                Array(simulationLength) { DoubleArray(numSimulations) {
-                    historicalInflation[Random.nextInt(historicalInflation.size)]
-                } }
+                val jobs = List(simulationLength) { t ->
+                    async {
+                        for (s in 0 until numSimulations) {
+                            inflationMatrix[t][s] = historicalInflation[kotlin.random.Random.nextInt(historicalInflation.size)]
+                        }
+                    }
+                }
+                jobs.awaitAll()
             }
             "scale" -> {
                 val scaleFactor = inflationMean / historicalInflation.average()
-                Array(simulationLength) { DoubleArray(numSimulations) {
-                    historicalInflation[Random.nextInt(historicalInflation.size)] * scaleFactor
-                } }
+                val jobs = List(simulationLength) { t ->
+                    async {
+                        for (s in 0 until numSimulations) {
+                            inflationMatrix[t][s] = historicalInflation[kotlin.random.Random.nextInt(historicalInflation.size)] * scaleFactor
+                        }
+                    }
+                }
+                jobs.awaitAll()
             }
             "lognormal" -> {
                 val variance = historicalInflation.variance()
@@ -43,16 +53,28 @@ object InflationModel {
                 muCalc = ln(inflationMean) - (sigmaCalc * sigmaCalc) / 2
 
                 val rand = java.util.Random()
-                Array(simulationLength) { DoubleArray(numSimulations) {
-                    exp(muCalc + sigmaCalc * rand.nextGaussian())
-                } }
+                val jobs = List(simulationLength) { t ->
+                    async {
+                        for (s in 0 until numSimulations) {
+                            inflationMatrix[t][s] = exp(muCalc + sigmaCalc * rand.nextGaussian())
+                        }
+                    }
+                }
+                jobs.awaitAll()
             }
             else -> {
-                Array(simulationLength) { DoubleArray(numSimulations) { inflationMean } }
+                val jobs = List(simulationLength) { t ->
+                    async {
+                        for (s in 0 until numSimulations) {
+                            inflationMatrix[t][s] = inflationMean
+                        }
+                    }
+                }
+                jobs.awaitAll()
             }
         }
-        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
 
-        return inflationMatrix
+        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
+        inflationMatrix
     }
 }
