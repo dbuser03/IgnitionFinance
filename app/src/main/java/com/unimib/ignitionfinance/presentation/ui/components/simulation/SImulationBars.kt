@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unimib.ignitionfinance.presentation.ui.theme.IgnitionFinanceTheme
-import kotlin.math.max
 
 data class SimulationBar(
     val percentage: Double,
@@ -33,25 +32,6 @@ fun SimulationBars(
         MaterialTheme.colorScheme.onTertiary
     )
 
-    val effectiveValues: List<Double> = if (results.isNotEmpty()) {
-        val n = results.size
-        val effective = MutableList(n) { 0.0 }
-        effective[n - 1] = results[n - 1].percentage * 100 // Conversione da decimale a percentuale
-
-        for (i in (n - 2) downTo 0) {
-            val actualGap = (results[i + 1].percentage - results[i].percentage) * 100
-            val gap = when {
-                actualGap == 0.0 -> 0.0
-                actualGap < 10.0 -> 10.0
-                else -> actualGap
-            }
-            effective[i] = effective[i + 1] - gap
-        }
-        effective
-    } else {
-        listOf()
-    }
-
     Row(
         modifier = Modifier
             .padding(top = 36.dp)
@@ -61,12 +41,11 @@ fun SimulationBars(
         verticalAlignment = Alignment.Bottom
     ) {
         results.forEachIndexed { index, result ->
-            val effectivePercentage = max(effectiveValues.getOrNull(index) ?: (result.percentage * 100), 0.0)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                if (result.percentage <= 0.3) { // Ora la soglia è in formato decimale (es. 0.3 = 30%)
+                if (result.percentage <= 0.3) {
                     Text(
                         text = "${(result.percentage * 100).toInt()}%",
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -77,7 +56,7 @@ fun SimulationBars(
                 Box(
                     modifier = Modifier
                         .width(80.dp)
-                        .fillMaxHeight(((effectivePercentage / 100f) * MAX_BAR_HEIGHT).toFloat())
+                        .fillMaxHeight((result.percentage * MAX_BAR_HEIGHT).toFloat())
                         .background(
                             barColors.getOrElse(index) { MaterialTheme.colorScheme.primaryContainer },
                             shape = RoundedCornerShape(12.dp)
@@ -97,7 +76,7 @@ fun SimulationBars(
                 }
                 Text(
                     text = result.capital,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 12.dp),
                     fontSize = 14.sp,
                     color = if (index == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                 )
