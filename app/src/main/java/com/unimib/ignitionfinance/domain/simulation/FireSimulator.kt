@@ -71,7 +71,7 @@ object FireSimulator {
             }
         }
 
-        val targetYear = config.settings.intervals.yearsInFIRE.toInt()
+        val targetYear = config.settings.intervals.yearsInPaidRetirement.toInt()
         val successCount = (0 until numSimulations).count { sim ->
             (invested[targetYear][sim] + cash[targetYear][sim]) > 0
         }
