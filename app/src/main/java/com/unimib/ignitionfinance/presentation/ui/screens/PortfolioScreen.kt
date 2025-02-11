@@ -40,7 +40,7 @@ fun PortfolioScreen(
     viewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val dialogTitle = "Add your cash or product"
+    val dialogTitle = stringResource(id = R.string.dialog_add_product)
     var showDialog by remember { mutableStateOf(false) }
     val state by viewModel.state.collectAsState()
     val listState = rememberLazyListState()
