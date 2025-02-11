@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.local.entity.SimulationOutcome
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -35,7 +34,6 @@ class StartSimulationUseCase @Inject constructor(
     private val configFactory: SimulationConfigFactory,
     private val authRepository: AuthRepository,
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
-    private val userDataMapper: UserDataMapper
 ) {
     companion object {
         private const val TAG = "SIMULATION_USECASE"
@@ -57,16 +55,13 @@ class StartSimulationUseCase @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun execute(): Flow<Result<Pair<List<SimulationResult>, Double>>> = flow {
         try {
-            // Get current user and their data
             val userId = getCurrentUserId()
                 ?: throw IllegalStateException("Failed to get current user ID")
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
                 ?: throw IllegalStateException("User not found in local database")
 
-            // Store the current dataset before any operations
             val existingDataset = currentUser.dataset
 
-            // Check network availability and get appropriate dataset
             val isNetworkAvailable = networkUtils.isNetworkAvailable()
             Log.d(TAG, "Network available: $isNetworkAvailable")
 
@@ -81,7 +76,6 @@ class StartSimulationUseCase @Inject constructor(
                 return@flow
             }
 
-            // Create configuration using appropriate dataset
             val configResult = configFactory.createConfig().first()
             val baseConfig = configResult.getOrElse {
                 emit(Result.failure(it))
@@ -90,7 +84,7 @@ class StartSimulationUseCase @Inject constructor(
                 dataset = if (newDataset.isNotEmpty()) newDataset else existingDataset
             )
 
-            val capitalIncrements = listOf(0.0, 50_000.0, 100_000.0, 150_000.0)
+            val capitalIncrements = listOf(0.0, 0.0, 0.0, 0.0)
             val configs = capitalIncrements.map { increment ->
                 baseConfig.copy(
                     capital = baseConfig.capital.copy(
@@ -161,20 +155,17 @@ class StartSimulationUseCase @Inject constructor(
             Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
-            // Create SimulationOutcome object and update user
             val simulationOutcome = SimulationOutcome(
                 results = simulationResults,
                 fuckYouMoney = fuckYouMoney
             )
 
-            // Update user with new simulation results
             val updatedUser = currentUser.copy(
                 simulationOutcome = simulationOutcome,
                 dataset = newDataset.ifEmpty { existingDataset },
                 updatedAt = System.currentTimeMillis()
             )
 
-            // Save to local database
             localDatabaseRepository.update(updatedUser).first()
 
             emit(Result.success(simulationResults to fuckYouMoney))
@@ -283,7 +274,8 @@ class StartSimulationUseCase @Inject constructor(
                     b = a * GOLDEN_RATIO
                 } else {
                     b = successful.minOf { it.first }
-                    a = points[points.indexOfFirst { it >= b } - 1]
+                    val idx = points.indexOfFirst { it >= b }
+                    a = if (idx > 0) points[idx - 1] else a
                 }
             }
 

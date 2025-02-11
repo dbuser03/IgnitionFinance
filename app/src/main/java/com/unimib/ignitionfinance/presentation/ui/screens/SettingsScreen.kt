@@ -169,21 +169,21 @@ fun SettingsScreen(
                         title = "INTERVALS",
                         inputBoxModelList = listOf(
                             InputBoxModel(
+                                key = "yearsInPaidRetirement",
+                                label = "Target years",
+                                prefix = "YRS",
+                                iconResId = R.drawable.outline_send_money_24,
+                                inputValue = remember(state.settings) {
+                                    mutableStateOf(TextFieldValue(settingsData.intervals.yearsInPaidRetirement))
+                                }
+                            ),
+                            InputBoxModel(
                                 key = "yearsInFire",
                                 label = "Years in FIRE",
                                 prefix = "YRS",
                                 iconResId = R.drawable.outline_local_fire_department_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.intervals.yearsInFIRE))
-                                }
-                            ),
-                            InputBoxModel(
-                                key = "yearsInPaidRetirement",
-                                label = "Years in paid retirement",
-                                prefix = "YRS",
-                                iconResId = R.drawable.outline_send_money_24,
-                                inputValue = remember(state.settings) {
-                                    mutableStateOf(TextFieldValue(settingsData.intervals.yearsInPaidRetirement))
                                 }
                             ),
                             InputBoxModel(
