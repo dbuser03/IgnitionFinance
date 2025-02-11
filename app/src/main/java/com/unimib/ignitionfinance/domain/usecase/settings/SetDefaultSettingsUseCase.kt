@@ -18,7 +18,7 @@ class SetDefaultSettingsUseCase @Inject constructor(){
             expenses = Expenses(
                 taxRatePercentage = "26",
                 stampDutyPercentage = "0.2",
-                loadPercentage = "1"
+                loadPercentage = "100"
             ),
             intervals = Intervals(
                 yearsInFIRE = "----",

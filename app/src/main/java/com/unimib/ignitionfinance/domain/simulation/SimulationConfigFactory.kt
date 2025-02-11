@@ -21,7 +21,7 @@ class SimulationConfigFactory @Inject constructor(
     private val fetchInflationUseCase: FetchInflationUseCase,
     private val getUserInvestedUseCase: GetUserInvestedUseCase,
     private val getUserCashUseCase: GetUserCashUseCase,
-    private val networkUtils: NetworkUtils  // Iniettato per controllare la connettività
+    private val networkUtils: NetworkUtils
 ) {
     companion object {
         private const val LOG_TAG = "SIM_CONFIG"
@@ -29,8 +29,6 @@ class SimulationConfigFactory @Inject constructor(
     }
 
     fun createConfig(): Flow<Result<SimulationConfig>> {
-        // Se il dispositivo non è online, usiamo un valore di fallback per l'inflazione:
-        // Utilizziamo una mappa con chiave di tipo Int (ad es. 0) e il valore medio definito in SimulationParams.
         val inflationFlow: Flow<Result<Map<Int, Double>>> =
             if (networkUtils.isNetworkAvailable()) {
                 fetchInflationUseCase.execute()
