@@ -84,7 +84,7 @@ class StartSimulationUseCase @Inject constructor(
                 dataset = if (newDataset.isNotEmpty()) newDataset else existingDataset
             )
 
-            val capitalIncrements = listOf(0.0, 0.0, 0.0, 0.0)
+            val capitalIncrements = listOf(0.0, 50_000.0, 100_000.0, 150_000.0)
             val configs = capitalIncrements.map { increment ->
                 baseConfig.copy(
                     capital = baseConfig.capital.copy(
@@ -235,7 +235,36 @@ class StartSimulationUseCase @Inject constructor(
                 async(Dispatchers.Default) {
                     val rate = successRateCache.getOrPut(capital) {
                         val config = createConfigWithCapital(baseConfig, capital)
-                        runSimulation(config).successRate
+
+                        if (config.capital.invested == 0.0) {
+                            val inflationMatrix = InflationModel.generateInflationMatrix(
+                                scenarioInflation = config.settings.inflationModel.lowercase(),
+                                inflationMean = config.simulationParams.averageInflation,
+                                historicalInflation = config.historicalInflation.values.toList(),
+                                numSimulations = config.settings.numberOfSimulations.toInt(),
+                                simulationLength = 100
+                            )
+
+                            val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
+                                initialWithdrawal = config.settings.withdrawals.withoutPension.toDouble(),
+                                yearsWithoutPension = config.settings.intervals.yearsInFIRE.toInt(),
+                                pensionWithdrawal = config.settings.withdrawals.withPension.toDouble(),
+                                inflationMatrix = inflationMatrix
+                            )
+
+                            val successCount = (0 until config.settings.numberOfSimulations.toInt()).count { simIndex ->
+                                var remainingCash = config.capital.cash
+                                for (t in 0 until config.settings.intervals.yearsInFIRE.toInt()) {
+                                    remainingCash -= withdrawalMatrix[t][simIndex]
+                                    if (remainingCash <= 0) return@count false
+                                }
+                                true
+                            }
+
+                            successCount.toDouble() / config.settings.numberOfSimulations.toDouble()
+                        } else {
+                            runSimulation(config).successRate
+                        }
                     }
                     capital to rate
                 }
@@ -245,7 +274,6 @@ class StartSimulationUseCase @Inject constructor(
         var iteration = 0
         while ((b - a) > CAPITAL_TOLERANCE && iteration < MAX_ITERATIONS) {
             val evaluatedPoints = evaluatePoints(points)
-            Log.d(TAG, "Iteration $iteration: Points evaluated: $evaluatedPoints")
 
             val sortedPoints = evaluatedPoints.sortedBy { it.first }
             val transitionPoint = sortedPoints.zipWithNext().firstOrNull { (p1, p2) ->
@@ -283,12 +311,9 @@ class StartSimulationUseCase @Inject constructor(
             iteration++
         }
 
-        val finalCapital = successRateCache.entries
+        return successRateCache.entries
             .filter { it.value >= SUCCESS_RATE_THRESHOLD }
             .minByOrNull { it.key }?.key ?: b
-
-        Log.d(TAG, "Final result after $iteration iterations: capital=$finalCapital")
-        return finalCapital
     }
 
     private suspend fun evaluatePoint(

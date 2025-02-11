@@ -18,101 +18,126 @@ object FireSimulator {
         marketReturnsMatrix: Array<DoubleArray>,
         withdrawalMatrix: Array<DoubleArray>
     ): SimulationResult = withContext(Dispatchers.Default) {
-
         val simulationYears = 100
         val numSimulations = config.settings.numberOfSimulations.toInt()
-        val initialCapital = config.capital.invested.toDouble()
+        val initialInvestedCapital = config.capital.invested.toDouble()
+        val initialCashCapital = config.capital.cash.toDouble()
         val loadPercentage = config.settings.expenses.loadPercentage.toDouble()
         val bufferYears = config.settings.intervals.yearsOfBuffer.toDouble()
         val taxRate = config.settings.expenses.taxRatePercentage.toDouble()
         val stampDuty = config.settings.expenses.stampDutyPercentage.toDouble()
         val retirementYear = config.settings.intervals.yearsInPaidRetirement.toInt()
+        val cashInterestRate = config.simulationParams.cashInterestRate.toDouble()
 
         val simulationResults = (0 until numSimulations).map { simIndex ->
             async {
                 val isFirstSimulation = simIndex == 0
 
-                var portfolio = initialCapital
+                var portfolio = initialInvestedCapital
+                var cash = initialCashCapital
                 var buffer = 0.0
-                var taxableCapital = initialCapital * loadPercentage
+                var taxableCapital = initialInvestedCapital * loadPercentage
                 var portfolioAtRetirement = portfolio
+                var cashAtRetirement = cash
                 var bufferAtRetirement = buffer
 
                 for (t in 0 until simulationYears - 1) {
                     val currentMarketReturn = marketReturnsMatrix[t][simIndex]
                     val currentWithdrawal = withdrawalMatrix[t][simIndex]
 
-                    val condition = if (t > 0) {
-                        marketReturnsMatrix[t][simIndex] > marketReturnsMatrix[t - 1][simIndex]
-                    } else {
-                        true
-                    }
-                    val withdrawalLimit = if (condition) {
-                        currentWithdrawal * bufferYears
-                    } else {
-                        currentWithdrawal
-                    }
-                    val availableFunds = portfolio + buffer
-                    val newBuffer = min(availableFunds, withdrawalLimit)
-                    val withdrawalBuffer = max(0.0, newBuffer - buffer)
+                    // Apply interest to cash balance at the start of each year
+                    cash *= (1.0 + cashInterestRate)
 
-                    val capitalGain = if (portfolio > 0) {
-                        withdrawalBuffer * (1.0 - (taxableCapital / portfolio))
-                    } else {
-                        0.0
+                    var remainingWithdrawal = currentWithdrawal
+
+                    if (cash > 0) {
+                        val cashWithdrawal = min(cash, remainingWithdrawal)
+                        cash -= cashWithdrawal
+                        remainingWithdrawal -= cashWithdrawal
                     }
-                    val tax = capitalGain * taxRate
+
+                    if (remainingWithdrawal > 0) {
+                        val condition = if (t > 0) {
+                            marketReturnsMatrix[t][simIndex] > marketReturnsMatrix[t - 1][simIndex]
+                        } else {
+                            true
+                        }
+
+                        val withdrawalLimit = if (condition) {
+                            remainingWithdrawal * bufferYears
+                        } else {
+                            remainingWithdrawal
+                        }
+
+                        val availableFunds = portfolio
+                        val newBuffer = min(availableFunds, withdrawalLimit)
+                        val withdrawalBuffer = max(0.0, newBuffer - buffer)
+
+                        val capitalGain = if (portfolio > 0) {
+                            withdrawalBuffer * (1.0 - (taxableCapital / portfolio))
+                        } else {
+                            0.0
+                        }
+                        val tax = capitalGain * taxRate
+
+                        if (tax != 0.0 && portfolio > 0.0) {
+                            taxableCapital *= (1.0 - withdrawalBuffer / portfolio)
+                        }
+                        portfolio -= withdrawalBuffer
+                        buffer = buffer + withdrawalBuffer - tax - remainingWithdrawal
+                    }
 
                     if (isFirstSimulation) {
                         Log.d(
                             TAG, """
                             Simulazione $simIndex, Anno ${t + 1}:
                             - Valore Portafoglio: €${String.format("%,.2f", portfolio)}
-                            - Prelievo: €${String.format("%,.2f", withdrawalBuffer)}
+                            - Liquidità Disponibile: €${String.format("%,.2f", cash)}
+                            - Prelievo Totale: €${String.format("%,.2f", currentWithdrawal)}
                             - Rendimento Mercato: ${String.format("%.2f%%", (currentMarketReturn - 1.0) * 100)}
-                            - Capital Gain: €${String.format("%,.2f", capitalGain)}
-                            - Tasse Capital Gain: €${String.format("%,.2f", tax)}
+                            - Rendimento Liquidità: ${String.format("%.2f%%", cashInterestRate * 100)}
                             - Saldo Buffer: €${String.format("%,.2f", buffer)}
                             """.trimIndent()
                         )
                     }
 
-                    if (tax != 0.0 && portfolio > 0.0) {
-                        taxableCapital *= (1.0 - withdrawalBuffer / portfolio)
-                    }
-                    portfolio -= withdrawalBuffer
-                    buffer = buffer + withdrawalBuffer - tax - min(portfolio + buffer, currentWithdrawal)
-
-                    if (portfolio < currentWithdrawal * 1e-6) {
+                    if (portfolio < currentWithdrawal * 1e-6 && cash < currentWithdrawal * 1e-6) {
                         portfolio = 0.0
                         if (isFirstSimulation) {
-                            Log.w(TAG, "Simulazione $simIndex, Anno ${t + 1}: Portafoglio esaurito")
+                            Log.w(TAG, """
+                                Simulazione $simIndex, Anno ${t + 1}: 
+                                Capitale investito esaurito. 
+                                Liquidità residua: €${String.format("%,.2f", cash)}
+                                """.trimIndent())
                         }
                     }
 
                     if (t + 1 == retirementYear) {
                         portfolioAtRetirement = portfolio
+                        cashAtRetirement = cash
                         bufferAtRetirement = buffer
                     }
 
                     val nextMarketReturn = marketReturnsMatrix[t + 1][simIndex]
                     portfolio *= nextMarketReturn
+
                     val stampDutyAmount = (portfolio + buffer) * stampDuty
                     buffer -= stampDutyAmount
                 }
 
-                val success = (portfolioAtRetirement + bufferAtRetirement) > 0
+                val success = (portfolioAtRetirement + cashAtRetirement + bufferAtRetirement) > 0
                 if (isFirstSimulation) {
                     if (success) {
                         Log.i(
                             TAG, """
                             Simulazione $simIndex SUCCESSO:
                             - Valore Finale Portafoglio: €${String.format("%,.2f", portfolioAtRetirement)}
+                            - Liquidità Finale: €${String.format("%,.2f", cashAtRetirement)}
                             - Valore Finale Buffer: €${String.format("%,.2f", bufferAtRetirement)}
                             """.trimIndent()
                         )
                     } else {
-                        Log.w(TAG, "Simulazione $simIndex FALLITA: Portafoglio esaurito")
+                        Log.w(TAG, "Simulazione $simIndex FALLITA: Capitale esaurito")
                     }
                 }
                 success
