@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.di
 
-import com.unimib.ignitionfinance.data.local.mapper.UserMapper
+import com.unimib.ignitionfinance.data.local.utils.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.AuthMapper
 import com.unimib.ignitionfinance.data.remote.mapper.ExchangeMapper
 import com.unimib.ignitionfinance.data.remote.mapper.InflationMapper

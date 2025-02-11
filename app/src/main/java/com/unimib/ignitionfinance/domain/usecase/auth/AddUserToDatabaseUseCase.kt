@@ -2,7 +2,7 @@ package com.unimib.ignitionfinance.domain.usecase.auth
 
 import android.content.Context
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.local.mapper.UserMapper
+import com.unimib.ignitionfinance.data.local.utils.UserMapper
 import com.unimib.ignitionfinance.data.remote.mapper.UserDataMapper
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.SyncQueueItemRepository
