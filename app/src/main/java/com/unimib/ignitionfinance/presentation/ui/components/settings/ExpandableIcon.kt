@@ -28,14 +28,3 @@ fun ExpandableIcon(
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun ExpandableIconPreview() {
-    IgnitionFinanceTheme {
-        ExpandableIcon(
-            isExpanded = true,
-            onClick = {}
-        )
-    }
-}
