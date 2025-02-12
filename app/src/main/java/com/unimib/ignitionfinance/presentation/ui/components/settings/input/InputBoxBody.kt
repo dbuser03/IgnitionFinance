@@ -67,38 +67,3 @@ fun InputBoxBody(
         }
     }
 }
-
-/*@Composable
-private fun AnimatedInputValue(
-    inputValue: String,
-    textStyle: TextStyle
-) {
-    Row(
-        modifier = Modifier.graphicsLayer(clip = false)
-    ) {
-        inputValue.forEachIndexed { index, char ->
-            var visible by remember { mutableStateOf(false) }
-
-            LaunchedEffect(char, index) {
-                delay(index * 30L)
-                visible = true
-            }
-
-            AnimatedVisibility(
-                visible = visible,
-                enter = slideInHorizontally(
-                    initialOffsetX = { 10 },
-                    animationSpec = tween(durationMillis = 100)
-                ) + fadeIn(animationSpec = tween(durationMillis = 100)),
-                exit = ExitTransition.None
-            ) {
-                Text(
-                    text = char.toString(),
-                    style = textStyle,
-                    color = MaterialTheme.colorScheme.primary,
-                    softWrap = false
-                )
-            }
-        }
-    }
-}*/
