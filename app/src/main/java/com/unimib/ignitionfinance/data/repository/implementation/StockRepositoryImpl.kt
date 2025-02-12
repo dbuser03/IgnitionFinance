@@ -5,7 +5,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.unimib.ignitionfinance.data.remote.mapper.StockMapper
-import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.api.StockData
 import com.unimib.ignitionfinance.data.remote.response.TimeSeriesData
 import com.unimib.ignitionfinance.data.remote.service.StockService
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository

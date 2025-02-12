@@ -17,7 +17,6 @@ import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
-
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale

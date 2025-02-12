@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
-import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.api.StockData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.domain.usecase.fetch.FetchHistoricalDataUseCase

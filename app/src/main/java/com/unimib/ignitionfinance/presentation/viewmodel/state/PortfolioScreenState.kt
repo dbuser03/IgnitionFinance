@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.presentation.viewmodel.state
 
-import com.unimib.ignitionfinance.data.remote.model.ExchangeData
-import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.api.ExchangeData
+import com.unimib.ignitionfinance.data.remote.model.api.StockData
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 
 data class PortfolioScreenState(
