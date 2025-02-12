@@ -19,7 +19,6 @@ object UserMapper {
             productList = user.productList,
             firstAdded = user.firstAdded,
             dataset = user.dataset,
-            // Add simulation data to UserData
             simulationOutcome = user.simulationOutcome
         )
     }
@@ -41,7 +40,6 @@ object UserMapper {
             productList = userData?.productList ?: emptyList(),
             firstAdded = userData?.firstAdded == true,
             dataset = userData?.dataset ?: emptyList(),
-            // Add simulation data from UserData
             simulationOutcome = userData?.simulationOutcome
         )
     }

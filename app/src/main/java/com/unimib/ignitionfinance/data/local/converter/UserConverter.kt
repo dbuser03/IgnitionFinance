@@ -3,11 +3,13 @@ package com.unimib.ignitionfinance.data.local.converter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.unimib.ignitionfinance.data.local.entity.SimulationOutcome
 import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.data.remote.model.user.Settings
+import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
+import kotlin.Pair
+import kotlin.collections.List
 
 class UserConverter {
     private val gson = Gson()
@@ -39,14 +41,14 @@ class UserConverter {
         gson.fromJson(datasetString, object : TypeToken<List<DailyReturn>>() {}.type)
 
     @TypeConverter
-    fun fromSimulationOutcome(outcome: SimulationOutcome?): String? {
+    fun fromSimulationOutcome(outcome: Pair<List<SimulationResult>, Double?>?): String? {
         return outcome?.let { gson.toJson(it) }
     }
 
     @TypeConverter
-    fun toSimulationOutcome(outcomeString: String?): SimulationOutcome? {
+    fun toSimulationOutcome(outcomeString: String?): Pair<List<SimulationResult>, Double?>? {
         return outcomeString?.let {
-            gson.fromJson(it, object : TypeToken<SimulationOutcome>() {}.type)
+            gson.fromJson(it, object : TypeToken<Pair<List<SimulationResult>, Double?>>() {}.type)
         }
     }
 

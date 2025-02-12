@@ -29,14 +29,14 @@ import java.util.Locale
 @Composable
 fun NetWorthDisplay(
     inputBoxModel: InputBoxModel,
-    netWorth: Double = 0.0,
+    netWorth: Double? = 0.0,
     isLoading: Boolean = false,
     isNetWorthHidden: Boolean = false,
     showVisibilityIcon: Boolean = true,
     onVisibilityToggle: () -> Unit = { }
 ) {
     val formattedNetWorth = remember(netWorth) {
-        if (netWorth % 1 == 0.0) {
+        if (netWorth?.rem(1) == 0.0) {
             String.format(Locale.US, "%,.0f", netWorth)
         } else {
             String.format(Locale.US, "%,.2f", netWorth)
