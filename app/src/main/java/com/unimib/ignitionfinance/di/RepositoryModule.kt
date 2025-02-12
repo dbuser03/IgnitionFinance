@@ -106,7 +106,9 @@ object RepositoryModule {
         deleteAllFn = UserDao::deleteAllUsers,
         getUnsyncedFn = UserDao::getUnsyncedUsers,
         getUpdatedAfterFn = UserDao::getUsersUpdatedAfter,
-        updateLastSyncFn = UserDao::updateLastSyncTimestamp
+        updateLastSyncFn = UserDao::updateLastSyncTimestamp,
+        updateDatasetFn = { id, dataset, timestamp -> userDao.updateDataset(id, dataset, timestamp) },
+        updateSimulationOutcomeFn = { id, outcome, timestamp -> userDao.updateSimulationOutcome(id, outcome, timestamp) }
     )
 
     @Provides

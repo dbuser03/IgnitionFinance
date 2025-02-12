@@ -1,5 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
+import com.google.gson.Gson
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
@@ -23,19 +24,12 @@ class AddDatasetToDatabaseUseCase @Inject constructor(
             val userId = authData.id.takeIf { it.isNotEmpty() }
                 ?: throw IllegalStateException("User ID is empty")
 
-            val localUserResult = localDatabaseRepository.getById(userId).first()
-            val user = localUserResult.getOrNull()
-                ?: throw IllegalStateException("User not found in local database for ID: $userId")
+            val jsonDataset = Gson().toJson(dataset)
 
-            val updatedUser = user.copy(
-                dataset = user.dataset.toMutableList().apply {
-                    clear()
-                    addAll(dataset)
-                },
-                updatedAt = System.currentTimeMillis()
-            )
-
-            localDatabaseRepository.update(updatedUser).first().getOrThrow()
+            localDatabaseRepository.updateDataset(
+                userId,
+                dataset = jsonDataset,
+            ).first()
 
             emit(Result.success(Unit))
         } catch (e: CancellationException) {

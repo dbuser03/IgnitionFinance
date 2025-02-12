@@ -3,6 +3,7 @@ package com.unimib.ignitionfinance.domain.usecase.simulation
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.google.gson.Gson
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
@@ -80,7 +81,7 @@ class StartSimulationUseCase @Inject constructor(
                 emit(Result.failure(it))
                 return@flow
             }.copy(
-                dataset = if (newDataset.isNotEmpty()) newDataset else existingDataset
+                dataset = newDataset.ifEmpty { existingDataset }
             )
 
             val capitalIncrements = listOf(0.0, 50_000.0, 100_000.0, 150_000.0)
@@ -155,14 +156,13 @@ class StartSimulationUseCase @Inject constructor(
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
             val simulationOutcome = Pair(simulationResults, fuckYouMoney)
+            val simulationOutcomeJson = Gson().toJson(simulationOutcome)
 
-            val updatedUser = currentUser.copy(
-                simulationOutcome = simulationOutcome,
-                dataset = newDataset.ifEmpty { existingDataset },
-                updatedAt = System.currentTimeMillis()
-            )
 
-            localDatabaseRepository.update(updatedUser).first()
+            localDatabaseRepository.updateSimulationOutcome(
+                userId,
+                outcome = simulationOutcomeJson
+            ).first()
 
             emit(Result.success(simulationResults to fuckYouMoney))
         } catch (e: Exception) {

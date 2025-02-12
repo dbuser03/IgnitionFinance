@@ -20,8 +20,8 @@ interface UserDao {
     suspend fun delete(user: User)
 
     @Update
-    suspend fun UserDao.update(user: User) {
-        update(
+    suspend fun update(user: User) {
+        updateNoSimulation(
             id = user.id,
             name = user.name,
             surname = user.surname,
@@ -35,6 +35,32 @@ interface UserDao {
             firstAdded = user.firstAdded
         )
     }
+
+
+    @Query("""
+        UPDATE users 
+        SET dataset = :dataset,
+            updated_at = :timestamp
+        WHERE id = :userId
+    """)
+    suspend fun updateDataset(
+        userId: String,
+        dataset: String?,
+        timestamp: Long = System.currentTimeMillis()
+    )
+
+    @Query("""
+        UPDATE users 
+        SET simulation_outcome = :simulationOutcome,
+            updated_at = :timestamp
+        WHERE id = :userId
+    """)
+    suspend fun updateSimulationOutcome(
+        userId: String,
+        simulationOutcome: String?,
+        timestamp: Long = System.currentTimeMillis()
+    )
+
 
     @Query("UPDATE users SET updated_at = :timestamp WHERE id = :userId")
     suspend fun updateTimestamp(userId: String, timestamp: Long = System.currentTimeMillis())
@@ -65,7 +91,7 @@ interface UserDao {
         first_added = :firstAdded
     WHERE id = :id
 """)
-    suspend fun update(
+    suspend fun updateNoSimulation(
         id: String,
         name: String,
         surname: String,
