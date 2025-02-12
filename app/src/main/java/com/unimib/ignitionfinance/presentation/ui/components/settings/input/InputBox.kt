@@ -16,10 +16,8 @@ import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.CustomIcon
 import com.unimib.ignitionfinance.presentation.ui.components.dialog.DialogManager
+import com.unimib.ignitionfinance.presentation.utils.formatNumberAmerican
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 @Composable
 fun InputBox(
@@ -141,20 +139,3 @@ fun InputBox(
         }
     }
 }
-
-/*fun formatNumberAmerican(input: String): String {
-    return try {
-        val symbols = DecimalFormatSymbols(Locale.US).apply {
-            groupingSeparator = ','
-            decimalSeparator = '.'
-        }
-        val formatter = DecimalFormat("#,###.##", symbols).apply {
-            isGroupingUsed = true
-            maximumFractionDigits = 2
-        }
-
-        input.toDoubleOrNull()?.let { formatter.format(it) } ?: input
-    } catch (_: NumberFormatException) {
-        input
-    }
-}*/
