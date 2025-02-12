@@ -95,7 +95,6 @@ fun SimulationScreen(
                             val (results, fuckYouMoney) = when (simulationState) {
                                 is UiState.Success -> simulationState.data
                                 is UiState.Idle -> {
-                                    // Use empty data if no previous simulation exists
                                     state.lastSimulationResult ?: Pair(
                                         List(4) { SimulationResult(0.0) },
                                         0.0
