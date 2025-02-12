@@ -6,7 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unimib.ignitionfinance.BuildConfig
-import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.api.StockData
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.domain.usecase.flag.*
 import com.unimib.ignitionfinance.domain.usecase.fetch.FetchExchangeUseCase

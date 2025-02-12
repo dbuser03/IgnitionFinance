@@ -1,7 +1,7 @@
 package com.unimib.ignitionfinance.domain.usecase.fetch
 
 import com.unimib.ignitionfinance.BuildConfig
-import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.api.StockData
 import com.unimib.ignitionfinance.data.repository.interfaces.StockRepository
 import com.unimib.ignitionfinance.domain.usecase.networth.invested.GetProductListUseCase
 import kotlinx.coroutines.flow.Flow
