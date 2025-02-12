@@ -1,0 +1,276 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, margin=3cm]{geometry}
+\usepackage{amsmath}
+\usepackage{fontspec}
+\setmainfont[
+  Path = fonts/,                    % Cartella in cui sono presenti i file
+  Extension = .otf,                  % Estensione dei file
+  UprightFont = *-regular,           % Usa "NeueHaasGroteskDisplay-Regular.otf"
+  UprightFeatures = {LetterSpace=5}, % Aumenta la spaziatura di 5/1000 em per il Regular
+  BoldFont = *-bold,                 % Usa "NeueHaasGroteskDisplay-Bold.otf" per il grassetto
+  ItalicFeatures = {FakeSlant=0.2}    % Simula l'italic
+]{neue-haas-grotesk-display}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows, shapes, positioning}
+
+\title{Architettura Complessiva dell'Applicazione Ignition Finance: Un'Analisi Dettagliata}
+\author{Il Team di Sviluppo Ignition Finance}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduzione}
+
+Questo documento fornisce un'analisi approfondita dell'architettura complessiva dell'applicazione Ignition Finance. Oltre a delineare i componenti interni, si concentra sulle loro relazioni e sulle modalità di interazione con componenti esterni cruciali quali Firebase, API esterne e il database interno. L'obiettivo è fornire una visione chiara delle scelte di design e delle motivazioni che le sottendono.
+
+\section{Principi Guida dell'Architettura}
+
+L'architettura di Ignition Finance è fondata sui seguenti principi chiave:
+
+\begin{itemize}
+    \item \textbf{Modularità:} L'applicazione è suddivisa in moduli indipendenti (package) per favorire lo sviluppo parallelo, la manutenzione semplificata e il riuso di componenti.
+    \item \textbf{Separazione delle Responsabilità (SoC):} Ogni modulo è responsabile di un aspetto specifico dell'applicazione, riducendo l'accoppiamento e migliorando la coesione.
+    \item \textbf{Testabilità:} L'architettura facilita la scrittura di test unitari e di integrazione, garantendo la qualità e la stabilità del codice.
+    \item \textbf{Scalabilità:} L'applicazione è progettata per gestire un numero crescente di utenti e di dati, garantendo prestazioni ottimali.
+    \item \textbf{Reattività:} L'interfaccia utente è reattiva e intuitiva, fornendo un'esperienza utente fluida e coinvolgente.
+\end{itemize}
+
+\section{Componenti Architetturali}
+
+L'applicazione Ignition Finance è strutturata in quattro package principali: \texttt{data}, \texttt{domain}, \texttt{presentation} e \texttt{di}.
+
+\subsection{Package \texttt{data}: Il Nucleo dell'Accesso ai Dati}
+
+Il package \texttt{data} è responsabile della gestione e dell'astrazione delle sorgenti dati, sia locali che remote. La sua architettura è pensata per garantire un accesso efficiente, uniforme e testabile ai dati necessari per il funzionamento dell'applicazione.
+
+\subsubsection{Componenti Chiave e Modalità di Interazione}
+
+\begin{itemize}
+    \item \textbf{Persistenza Locale (Room):}
+    \begin{itemize}
+        \item \textit{Componenti: AppDatabase.kt, UserDao.kt, SyncQueueItemDao.kt, User.kt, SyncQueueItem.kt}
+        \item \textit{Ruolo:} Room viene utilizzato per memorizzare i dati in locale, consentendo l'accesso offline e migliorando le prestazioni.
+        \item \textit{Interazione:} Le DAO (Data Access Objects) forniscono un'interfaccia per interagire con il database Room. I \texttt{Converter} gestiscono la conversione tra oggetti Kotlin e i tipi di dati supportati da Room.
+    \end{itemize}
+    \item \textbf{API Remote (Retrofit):}
+    \begin{itemize}
+        \item \textit{Componenti: RetrofitClient.kt, Servizi (StockService.kt, ExchangeService.kt, ecc.), Mapper, Response Models}
+        \item \textit{Ruolo:} Retrofit viene utilizzato per comunicare con le API esterne, recuperando dati finanziari quali quotazioni azionarie, tassi di cambio e dati sull'inflazione.
+        \item \textit{Interazione:} \texttt{RetrofitClient.kt} configura e fornisce istanze dei servizi Retrofit. I \texttt{Mapper} trasformano le risposte delle API in oggetti Kotlin utilizzabili.
+        \begin{itemize}
+            \item \textit{API Alpha Vantage:} Utilizzata per recuperare dati azionari storici e in tempo reale, quali quotazioni, volumi e indicatori di performance.
+            \item \textit{API della Banca Centrale Europea (ECB):} Utilizzata per recuperare dati sui tassi di cambio e sull'inflazione.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Servizi Firebase (Authentication, Firestore):}
+    \begin{itemize}
+        \item \textit{Componenti: AuthService.kt, FirestoreService.kt}
+        \item \textit{Ruolo:} Firebase viene utilizzato per l'autenticazione degli utenti (Authentication) e per la persistenza dei dati nel cloud (Firestore).
+        \item \textit{Interazione:} \texttt{AuthService.kt} gestisce l'autenticazione degli utenti, mentre \texttt{FirestoreService.kt} fornisce metodi per interagire con Firestore, quali la lettura, scrittura, aggiornamento e cancellazione di documenti.
+    \end{itemize}
+    \item \textbf{Sincronizzazione dei Dati (SyncWorker.kt):}
+    \begin{itemize}
+        \item \textit{Componenti: SyncWorker.kt, SyncQueueItem.kt, SyncQueueItemDao.kt}
+        \item \textit{Ruolo:} \texttt{SyncWorker.kt} viene eseguito in background per sincronizzare i dati tra il database locale (Room) e Firestore.
+        \item \textit{Interazione:} \texttt{SyncQueueItem.kt} rappresenta un'operazione di sincronizzazione da eseguire. \texttt{SyncQueueItemDao.kt} gestisce la coda di sincronizzazione nel database Room.
+    \end{itemize}
+    \item \textbf{Repository (Interfacce e Implementazioni):}
+    \begin{itemize}
+        \item \textit{Componenti: AuthRepository.kt, AuthRepositoryImpl.kt, FirestoreRepository.kt, FirestoreRepositoryImpl.kt, LocalDatabaseRepository.kt, LocalDatabaseRepositoryImpl.kt}
+        \item \textit{Ruolo:} I repository forniscono un'astrazione tra le sorgenti dati e la logica di business (package \texttt{domain}).
+        \item \textit{Interazione:} Gli use case nel package \texttt{domain} interagiscono con i repository per accedere ai dati. I repository a loro volta utilizzano Room, Retrofit e i servizi Firebase per recuperare e salvare i dati.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Scelte Implementative e Motivazioni}
+
+\begin{itemize}
+    \item \textbf{Utilizzo di Room:} La scelta di Room come database locale è motivata dalla sua integrazione con Android Architecture Components, dalla facilità d'uso e dalle performance efficienti.
+    \item \textbf{Retrofit per API Remote:} Retrofit è stato scelto per la sua flessibilità, la sua integrazione con Gson e la sua capacità di gestire facilmente le chiamate asincrone.
+        \begin{itemize}
+            \item \textit{API Alpha Vantage:} Utilizzata per recuperare dati azionari storici e in tempo reale, quali quotazioni, volumi e indicatori di performance.
+            \item \textit{API della Banca Centrale Europea (ECB):} Utilizzata per recuperare dati sui tassi di cambio e sull'inflazione.
+        \end{itemize}
+    \item \textbf{Firebase per Autenticazione e Cloud Storage:} Firebase è stato scelto per la sua semplicità d'uso, la scalabilità e le funzionalità di autenticazione e cloud storage.
+    \item \textbf{SyncWorker per la Sincronizzazione:} L'utilizzo di un \texttt{SyncWorker} consente di eseguire le operazioni di sincronizzazione in background, senza bloccare l'interfaccia utente.
+    \item \textbf{Repository Pattern:} L'adozione del Repository Pattern favorisce la testabilità e la manutenibilità del codice, separando la logica di business dall'implementazione delle sorgenti dati.
+\end{itemize}
+
+\subsection{Package \texttt{domain}: La Logica di Business al Centro}
+
+Il package \texttt{domain} incapsula la logica di business dell'applicazione, definendo gli use case, i modelli di dominio e le regole di validazione. Questo package è indipendente dall'implementazione dell'UI e delle sorgenti dati, garantendo la portabilità e la testabilità della logica di business.
+
+\subsubsection{Componenti Chiave e Modalità di Interazione}
+
+\begin{itemize}
+    \item \textbf{Use Case:}
+    \begin{itemize}
+        \item \textit{Esempi: LoginUserUseCase.kt, AddUserToDatabaseUseCase.kt, StartSimulationUseCase.kt}
+        \item \textit{Ruolo:} Rappresentano le interazioni tra l'utente e il sistema. Incapsulano una specifica logica di business.
+        \item \textit{Interazione:} I ViewModel nel package \texttt{presentation} invocano gli use case. Gli use case a loro volta interagiscono con i repository per accedere ai dati.
+    \end{itemize}
+    \item \textbf{Modelli di Dominio:}
+    \begin{itemize}
+        \item \textit{Esempi: User.kt, Product.kt, Settings.kt, SimulationResult.kt}
+        \item \textit{Ruolo:} Definiscono i concetti chiave dell'applicazione e le loro relazioni.
+    \end{itemize}
+    \item \textbf{Regole di Validazione:}
+    \begin{itemize}
+        \item \textit{Esempi: LoginValidator.kt, RegistrationValidator.kt}
+        \item \textit{Ruolo:} Garantiscono la correttezza dei dati inseriti dall'utente.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Scelte Implementative e Motivazioni}
+
+\begin{itemize}
+    \item \textbf{Definizione di Use Case Chiari:} La definizione di use case chiari e specifici consente di incapsulare la logica di business in componenti testabili e riutilizzabili.
+    \item \textbf{Modelli di Dominio Indipendenti:} La definizione di modelli di dominio indipendenti dall'implementazione consente di rappresentare i concetti chiave dell'applicazione in modo coerente e flessibile.
+    \item \textbf{Regole di Validazione Centralizzate:} L'implementazione di regole di validazione centralizzate garantisce la correttezza dei dati e semplifica la gestione degli errori.
+    \item \textbf{Indipendenza dalle Sorgenti Dati e dall'UI:} La scelta di rendere il package \texttt{domain} indipendente dalle sorgenti dati e dall'UI consente di testare la logica di business in modo isolato e di riutilizzarla in diverse parti dell'applicazione.
+\end{itemize}
+
+\subsubsection{Modalità di Interazione con il Package \texttt{data}}
+
+\begin{itemize}
+    \item Gli use case interagiscono con il package \texttt{data} tramite le interfacce dei repository.
+    \item Questa interazione è asincrona, utilizzando Coroutines e Flow per gestire le operazioni di I/O.
+    \item La separazione tra use case e repository consente di testare la logica di business in modo isolato, senza dover accedere alle sorgenti dati reali.
+\end{itemize}
+
+\subsection{Package \texttt{presentation} e \texttt{ui}: L'Esperienza Utente}
+
+Il package \texttt{presentation} e \texttt{ui} sono responsabili della presentazione dell'interfaccia utente all'utente e della gestione dell'interazione con la logica di business.
+
+\subsubsection{Componenti Chiave e Modalità di Interazione}
+
+\begin{itemize}
+    \item \textbf{ViewModel:}
+    \begin{itemize}
+        \item \textit{Esempi: LoginScreenViewModel.kt, PortfolioScreenViewModel.kt, SettingsScreenViewModel.kt}
+        \item \textit{Ruolo:} Gestiscono lo stato dell'UI e comunicano con gli use case nel package \texttt{domain}.
+        \item \textit{Interazione:} Espongono lo stato dell'UI tramite StateFlow, che viene osservato dai Composables nel package \texttt{ui}.
+    \end{itemize}
+    \item \textbf{Composables (UI):}
+    \begin{itemize}
+        \item \textit{Esempi: Schermate (LoginScreen.kt, PortfolioScreen.kt, ecc.), Componenti (CustomFAB.kt, CustomTextField.kt, ecc.)}
+        \item \textit{Ruolo:} Visualizzano i dati e gestiscono le interazioni dell'utente.
+        \item \textit{Interazione:} Osservano lo stato dell'UI esposto dai ViewModel e invocano callback per segnalare le interazioni dell'utente.
+    \end{itemize}
+    \item \textbf{Navigation Component:}
+    \begin{itemize}
+        \item \textit{Componenti: AppNavigation.kt, Destinations.kt, NavGraph.kt}
+        \item \textit{Ruolo:} Gestisce la navigazione tra le diverse schermate dell'applicazione.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Scelte Implementative e Motivazioni}
+
+\begin{itemize}
+    \item \textbf{Jetpack Compose:} La scelta di Jetpack Compose come toolkit UI è motivata dalla sua natura dichiarativa, dalla sua flessibilità e dalla sua integrazione con Kotlin Coroutines e Flow.
+    \item \textbf{ViewModel e StateFlow:} L'utilizzo dei ViewModel e di StateFlow garantisce un flusso di dati reattivo e unidirezionale, facilitando la gestione dello stato dell'UI e la testabilità dei componenti UI.
+\end{itemize}
+
+\subsection{Package \texttt{di}: L'Orchestrazione delle Dipendenze}
+
+Il package \texttt{di} (Dependency Injection) gestisce le dipendenze tra i vari componenti dell'applicazione, utilizzando Hilt.
+
+\subsubsection{Componenti Chiave e Modalità di Interazione}
+
+\begin{itemize}
+    \item \textbf{Moduli Hilt:}
+    \begin{itemize}
+        \item \textit{Esempi: DatabaseModule.kt, FirebaseModule.kt, NetworkModule.kt, RepositoryModule.kt, UseCaseModule.kt}
+        \item \textit{Ruolo:} Forniscono le definizioni delle dipendenze, specificando come creare le istanze dei diversi componenti.
+        \item \textit{Interazione:} Hilt utilizza i moduli per iniettare le dipendenze nei componenti che ne hanno bisogno (ViewModel, use case, repository, ecc.).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Scelte Implementative e Motivazioni}
+
+\begin{itemize}
+    \item \textbf{Hilt per Dependency Injection:} L'utilizzo di Hilt semplifica la gestione delle dipendenze, riduce il boilerplate code e migliora la testabilità dell'applicazione. Hilt si basa su Dagger, un framework di dependency injection consolidato e performante.
+\end{itemize}
+
+\section{Interazioni con Componenti Esterni: Un'Analisi Approfondita}
+
+L'applicazione Ignition Finance si integra con diversi componenti esterni per fornire funzionalità avanzate.
+
+\subsection{Firebase: Autenticazione, Persistenza dei Dati e Sincronizzazione}
+
+\begin{itemize}
+    \item \textbf{Firebase Authentication:} Utilizzato per gestire l'autenticazione degli utenti, fornendo metodi per la registrazione, il login e il reset della password.
+    \begin{itemize}
+        \item \textit{Interazione:} I ViewModel relativi all'autenticazione (es: \texttt{LoginScreenViewModel}, \texttt{RegistrationScreenViewModel}) interagiscono con l'interfaccia \texttt{AuthRepository} per autenticare gli utenti tramite Firebase Authentication.
+    \end{itemize}
+    \item \textbf{Firestore:} Utilizzato come database NoSQL per la persistenza dei dati nel cloud.
+    \begin{itemize}
+        \item \textit{Interazione:} I repository che richiedono l'accesso ai dati nel cloud (es: \texttt{FirestoreRepositoryImpl}) utilizzano il servizio \texttt{FirestoreService} per interagire con Firestore.
+    \end{itemize}
+    \item \textbf{Modalità di Sincronizzazione:} La sincronizzazione dei dati tra il database locale (Room) e Firestore è gestita dal \texttt{SyncWorker}, che esegue le operazioni di sincronizzazione in background.
+    \begin{itemize}
+        \item \textit{Logica:} Il \texttt{SyncWorker} legge le operazioni di sincronizzazione dalla tabella \texttt{sync\_queue\_items} nel database Room e le esegue su Firestore. Al termine dell'operazione, aggiorna lo stato dell'operazione nella tabella \texttt{sync\_queue\_items}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{API Esterne: Dati Finanziari in Tempo Reale}
+
+\begin{itemize}
+    \item \textbf{API Alpha Vantage:} Utilizzata per recuperare dati azionari storici e in tempo reale, quali quotazioni, volumi e indicatori di performance.
+    \begin{itemize}
+        \item \textit{Interazione:} I repository relativi ai dati azionari (es: \texttt{StockRepositoryImpl}, \texttt{SearchStockRepositoryImpl}) utilizzano i servizi Retrofit (es: \texttt{StockService}, \texttt{SearchStockService}) per interrogare l'API di Alpha Vantage.
+    \end{itemize}
+    \item \textbf{API della Banca Centrale Europea (ECB):} Utilizzata per recuperare dati sui tassi di cambio e sull'inflazione.
+    \begin{itemize}
+        \item \textit{Interazione:} I repository relativi ai tassi di cambio e all'inflazione (es: \texttt{ExchangeRepositoryImpl}, \texttt{InflationRepositoryImpl}) utilizzano i servizi Retrofit (es: \texttt{ExchangeService}, \texttt{InflationService}) per interrogare l'API della BCE.
+\end{itemize}
+\end{itemize}
+
+\subsection{Database Interno: Persistenza Locale e Gestione della Sincronizzazione}
+
+\begin{itemize}
+\item \textbf{Room:} Framework di Android per la persistenza dei dati in locale.
+\begin{itemize}
+\item \textit{Ruolo:} Utilizzato per memorizzare i dati degli utenti, le impostazioni, i prodotti del portafoglio e la coda di sincronizzazione.
+\item \textit{Interazione:} I repository che richiedono l'accesso ai dati locali (es: \texttt{LocalDatabaseRepositoryImpl}) utilizzano le DAO (es: \texttt{UserDao}, \texttt{SyncQueueItemDao}) per interagire con il database Room.
+\end{itemize}
+\end{itemize}
+
+\section{Architettura del Flusso di Dati}
+
+Un flusso di dati tipico nell'applicazione segue il seguente schema:
+
+\begin{enumerate}
+\item L'utente interagisce con l'UI (Composables).
+\item L'UI invoca una funzione nel ViewModel.
+\item Il ViewModel invoca un use case nel package \texttt{domain}.
+\item L'use case interagisce con uno o più repository nel package \texttt{data}.
+\item I repository accedono alle sorgenti dati (Firebase, API esterne, database locale).
+\item I dati vengono convertiti dai mapper nei modelli di dominio appropriati.
+\item I dati vengono restituiti all'use case.
+\item L'use case elabora i dati e li restituisce al ViewModel.
+\item Il ViewModel aggiorna lo stato dell'UI (StateFlow).
+\item L'UI osserva i cambiamenti dello stato e si aggiorna di conseguenza.
+\end{enumerate}
+
+\section{Conclusioni}
+
+L'architettura dell'applicazione Ignition Finance è stata progettata con attenzione per garantire la modularità, la separazione delle responsabilità, la testabilità e la scalabilità. L'utilizzo di tecnologie moderne come Jetpack Compose, Coroutines e Hilt semplifica lo sviluppo e la manutenzione dell'applicazione. La comunicazione con componenti esterni è gestita in modo efficace e flessibile, consentendo all'applicazione di adattarsi facilmente a nuovi requisiti e a nuove tecnologie. Le nostre scelte di design riflettono l'impegno per un'architettura pulita, manutenibile e scalabile, con una particolare attenzione alla robustezza, alla sicurezza e all'esperienza utente.
+
+\section{Schema Architetturale Complessivo}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{/home/teto/Scrivania}
+    \caption{Schema Architetturale Complessivo di Ignition Finance}
+    \label{fig:diagramma_architettura_completa}
+\end{figure}
+
+\end{document}
