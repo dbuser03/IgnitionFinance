@@ -13,4 +13,6 @@ interface LocalDatabaseRepository<T> {
     suspend fun getUnsyncedEntities(): Flow<Result<List<T>>>
     suspend fun updateLastSyncTimestamp(id: String, timestamp: Long = System.currentTimeMillis()): Flow<Result<Unit>>
     suspend fun exists(id: String): Flow<Result<Boolean>>
+    suspend fun updateDataset(id: String, dataset: String?): Flow<Result<Unit>>
+    suspend fun updateSimulationOutcome(id: String, outcome: String?): Flow<Result<Unit>>
 }
