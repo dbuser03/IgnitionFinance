@@ -4,8 +4,8 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
-import com.unimib.ignitionfinance.data.local.entity.SimulationOutcome
 import com.unimib.ignitionfinance.data.local.entity.User
+import com.unimib.ignitionfinance.data.remote.model.SimulationOutcomeData
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -155,7 +155,7 @@ class StartSimulationUseCase @Inject constructor(
             Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
-            val simulationOutcome = SimulationOutcome(
+            val simulationOutcome = SimulationOutcomeData(
                 results = simulationResults,
                 fuckYouMoney = fuckYouMoney
             )
