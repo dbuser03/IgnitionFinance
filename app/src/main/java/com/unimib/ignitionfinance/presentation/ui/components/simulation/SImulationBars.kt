@@ -100,16 +100,3 @@ fun SimulationBarsForFour(
     )
     SimulationBars(results = simulationResults)
 }
-
-@Preview(showBackground = true)
-@Composable
-fun SimulationBarsPreview() {
-    IgnitionFinanceTheme {
-        SimulationBarsForFour(
-            capital1 = "350k", percentage1 = 0.2,
-            capital2 = "400k", percentage2 = 0.3,
-            capital3 = "450k", percentage3 = 0.95,
-            capital4 = "500k", percentage4 = 0.96
-        )
-    }
-}

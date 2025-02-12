@@ -30,7 +30,6 @@ fun PerformanceCard(
         Row(
             modifier = Modifier.padding(24.dp)
         ) {
-            // Left column with title
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.CenterStart
@@ -40,8 +39,6 @@ fun PerformanceCard(
                     style = TypographyMedium.bodyLarge
                 )
             }
-
-            // Right column with legend
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
