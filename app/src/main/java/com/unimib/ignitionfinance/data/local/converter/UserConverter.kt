@@ -3,11 +3,13 @@ package com.unimib.ignitionfinance.data.local.converter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.unimib.ignitionfinance.data.remote.model.SimulationOutcomeData
 import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.data.remote.model.user.Settings
+import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
+import kotlin.Pair
+import kotlin.collections.List
 
 class UserConverter {
     private val gson = Gson()
@@ -16,15 +18,13 @@ class UserConverter {
     fun fromAuthData(authData: AuthData): String = gson.toJson(authData)
 
     @TypeConverter
-    fun toAuthData(authDataString: String): AuthData? =
-        gson.fromJson(authDataString, object : TypeToken<AuthData>() {}.type)
+    fun toAuthData(authDataString: String): AuthData? = gson.fromJson(authDataString, object : TypeToken<AuthData>() {}.type)
 
     @TypeConverter
     fun fromSettings(settings: Settings): String = gson.toJson(settings)
 
     @TypeConverter
-    fun toSettings(settingsString: String): Settings? =
-        gson.fromJson(settingsString, object : TypeToken<Settings>() {}.type)
+    fun toSettings(settingsString: String): Settings? = gson.fromJson(settingsString, object : TypeToken<Settings>() {}.type)
 
     @TypeConverter
     fun fromProductList(productList: List<Product>): String = gson.toJson(productList)
@@ -41,14 +41,15 @@ class UserConverter {
         gson.fromJson(datasetString, object : TypeToken<List<DailyReturn>>() {}.type)
 
     @TypeConverter
-    fun fromSimulationOutcome(simulationOutcome: SimulationOutcomeData?): String? {
-        return simulationOutcome?.let { gson.toJson(it) }
+    fun fromSimulationOutcome(outcome: Pair<List<SimulationResult>, Double?>?): String? {
+        return outcome?.let { gson.toJson(it) }
     }
 
     @TypeConverter
-    fun toSimulationOutcome(simulationOutcomeString: String?): SimulationOutcomeData? {
-        return simulationOutcomeString?.let {
-            gson.fromJson(it, object : TypeToken<SimulationOutcomeData>() {}.type)
+    fun toSimulationOutcome(outcomeString: String?): Pair<List<SimulationResult>, Double?>? {
+        return outcomeString?.let {
+            gson.fromJson(it, object : TypeToken<Pair<List<SimulationResult>, Double?>>() {}.type)
         }
     }
+
 }

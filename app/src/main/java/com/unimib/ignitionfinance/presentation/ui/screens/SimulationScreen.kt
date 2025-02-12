@@ -17,8 +17,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.R
+import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.simulation.SimulationBarsForFour
@@ -38,7 +38,7 @@ fun SimulationScreen(
     viewModel: SimulationScreenViewModel = hiltViewModel(),
     settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
     summaryViewModel: SummaryScreenViewModel = hiltViewModel(),
-    portfolioViewModel: PortfolioScreenViewModel =  hiltViewModel()
+    portfolioViewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
@@ -69,7 +69,7 @@ fun SimulationScreen(
         floatingActionButton = {
             CustomFAB(
                 onClick = {
-                    viewModel.startSimulation(apiKey = BuildConfig.ALPHAVANTAGE_API_KEY)
+                    viewModel.startSimulation()
                 },
                 modifier = Modifier.padding(bottom = 12.dp),
                 icon = painterResource(id = R.drawable.outline_autoplay_24),
@@ -90,9 +90,20 @@ fun SimulationScreen(
                         )
                     }
 
-                    is UiState.Success -> {
+                    is UiState.Success, is UiState.Idle -> {
                         Column {
-                            val (results, fuckYouMoney) = simulationState.data
+                            val (results, fuckYouMoney) = when (simulationState) {
+                                is UiState.Success -> simulationState.data
+                                is UiState.Idle -> {
+                                    // Use empty data if no previous simulation exists
+                                    state.lastSimulationResult ?: Pair(
+                                        List(4) { SimulationResult(0.0) },
+                                        0.0
+                                    )
+                                }
+                                else -> Pair(List(4) { SimulationResult(0.0) }, 0.0)
+                            }
+
                             val netWorth = portfolioState.cash.toDouble() + summaryState.invested
 
                             SimulationBarsForFour(
@@ -105,7 +116,7 @@ fun SimulationScreen(
                                 percentage3 = results[2].successRate,
                                 percentage4 = results[3].successRate
                             )
-                            
+
                             Spacer(modifier = Modifier.height(24.dp))
 
                             NetWorthDisplay(
@@ -124,13 +135,6 @@ fun SimulationScreen(
                     is UiState.Error -> {
                         Text(
                             text = "Error: ${simulationState.message}",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-
-                    else -> {
-                        Text(
-                            text = "",
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }

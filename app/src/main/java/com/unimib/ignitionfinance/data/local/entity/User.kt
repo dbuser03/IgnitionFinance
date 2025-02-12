@@ -7,7 +7,7 @@ import com.unimib.ignitionfinance.data.remote.model.user.AuthData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.data.remote.model.user.Settings
-import com.unimib.ignitionfinance.data.remote.model.SimulationOutcomeData
+import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 
 @Entity(tableName = "users")
 data class User(
@@ -23,5 +23,5 @@ data class User(
     @ColumnInfo(name = "product_list") val productList: List<Product> = emptyList(),
     @ColumnInfo(name = "first_added") val firstAdded: Boolean = false,
     @ColumnInfo(name = "dataset") val dataset: List<DailyReturn> = emptyList(),
-    @ColumnInfo(name = "simulation_outcome") val simulationOutcome: SimulationOutcomeData? = null
+    @ColumnInfo(name = "simulation_outcome") val simulationOutcome: Pair<List<SimulationResult>, Double?>? = null
 )

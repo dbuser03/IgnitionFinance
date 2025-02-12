@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.BuildConfig
 import com.unimib.ignitionfinance.data.local.entity.User
-import com.unimib.ignitionfinance.data.remote.model.SimulationOutcomeData
 import com.unimib.ignitionfinance.data.repository.interfaces.AuthRepository
 import com.unimib.ignitionfinance.data.repository.interfaces.LocalDatabaseRepository
 import com.unimib.ignitionfinance.domain.simulation.AnnualReturnsMatrixGenerator
@@ -155,10 +154,7 @@ class StartSimulationUseCase @Inject constructor(
             Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
             Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
 
-            val simulationOutcome = SimulationOutcomeData(
-                results = simulationResults,
-                fuckYouMoney = fuckYouMoney
-            )
+            val simulationOutcome = Pair(simulationResults, fuckYouMoney)
 
             val updatedUser = currentUser.copy(
                 simulationOutcome = simulationOutcome,
@@ -235,36 +231,7 @@ class StartSimulationUseCase @Inject constructor(
                 async(Dispatchers.Default) {
                     val rate = successRateCache.getOrPut(capital) {
                         val config = createConfigWithCapital(baseConfig, capital)
-
-                        if (config.capital.invested == 0.0) {
-                            val inflationMatrix = InflationModel.generateInflationMatrix(
-                                scenarioInflation = config.settings.inflationModel.lowercase(),
-                                inflationMean = config.simulationParams.averageInflation,
-                                historicalInflation = config.historicalInflation.values.toList(),
-                                numSimulations = config.settings.numberOfSimulations.toInt(),
-                                simulationLength = 100
-                            )
-
-                            val withdrawalMatrix = WithdrawalCalculator.calculateWithdrawals(
-                                initialWithdrawal = config.settings.withdrawals.withoutPension.toDouble(),
-                                yearsWithoutPension = config.settings.intervals.yearsInFIRE.toInt(),
-                                pensionWithdrawal = config.settings.withdrawals.withPension.toDouble(),
-                                inflationMatrix = inflationMatrix
-                            )
-
-                            val successCount = (0 until config.settings.numberOfSimulations.toInt()).count { simIndex ->
-                                var remainingCash = config.capital.cash
-                                for (t in 0 until config.settings.intervals.yearsInFIRE.toInt()) {
-                                    remainingCash -= withdrawalMatrix[t][simIndex]
-                                    if (remainingCash <= 0) return@count false
-                                }
-                                true
-                            }
-
-                            successCount.toDouble() / config.settings.numberOfSimulations.toDouble()
-                        } else {
-                            runSimulation(config).successRate
-                        }
+                        runSimulation(config).successRate
                     }
                     capital to rate
                 }
@@ -274,7 +241,7 @@ class StartSimulationUseCase @Inject constructor(
         var iteration = 0
         while ((b - a) > CAPITAL_TOLERANCE && iteration < MAX_ITERATIONS) {
             val evaluatedPoints = evaluatePoints(points)
-
+            Log.d(TAG, "Iteration $iteration: Bracket=[$a, $b], Points: $evaluatedPoints")
             val sortedPoints = evaluatedPoints.sortedBy { it.first }
             val transitionPoint = sortedPoints.zipWithNext().firstOrNull { (p1, p2) ->
                 p1.second < SUCCESS_RATE_THRESHOLD && p2.second >= SUCCESS_RATE_THRESHOLD
@@ -282,11 +249,7 @@ class StartSimulationUseCase @Inject constructor(
 
             if (transitionPoint != null) {
                 val (p1, p2) = transitionPoint
-                val estimatedCapital = linearInterpolate(
-                    p1.first, p1.second,
-                    p2.first, p2.second,
-                )
-
+                val estimatedCapital = linearInterpolate(p1.first, p1.second, p2.first, p2.second)
                 if (estimatedCapital in (a + CAPITAL_TOLERANCE)..(b - CAPITAL_TOLERANCE)) {
                     val estimatedRate = evaluatePoint(baseConfig, estimatedCapital, successRateCache)
                     if (estimatedRate >= SUCCESS_RATE_THRESHOLD) {
@@ -306,14 +269,16 @@ class StartSimulationUseCase @Inject constructor(
                     a = if (idx > 0) points[idx - 1] else a
                 }
             }
-
             points = generatePoints(a, b)
             iteration++
         }
 
-        return successRateCache.entries
+        val finalResult = successRateCache.entries
             .filter { it.value >= SUCCESS_RATE_THRESHOLD }
             .minByOrNull { it.key }?.key ?: b
+
+        Log.d(TAG, "Optimized FUM: $finalResult after $iteration iterations")
+        return finalResult
     }
 
     private suspend fun evaluatePoint(
