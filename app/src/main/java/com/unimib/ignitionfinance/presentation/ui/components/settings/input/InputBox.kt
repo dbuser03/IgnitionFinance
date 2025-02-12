@@ -142,7 +142,7 @@ fun InputBox(
     }
 }
 
-fun formatNumberAmerican(input: String): String {
+/*fun formatNumberAmerican(input: String): String {
     return try {
         val symbols = DecimalFormatSymbols(Locale.US).apply {
             groupingSeparator = ','
@@ -157,4 +157,4 @@ fun formatNumberAmerican(input: String): String {
     } catch (_: NumberFormatException) {
         input
     }
-}
+}*/
