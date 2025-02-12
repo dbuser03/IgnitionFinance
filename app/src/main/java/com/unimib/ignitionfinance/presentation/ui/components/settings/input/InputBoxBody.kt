@@ -68,7 +68,7 @@ fun InputBoxBody(
     }
 }
 
-@Composable
+/*@Composable
 private fun AnimatedInputValue(
     inputValue: String,
     textStyle: TextStyle
@@ -101,4 +101,4 @@ private fun AnimatedInputValue(
             }
         }
     }
-}
+}*/
