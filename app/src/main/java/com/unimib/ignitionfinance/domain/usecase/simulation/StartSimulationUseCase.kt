@@ -38,10 +38,10 @@ class StartSimulationUseCase @Inject constructor(
     companion object {
         private const val TAG = "SIMULATION_USECASE"
         private const val SUCCESS_RATE_THRESHOLD = 0.95
-        private const val CAPITAL_TOLERANCE = 1000.0
-        private const val MAX_ITERATIONS = 15
+        private const val CAPITAL_TOLERANCE = 100.0
+        private const val MAX_ITERATIONS = 20
         private const val GOLDEN_RATIO = 1.618033988749895
-        private const val PARALLEL_POINTS = 3
+        private const val PARALLEL_POINTS = 5
     }
 
     private suspend fun getCurrentUserId(): String? {

@@ -45,7 +45,6 @@ object FireSimulator {
                     val currentMarketReturn = marketReturnsMatrix[t][simIndex]
                     val currentWithdrawal = withdrawalMatrix[t][simIndex]
 
-                    // Apply interest to cash balance at the start of each year
                     cash *= (1.0 + cashInterestRate)
 
                     var remainingWithdrawal = currentWithdrawal
