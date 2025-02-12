@@ -54,7 +54,6 @@ fun SummaryScreen(
     var showAssetCard by remember { mutableStateOf(false) }
     var showPerformanceCard by remember { mutableStateOf(false) }
 
-    // Calculate performance metrics
     val performanceMetrics = remember(portfolioState.products) {
         calculatePerformanceMetrics(portfolioState.products)
     }

@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.fetch
 
-import com.unimib.ignitionfinance.data.remote.model.SearchStockData
+import com.unimib.ignitionfinance.data.remote.model.api.SearchStockData
 import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

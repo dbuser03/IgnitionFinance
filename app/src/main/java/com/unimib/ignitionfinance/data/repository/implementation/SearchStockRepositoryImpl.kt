@@ -3,7 +3,7 @@ package com.unimib.ignitionfinance.data.repository.implementation
 import android.util.Log
 import com.unimib.ignitionfinance.data.remote.mapper.SearchStockMapper
 import com.unimib.ignitionfinance.data.remote.service.SearchStockService
-import com.unimib.ignitionfinance.data.remote.model.SearchStockData
+import com.unimib.ignitionfinance.data.remote.model.api.SearchStockData
 import com.unimib.ignitionfinance.data.repository.interfaces.SearchStockRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

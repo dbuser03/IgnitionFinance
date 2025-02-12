@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.domain.utils
 
-import com.unimib.ignitionfinance.data.remote.model.StockData
+import com.unimib.ignitionfinance.data.remote.model.api.StockData
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import java.math.BigDecimal

@@ -121,7 +121,7 @@ fun SimulationScreen(
 
                             NetWorthDisplay(
                                 inputBoxModel = InputBoxModel(
-                                    label = "Fuck you money (>95%):",
+                                    label = stringResource(id = R.string.fuck_you_money_label),
                                     prefix = "€",
                                     key = "Fuck you money",
                                     inputValue = remember { mutableStateOf(TextFieldValue(fuckYouMoney.toString())) },

@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.fetch
 
-import com.unimib.ignitionfinance.data.remote.model.ExchangeData
+import com.unimib.ignitionfinance.data.remote.model.api.ExchangeData
 import com.unimib.ignitionfinance.data.repository.interfaces.ExchangeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
