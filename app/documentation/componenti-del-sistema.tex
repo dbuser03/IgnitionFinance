@@ -1,0 +1,271 @@
+\subsection{SyncWorker}\label{subsec:syncworker} Gestisce la sincronizzazione.
+Usa Hilt.
+
+\begin{lstlisting}[caption=SyncWorker.kt, label=lst:syncworker, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+@HiltWorker class SyncWorker<T> @AssistedInject constructor( @Assisted context:
+Context, @Assisted workerParams: WorkerParameters, private val
+syncQueueItemRepository: SyncQueueItemRepository, private val
+firestoreRepository: FirestoreRepository, private val localRepository:
+LocalDatabaseRepository<T> ) : CoroutineWorker(context, workerParams) {
+companion object { private const val TAG = "SyncWorker" }
+
+    override suspend fun doWork(): Result = coroutineScope { try { Log.d(TAG,
+        "Starting sync work") cleanupStuckSyncingItems()
+
+            val currentTime = System.currentTimeMillis() val pendingItems =
+            syncQueueItemRepository.getPendingItems(currentTime) Log.d(TAG,
+            "Found ${pendingItems.size} pending items ready for processing")
+
+            if (pendingItems.isEmpty()) { Log.d(TAG, "No pending items,
+                completing successfully") return@coroutineScope Result.success()
+                }
+
+            val results = processBatches(pendingItems) Log.d(TAG, "Processed
+            ${results.size} items")
+
+            val errorCount = results.count { it is SyncOperationResult.Error }
+            val successCount = results.count { it is SyncOperationResult.Success
+            } val retryCount = results.count { it is SyncOperationResult.Retry }
+            val staleCount = results.count { it is SyncOperationResult.StaleData
+            }
+
+            Log.d(TAG, "Sync results - Success: $successCount, Errors:
+            $errorCount, Retries: $retryCount, Stale: $staleCount")
+
+            handleFailedItems()
+
+            return@coroutineScope when { errorCount > 0 -> { Log.w(TAG, "Some
+                operations failed, scheduling retry") Result.retry() }
+                staleCount > 0 -> { Log.d(TAG, "Some items were stale and have
+                been handled") Result.success() } else -> { Log.d(TAG, "All
+                operations completed successfully") Result.success() } } } catch
+                (e: Exception) { handleWorkerError(e) } } // ... (rest of the
+                code) }
+\end{lstlisting}
+
+\textbf{doWork()}: Sovrascrive \texttt{doWork()}.
+Passaggi:
+\begin{enumerate}
+    \item \textbf{cleanupStuckSyncingItems()}: Pulisce elementi bloccati in
+    \texttt{SYNCING}.
+    \item \textbf{Recupera elementi in sospeso}: Ottiene elementi pronti.
+    \item \textbf{Elabora i batch}: Divide in batch.
+    \item \textbf{Gestisce i risultati}: Gestisce successo, errore, retry.
+    \item \textbf{handleFailedItems()}: Elimina tentativi massimi superati.
+    \item \textbf{Restituisce il risultato}: \texttt{Result.success()},
+    \texttt{Result.retry()} o \texttt{Result.failure()}.
+\end{enumerate}
+
+\textbf{Operazioni di sincronizzazione}:
+
+\begin{lstlisting}[caption=Operazioni di Sincronizzazione, label=lst:sync_operations, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+    private suspend fun performAddOperation(item: SyncQueueItem):
+        SyncOperationResult { Log.d(TAG, "Performing ADD operation for item
+        ${item.id}") return firestoreRepository.addDocument(collectionPath =
+        item.collection, data = item.payload, documentId =
+        item.id).first().fold( onSuccess = { Log.d(TAG, "ADD operation
+        successful for item ${item.id}"); SyncOperationResult.Success(item.id)
+        }, onFailure = { error -> Log.e(TAG, "ADD operation failed for item
+        ${item.id}", error); throw error } ) }
+
+    private suspend fun performUpdateOperation(item: SyncQueueItem):
+        SyncOperationResult { Log.d(TAG, "Performing UPDATE operation for item
+        ${item.id}") try { val currentDocResult =
+        firestoreRepository.getDocumentById(collectionPath = item.collection,
+        documentId = item.id).first() val currentDoc =
+        currentDocResult.getOrNull() ?: throw IllegalStateException("Remote
+        document not found or null") val remoteTimestamp =
+        (currentDoc["updatedAt"] as? Double)?.toLong() ?: throw
+        IllegalStateException("Remote document missing updatedAt timestamp") val
+        localTimestamp = item.createdAt if (remoteTimestamp > localTimestamp) {
+        Log.d("UpdateUserSettingsUseCase", "Remote document is newer (remote:
+        $remoteTimestamp, local: $localTimestamp)") return
+        SyncOperationResult.StaleData(item.id) } return
+        firestoreRepository.updateDocument(collectionPath = item.collection,
+        data = item.payload, documentId = item.id).first().fold( onSuccess = {
+        Log.d(TAG, "UPDATE operation successful for item ${item.id}");
+        SyncOperationResult.Success(item.id) }, onFailure = { error ->
+        Log.e(TAG, "UPDATE operation failed for item ${item.id}", error); throw
+        error } ) } catch (e: Exception) { Log.e(TAG, "Error during UPDATE
+        operation for item ${item.id}", e); throw e } }
+
+    private suspend fun performDeleteOperation(item: SyncQueueItem):
+        SyncOperationResult { Log.d(TAG, "Performing DELETE operation for item
+        ${item.id}") return firestoreRepository.deleteDocument(collectionPath =
+        item.collection, documentId = item.id).first().fold( onSuccess = {
+        Log.d(TAG, "DELETE operation successful for item ${item.id}");
+        SyncOperationResult.Success(item.id) }, onFailure = { error ->
+        Log.e(TAG, "DELETE operation failed for item ${item.id}", error); throw
+        error } ) }
+\end{lstlisting}
+
+\subsection{SyncQueueItem}\label{subsec:syncqueueitem} Rappresenta un'operazione
+di sincronizzazione.
+
+\begin{lstlisting}[caption=SyncQueueItem.kt, label=lst:syncqueueitem, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+package com.unimib.ignitionfinance.data.local.entity
+
+import androidx.room.ColumnInfo import androidx.room.Entity import
+androidx.room.PrimaryKey import
+com.unimib.ignitionfinance.data.local.utils.SyncStatus
+
+@Entity(tableName = "sync_queue_items") data class SyncQueueItem ( @PrimaryKey
+val id: String, @ColumnInfo(name = "collection") val collection: String,
+@ColumnInfo(name = "payload") val payload: Map<String, Any>, @ColumnInfo(name =
+"operation") val operationType: String, @ColumnInfo(name = "status") val status:
+SyncStatus = SyncStatus.PENDING, @ColumnInfo(name = "attempts") val attempts:
+Int = 0, @ColumnInfo(name = "created_at") val createdAt: Long =
+System.currentTimeMillis(), @ColumnInfo(name = "scheduled_for") val
+scheduledFor: Long = System.currentTimeMillis() )
+\end{lstlisting}
+
+\textbf{Campi principali}:
+\begin{itemize}
+    \item \texttt{id}: ID univoco.
+    \item \texttt{collection}: Nome collezione Firestore.
+    \item \texttt{payload}: Dati da sincronizzare.
+    \item \texttt{operationType}: ADD, UPDATE, DELETE\@.
+    \item \texttt{status}: PENDING, SYNCING, SUCCEEDED, FAILED\@.
+    \item \texttt{attempts}: Numero di tentativi.
+    \item \texttt{createdAt}: Timestamp creazione.
+    \item \texttt{scheduledFor}: Timestamp schedulato.
+\end{itemize}
+
+\subsection{SyncQueueItemRepository}\label{subsec:syncqueueitemrepository}
+Fornisce accesso al DB locale.
+
+\begin{lstlisting}[caption=SyncQueueItemDao.kt, label=lst:syncqueueitemdao, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+package com.unimib.ignitionfinance.data.local.database
+
+import androidx.room.Dao import androidx.room.Delete import androidx.room.Insert
+import androidx.room.OnConflictStrategy import androidx.room.Query import
+androidx.room.Update import
+com.unimib.ignitionfinance.data.local.entity.SyncQueueItem import
+com.unimib.ignitionfinance.data.local.utils.SyncStatus
+
+@Dao interface SyncQueueItemDao { @Insert(onConflict =
+OnConflictStrategy.REPLACE) suspend fun insert(item: SyncQueueItem)
+
+    @Update suspend fun update(item: SyncQueueItem)
+
+    @Delete suspend fun delete(item: SyncQueueItem)
+
+    @Query("SELECT * FROM sync_queue_items WHERE id = :id") suspend fun
+    getById(id: String): SyncQueueItem?
+
+    @Query("SELECT * FROM sync_queue_items WHERE status = :status") suspend fun
+    getByStatus(status: SyncStatus): List<SyncQueueItem>
+
+    @Query("SELECT * FROM sync_queue_items WHERE status = :status AND collection
+    = :collection") suspend fun getByStatusAndCollection(status: SyncStatus,
+    collection: String): List<SyncQueueItem>
+
+    @Query("SELECT * FROM sync_queue_items WHERE scheduled_for <= :timestamp AND
+    status = :status") suspend fun getPendingItems(timestamp: Long =
+    System.currentTimeMillis(), status: SyncStatus = SyncStatus.PENDING):
+    List<SyncQueueItem>
+
+    @Query("SELECT * FROM sync_queue_items WHERE attempts >= :maxAttempts AND
+    status = :status") suspend fun getFailedItems(maxAttempts: Int, status:
+    SyncStatus = SyncStatus.FAILED): List<SyncQueueItem> }
+\end{lstlisting}
+
+\textbf{Metodi principali}:
+\begin{itemize}
+    \item \texttt{insert(item)}: Inserisce.
+    \item \texttt{update(item)}: Aggiorna.
+    \item \texttt{delete(item)}: Elimina.
+    \item \texttt{getById(id)}: Recupera per ID\@.
+    \item \texttt{getByStatus(status)}: Recupera per stato.
+    \item \texttt{getPendingItems(timestamp)}: Recupera in sospeso.
+\end{itemize}
+
+\subsection{SyncOperationScheduler}\label{subsec:syncoperationscheduler}
+Gestisce pianificazione con WorkManager.
+
+\begin{lstlisting}[caption=SyncOperationScheduler.kt, label=lst:syncoperationscheduler, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+package com.unimib.ignitionfinance.data.remote.worker
+
+import android.content.Context import androidx.work.BackoffPolicy import
+androidx.work.Constraints import androidx.work.ExistingPeriodicWorkPolicy import
+androidx.work.NetworkType import androidx.work.OneTimeWorkRequestBuilder import
+androidx.work.PeriodicWorkRequestBuilder import androidx.work.WorkManager import
+java.util.concurrent.TimeUnit
+
+object SyncOperationScheduler { const val TAG = "SyncOperationScheduler" const
+    val SYNC_WORK_NAME = "sync_operation_work" const val MAX_RETRIES = 3 const
+    val SYNC_TIMEOUT_MS = 30000L const val BATCH_SIZE = 10 const val
+    BATCH_DELAY_MS = 1000L const val INITIAL_BACKOFF_DELAY_MS = 10000L const val
+    PERIODIC_SYNC_INTERVAL = 15L const val MIN_BACKOFF_DELAY_MS = 5000L const
+    val MAX_BACKOFF_DELAY_MS = 300000L
+
+    inline fun <reified T> schedule(context: Context, constraints: Constraints =
+        getDefaultConstraints()) { Log.d(TAG, "Scheduling periodic sync work
+        with interval: $PERIODIC_SYNC_INTERVAL minutes") try { val
+        syncWorkRequest =
+        PeriodicWorkRequestBuilder<SyncWorker<T>>(repeatInterval =
+        PERIODIC_SYNC_INTERVAL, repeatIntervalTimeUnit = TimeUnit.MINUTES,
+        flexTimeInterval = 5, flexTimeIntervalUnit = TimeUnit.MINUTES)
+        .setConstraints(constraints)
+        .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, INITIAL_BACKOFF_DELAY_MS,
+        TimeUnit.MILLISECONDS) .build() Log.d(TAG, "Work request built with
+        constraints: ${constraints.requiredNetworkType}")
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(SYNC_WORK_NAME,
+        ExistingPeriodicWorkPolicy.REPLACE, syncWorkRequest) Log.i(TAG,
+        "Periodic sync work scheduled successfully") } catch (e: Exception) {
+        Log.e(TAG, "Error scheduling periodic sync work", e) } }
+
+    inline fun <reified T> scheduleOneTime(context: Context, constraints:
+        Constraints = getDefaultConstraints()) { Log.d(TAG, "Scheduling one-time
+        sync work with initial delay: $initialDelay ms") try { val
+        syncWorkRequest = OneTimeWorkRequestBuilder<SyncWorker<T>>()
+        .setConstraints(constraints)
+        .setBackoffCriteria(BackoffPolicy.EXPONENTIAL,
+        INITIAL_BACKOFF_DELAY_MS.coerceIn(MIN_BACKOFF_DELAY_MS,
+        MAX_BACKOFF_DELAY_MS), TimeUnit.MILLISECONDS)
+        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS) .build()
+        Log.d(TAG, "One-time work request built with constraints:
+        ${constraints.requiredNetworkType}")
+        WorkManager.getInstance(context).enqueue(syncWorkRequest) Log.i(TAG,
+        "One-time sync work scheduled successfully") } catch (e: Exception) {
+        Log.e(TAG, "Error scheduling one-time sync work", e) } }
+
+    fun cancel(context: Context) { Log.d(TAG, "Cancelling sync work:
+        $SYNC_WORK_NAME") try {
+        WorkManager.getInstance(context).cancelUniqueWork(SYNC_WORK_NAME)
+        Log.i(TAG, "Sync work cancelled successfully") } catch (e: Exception) {
+        Log.e(TAG, "Error cancelling sync work", e) } }
+
+    fun getDefaultConstraints() =
+Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresBatteryNotLow(true).build()
+}
+\end{lstlisting}
+
+\textbf{Metodi principali}:
+\begin{itemize}
+    \item \texttt{schedule(context, constraints)}: Pianifica periodica.
+    \item \texttt{scheduleOneTime(context, constraints)}: Pianifica una tantum.
+    \item \texttt{cancel(context)}: Annulla.
+    \item \texttt{getDefaultConstraints()}: Restituisce constraints predefinite.
+\end{itemize}
+
+\subsection{SyncOperationResult}\label{subsec:syncoperationresult} Risultato di
+un'operazione.
+
+\begin{lstlisting}[caption=SyncOperationResult.kt, label=lst:syncoperationresult, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+package com.unimib.ignitionfinance.data.remote.worker
+
+sealed class SyncOperationResult { data class Success(val itemId: String) :
+    SyncOperationResult() data class Retry(val itemId: String, val error:
+    Throwable) : SyncOperationResult() data class Error(val itemId: String, val
+    error: Throwable) : SyncOperationResult() data class StaleData(val itemId:
+    String) : SyncOperationResult() }
+\end{lstlisting}
+
+\textbf{Possibili risultati}:
+\begin{itemize}
+    \item \texttt{Success(itemId)}: Successo.
+    \item \texttt{Retry(itemId, error)}: Riprova.
+    \item \texttt{Error(itemId, error)}: Errore.
+    \item \texttt{StaleData(itemId)}: Dati obsoleti.
+\end{itemize}

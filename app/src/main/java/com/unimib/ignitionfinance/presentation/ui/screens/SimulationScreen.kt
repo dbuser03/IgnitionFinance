@@ -120,7 +120,6 @@ fun SimulationScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Non mostrare l'errore nello schermo principale
                 when (val simulationState = state.simulationState) {
                     is UiState.Loading -> {
                         CircularProgressIndicator(
