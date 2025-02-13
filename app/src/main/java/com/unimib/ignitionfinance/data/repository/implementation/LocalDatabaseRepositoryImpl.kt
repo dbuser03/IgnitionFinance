@@ -61,20 +61,16 @@ class LocalDatabaseRepositoryImpl<T, DAO> @Inject constructor(
         }.flowOn(Dispatchers.IO)
 
     override suspend fun updateDataset(id: String, dataset: String?): Flow<Result<Unit>> = flow {
-        // Move the operation outside of try-catch
         updateDatasetFn(id, dataset, System.currentTimeMillis())
         emit(Result.success(Unit))
     }.catch { exception ->
-        // Handle exceptions using Flow's catch operator
         emit(Result.failure(exception))
     }
 
     override suspend fun updateSimulationOutcome(id: String, outcome: String?): Flow<Result<Unit>> = flow {
-        // Move the operation outside of try-catch
         updateSimulationOutcomeFn(id, outcome, System.currentTimeMillis())
         emit(Result.success(Unit))
     }.catch { exception ->
-        // Handle exceptions using Flow's catch operator
         emit(Result.failure(exception))
     }
 
