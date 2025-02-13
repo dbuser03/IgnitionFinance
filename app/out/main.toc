@@ -42,18 +42,18 @@
 \contentsline {section}{\numberline {17}Componenti del Sistema}{16}{section.17}%
 \contentsline {subsection}{\numberline {17.1}SyncWorker}{16}{subsection.17.1}%
 \contentsline {subsection}{\numberline {17.2}SyncQueueItem}{17}{subsection.17.2}%
-\contentsline {subsection}{\numberline {17.3}SyncQueueItemRepository}{17}{subsection.17.3}%
-\contentsline {subsection}{\numberline {17.4}SyncOperationScheduler}{18}{subsection.17.4}%
-\contentsline {subsection}{\numberline {17.5}SyncOperationResult}{19}{subsection.17.5}%
-\contentsline {section}{\numberline {18}Flusso di Sincronizzazione}{19}{section.18}%
-\contentsline {section}{\numberline {19}Gestione Errori e Retry}{20}{section.19}%
-\contentsline {section}{\numberline {20}Considerazioni sulla Performance}{20}{section.20}%
-\contentsline {section}{\numberline {21}Algoritmo di Sincronizzazione}{20}{section.21}%
-\contentsline {subsection}{\numberline {21.1}Logica di Funzionamento}{20}{subsection.21.1}%
-\contentsline {subsection}{\numberline {21.2}Gestione dei Conflitti}{20}{subsection.21.2}%
-\contentsline {subsection}{\numberline {21.3}Pulizia della Coda}{20}{subsection.21.3}%
-\contentsline {section}{GRAFICA UI UX}{21}{section*.7}%
-\contentsline {section}{\numberline {22}Preambolo}{21}{section.22}%
-\contentsline {section}{\numberline {23}Ispirazione}{21}{section.23}%
-\contentsline {section}{\numberline {24}Colori e Tipografia}{22}{section.24}%
-\contentsline {section}{Conclusioni}{24}{section*.14}%
+\contentsline {subsection}{\numberline {17.3}SyncQueueItemRepository}{18}{subsection.17.3}%
+\contentsline {subsection}{\numberline {17.4}SyncOperationScheduler}{19}{subsection.17.4}%
+\contentsline {subsection}{\numberline {17.5}SyncOperationResult}{20}{subsection.17.5}%
+\contentsline {section}{\numberline {18}Flusso di Sincronizzazione}{20}{section.18}%
+\contentsline {section}{\numberline {19}Gestione Errori e Retry}{21}{section.19}%
+\contentsline {section}{\numberline {20}Considerazioni sulla Performance}{21}{section.20}%
+\contentsline {section}{\numberline {21}Algoritmo di Sincronizzazione}{21}{section.21}%
+\contentsline {subsection}{\numberline {21.1}Logica di Funzionamento}{21}{subsection.21.1}%
+\contentsline {subsection}{\numberline {21.2}Gestione dei Conflitti}{22}{subsection.21.2}%
+\contentsline {subsection}{\numberline {21.3}Pulizia della Coda}{22}{subsection.21.3}%
+\contentsline {section}{GRAFICA UI UX}{22}{section*.7}%
+\contentsline {section}{\numberline {22}Preambolo}{22}{section.22}%
+\contentsline {section}{\numberline {23}Ispirazione}{22}{section.23}%
+\contentsline {section}{\numberline {24}Colori e Tipografia}{24}{section.24}%
+\contentsline {section}{Conclusioni}{26}{section*.14}%
