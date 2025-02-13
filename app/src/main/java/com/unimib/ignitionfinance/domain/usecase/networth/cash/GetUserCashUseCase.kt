@@ -48,8 +48,8 @@ class GetUserCashUseCase @Inject constructor(
 
         val cashToEmit = when {
             remoteUser != null &&
-                    (remoteUser.updatedAt.toLong() >= (localUser.lastSyncTimestamp?.toLong() ?: 0)) &&
-                    (remoteUser.updatedAt.toLong() >= localUser.updatedAt.toLong()) -> {
+                    (remoteUser.updatedAt >= (localUser.lastSyncTimestamp ?: 0)) &&
+                    (remoteUser.updatedAt >= localUser.updatedAt) -> {
                 val updatedLocalUser = localUser.copy(
                     cash = remoteUser.cash,
                     updatedAt = remoteUser.updatedAt,

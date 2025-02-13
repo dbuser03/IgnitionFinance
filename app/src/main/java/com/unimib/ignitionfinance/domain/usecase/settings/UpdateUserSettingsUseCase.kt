@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
-import android.util.Log
 import kotlinx.coroutines.delay
 
 class UpdateUserSettingsUseCase @Inject constructor(
@@ -33,7 +32,6 @@ class UpdateUserSettingsUseCase @Inject constructor(
 ) {
     fun execute(updatedSettings: Settings): Flow<Result<Settings?>> = flow {
         try {
-            Log.d("UpdateUserSettingsUseCase", "Starting settings update with: $updatedSettings")
 
             val currentUserResult = authRepository.getCurrentUser().first()
             val authData = currentUserResult.getOrNull()
@@ -45,46 +43,35 @@ class UpdateUserSettingsUseCase @Inject constructor(
             val currentUser = localDatabaseRepository.getById(userId).first().getOrNull()
                 ?: throw IllegalStateException("User not found in local database")
 
-            Log.d("UpdateUserSettingsUseCase", "Current user found: $currentUser")
-
             val currentTime = System.currentTimeMillis()
             val updatedUser = currentUser.copy(
                 settings = updatedSettings,
                 updatedAt = currentTime
             )
-            Log.d("UpdateUserSettingsUseCase", "Updated User: $updatedUser")
 
             localDatabaseRepository.update(updatedUser).first()
-            Log.d("UpdateUserSettingsUseCase", "Local database updated")
-            val currentUserNew = localDatabaseRepository.getById(userId).first().getOrNull()
-            Log.d("UpdateUserSettingsUseCase", "NewUpdatedUser: $currentUserNew")
 
             val syncQueueItem = createSyncQueueItem(updatedUser)
             syncQueueItemRepository.insert(syncQueueItem)
-            Log.d("UpdateUserSettingsUseCase", "Sync queue item inserted: ${syncQueueItem.payload}")
 
             withContext(Dispatchers.IO) {
                 SyncOperationScheduler.scheduleOneTime<User>(context)
             }
-            Log.d("UpdateUserSettingsUseCase", "Worker scheduled")
 
             delay(500)
 
             val settings = getUserSettingsUseCase.execute().first().getOrNull()
-            Log.d("UpdateUserSettingsUseCase", "Final settings: $settings")
 
             emit(Result.success(settings))
 
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.e("UpdateUserSettingsUseCase", "Error during update: ${e.message}", e)
             emit(Result.failure(e))
         }
     }
 
     private fun createSyncQueueItem(user: User): SyncQueueItem {
-        Log.d("UpdateUserSettingsUseCase", "Creating sync queue item for user: ${user.id}")
         val userData = userMapper.mapUserToUserData(user)
         val document = userDataMapper.mapUserDataToDocument(userData)
 

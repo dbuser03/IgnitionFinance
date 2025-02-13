@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.flag
 
 import android.content.Context
-import android.util.Log
 import com.unimib.ignitionfinance.data.local.entity.SyncQueueItem
 import com.unimib.ignitionfinance.data.local.entity.User
 import com.unimib.ignitionfinance.data.local.utils.UserMapper
@@ -62,7 +61,6 @@ class UpdateFirstAddedUseCase @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.e("UpdateFirstAddedUseCase", "Error during update: ${e.message}", e)
             emit(Result.failure(e))
         }
     }
