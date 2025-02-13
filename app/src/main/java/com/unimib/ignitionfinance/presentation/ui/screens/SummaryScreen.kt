@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
-import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.ui.components.summary.AssetAllocationCard
 import com.unimib.ignitionfinance.presentation.ui.components.summary.NetWorthDisplay
@@ -31,11 +30,6 @@ import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewMode
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
 import kotlinx.coroutines.delay
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
-import java.time.temporal.ChronoUnit
-import kotlin.math.pow
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

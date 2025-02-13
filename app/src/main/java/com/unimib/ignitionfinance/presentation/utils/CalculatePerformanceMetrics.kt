@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.screens.Quadruple
-import com.unimib.ignitionfinance.presentation.utils.calculateHoldingPeriodInYears
 import kotlin.math.pow
 
 @RequiresApi(Build.VERSION_CODES.O)
