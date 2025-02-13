@@ -20,7 +20,11 @@ class SimulationScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SimulationScreenState())
-    val state: StateFlow<SimulationScreenState> = _state
+    val state: StateFlow<SimulationScreenState> = _state.asStateFlow()
+
+    // Aggiungiamo un nuovo StateFlow specifico per gli errori di validazione
+    private val _validateSettings = MutableStateFlow<String?>(null)
+    val validateSettings: StateFlow<String?> = _validateSettings.asStateFlow()
 
     init {
         getLastSimulation()
@@ -31,20 +35,33 @@ class SimulationScreenViewModel @Inject constructor(
             try {
                 getLastSimulationResultUseCase.execute()
                     .collect { result ->
-                        _state.update { currentState ->
-                            currentState.copy(
-                                lastSimulationResult = result.getOrNull(),
-                                simulationState = when {
-                                    result.isSuccess -> UiState.Idle
-                                    else -> UiState.Error(
-                                        result.exceptionOrNull()?.localizedMessage
-                                            ?: "Error loading last simulation"
+                        result.fold(
+                            onSuccess = { simulationResult ->
+                                _state.update { currentState ->
+                                    currentState.copy(
+                                        lastSimulationResult = simulationResult,
+                                        simulationState = UiState.Idle
                                     )
                                 }
-                            )
-                        }
+                            },
+                            onFailure = { error ->
+                                if (error is IllegalArgumentException) {
+                                    _validateSettings.value = error.message
+                                }
+                                _state.update { currentState ->
+                                    currentState.copy(
+                                        simulationState = UiState.Error(
+                                            error.localizedMessage ?: "Error loading last simulation"
+                                        )
+                                    )
+                                }
+                            }
+                        )
                     }
             } catch (e: Exception) {
+                if (e is IllegalArgumentException) {
+                    _validateSettings.value = e.message
+                }
                 _state.update {
                     it.copy(
                         simulationState = UiState.Error(
@@ -64,28 +81,33 @@ class SimulationScreenViewModel @Inject constructor(
             try {
                 startSimulationUseCase.execute()
                     .collect { result ->
-                        _state.update { currentState ->
-                            currentState.copy(
-                                simulationState = when {
-                                    result.isSuccess -> {
-                                        val data = result.getOrNull()
-                                        if (data != null) {
-                                            UiState.Success(data)
-                                        } else {
-                                            UiState.Error("No data received from simulation")
-                                        }
-                                    }
-                                    else -> UiState.Error(
-                                        result.exceptionOrNull()?.localizedMessage
-                                            ?: "Simulation error"
+                        result.fold(
+                            onSuccess = { data ->
+                                _state.update { currentState ->
+                                    currentState.copy(
+                                        simulationState = UiState.Success(data),
+                                        lastSimulationResult = data
                                     )
-                                },
-                                lastSimulationResult = result.getOrNull()
-                                    ?: currentState.lastSimulationResult
-                            )
-                        }
+                                }
+                            },
+                            onFailure = { error ->
+                                if (error is IllegalArgumentException) {
+                                    _validateSettings.value = error.message
+                                }
+                                _state.update { currentState ->
+                                    currentState.copy(
+                                        simulationState = UiState.Error(
+                                            error.localizedMessage ?: "Simulation error"
+                                        )
+                                    )
+                                }
+                            }
+                        )
                     }
             } catch (e: Exception) {
+                if (e is IllegalArgumentException) {
+                    _validateSettings.value = e.message
+                }
                 _state.update {
                     it.copy(
                         simulationState = UiState.Error(
@@ -95,5 +117,10 @@ class SimulationScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    // Aggiungiamo una funzione per resettare l'errore di validazione
+    fun clearValidationError() {
+        _validateSettings.value = null
     }
 }

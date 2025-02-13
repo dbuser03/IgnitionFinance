@@ -83,7 +83,12 @@ class StartSimulationUseCase @Inject constructor(
             }.copy(
                 dataset = newDataset.ifEmpty { existingDataset }
             )
-
+            val validationErrors = SimulationConfigValidator.validate(baseConfig) // Validate only the base config now
+            if (validationErrors.isNotEmpty()) {
+                val errorMessage = validationErrors.joinToString("\n")
+                emit(Result.failure(IllegalArgumentException(errorMessage)))
+                return@flow
+            }
             val capitalIncrements = listOf(0.0, 50_000.0, 100_000.0, 150_000.0)
             val configs = capitalIncrements.map { increment ->
                 baseConfig.copy(
@@ -93,16 +98,6 @@ class StartSimulationUseCase @Inject constructor(
                 )
             }
 
-            val validationErrors = configs.flatMap { config ->
-                SimulationConfigValidator.validate(config).map {
-                    "Config with capital ${config.capital.total}: $it"
-                }
-            }
-            if (validationErrors.isNotEmpty()) {
-                val errorMessage = validationErrors.joinToString("\n")
-                emit(Result.failure(IllegalArgumentException(errorMessage)))
-                return@flow
-            }
 
             val overallStartTime = System.currentTimeMillis()
 

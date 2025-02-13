@@ -12,6 +12,7 @@
     <string name="simulation_label">Simulation</string>
     <string name="simulation_title">FIRE \nSimulation</string>
     <string name="settings_title">Settings</string>
+    <string name="validation_error_title">Check you Settings</string>
 
     <!-- Screen descriptions and instructions -->
     <string name="intro_description">Calculate your path to financial independence: enter your wealth and simulate personalized scenarios.</string>
@@ -19,6 +20,7 @@
     <string name="login_description">Sign in using the email and password \nyou used to sign up the first time.</string>
     <string name="registration_description">Make sure to check all the information \nyou provide and accept the terms and conditions.</string>
     <string name="reset_password_description">Add the email you used to register to \nreceive the reset password link</string>
+    <string name="Check_Setting_descriptions">Before continue with the simulation check your settings</string>
 
     <!-- Form input labels -->
     <string name="label_email">Email</string>
@@ -43,6 +45,8 @@
     <string name="simulate_FAB_description">Start Simulation</string>
     <string name="login_FAB_description">Login</string>
     <string name="registration_FAB_description">Register</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="go_to_settings">Go to Settings</string>
 
     <!-- Dialog related strings -->
     <string name="dialog_confirm">Confirm</string>

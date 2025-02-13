@@ -20,7 +20,9 @@ import androidx.navigation.NavController
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
+import com.unimib.ignitionfinance.presentation.navigation.Destinations
 import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
+import com.unimib.ignitionfinance.presentation.ui.components.dialog.CustomAlertDialog
 import com.unimib.ignitionfinance.presentation.ui.components.simulation.SimulationBarsForFour
 import com.unimib.ignitionfinance.presentation.ui.components.summary.NetWorthDisplay
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithButton
@@ -40,10 +42,14 @@ fun SimulationScreen(
     summaryViewModel: SummaryScreenViewModel = hiltViewModel(),
     portfolioViewModel: PortfolioScreenViewModel = hiltViewModel()
 ) {
+    val validationError by viewModel.validateSettings.collectAsState()
+
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     val summaryState by summaryViewModel.state.collectAsState()
     val portfolioState by portfolioViewModel.state.collectAsState()
+    var showValidationDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         settingsViewModel.getUserSettings()
@@ -53,6 +59,37 @@ fun SimulationScreen(
 
     BackHandler(enabled = true) {
         (context as? Activity)?.moveTaskToBack(true)
+    }
+
+    LaunchedEffect(validationError) {
+        if (validationError != null) {
+            showValidationDialog = true
+            errorMessage = validationError!!
+        }
+    }
+
+    if (showValidationDialog) {
+        CustomAlertDialog(
+            onDismissRequest = {
+                showValidationDialog = false
+                viewModel.clearValidationError()
+            },
+            onConfirmation = {
+                showValidationDialog = false
+                viewModel.clearValidationError()
+                navController.navigate(Destinations.SettingsScreen.route) {
+                    popUpTo(Destinations.SimulationScreen.route) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            dialogTitle = stringResource(id = R.string.validation_error_title),
+            message = stringResource(id = R.string.Check_Setting_descriptions),
+            confirmButtonText = stringResource(id = R.string.go_to_settings),
+            dismissButtonText = stringResource(id = R.string.dismiss)
+        )
     }
 
     Scaffold(
@@ -83,6 +120,7 @@ fun SimulationScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
+                // Non mostrare l'errore nello schermo principale
                 when (val simulationState = state.simulationState) {
                     is UiState.Loading -> {
                         CircularProgressIndicator(
@@ -95,7 +133,6 @@ fun SimulationScreen(
                             val (results, fuckYouMoney) = when (simulationState) {
                                 is UiState.Success -> simulationState.data
                                 is UiState.Idle -> {
-                                    // Use empty data if no previous simulation exists
                                     state.lastSimulationResult ?: Pair(
                                         List(4) { SimulationResult(0.0) },
                                         0.0
@@ -133,10 +170,7 @@ fun SimulationScreen(
                     }
 
                     is UiState.Error -> {
-                        Text(
-                            text = "Error: ${simulationState.message}",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        //Non mostrare niente. l'errore è gestito dal dialog
                     }
                 }
             }
