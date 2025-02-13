@@ -24,6 +24,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.CustomFAB
 import com.unimib.ignitionfinance.presentation.ui.components.simulation.SimulationBarsForFour
 import com.unimib.ignitionfinance.presentation.ui.components.summary.NetWorthDisplay
 import com.unimib.ignitionfinance.presentation.ui.components.title.TitleWithButton
+import com.unimib.ignitionfinance.presentation.utils.formatCapital
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SimulationScreenViewModel
@@ -143,7 +144,7 @@ fun SimulationScreen(
     )
 }
 
-fun formatCapital(value: Double): String {
+/*fun formatCapital(value: Double): String {
     return when {
         value < 1_000 -> "$value"
         value < 1_000_000 -> {
@@ -172,4 +173,4 @@ fun formatCapital(value: Double): String {
             else "${billions.toInt()}MLD"
         }
     }
-}
+}*/
