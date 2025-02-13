@@ -170,7 +170,7 @@ fun SimulationScreen(
                     }
 
                     is UiState.Error -> {
-                        //Non mostrare niente. l'errore è gestito dal dialog
+
                     }
                 }
             }
