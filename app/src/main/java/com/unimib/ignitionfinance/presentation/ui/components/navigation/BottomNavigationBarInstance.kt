@@ -1,3 +1,5 @@
+package com.unimib.ignitionfinance.presentation.ui.components.navigation
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -5,7 +7,6 @@ import com.unimib.ignitionfinance.R
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.unimib.ignitionfinance.presentation.navigation.Destinations
-import com.unimib.ignitionfinance.presentation.ui.components.navigation.BottomNavigationBar
 import com.unimib.ignitionfinance.presentation.model.BottomNavigationItemModel
 
 @Composable

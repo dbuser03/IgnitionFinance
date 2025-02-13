@@ -2,6 +2,7 @@ package com.unimib.ignitionfinance.data.remote.service
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
 import com.unimib.ignitionfinance.data.remote.service.utils.FirestoreErrors
 import com.unimib.ignitionfinance.data.remote.service.utils.FirestoreServiceException
 import kotlinx.coroutines.tasks.await
@@ -20,7 +21,7 @@ class FirestoreService {
         }
     }
 
-    suspend fun getCollection(collectionPath: String) = try {
+    suspend fun getCollection(collectionPath: String): QuerySnapshot = try {
         firestore.collection(collectionPath).get().await()
     } catch (e: FirebaseFirestoreException) {
         throw FirestoreServiceException(FirestoreErrors.getErrorMessage(FirestoreErrors.GETTING_COLLECTION, true), e)

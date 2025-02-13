@@ -81,7 +81,7 @@ class UserConverter {
         return value?.let {
             try {
                 val type = object : TypeToken<Pair<List<SimulationResult>, Double?>>() {}.type
-                gson.fromJson(it, type)
+                gson.fromJson<Pair<List<SimulationResult>, Double?>>(it, type)
             } catch (e: Exception) {
                 null
             }

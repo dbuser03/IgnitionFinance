@@ -8,10 +8,11 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import java.util.regex.Pattern
 
 object ValidationRules {
     private object Configs {
-        val EMAIL_PATTERN = Patterns.EMAIL_ADDRESS
+        val EMAIL_PATTERN: Pattern = Patterns.EMAIL_ADDRESS
 
         val PASSWORD_RULES = PasswordRule(
             minLength = 8,
@@ -60,7 +61,7 @@ object ValidationRules {
                 (!rules.requireUppercase || this.any { it.isUpperCase() }) &&
                 (!rules.requireLowercase || this.any { it.isLowerCase() }) &&
                 (!rules.requireDigit || this.any { it.isDigit() }) &&
-                (!rules.specialCharacters.isNotEmpty() || this.any { it in rules.specialCharacters }) &&
+                (rules.specialCharacters.isEmpty() || this.any { it in rules.specialCharacters }) &&
                 (!rules.allowSingleWordOnly || this.isSingleWord())
     }
 

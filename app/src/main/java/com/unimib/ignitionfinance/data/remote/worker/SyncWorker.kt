@@ -22,9 +22,6 @@ class SyncWorker<T> @AssistedInject constructor(
     private val firestoreRepository: FirestoreRepository,
     private val localRepository: LocalDatabaseRepository<T>
 ) : CoroutineWorker(context, workerParams) {
-    companion object {
-        private const val TAG = "SyncWorker"
-    }
 
     override suspend fun doWork(): Result = coroutineScope {
         try {
@@ -40,8 +37,8 @@ class SyncWorker<T> @AssistedInject constructor(
             val results = processBatches(pendingItems)
 
             val errorCount = results.count { it is SyncOperationResult.Error }
-            val successCount = results.count { it is SyncOperationResult.Success }
-            val retryCount = results.count { it is SyncOperationResult.Retry }
+            results.count { it is SyncOperationResult.Success }
+            results.count { it is SyncOperationResult.Retry }
             val staleCount = results.count { it is SyncOperationResult.StaleData }
 
 
@@ -59,7 +56,7 @@ class SyncWorker<T> @AssistedInject constructor(
                 }
             }
         } catch (e: Exception) {
-            handleWorkerError(e)
+            handleWorkerError()
         }
     }
 
@@ -89,8 +86,7 @@ class SyncWorker<T> @AssistedInject constructor(
     private suspend fun processBatches(items: List<SyncQueueItem>): List<SyncOperationResult> {
         return items.chunked(SyncOperationScheduler.BATCH_SIZE).flatMap { batch ->
             batch.map { item ->
-                processItem(item).also { result ->
-                }
+                processItem(item)
             }.also {
                 delay(SyncOperationScheduler.BATCH_DELAY_MS)
             }
@@ -132,7 +128,7 @@ class SyncWorker<T> @AssistedInject constructor(
                 localRepository.updateLastSyncTimestamp(item.id).first().fold(
                     onSuccess = {
                     },
-                    onFailure = { error ->
+                    onFailure = {
                     }
                 )
                 syncQueueItemRepository.delete(item)
@@ -241,7 +237,7 @@ class SyncWorker<T> @AssistedInject constructor(
         return System.currentTimeMillis() + backoffMs
     }
 
-    private fun handleWorkerError(error: Throwable): Result {
+    private fun handleWorkerError(): Result {
         return Result.retry()
     }
 }

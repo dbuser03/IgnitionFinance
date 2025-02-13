@@ -56,7 +56,7 @@ class AddUserToDatabaseUseCase @Inject constructor(
                     createdAt = currentTime,
                     updatedAt = currentTime
                 )
-                executeNewUser("users", user).collect {
+                executeNewUser(user).collect {
                     emit(it)
                 }
             }
@@ -92,7 +92,7 @@ class AddUserToDatabaseUseCase @Inject constructor(
                         syncQueueItemRepository.delete(item)
                     }
                 } else if (remoteTimestamp < localTimestamp) {
-                    val syncQueueItem = createSyncQueueItem(localUser.getOrNull()!!, "users")
+                    val syncQueueItem = createSyncQueueItem(localUser.getOrNull()!!)
                     syncQueueItemRepository.insert(syncQueueItem)
 
                     withContext(Dispatchers.IO) {
@@ -111,8 +111,8 @@ class AddUserToDatabaseUseCase @Inject constructor(
         }
     }
 
-    private fun executeNewUser(collectionPath: String, user: User): Flow<Result<Unit?>> = flow {
-        val syncQueueItem = createSyncQueueItem(user, collectionPath)
+    private fun executeNewUser(user: User): Flow<Result<Unit?>> = flow {
+        val syncQueueItem = createSyncQueueItem(user)
 
         try {
             coroutineScope {
@@ -146,14 +146,14 @@ class AddUserToDatabaseUseCase @Inject constructor(
         }
     }
 
-    private fun createSyncQueueItem(user: User, collectionPath: String): SyncQueueItem {
+    private fun createSyncQueueItem(user: User): SyncQueueItem {
         val userData = userMapper.mapUserToUserData(user)
         val document = userDataMapper.mapUserDataToDocument(userData)
         val documentId = userData.authData.id
 
         return SyncQueueItem(
             id = documentId,
-            collection = collectionPath,
+            collection = "users",
             payload = document,
             operationType = "ADD",
             status = SyncStatus.PENDING

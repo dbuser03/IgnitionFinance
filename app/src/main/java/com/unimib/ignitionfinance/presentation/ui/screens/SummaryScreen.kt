@@ -1,6 +1,6 @@
 package com.unimib.ignitionfinance.presentation.ui.screens
 
-import BottomNavigationBarInstance
+import com.unimib.ignitionfinance.presentation.ui.components.navigation.BottomNavigationBarInstance
 import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.BackHandler

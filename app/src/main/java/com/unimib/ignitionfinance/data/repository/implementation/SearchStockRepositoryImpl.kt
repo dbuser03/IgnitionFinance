@@ -27,7 +27,7 @@ class SearchStockRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val searchStockData = response.body()
 
-                val jsonResponse = gson.toJson(searchStockData)
+                gson.toJson(searchStockData)
 
                 if (searchStockData?.bestMatches != null) {
                     emit(Result.success(searchStockMapper.mapToDomain(searchStockData)))

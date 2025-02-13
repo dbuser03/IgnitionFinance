@@ -33,6 +33,6 @@ object DatasetValidator {
 }
 
 sealed class DatasetValidationResult {
-    object Success : DatasetValidationResult()
+    data object Success : DatasetValidationResult()
     data class Failure(val message: String) : DatasetValidationResult()
 }

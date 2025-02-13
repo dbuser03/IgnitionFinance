@@ -323,7 +323,7 @@ class PortfolioScreenViewModel @Inject constructor(
                                     cash = cash ?: currentState.cash,
                                     cashState = UiState.Success(cash ?: currentState.cash)
                                 ).also {
-                                    updateFirstAdded(true)
+                                    updateFirstAdded()
                                 }
                             }
                             result.isFailure -> currentState.copy(
@@ -339,7 +339,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    fun getProducts() {
+    private fun getProducts() {
         viewModelScope.launch {
             _state.update { it.copy(productsState = UiState.Loading) }
             getProductListUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY)
@@ -472,7 +472,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    fun getFirstAdded() {
+    private fun getFirstAdded() {
         viewModelScope.launch {
             _state.update { it.copy(firstAddedState = UiState.Loading) }
             getFirstAddedUseCase.execute()
@@ -499,10 +499,10 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateFirstAdded(newFirstAdded: Boolean) {
+    private fun updateFirstAdded() {
         viewModelScope.launch {
             _state.update { it.copy(firstAddedState = UiState.Loading) }
-            updateFirstAddedUseCase.execute(newFirstAdded)
+            updateFirstAddedUseCase.execute(true)
                 .catch { exception ->
                     _state.update {
                         it.copy(
@@ -595,7 +595,7 @@ class PortfolioScreenViewModel @Inject constructor(
         }
     }
 
-    fun fetchSingleProductHistory(ticker: String, symbol: String = "", onSuccess: (() -> Unit)? = null) {
+    private fun fetchSingleProductHistory(ticker: String, symbol: String = "", onSuccess: (() -> Unit)? = null) {
         viewModelScope.launch {
             _state.update { it.copy(singleProductHistoryState = UiState.Loading) }
 
