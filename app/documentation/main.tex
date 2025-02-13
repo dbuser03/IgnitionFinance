@@ -20,29 +20,31 @@
 
 \begin{document}
 
-\begin{titlepage}
-    \AddToShipoutPictureBG*{
-        \begin{tikzpicture}[remember picture, overlay]
-            \node[inner sep=1cm] at (current page.center) { \includegraphics[
-                width=\dimexpr\paperwidth-2cm\relax,
-                height=\dimexpr\paperheight-2cm\relax, keepaspectratio=false
+    \begin{titlepage}
+        \AddToShipoutPictureBG*{
+            \begin{tikzpicture}[remember picture, overlay]
+                \node[inner sep=1cm] at (current page.center) { \includegraphics[
+                    width=\dimexpr\paperwidth-2cm\relax,
+                    height=\dimexpr\paperheight-2cm\relax, keepaspectratio=false
                 ]{foto/intro} };
-        \end{tikzpicture}
-    }
-    
-    \centering
-    \vspace*{2cm}
+            \end{tikzpicture}
+        }
 
-    \raggedright
-    \vspace{20cm}
-    \noindent\hspace*{-1.1cm}
-    {\fontsize{48pt}{48pt}\selectfont\bfseries\color{white} Ignition
-    Finance\par}
-    \vfill
-\end{titlepage}
+        \centering
+        \vspace*{2cm}
 
-\newgeometry{a4paper, left=25mm, right=25mm, top=25mm, bottom=25mm}
-\tableofcontents
+        \raggedright
+        \vspace{19cm}
+        \noindent\hspace*{-1.1cm}
+        {\fontsize{48pt}{48pt}\selectfont\bfseries\color{white} Ignition Finance\par}
+        \vspace{0.5cm}
+        \noindent\hspace*{-1.1cm}
+        {\fontsize{12pt}{12pt}\selectfont\color{white} ERROR 404\par}
+        \vfill
+    \end{titlepage}
+
+    \newgeometry{a4paper, left=25mm, right=25mm, top=25mm, bottom=25mm}
+    \tableofcontents
 
 \section*{Introduzione alla Documentazione di Ignition Finance}
 
@@ -308,8 +310,13 @@ particolare attenzione alla robustezza, alla sicurezza e all'esperienza utente.
 \vspace{7cm}
 \section{Schema Architetturale
 Complessivo}\label{sec:schema-architetturale-complessivo}
-\vspace{2cm}
-\vspace{10cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{foto/architecture}
+    \caption{}
+    \label{fig:architecture}
+\end{figure}
+
 \section*{Algoritmo di Simulazione FIRE (Financial Independence, Retire Early)}
 \addcontentsline{toc}{section}{ALGORITMO DI SIMULAZIONE FIRE (FINANCIAL INDEPENDENCE, RETIRE EARLY)}
    
