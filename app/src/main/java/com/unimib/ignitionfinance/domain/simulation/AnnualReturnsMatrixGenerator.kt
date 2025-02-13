@@ -1,12 +1,13 @@
 package com.unimib.ignitionfinance.domain.simulation
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 object AnnualReturnsMatrixGenerator {
-    private const val TAG = "AnnualReturnsMatrix"
 
     suspend fun generateMatrices(
         dataset: List<DailyReturn>,

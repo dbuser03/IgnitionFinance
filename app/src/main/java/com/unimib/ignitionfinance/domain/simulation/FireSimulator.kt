@@ -18,14 +18,14 @@ object FireSimulator {
     ): SimulationResult = withContext(Dispatchers.Default) {
         val simulationYears = 100
         val numSimulations = config.settings.numberOfSimulations.toInt()
-        val initialInvestedCapital = config.capital.invested.toDouble()
-        val initialCashCapital = config.capital.cash.toDouble()
+        val initialInvestedCapital = config.capital.invested
+        val initialCashCapital = config.capital.cash
         val loadPercentage = config.settings.expenses.loadPercentage.toDouble()
         val bufferYears = config.settings.intervals.yearsOfBuffer.toDouble()
         val taxRate = config.settings.expenses.taxRatePercentage.toDouble()
         val stampDuty = config.settings.expenses.stampDutyPercentage.toDouble()
         val retirementYear = config.settings.intervals.yearsInPaidRetirement.toInt()
-        val cashInterestRate = config.simulationParams.cashInterestRate.toDouble()
+        val cashInterestRate = config.simulationParams.cashInterestRate
 
         val simulationResults = (0 until numSimulations).map { simIndex ->
             async {
