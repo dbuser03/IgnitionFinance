@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.18.0 (TeX Live 2025/dev/Debian)  (format=lualatex 2024.10.10)  13 FEB 2025 17:53
+This is LuaHBTeX, Version 1.18.0 (TeX Live 2025/dev/Debian)  (format=lualatex 2025.2.13)  13 FEB 2025 20:50
  restricted system commands enabled.
  file:line:error style messages enabled.
 **main.tex
@@ -9,8 +9,8 @@ Lua module: luaotfload 2024-02-14 3.28 Lua based OpenType font support
 Lua module: lualibs 2023-07-13 2.76 ConTeXt Lua standard libraries.
 Lua module: lualibs-extended 2023-07-13 2.76 ConTeXt Lua libraries -- extended c
 ollection.
-luaotfload | conf : Root cache directory is "/home/dbuser/.texlive2024/texmf-var
-/luatex-cache/generic/names".
+luaotfload | conf : Root cache directory is "/home/teto/.texlive2024/texmf-var/l
+uatex-cache/generic/names".
 luaotfload | init : Loading fontloader "fontloader-2023-12-28.lua" from kpse-res
 olved path "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/fontloader-2023-
 12-28.lua".
@@ -21,8 +21,8 @@ Inserting `luaotfload.node_processor' in `hpack_filter'.
 Inserting `luaotfload.glyph_stream' in `glyph_stream_provider'.
 Inserting `luaotfload.define_font' in `define_font'.
 Lua-only attribute luaotfload_color_attribute = 2
-luaotfload | conf : Root cache directory is "/home/dbuser/.texlive2024/texmf-var
-/luatex-cache/generic/names".
+luaotfload | conf : Root cache directory is "/home/teto/.texlive2024/texmf-var/l
+uatex-cache/generic/names".
 Inserting `luaotfload.harf.strip_prefix' in `find_opentype_file'.
 Inserting `luaotfload.harf.strip_prefix' in `find_truetype_file'.
 Removing  `luaotfload.glyph_stream' from `glyph_stream_provider'.
@@ -45,8 +45,8 @@ mf-dist/tex/latex/base/article.cls
 Document Class: article 2024/02/08 v1.4n Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
 File: size10.clo 2024/02/08 v1.4n Standard LaTeX file (size option)
-luaotfload | db : Font names database loaded from /home/dbuser/.texlive2024/texm
-f-var/luatex-cache/generic/names/luaotfload-names.luc.gz)
+luaotfload | db : Font names database loaded from /home/teto/.texlive2024/texmf-
+var/luatex-cache/generic/names/luaotfload-names.luc.gz)
 \c@part=\count192
 \c@section=\count193
 \c@subsection=\count194
@@ -836,7 +836,7 @@ File: pgflibraryshapes.multipart.code.tex 2023-01-15 v3.1.10 (3.1.10)
 zlibrarypositioning.code.tex
 File: tikzlibrarypositioning.code.tex 2023-01-15 v3.1.10 (3.1.10)
 )
-(/home/dbuser/AndroidStudioProjects/IgnitionFinance/app/out/main.aux)
+(/home/teto/AndroidStudioProjects/IgnitionFinance/app/out/main.aux)
 \openout1 = main.aux
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
@@ -993,8 +993,8 @@ e
 ))
 Package hyperref Info: Link coloring OFF on input line 21.
 
-(/home/dbuser/AndroidStudioProjects/IgnitionFinance/app/out/main.out)
-(/home/dbuser/AndroidStudioProjects/IgnitionFinance/app/out/main.out)
+(/home/teto/AndroidStudioProjects/IgnitionFinance/app/out/main.out)
+(/home/teto/AndroidStudioProjects/IgnitionFinance/app/out/main.out)
 \@outlinefile=\write4
 
 \openout4 = main.out
@@ -1044,7 +1044,7 @@ Package geometry Warning: `a4paper': not available in `\newgeometry'; skipped.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(/home/dbuser/AndroidStudioProjects/IgnitionFinance/app/out/main.toc
+(/home/teto/AndroidStudioProjects/IgnitionFinance/app/out/main.toc
 LaTeX Font Info:    Trying to load font information for U+msa on input line 6.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -1146,50 +1146,68 @@ Repository\TU/neue-haas-grotesk-display(0)/m/it/10 .
 
 (./componenti-del-sistema.tex
 
+./componenti-del-sistema.tex:1: LaTeX Error: Can be used only in preamble.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1 \usepackage
+             {xcolor}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+
 [15]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 4.
+nput line 7.
 
 
 [16]
 
 [17]
 
-[18])
+[18]
 
-[19]
+[19])
 
 [20]
-<foto/swiss_design.png, id=647, 2006.49625pt x 1652.1725pt>
+
+[21]
+<foto/swiss_design.png, id=755, 2006.49625pt x 1652.1725pt>
 File: foto/swiss_design.png Graphic file (type png)
 <use foto/swiss_design.png>
 Package luatex.def Info: foto/swiss_design.png  used on input line 606.
 (luatex.def)             Requested size: 455.24411pt x 374.84883pt.
 
 
-[21<./foto/swiss_design.png>]
-<foto/google_clock_app.png, id=654, 1532.72626pt x 3301.33376pt>
+[22]
+<foto/google_clock_app.png, id=760, 1532.72626pt x 3301.33376pt>
 File: foto/google_clock_app.png Graphic file (type png)
 <use foto/google_clock_app.png>
 Package luatex.def Info: foto/google_clock_app.png  used on input line 635.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/portfolio_screen.png, id=655, 1532.72626pt x 3301.33376pt>
+<foto/portfolio_screen.png, id=761, 1532.72626pt x 3301.33376pt>
 File: foto/portfolio_screen.png Graphic file (type png)
 <use foto/portfolio_screen.png>
 Package luatex.def Info: foto/portfolio_screen.png  used on input line 641.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/swipe_interaction_spotify.png, id=656, 1532.72626pt x 3301.33376pt>
+<foto/swipe_interaction_spotify.png, id=762, 1532.72626pt x 3301.33376pt>
 File: foto/swipe_interaction_spotify.png Graphic file (type png)
 <use foto/swipe_interaction_spotify.png>
 Package luatex.def Info: foto/swipe_interaction_spotify.png  used on input line
  647.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/swipe_interaction.png, id=657, 1532.72626pt x 3301.33376pt>
+<foto/swipe_interaction.png, id=763, 1532.72626pt x 3301.33376pt>
 File: foto/swipe_interaction.png Graphic file (type png)
 <use foto/swipe_interaction.png>
 Package luatex.def Info: foto/swipe_interaction.png  used on input line 653.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
- (./colori-e-tipografia.tex
+
+
+[23<./foto/swiss_design.png>] (./colori-e-tipografia.tex
 Overfull \hbox (8.27844pt too wide) in paragraph at lines 18--18
  [][][][][][][] 
  []
@@ -1261,24 +1279,24 @@ Overfull \hbox (8.27844pt too wide) in paragraph at lines 33--33
 
 
 
-[22<./foto/google_clock_app.png><./foto/portfolio_screen.png><./foto/swipe_inter
+[24<./foto/google_clock_app.png><./foto/portfolio_screen.png><./foto/swipe_inter
 action_spotify.png><./foto/swipe_interaction.png>]
-<foto/intro_screen.png, id=668, 1532.72626pt x 3301.33376pt>
+<foto/intro_screen.png, id=780, 1532.72626pt x 3301.33376pt>
 File: foto/intro_screen.png Graphic file (type png)
 <use foto/intro_screen.png>
 Package luatex.def Info: foto/intro_screen.png  used on input line 61.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/login.png, id=669, 1532.72626pt x 3301.33376pt>
+<foto/login.png, id=781, 1532.72626pt x 3301.33376pt>
 File: foto/login.png Graphic file (type png)
 <use foto/login.png>
 Package luatex.def Info: foto/login.png  used on input line 67.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/signup.png, id=670, 1532.72626pt x 3301.33376pt>
+<foto/signup.png, id=782, 1532.72626pt x 3301.33376pt>
 File: foto/signup.png Graphic file (type png)
 <use foto/signup.png>
 Package luatex.def Info: foto/signup.png  used on input line 73.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/forgot_password.png, id=671, 1532.72626pt x 3301.33376pt>
+<foto/forgot_password.png, id=783, 1532.72626pt x 3301.33376pt>
 File: foto/forgot_password.png Graphic file (type png)
 <use foto/forgot_password.png>
 Package luatex.def Info: foto/forgot_password.png  used on input line 79.
@@ -1287,50 +1305,46 @@ File: foto/portfolio_screen.png Graphic file (type png)
 <use foto/portfolio_screen.png>
 Package luatex.def Info: foto/portfolio_screen.png  used on input line 88.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/cash_card.png, id=672, 1532.72626pt x 3301.33376pt>
+<foto/cash_card.png, id=784, 1532.72626pt x 3301.33376pt>
 File: foto/cash_card.png Graphic file (type png)
 <use foto/cash_card.png>
 Package luatex.def Info: foto/cash_card.png  used on input line 94.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/product_card.png, id=673, 1532.72626pt x 3301.33376pt>
+<foto/product_card.png, id=785, 1532.72626pt x 3301.33376pt>
 File: foto/product_card.png Graphic file (type png)
 <use foto/product_card.png>
 Package luatex.def Info: foto/product_card.png  used on input line 100.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/summary_screen.png, id=674, 1532.72626pt x 3301.33376pt>
+<foto/summary_screen.png, id=786, 1532.72626pt x 3301.33376pt>
 File: foto/summary_screen.png Graphic file (type png)
 <use foto/summary_screen.png>
 Package luatex.def Info: foto/summary_screen.png  used on input line 106.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-
-
-[23<./foto/intro_screen.png><./foto/login.png><./foto/signup.png><./foto/forgot_
-password.png>]
-<foto/simulation_screen.png, id=684, 1532.72626pt x 3301.33376pt>
+<foto/simulation_screen.png, id=787, 1532.72626pt x 3301.33376pt>
 File: foto/simulation_screen.png Graphic file (type png)
 <use foto/simulation_screen.png>
 Package luatex.def Info: foto/simulation_screen.png  used on input line 115.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/settings_screen.png, id=685, 1532.72626pt x 3301.33376pt>
+<foto/settings_screen.png, id=788, 1532.72626pt x 3301.33376pt>
 File: foto/settings_screen.png Graphic file (type png)
 <use foto/settings_screen.png>
 Package luatex.def Info: foto/settings_screen.png  used on input line 121.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/inflation_card.png, id=686, 1532.72626pt x 3301.33376pt>
+<foto/inflation_card.png, id=789, 1532.72626pt x 3301.33376pt>
 File: foto/inflation_card.png Graphic file (type png)
 <use foto/inflation_card.png>
 Package luatex.def Info: foto/inflation_card.png  used on input line 127.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-<foto/input_card.png, id=687, 1532.72626pt x 3301.33376pt>
+<foto/input_card.png, id=790, 1532.72626pt x 3301.33376pt>
 File: foto/input_card.png Graphic file (type png)
 <use foto/input_card.png>
 Package luatex.def Info: foto/input_card.png  used on input line 133.
 (luatex.def)             Requested size: 109.26108pt x 235.29803pt.
-) (./conclusioni.tex
+)
 
-[24<./foto/cash_card.png><./foto/product_card.png><./foto/summary_screen.png><./
-foto/simulation_screen.png><./foto/settings_screen.png><./foto/inflation_card.pn
-g><./foto/input_card.png>]
+[25<./foto/intro_screen.png><./foto/login.png><./foto/signup.png><./foto/forgot_
+password.png><./foto/cash_card.png><./foto/product_card.png><./foto/summary_scre
+en.png>] (./conclusioni.tex
 Overfull \hbox (4.09988pt too wide) in paragraph at lines 34--37
 []\TU/neue-haas-grotesk-display(0)/b/n/10 In-ter-fac-cia Utente Mod-erna e Reat-
 tiva: \TU/neue-haas-grotesk-display(0)/m/it/10 L’uti-lizzo di Jet-pack Com-pos
@@ -1338,16 +1352,17 @@ e ha per-me-sso la creazione
  []
 
 
+
+[26<./foto/simulation_screen.png><./foto/settings_screen.png><./foto/inflation_c
+ard.png><./foto/input_card.png>]
 Overfull \hbox (2.35477pt too wide) in paragraph at lines 54--58
 []\TU/neue-haas-grotesk-display(0)/b/n/10 Ot-timiz-zazione delle Per-for-mance: \TU/neue-haas-grotesk-display(0)/m/it/10 L
 ’es-e-cuzione di sim-u-lazioni FIRE com-p-lesse può richiedere
  []
 
+)
 
-
-[25])
-
-[26] (/home/dbuser/AndroidStudioProjects/IgnitionFinance/app/out/main.aux)
+[27] (/home/teto/AndroidStudioProjects/IgnitionFinance/app/out/main.aux)
  ***********
 LaTeX2e <2024-06-01> patch level 2
 L3 programming layer <2024-05-27>
@@ -1364,16 +1379,16 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 )
 
 Here is how much of LuaTeX's memory you used:
- 29088 strings out of 475915
- 381563,1977958 words of node,token memory allocated
+ 29193 strings out of 475915
+ 305237,1977958 words of node,token memory allocated
  530 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 13 attribute, 55 glue_spec
 , 13 attribute_list, 2 write nodes
-   avail lists: 2:5614,3:487,4:256,5:6150,6:148,7:18484,8:32,9:13836,10:18,11:81
-5
- 50604 multiletter control sequences out of 65536+600000
+   avail lists: 2:4578,3:495,4:2984,5:5046,6:156,7:14257,8:31,9:11366,10:18,11:7
+56
+ 50605 multiletter control sequences out of 65536+600000
  55 fonts using 3921983 bytes
- 84i,12n,92p,455b,836s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,12n,92p,455b,838s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf/fonts/opentype/public/lm/lmmono8-regular.otf></usr/share/texmf
 /fonts/opentype/public/lm/lmmonolt10-bold.otf></usr/share/texmf/fonts/opentype/p
 ublic/lm/lmmono10-regular.otf><./fonts/neue-haas-grotesk-display-regular.otf><./
@@ -1385,10 +1400,10 @@ fonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/
 share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (27 pages, 12247655 bytes).
+Output written on main.pdf (28 pages, 12252295 bytes).
 
-PDF statistics: 784 PDF objects out of 1000 (max. 8388607)
- 690 compressed objects within 7 object streams
- 331 named destinations out of 1000 (max. 131072)
+PDF statistics: 895 PDF objects out of 1000 (max. 8388607)
+ 799 compressed objects within 8 object streams
+ 435 named destinations out of 1000 (max. 131072)
  488 words of extra memory for PDF output out of 10000 (max. 100000000)
 
