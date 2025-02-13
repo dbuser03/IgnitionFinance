@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.simulation
 
-import android.util.Log
 import com.unimib.ignitionfinance.domain.simulation.model.Capital
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationConfig
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationParams
@@ -24,7 +23,6 @@ class SimulationConfigFactory @Inject constructor(
     private val networkUtils: NetworkUtils
 ) {
     companion object {
-        private const val LOG_TAG = "SIM_CONFIG"
         private const val PERCENTAGE_DIVISOR = 100.0
     }
 
@@ -58,19 +56,10 @@ class SimulationConfigFactory @Inject constructor(
                     )
                 )
 
-                Log.d(LOG_TAG, "Original settings = $originalSettings")
-                Log.d(LOG_TAG, "Converted settings = $settings")
-
                 val inflation = inflationResult.getOrThrow()
-                Log.d(LOG_TAG, "Inflation = $inflation")
-
                 val invested = investedResult.getOrThrow()
-                Log.d(LOG_TAG, "Invested = $invested")
-
                 val cash = cashResult.getOrThrow().toDoubleOrNull() ?: 0.0
-
                 val simulationParams = SimulationParams()
-                Log.d(LOG_TAG, "SimulationParams = $simulationParams")
 
                 SimulationConfig(
                     dataset = dataset,
@@ -82,10 +71,6 @@ class SimulationConfigFactory @Inject constructor(
                     ),
                     simulationParams = simulationParams
                 )
-            }.also { result ->
-                if (result.isFailure) {
-                    Log.e(LOG_TAG, "Errore nella creazione di SimulationConfig", result.exceptionOrNull())
-                }
             }
         }
     }

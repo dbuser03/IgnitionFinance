@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.data.remote.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -12,7 +11,6 @@ import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 
 object SyncOperationScheduler {
-    const val TAG = "SyncOperationScheduler"
     const val SYNC_WORK_NAME = "sync_operation_work"
     const val MAX_RETRIES = 3
     const val SYNC_TIMEOUT_MS = 30000L
@@ -27,7 +25,6 @@ object SyncOperationScheduler {
         context: Context,
         constraints: Constraints = getDefaultConstraints()
     ) {
-        Log.d(TAG, "Scheduling periodic sync work with interval: $PERIODIC_SYNC_INTERVAL minutes")
         try {
             val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker<T>>(
                 repeatInterval = PERIODIC_SYNC_INTERVAL,
@@ -43,16 +40,12 @@ object SyncOperationScheduler {
                 )
                 .build()
 
-            Log.d(TAG, "Work request built with constraints: ${constraints.requiredNetworkType}")
-
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 SYNC_WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 syncWorkRequest
             )
-            Log.i(TAG, "Periodic sync work scheduled successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error scheduling periodic sync work", e)
+        } catch (_: Exception) {
         }
     }
 
@@ -61,7 +54,6 @@ object SyncOperationScheduler {
         constraints: Constraints = getDefaultConstraints(),
         initialDelay: Long = 0L
     ) {
-        Log.d(TAG, "Scheduling one-time sync work with initial delay: $initialDelay ms")
         try {
             val syncWorkRequest = OneTimeWorkRequestBuilder<SyncWorker<T>>()
                 .setConstraints(constraints)
@@ -73,22 +65,16 @@ object SyncOperationScheduler {
                 .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
                 .build()
 
-            Log.d(TAG, "One-time work request built with constraints: ${constraints.requiredNetworkType}")
 
             WorkManager.getInstance(context).enqueue(syncWorkRequest)
-            Log.i(TAG, "One-time sync work scheduled successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error scheduling one-time sync work", e)
+        } catch (_: Exception) {
         }
     }
 
     fun cancel(context: Context) {
-        Log.d(TAG, "Cancelling sync work: $SYNC_WORK_NAME")
         try {
             WorkManager.getInstance(context).cancelUniqueWork(SYNC_WORK_NAME)
-            Log.i(TAG, "Sync work cancelled successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error cancelling sync work", e)
+        } catch (_: Exception) {
         }
     }
 

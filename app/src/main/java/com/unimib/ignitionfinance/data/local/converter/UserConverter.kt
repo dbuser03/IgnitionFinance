@@ -11,12 +11,10 @@ import com.unimib.ignitionfinance.data.remote.model.user.Settings
 import com.unimib.ignitionfinance.domain.simulation.model.SimulationResult
 
 class UserConverter {
-    // We use GsonBuilder to create a more configurable Gson instance
     private val gson: Gson = GsonBuilder()
-        .serializeNulls() // This ensures null values are properly handled
+        .serializeNulls()
         .create()
 
-    // AuthData conversions
     @TypeConverter
     fun fromAuthData(value: AuthData?): String? {
         return value?.let { gson.toJson(it) }
@@ -29,7 +27,6 @@ class UserConverter {
         }
     }
 
-    // Settings conversions
     @TypeConverter
     fun fromSettings(value: Settings?): String? {
         return value?.let { gson.toJson(it) }
@@ -42,7 +39,6 @@ class UserConverter {
         }
     }
 
-    // Product List conversions
     @TypeConverter
     fun fromProductList(value: List<Product>?): String? {
         return value?.let { gson.toJson(it) }
@@ -50,7 +46,6 @@ class UserConverter {
 
     @TypeConverter
     fun toProductList(value: String?): List<Product> {
-        // Return empty list instead of null for better null safety
         if (value == null) return emptyList()
         return try {
             val listType = object : TypeToken<List<Product>>() {}.type
@@ -60,7 +55,6 @@ class UserConverter {
         }
     }
 
-    // Dataset (DailyReturn) conversions
     @TypeConverter
     fun fromDataset(value: List<DailyReturn>?): String? {
         return value?.let { gson.toJson(it) }
@@ -68,7 +62,6 @@ class UserConverter {
 
     @TypeConverter
     fun toDataset(value: String?): List<DailyReturn> {
-        // Return empty list instead of null for better null safety
         if (value == null) return emptyList()
         return try {
             val listType = object : TypeToken<List<DailyReturn>>() {}.type
@@ -78,7 +71,6 @@ class UserConverter {
         }
     }
 
-    // SimulationOutcome conversions
     @TypeConverter
     fun fromSimulationOutcome(value: Pair<List<SimulationResult>, Double?>?): String? {
         return value?.let { gson.toJson(it) }

@@ -1,12 +1,13 @@
 package com.unimib.ignitionfinance.domain.simulation
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.remote.model.user.DailyReturn
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 object AnnualReturnsMatrixGenerator {
-    private const val TAG = "AnnualReturnsMatrix"
 
     suspend fun generateMatrices(
         dataset: List<DailyReturn>,
@@ -29,7 +30,6 @@ object AnnualReturnsMatrixGenerator {
         }
 
         withContext(Dispatchers.Default) {
-            // Create a list of deferred computations for each simulation
             val jobs = List(numSimulations) { c ->
                 async {
                     var currentIndex = 0
@@ -43,7 +43,6 @@ object AnnualReturnsMatrixGenerator {
                     }
                 }
             }
-            // Wait for all computations to complete
             jobs.awaitAll()
         }
 

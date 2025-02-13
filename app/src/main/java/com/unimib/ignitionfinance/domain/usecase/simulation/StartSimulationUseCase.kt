@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.domain.usecase.simulation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.unimib.ignitionfinance.BuildConfig
@@ -36,7 +35,6 @@ class StartSimulationUseCase @Inject constructor(
     private val localDatabaseRepository: LocalDatabaseRepository<User>,
 ) {
     companion object {
-        private const val TAG = "SIMULATION_USECASE"
         private const val SUCCESS_RATE_THRESHOLD = 0.95
         private const val CAPITAL_TOLERANCE = 100.0
         private const val MAX_ITERATIONS = 20
@@ -63,7 +61,6 @@ class StartSimulationUseCase @Inject constructor(
             val existingDataset = currentUser.dataset
 
             val isNetworkAvailable = networkUtils.isNetworkAvailable()
-            Log.d(TAG, "Network available: $isNetworkAvailable")
 
             val datasetResult = if (isNetworkAvailable) {
                 buildDatasetUseCase.execute(BuildConfig.ALPHAVANTAGE_API_KEY).first()
@@ -98,9 +95,6 @@ class StartSimulationUseCase @Inject constructor(
                 )
             }
 
-
-            val overallStartTime = System.currentTimeMillis()
-
             val simulationResults = coroutineScope {
                 configs.map { config ->
                     async(Dispatchers.Default) { runSimulation(config) }
@@ -111,8 +105,6 @@ class StartSimulationUseCase @Inject constructor(
             val simulationPoints = simulationResults.zip(capitalIncrements).map { (result, increment) ->
                 (baseTotal + increment) to result.successRate
             }
-
-            Log.d(TAG, "Simulation points (capital, successRate): $simulationPoints")
 
             var lowerBound: Double? = null
             var upperBound: Double? = null
@@ -138,7 +130,6 @@ class StartSimulationUseCase @Inject constructor(
                 upperBound = lastCapital * GOLDEN_RATIO
             }
 
-            Log.d(TAG, "Initial FUM bracket: [$lowerBound, $upperBound]")
 
             val fuckYouMoney = calculateOptimizedFuckYouMoneyWithBracket(
                 baseConfig,
@@ -146,13 +137,8 @@ class StartSimulationUseCase @Inject constructor(
                 upperBound ?: Double.MAX_VALUE
             )
 
-            val overallExecutionTime = (System.currentTimeMillis() - overallStartTime) / 1000.0
-            Log.d(TAG, "Total execution time: $overallExecutionTime seconds")
-            Log.d(TAG, "Calculated Fuck You Money: $fuckYouMoney")
-
             val simulationOutcome = Pair(simulationResults, fuckYouMoney)
             val simulationOutcomeJson = Gson().toJson(simulationOutcome)
-
 
             localDatabaseRepository.updateSimulationOutcome(
                 userId,
@@ -161,7 +147,6 @@ class StartSimulationUseCase @Inject constructor(
 
             emit(Result.success(simulationResults to fuckYouMoney))
         } catch (e: Exception) {
-            Log.e(TAG, "Error during simulation execution", e)
             emit(Result.failure(e))
         }
     }
@@ -236,7 +221,6 @@ class StartSimulationUseCase @Inject constructor(
         var iteration = 0
         while ((b - a) > CAPITAL_TOLERANCE && iteration < MAX_ITERATIONS) {
             val evaluatedPoints = evaluatePoints(points)
-            Log.d(TAG, "Iteration $iteration: Bracket=[$a, $b], Points: $evaluatedPoints")
             val sortedPoints = evaluatedPoints.sortedBy { it.first }
             val transitionPoint = sortedPoints.zipWithNext().firstOrNull { (p1, p2) ->
                 p1.second < SUCCESS_RATE_THRESHOLD && p2.second >= SUCCESS_RATE_THRESHOLD
@@ -272,7 +256,6 @@ class StartSimulationUseCase @Inject constructor(
             .filter { it.value >= SUCCESS_RATE_THRESHOLD }
             .minByOrNull { it.key }?.key ?: b
 
-        Log.d(TAG, "Optimized FUM: $finalResult after $iteration iterations")
         return finalResult
     }
 

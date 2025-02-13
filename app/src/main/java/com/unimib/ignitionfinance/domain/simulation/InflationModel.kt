@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.simulation
 
-import android.util.Log
 import kotlinx.coroutines.*
 import kotlin.math.*
 
@@ -17,8 +16,6 @@ object InflationModel {
         numSimulations: Int,
         simulationLength: Int = 100
     ): Array<DoubleArray> = withContext(Dispatchers.Default) {
-        val TAG = "INFLATION_MODEL_LOG"
-        Log.d(TAG, "Historical inflation data: ${historicalInflation.joinToString(", ")}")
 
         val inflationMatrix = Array(simulationLength) { DoubleArray(numSimulations) }
 
@@ -73,8 +70,6 @@ object InflationModel {
                 jobs.awaitAll()
             }
         }
-
-        Log.d(TAG, "Inflation Matrix: ${inflationMatrix.contentDeepToString()}")
         inflationMatrix
     }
 }

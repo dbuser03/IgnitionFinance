@@ -9,7 +9,7 @@ fun DialogManager(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
     onConfirmation: ((String?) -> Unit)? = null,
-    onProductConfirmation: ((String?, String?, String?, String?, String?) -> Unit)? = null,  // Modified to accept 5 parameters
+    onProductConfirmation: ((String?, String?, String?, String?, String?) -> Unit)? = null,
     dialogTitle: String,
     prefix: String,
     firstAdded: Boolean = false

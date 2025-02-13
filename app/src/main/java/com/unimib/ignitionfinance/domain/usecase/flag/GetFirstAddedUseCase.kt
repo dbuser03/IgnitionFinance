@@ -49,8 +49,8 @@ class GetFirstAddedUseCase @Inject constructor(
 
         val firstAdded = when {
             remoteUser != null &&
-                    (remoteUser.updatedAt.toLong() >= (localUser.lastSyncTimestamp?.toLong() ?: 0)) &&
-                    (remoteUser.updatedAt.toLong() >= localUser.updatedAt.toLong()) -> {
+                    (remoteUser.updatedAt >= (localUser.lastSyncTimestamp ?: 0)) &&
+                    (remoteUser.updatedAt >= localUser.updatedAt) -> {
                 val updatedLocalUser = localUser.copy(
                     firstAdded = remoteUser.firstAdded,
                     updatedAt = remoteUser.updatedAt,
