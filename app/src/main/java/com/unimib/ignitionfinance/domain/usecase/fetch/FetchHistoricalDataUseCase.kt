@@ -25,9 +25,7 @@ class FetchHistoricalDataUseCase @Inject constructor(
                 throw IllegalArgumentException("API key cannot be empty")
             }
 
-            val actualSymbol = if (symbol.isNotEmpty()) {
-                symbol
-            } else {
+            val actualSymbol = symbol.ifEmpty {
                 val searchResult = fetchSearchStockDataUseCase.execute(ticker, apiKey).first()
                 searchResult.getOrNull()?.symbol
                     ?: throw NoSuchElementException("Symbol not found for product: $ticker")
@@ -65,10 +63,9 @@ class FetchHistoricalDataUseCase @Inject constructor(
 
             for (product in products) {
                 try {
-                    val symbol = if (product.symbol.isNotEmpty()) {
-                        product.symbol
-                    } else {
-                        val searchResult = fetchSearchStockDataUseCase.execute(product.ticker, apiKey).first()
+                    val symbol = product.symbol.ifEmpty {
+                        val searchResult =
+                            fetchSearchStockDataUseCase.execute(product.ticker, apiKey).first()
                         searchResult.getOrNull()?.symbol
                             ?: throw NoSuchElementException("Symbol not found for product: ${product.ticker}")
                     }

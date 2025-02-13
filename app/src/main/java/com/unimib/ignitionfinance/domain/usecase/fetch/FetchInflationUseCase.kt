@@ -1,6 +1,5 @@
 package com.unimib.ignitionfinance.domain.usecase.fetch
 
-import android.util.Log
 import com.unimib.ignitionfinance.data.repository.interfaces.InflationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,19 +30,10 @@ class FetchInflationUseCase @Inject constructor(
                                     inflationData.year.toInt() to (inflationData.inflationRate / 100.0)
                                 }
 
-                            // Log dei dati fetchati dall'API
-                            Log.d("INFLATION_FETCH", "Fetched Inflation Data: $apiData")
-
                             val combinedData: Map<Int, Double> = historicalData + apiData
-                            val reversedCombinedData = combinedData.toList().reversed().toMap()
-
-                            // Log dei dati combinati invertiti
-                            Log.d("INFLATION_FETCH", "Reversed Combined Data: $reversedCombinedData")
-
                             emit(Result.success(combinedData))
                         },
                         onFailure = { exception ->
-                            Log.e("INFLATION_FETCH", "Failed to fetch inflation data", exception)
                             emit(Result.failure(exception))
                         }
                     )
@@ -51,7 +41,6 @@ class FetchInflationUseCase @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.e("INFLATION_FETCH", "Unexpected error", e)
             emit(Result.failure(e))
         }
     }
