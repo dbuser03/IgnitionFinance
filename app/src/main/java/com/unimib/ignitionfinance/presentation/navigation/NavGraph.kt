@@ -1,5 +1,7 @@
 package com.unimib.ignitionfinance.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -18,6 +20,7 @@ import com.unimib.ignitionfinance.presentation.ui.screens.SettingsScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SimulationScreen
 import com.unimib.ignitionfinance.presentation.ui.screens.SummaryScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -39,7 +42,7 @@ fun NavGraph(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
-            ResetPasswordScreen(navController) //
+            ResetPasswordScreen(navController)
         }
 
         composable(

@@ -14,7 +14,6 @@ val NeueHaasGroteskDisplayFontFamily = FontFamily(
     Font(R.font.neue_haas_grotesk_display_bold, FontWeight.Bold)
 )
 
-// Set of Material typography styles
 val Typography = Typography(
     // Body Normal
     bodySmall = TextStyle(

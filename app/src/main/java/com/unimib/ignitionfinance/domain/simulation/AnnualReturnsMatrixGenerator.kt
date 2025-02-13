@@ -30,7 +30,6 @@ object AnnualReturnsMatrixGenerator {
         }
 
         withContext(Dispatchers.Default) {
-            // Create a list of deferred computations for each simulation
             val jobs = List(numSimulations) { c ->
                 async {
                     var currentIndex = 0
@@ -44,7 +43,6 @@ object AnnualReturnsMatrixGenerator {
                     }
                 }
             }
-            // Wait for all computations to complete
             jobs.awaitAll()
         }
 
