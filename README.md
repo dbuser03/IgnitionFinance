@@ -15,6 +15,6 @@ ERROR 404
 - **Daniele Buser** - 894514  
 - **Francesco Bianchi** - 902251  
 - **Stefano Brighenti** - 900153  
-- **Hicham Benbouizid** - 894680  
+- **Hicham Benbouzid** - 894680  
 
 
