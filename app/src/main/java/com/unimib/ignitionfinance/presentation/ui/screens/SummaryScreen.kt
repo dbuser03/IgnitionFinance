@@ -26,6 +26,7 @@ import com.unimib.ignitionfinance.presentation.ui.components.summary.AssetAlloca
 import com.unimib.ignitionfinance.presentation.ui.components.summary.NetWorthDisplay
 import com.unimib.ignitionfinance.presentation.ui.components.summary.PerformanceCard
 import com.unimib.ignitionfinance.presentation.ui.components.title.Title
+import com.unimib.ignitionfinance.presentation.utils.calculatePerformanceMetrics
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
@@ -165,7 +166,7 @@ fun SummaryScreen(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+/*@RequiresApi(Build.VERSION_CODES.O)
 private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double, Pair<String, Double>, Pair<String, Double>>? {
     if (products.isEmpty()) return null
 
@@ -206,16 +207,16 @@ private fun calculatePerformanceMetrics(products: List<Product>): Triple<Double,
         ?.let { it.first to it.second } ?: ("" to 0.0)
 
     return Triple(weightedAveragePerformance, bestPerformer, worstPerformer)
-}
+}*/
 
-private data class Quadruple<A, B, C, D>(
+data class Quadruple<A, B, C, D>(
     val first: A,
     val second: B,
     val third: C,
     val fourth: D
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
+/*@RequiresApi(Build.VERSION_CODES.O)
 private fun calculateHoldingPeriodInYears(purchaseDate: String): Double {
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val now = LocalDate.now()
@@ -227,4 +228,4 @@ private fun calculateHoldingPeriodInYears(purchaseDate: String): Double {
     } catch (_: DateTimeParseException) {
         return 0.0
     }
-}
+}*/
