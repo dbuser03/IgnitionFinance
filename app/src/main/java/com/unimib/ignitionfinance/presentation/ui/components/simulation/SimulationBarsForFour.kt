@@ -17,7 +17,7 @@ data class SimulationBar(
     val capital: String
 )
 
-const val MAX_BAR_HEIGHT = 0.9f
+const val SIMULATION_MAX_BAR_HEIGHT = 0.9f
 
 @Composable
 fun SimulationBars(
@@ -54,7 +54,7 @@ fun SimulationBars(
                 Box(
                     modifier = Modifier
                         .width(80.dp)
-                        .fillMaxHeight((result.percentage * MAX_BAR_HEIGHT).toFloat())
+                        .fillMaxHeight((result.percentage * SIMULATION_MAX_BAR_HEIGHT).toFloat())
                         .background(
                             barColors.getOrElse(index) { MaterialTheme.colorScheme.primaryContainer },
                             shape = RoundedCornerShape(12.dp)
