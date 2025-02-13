@@ -30,7 +30,6 @@ import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SimulationScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SummaryScreenViewModel
 import com.unimib.ignitionfinance.presentation.viewmodel.state.UiState
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
