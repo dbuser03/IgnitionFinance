@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_EXPRESSION")
+
 package com.unimib.ignitionfinance.presentation.ui.components.summary
 
 import androidx.compose.foundation.layout.*

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.unimib.ignitionfinance.R
@@ -31,7 +32,7 @@ fun SwipeToDeleteContainer(
     var offsetX by remember { mutableFloatStateOf(0f) }
     val animatedOffset by animateFloatAsState(
         targetValue = offsetX,
-        label = "swipeAnimation"
+        label = stringResource(id = R.string.label_swipe_animation),
     )
     val deleteThreshold = with(LocalDensity.current) { 80.dp.toPx() }
     val iconSize = 24.dp
@@ -62,7 +63,7 @@ fun SwipeToDeleteContainer(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.outline_delete_24),
-                    contentDescription = "Delete Product",
+                    contentDescription = stringResource(id = R.string.delete_product),
                     tint = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .offset(x = (iconSize / 2))

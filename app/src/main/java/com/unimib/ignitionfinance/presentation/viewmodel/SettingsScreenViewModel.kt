@@ -66,10 +66,8 @@ class SettingsScreenViewModel @Inject constructor(
     fun updateSettings(newSettings: Settings) {
         viewModelScope.launch {
             _state.update { it.copy(settingsState = UiState.Loading) }
-            Log.d("SettingsScreenViewModel", "Updating settings: $newSettings")
             updateUserSettingsUseCase.execute(newSettings)
                 .catch { exception ->
-                    Log.e("SettingsScreenViewModel", "Update failed: ${exception.localizedMessage}")
                     _state.update {
                         it.copy(
                             settingsState = UiState.Error(
@@ -79,13 +77,11 @@ class SettingsScreenViewModel @Inject constructor(
                     }
                 }
                 .collect { result ->
-                    Log.d("SettingsScreenViewModel", "Update result: $result")
                     _state.update { currentState ->
                         when {
                             result.isSuccess -> {
                                 val settings = result.getOrNull()
                                 if (settings != null) {
-                                    Log.d("SettingsScreenViewModel", "Settings updated successfully: $settings")
                                     currentState.copy(
                                         settings = settings,
                                         settingsState = UiState.Success(settings)

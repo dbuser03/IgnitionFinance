@@ -14,8 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.data.remote.model.user.Product
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCardHeader
 import com.unimib.ignitionfinance.presentation.viewmodel.PortfolioScreenViewModel
@@ -103,24 +105,24 @@ fun DashboardCard(
                             state.value.usdExchangeState is UiState.Loading ||
                                     state.value.chfExchangeState is UiState.Loading -> {
                                 PerformanceBox(
-                                    leftAmount = "----",
-                                    rightAmount = "----",
-                                    leftCurrencySymbol = "$",
-                                    rightCurrencySymbol = "₣",
-                                    leftLabel = "USD",
-                                    rightLabel = "CHF",
+                                    leftAmount = stringResource(id = R.string.no_data),
+                                    rightAmount = stringResource(id = R.string.no_data),
+                                    leftCurrencySymbol = stringResource(id = R.string.currency_usd),
+                                    rightCurrencySymbol = stringResource(id = R.string.currency_chf),
+                                    leftLabel = stringResource(id = R.string.label_usd),
+                                    rightLabel = stringResource(id = R.string.label_chf),
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
                             state.value.usdExchangeState is UiState.Error ||
                                     state.value.chfExchangeState is UiState.Error -> {
                                 PerformanceBox(
-                                    leftAmount = "----",
-                                    rightAmount = "----",
-                                    leftCurrencySymbol = "$",
-                                    rightCurrencySymbol = "₣",
-                                    leftLabel = "USD",
-                                    rightLabel = "CHF",
+                                    leftAmount = stringResource(id = R.string.no_data),
+                                    rightAmount = stringResource(id = R.string.no_data),
+                                    leftCurrencySymbol = stringResource(id = R.string.currency_usd),
+                                    rightCurrencySymbol = stringResource(id = R.string.currency_chf),
+                                    leftLabel = stringResource(id = R.string.label_usd),
+                                    rightLabel = stringResource(id = R.string.label_chf),
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -128,10 +130,10 @@ fun DashboardCard(
                                 PerformanceBox(
                                     leftAmount = viewModel.calculateUsdAmount(state.value.cash),
                                     rightAmount = viewModel.calculateChfAmount(state.value.cash),
-                                    leftCurrencySymbol = "$",
-                                    rightCurrencySymbol = "₣",
-                                    leftLabel = "USD",
-                                    rightLabel = "CHF",
+                                    leftCurrencySymbol = stringResource(id = R.string.currency_usd),
+                                    rightCurrencySymbol = stringResource(id = R.string.currency_chf),
+                                    leftLabel = stringResource(id = R.string.label_usd),
+                                    rightLabel = stringResource(id = R.string.label_chf),
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -188,10 +190,10 @@ fun DashboardCard(
                                 )
                             } else {
                                 PerformanceBox(
-                                    leftAmount = "----",
-                                    rightAmount = "----",
-                                    leftLabel = "Historical",
-                                    rightLabel = "No current data",
+                                    leftAmount = stringResource(id = R.string.no_data),
+                                    rightAmount = stringResource(id = R.string.no_data),
+                                    leftLabel = stringResource(id = R.string.label_historical),
+                                    rightLabel = stringResource(id = R.string.label_no_current_data),
                                     modifier = Modifier.fillMaxWidth(),
                                     onDeleteClicked = { viewModel.removeProduct(product.ticker) },
                                     percentageChange = if (product.averagePerformance.isNotEmpty()) {

@@ -22,7 +22,6 @@ class SimulationScreenViewModel @Inject constructor(
     private val _state = MutableStateFlow(SimulationScreenState())
     val state: StateFlow<SimulationScreenState> = _state.asStateFlow()
 
-    // Aggiungiamo un nuovo StateFlow specifico per gli errori di validazione
     private val _validateSettings = MutableStateFlow<String?>(null)
     val validateSettings: StateFlow<String?> = _validateSettings.asStateFlow()
 
@@ -119,7 +118,6 @@ class SimulationScreenViewModel @Inject constructor(
         }
     }
 
-    // Aggiungiamo una funzione per resettare l'errore di validazione
     fun clearValidationError() {
         _validateSettings.value = null
     }

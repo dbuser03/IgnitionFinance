@@ -1,7 +1,6 @@
 package com.unimib.ignitionfinance.presentation.viewmodel
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -71,7 +70,6 @@ class PortfolioScreenViewModel @Inject constructor(
         val purchaseFormatter2 = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val lastUpdateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-        // Get current time for comparison
         val currentDateTime = LocalDateTime.now()
 
         fun parsePurchaseDate(dateStr: String): LocalDate? {
@@ -90,7 +88,6 @@ class PortfolioScreenViewModel @Inject constructor(
             val originalPurchaseDateStr = product.purchaseDate
             val purchaseDate = parsePurchaseDate(originalPurchaseDateStr) ?: return@forEachIndexed
 
-            // Check if product needs updating (more than 24 hours since last update)
             val lastUpdated = LocalDateTime.parse(product.lastUpdated, lastUpdateFormatter)
             val needsUpdate = ChronoUnit.HOURS.between(lastUpdated, currentDateTime) >= 24
 
@@ -132,7 +129,6 @@ class PortfolioScreenViewModel @Inject constructor(
                 BigDecimal.ZERO
             }
 
-            // If product needs updating, calculate new amount based on performance
             if (needsUpdate) {
                 try {
                     val currentAmount = BigDecimal(product.amount)
@@ -148,18 +144,15 @@ class PortfolioScreenViewModel @Inject constructor(
                         )
                     )
 
-                    // Update the product with new amount and timestamp
                     val updatedProduct = product.copy(
                         amount = newAmount.setScale(2, RoundingMode.HALF_UP).toString(),
                         lastUpdated = currentDateTime.format(lastUpdateFormatter)
                     )
 
-                    // Launch a coroutine to update the product
                     viewModelScope.launch {
                         updateProduct(updatedProduct)
                     }
-                } catch (e: Exception) {
-                    Log.e("PortfolioViewModel", "Error updating product amount: ${e.message}")
+                } catch (_: Exception) {
                 }
             }
 
@@ -313,7 +306,6 @@ class PortfolioScreenViewModel @Inject constructor(
             _state.update { it.copy(cashState = UiState.Loading) }
             updateUserCashUseCase.execute(newCash)
                 .catch { exception ->
-                    Log.e("PortfolioViewModel", "Error updating cash: ${exception.localizedMessage}")
                     _state.update {
                         it.copy(
                             cashState = UiState.Error(
@@ -380,7 +372,6 @@ class PortfolioScreenViewModel @Inject constructor(
             _state.update { it.copy(productsState = UiState.Loading) }
             addProductToDatabaseUseCase.handleProductStorage(product, BuildConfig.ALPHAVANTAGE_API_KEY)
                 .catch { exception ->
-                    Log.e("PortfolioViewModel", "Error handling product storage: ${exception.localizedMessage}")
                     _state.update {
                         it.copy(
                             productsState = UiState.Error(
@@ -421,7 +412,6 @@ class PortfolioScreenViewModel @Inject constructor(
 
             updateProductListUseCase.removeProduct(productId)
                 .catch { exception ->
-                    Log.e("PortfolioViewModel", "Error removing product: ${exception.localizedMessage}")
                     _state.update {
                         it.copy(
                             productsState = UiState.Error(
@@ -456,7 +446,6 @@ class PortfolioScreenViewModel @Inject constructor(
 
             updateProductListUseCase.updateProduct(updatedProduct)
                 .catch { exception ->
-                    Log.e("PortfolioViewModel", "Error updating product: ${exception.localizedMessage}")
                     _state.update {
                         it.copy(
                             productsState = UiState.Error(

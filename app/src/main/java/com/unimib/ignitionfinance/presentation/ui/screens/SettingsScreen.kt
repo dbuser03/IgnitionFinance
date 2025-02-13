@@ -1,19 +1,19 @@
 package com.unimib.ignitionfinance.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.navigation.NavController
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.unimib.ignitionfinance.presentation.ui.components.title.TitleSettings
 import com.unimib.ignitionfinance.R
 import com.unimib.ignitionfinance.presentation.ui.components.settings.input.InputCard
 import com.unimib.ignitionfinance.presentation.ui.components.settings.select.SelectCard
+import com.unimib.ignitionfinance.presentation.ui.components.title.TitleSettings
 import com.unimib.ignitionfinance.presentation.model.InputBoxModel
 import com.unimib.ignitionfinance.presentation.model.SelectBoxModel
 import com.unimib.ignitionfinance.presentation.viewmodel.SettingsScreenViewModel
@@ -73,13 +73,13 @@ fun SettingsScreen(
             ) {
                 item {
                     InputCard(
-                        label = "NORMAL, RETIREMENT",
-                        title = "WITHDRAW",
+                        label = stringResource(id = R.string.withdraw_label),
+                        title = stringResource(id = R.string.withdraw_title),
                         inputBoxModelList = listOf(
                             InputBoxModel(
                                 key = "monthlyWithdrawalsWithoutPension",
-                                label = "Monthly withdrawals (no pension)",
-                                prefix = "€",
+                                label = stringResource(id = R.string.monthly_withdrawals_no_pension),
+                                prefix = stringResource(id = R.string.currency_eur),
                                 iconResId = R.drawable.outline_person_apron_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.withdrawals.withoutPension))
@@ -87,8 +87,8 @@ fun SettingsScreen(
                             ),
                             InputBoxModel(
                                 key = "monthlyWithdrawalsWithPension",
-                                label = "Monthly withdrawals (with pension)",
-                                prefix = "€",
+                                label = stringResource(id = R.string.monthly_withdrawals_with_pension),
+                                prefix = stringResource(id = R.string.currency_eur),
                                 iconResId = R.drawable.outline_person_4_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.withdrawals.withPension))
@@ -104,8 +104,8 @@ fun SettingsScreen(
                 }
                 item {
                     SelectCard(
-                        label = "NORMAL, SCALE, LOGNORMAL",
-                        title = "INFLATION",
+                        label = stringResource(id = R.string.inflation_select_label),
+                        title = stringResource(id = R.string.inflation_title),
                         model = inflationModel,
                         isExpanded = state.expandedCardIndex == 1,
                         onCardClicked = {
@@ -125,13 +125,13 @@ fun SettingsScreen(
                 }
                 item {
                     InputCard(
-                        label = "TAX RATE, STAMP DUTY, LOAD",
-                        title = "EXPENSES",
+                        label = stringResource(id = R.string.expenses_label),
+                        title = stringResource(id = R.string.expenses_title),
                         inputBoxModelList = listOf(
                             InputBoxModel(
                                 key = "taxRatePercentage",
-                                label = "Tax Rate Percentage",
-                                prefix = "%",
+                                label = stringResource(id = R.string.tax_rate_percentage),
+                                prefix = stringResource(id = R.string.percentage_prefix),
                                 iconResId = R.drawable.outline_account_balance_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.expenses.taxRatePercentage))
@@ -139,8 +139,8 @@ fun SettingsScreen(
                             ),
                             InputBoxModel(
                                 key = "stampDutyPercentage",
-                                label = "Stamp Duty Percentage",
-                                prefix = "%",
+                                label = stringResource(id = R.string.stamp_duty_percentage),
+                                prefix = stringResource(id = R.string.percentage_prefix),
                                 iconResId = R.drawable.outline_position_top_right_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.expenses.stampDutyPercentage))
@@ -148,8 +148,8 @@ fun SettingsScreen(
                             ),
                             InputBoxModel(
                                 key = "loadPercentage",
-                                label = "Load Percentage",
-                                prefix = "%",
+                                label = stringResource(id = R.string.load_percentage),
+                                prefix = stringResource(id = R.string.percentage_prefix),
                                 iconResId = R.drawable.outline_weight_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.expenses.loadPercentage))
@@ -165,13 +165,13 @@ fun SettingsScreen(
                 }
                 item {
                     InputCard(
-                        label = "YEARS, RETIREMENTS YEARS, BUFFER",
-                        title = "INTERVALS",
+                        label = stringResource(id = R.string.intervals_label),
+                        title = stringResource(id = R.string.intervals_title),
                         inputBoxModelList = listOf(
                             InputBoxModel(
                                 key = "yearsInPaidRetirement",
-                                label = "Target years",
-                                prefix = "YRS",
+                                label = stringResource(id = R.string.target_years),
+                                prefix = stringResource(id = R.string.years_prefix),
                                 iconResId = R.drawable.outline_send_money_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.intervals.yearsInPaidRetirement))
@@ -179,8 +179,8 @@ fun SettingsScreen(
                             ),
                             InputBoxModel(
                                 key = "yearsInFire",
-                                label = "Years in FIRE",
-                                prefix = "YRS",
+                                label = stringResource(id = R.string.years_in_fire),
+                                prefix = stringResource(id = R.string.years_prefix),
                                 iconResId = R.drawable.outline_local_fire_department_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.intervals.yearsInFIRE))
@@ -188,8 +188,8 @@ fun SettingsScreen(
                             ),
                             InputBoxModel(
                                 key = "yearsOfBuffer",
-                                label = "Years of buffer",
-                                prefix = "YRS",
+                                label = stringResource(id = R.string.years_of_buffer),
+                                prefix = stringResource(id = R.string.years_prefix),
                                 iconResId = R.drawable.outline_clock_loader_10_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.intervals.yearsOfBuffer))
@@ -205,13 +205,13 @@ fun SettingsScreen(
                 }
                 item {
                     InputCard(
-                        label = "NUMBER",
-                        title = "SIMULATIONS",
+                        label = stringResource(id = R.string.simulations_label),
+                        title = stringResource(id = R.string.simulations_title),
                         inputBoxModelList = listOf(
                             InputBoxModel(
                                 key = "numberOfSimulations",
-                                label = "Number of simulations to perform",
-                                prefix = "N°",
+                                label = stringResource(id = R.string.number_of_simulations),
+                                prefix = stringResource(id = R.string.number_prefix),
                                 iconResId = R.drawable.outline_autoplay_24,
                                 inputValue = remember(state.settings) {
                                     mutableStateOf(TextFieldValue(settingsData.numberOfSimulations))
