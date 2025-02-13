@@ -1,6 +1,10 @@
+\usepackage{xcolor}
+
+\definecolor{codegray}{gray}{0.95}
+
 \subsection{SyncWorker}\label{subsec:syncworker} Gestisce la sincronizzazione. Usa Hilt.
 
-\begin{lstlisting}[caption=SyncWorker.kt, label=lst:syncworker, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+\begin{lstlisting}[caption=SyncWorker.kt, label=lst:syncworker, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4, backgroundcolor=\color{codegray}]
 @HiltWorker
 class SyncWorker<T> @AssistedInject constructor(
     @Assisted context: Context,
@@ -76,7 +80,7 @@ Passaggi:
 
 \textbf{Operazioni di sincronizzazione}:
 
-\begin{lstlisting}[caption=Operazioni di Sincronizzazione, label=lst:sync_operations, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+\begin{lstlisting}[caption=Operazioni di Sincronizzazione, label=lst:sync_operations, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4, backgroundcolor=\color{codegray}]
 private suspend fun performAddOperation(item: SyncQueueItem): SyncOperationResult {
     Log.d(TAG, "Performing ADD operation for item ${item.id}")
     return firestoreRepository.addDocument(
@@ -153,7 +157,7 @@ private suspend fun performDeleteOperation(item: SyncQueueItem): SyncOperationRe
 
 \subsection{SyncQueueItem}\label{subsec:syncqueueitem} Rappresenta un'operazione di sincronizzazione.
 
-\begin{lstlisting}[caption=SyncQueueItem.kt, label=lst:syncqueueitem, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+\begin{lstlisting}[caption=SyncQueueItem.kt, label=lst:syncqueueitem, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4, backgroundcolor=\color{codegray}]
 package com.unimib.ignitionfinance.data.local.entity
 
 import androidx.room.ColumnInfo
@@ -188,7 +192,7 @@ data class SyncQueueItem (
 
 \subsection{SyncQueueItemRepository}\label{subsec:syncqueueitemrepository} Fornisce accesso al DB locale.
 
-\begin{lstlisting}[caption=SyncQueueItemDao.kt, label=lst:syncqueueitemdao, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+\begin{lstlisting}[caption=SyncQueueItemDao.kt, label=lst:syncqueueitemdao, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4, backgroundcolor=\color{codegray}]
 package com.unimib.ignitionfinance.data.local.database
 
 import androidx.room.Dao
@@ -240,7 +244,7 @@ interface SyncQueueItemDao {
 
 \subsection{SyncOperationScheduler}\label{subsec:syncoperationscheduler} Gestisce pianificazione con WorkManager.
 
-\begin{lstlisting}[caption=SyncOperationScheduler.kt, label=lst:syncoperationscheduler, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+\begin{lstlisting}[caption=SyncOperationScheduler.kt, label=lst:syncoperationscheduler, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4, backgroundcolor=\color{codegray}]
 package com.unimib.ignitionfinance.data.remote.worker
 
 import android.content.Context
@@ -348,7 +352,7 @@ object SyncOperationScheduler {
 
 \subsection{SyncOperationResult}\label{subsec:syncoperationresult} Risultato di un'operazione.
 
-\begin{lstlisting}[caption=SyncOperationResult.kt, label=lst:syncoperationresult, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4]
+\begin{lstlisting}[caption=SyncOperationResult.kt, label=lst:syncoperationresult, basicstyle=\ttfamily\scriptsize, breaklines=true, breakatwhitespace=true, tabsize=4, backgroundcolor=\color{codegray}]
 package com.unimib.ignitionfinance.data.remote.worker
 
 sealed class SyncOperationResult {

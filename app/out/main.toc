@@ -41,11 +41,11 @@
 \contentsline {section}{\numberline {16}Architettura del Sistema}{15}{section.16}%
 \contentsline {section}{\numberline {17}Componenti del Sistema}{16}{section.17}%
 \contentsline {subsection}{\numberline {17.1}SyncWorker}{16}{subsection.17.1}%
-\contentsline {subsection}{\numberline {17.2}SyncQueueItem}{17}{subsection.17.2}%
+\contentsline {subsection}{\numberline {17.2}SyncQueueItem}{18}{subsection.17.2}%
 \contentsline {subsection}{\numberline {17.3}SyncQueueItemRepository}{18}{subsection.17.3}%
 \contentsline {subsection}{\numberline {17.4}SyncOperationScheduler}{19}{subsection.17.4}%
 \contentsline {subsection}{\numberline {17.5}SyncOperationResult}{20}{subsection.17.5}%
-\contentsline {section}{\numberline {18}Flusso di Sincronizzazione}{20}{section.18}%
+\contentsline {section}{\numberline {18}Flusso di Sincronizzazione}{21}{section.18}%
 \contentsline {section}{\numberline {19}Gestione Errori e Retry}{21}{section.19}%
 \contentsline {section}{\numberline {20}Considerazioni sulla Performance}{21}{section.20}%
 \contentsline {section}{\numberline {21}Algoritmo di Sincronizzazione}{21}{section.21}%
