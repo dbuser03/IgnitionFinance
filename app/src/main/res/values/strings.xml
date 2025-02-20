@@ -118,5 +118,5 @@
     <string name="simulations_label">NUMBER</string>
     <string name="simulations_title">SIMULATIONS</string>
     <string name="number_of_simulations">Number of Simulations to perform</string>
-    <string name="number_prefix">N.</string>
+    <string name="number_prefix">N°</string>
 </resources>
